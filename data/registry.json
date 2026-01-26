@@ -1,0 +1,38 @@
+[
+  {
+    "id": "chinese-sherzod",
+    "name": "Sherzod's Mandarin Lexicon",
+    "path": "data/chinese/sherzod.json",
+    "description": "Beginner-friendly Chinese word list grouped by 15-item sets.",
+    "tags": [
+      "chinese",
+      "vocabulary",
+      "beginner"
+    ],
+    "kind": "chinese"
+  },
+  {
+    "id": "english-faf-2nd-4",
+    "name": "Family and Friends 2nd Ed. Level 4",
+    "path": "data/english/family-and-friends-2nd-4.json",
+    "description": "English vocabulary lists with Russian translations and IPA.",
+    "tags": [
+      "english",
+      "family-and-friends",
+      "level-4"
+    ],
+    "kind": "english"
+  },
+  {
+    "id": "english-solutions-2-2",
+    "name": "Solutions 2nd Ed. (Red) - Draft",
+    "path": "data/english/solutions-2-2.json",
+    "description": "Unofficial draft vocabulary list created from memory. Replace with official wordlist when available.",
+    "tags": [
+      "english",
+      "solutions",
+      "draft"
+    ],
+    "kind": "english"
+  }
+]

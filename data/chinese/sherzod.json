@@ -1,0 +1,110 @@
+{
+  "kind": "mandarin",
+  "groups": [
+    {
+      "group": 1,
+      "tags": ["city","places"],
+      "items": [
+        {"word":"纽约","pinyin":"Niǔ yuē","english":"New York","id":1,"tags":["city","places"]},
+        {"word":"伦敦","pinyin":"Lún dūn","english":"London","id":2,"tags":["city","places"]},
+        {"word":"巴黎","pinyin":"Bā lí","english":"Paris","id":3,"tags":["city","places"]},
+        {"word":"东京","pinyin":"Dōng jīng","english":"Tokyo","id":4,"tags":["city","places"]},
+        {"word":"首尔","pinyin":"Shǒu ěr","english":"Seoul","id":5,"tags":["city","places"]},
+        {"word":"新加坡","pinyin":"Xīn jiā pō","english":"Singapore","id":6,"tags":["city","places"]},
+        {"word":"悉尼","pinyin":"Xī ní","english":"Sydney","id":7,"tags":["city","places"]},
+        {"word":"墨尔本","pinyin":"Mò ěr běn","english":"Melbourne","id":8,"tags":["city","places"]},
+        {"word":"多伦多","pinyin":"Duō lún duō","english":"Toronto","id":9,"tags":["city","places"]},
+        {"word":"温哥华","pinyin":"Wēn gē huá","english":"Vancouver","id":10,"tags":["city","places"]},
+        {"word":"洛杉矶","pinyin":"Luò shān jī","english":"Los Angeles","id":11,"tags":["city","places"]},
+        {"word":"旧金山","pinyin":"Jiù jīn shān","english":"San Francisco","id":12,"tags":["city","places"]},
+        {"word":"柏林","pinyin":"Bó lín","english":"Berlin","id":13,"tags":["city","places"]},
+        {"word":"罗马","pinyin":"Luó mǎ","english":"Rome","id":14,"tags":["city","places"]},
+        {"word":"马德里","pinyin":"Mǎ dé lǐ","english":"Madrid","id":15,"tags":["city","places"]}
+      ]
+    },
+    {
+      "group": 2,
+      "tags": ["country","places"],
+      "items": [
+        {"word":"国家","pinyin":"guó jiā","english":"country","id":1,"tags":["country","places"]},
+        {"word":"中国","pinyin":"Zhōng guó","english":"China","id":2,"tags":["country","places"]},
+        {"word":"美国","pinyin":"Měi guó","english":"United States","id":3,"tags":["country","places"]},
+        {"word":"英国","pinyin":"Yīng guó","english":"United Kingdom","id":4,"tags":["country","places"]},
+        {"word":"法国","pinyin":"Fǎ guó","english":"France","id":5,"tags":["country","places"]},
+        {"word":"日本","pinyin":"Rì běn","english":"Japan","id":6,"tags":["country","places"]},
+        {"word":"韩国","pinyin":"Hán guó","english":"South Korea","id":7,"tags":["country","places"]},
+        {"word":"加拿大","pinyin":"Jiā ná dà","english":"Canada","id":8,"tags":["country","places"]},
+        {"word":"澳大利亚","pinyin":"Ào dà lì yà","english":"Australia","id":9,"tags":["country","places"]},
+        {"word":"德国","pinyin":"Dé guó","english":"Germany","id":10,"tags":["country","places"]},
+        {"word":"意大利","pinyin":"Yì dà lì","english":"Italy","id":11,"tags":["country","places"]},
+        {"word":"西班牙","pinyin":"Xī bān yá","english":"Spain","id":12,"tags":["country","places"]},
+        {"word":"俄罗斯","pinyin":"É luó sī","english":"Russia","id":13,"tags":["country","places"]},
+        {"word":"印度","pinyin":"Yìn dù","english":"India","id":14,"tags":["country","places"]},
+        {"word":"巴西","pinyin":"Bā xī","english":"Brazil","id":15,"tags":["country","places"]}
+      ]
+    },
+    {
+      "group": 3,
+      "tags": ["family","people"],
+      "items": [
+        {"word":"家庭","pinyin":"jiā tíng","english":"family","id":1,"tags":["family","people"]},
+        {"word":"父亲","pinyin":"fù qīn","english":"father","id":2,"tags":["family","people"]},
+        {"word":"母亲","pinyin":"mǔ qīn","english":"mother","id":3,"tags":["family","people"]},
+        {"word":"爸爸","pinyin":"bà ba","english":"dad","id":4,"tags":["family","people"]},
+        {"word":"妈妈","pinyin":"mā ma","english":"mom","id":5,"tags":["family","people"]},
+        {"word":"兄弟","pinyin":"xiōng dì","english":"brothers","id":6,"tags":["family","people"]},
+        {"word":"姐妹","pinyin":"jiě mèi","english":"sisters","id":7,"tags":["family","people"]},
+        {"word":"哥哥","pinyin":"gē gē","english":"older brother","id":8,"tags":["family","people"]},
+        {"word":"姐姐","pinyin":"jiě jie","english":"older sister","id":9,"tags":["family","people"]},
+        {"word":"弟弟","pinyin":"dì di","english":"younger brother","id":10,"tags":["family","people"]},
+        {"word":"妹妹","pinyin":"mèi mei","english":"younger sister","id":11,"tags":["family","people"]},
+        {"word":"孩子","pinyin":"hái zi","english":"child","id":12,"tags":["family","people"]},
+        {"word":"儿子","pinyin":"ér zi","english":"son","id":13,"tags":["family","people"]},
+        {"word":"女儿","pinyin":"nǚ ér","english":"daughter","id":14,"tags":["family","people"]},
+        {"word":"祖父母","pinyin":"zǔ fù mǔ","english":"grandparents","id":15,"tags":["family","people"]}
+      ]
+    },
+    {
+      "group": 4,
+      "tags": ["language"],
+      "items": [
+        {"word":"语言","pinyin":"yǔ yán","english":"language","id":1,"tags":["language"]},
+        {"word":"中文","pinyin":"Zhōng wén","english":"Chinese","id":2,"tags":["language"]},
+        {"word":"英语","pinyin":"Yīng yǔ","english":"English","id":3,"tags":["language"]},
+        {"word":"西班牙语","pinyin":"Xī bān yá yǔ","english":"Spanish","id":4,"tags":["language"]},
+        {"word":"法语","pinyin":"Fǎ yǔ","english":"French","id":5,"tags":["language"]},
+        {"word":"德语","pinyin":"Dé yǔ","english":"German","id":6,"tags":["language"]},
+        {"word":"日语","pinyin":"Rì yǔ","english":"Japanese","id":7,"tags":["language"]},
+        {"word":"韩语","pinyin":"Hán yǔ","english":"Korean","id":8,"tags":["language"]},
+        {"word":"俄语","pinyin":"É yǔ","english":"Russian","id":9,"tags":["language"]},
+        {"word":"葡萄牙语","pinyin":"Pú táo yá yǔ","english":"Portuguese","id":10,"tags":["language"]},
+        {"word":"阿拉伯语","pinyin":"Ā lā bó yǔ","english":"Arabic","id":11,"tags":["language"]},
+        {"word":"意大利语","pinyin":"Yì dà lì yǔ","english":"Italian","id":12,"tags":["language"]},
+        {"word":"泰语","pinyin":"Tài yǔ","english":"Thai","id":13,"tags":["language"]},
+        {"word":"越南语","pinyin":"Yuè nán yǔ","english":"Vietnamese","id":14,"tags":["language"]},
+        {"word":"印地语","pinyin":"Yìn dì yǔ","english":"Hindi","id":15,"tags":["language"]}
+      ]
+    },
+    {
+      "group": 5,
+      "tags": ["profession","people"],
+      "items": [
+        {"word":"医生","pinyin":"yī shēng","english":"doctor","id":1,"tags":["profession","people"]},
+        {"word":"老师","pinyin":"lǎo shī","english":"teacher","id":2,"tags":["profession","people"]},
+        {"word":"学生","pinyin":"xué shēng","english":"student","id":3,"tags":["profession","people"]},
+        {"word":"工人","pinyin":"gōng rén","english":"worker","id":4,"tags":["profession","people"]},
+        {"word":"司机","pinyin":"sī jī","english":"driver","id":5,"tags":["profession","people"]},
+        {"word":"护士","pinyin":"hù shi","english":"nurse","id":6,"tags":["profession","people"]},
+        {"word":"警察","pinyin":"jǐng chá","english":"police officer","id":7,"tags":["profession","people"]},
+        {"word":"厨师","pinyin":"chú shī","english":"chef","id":8,"tags":["profession","people"]},
+        {"word":"服务员","pinyin":"fú wù yuán","english":"server","id":9,"tags":["profession","people"]},
+        {"word":"工程师","pinyin":"gōng chéng shī","english":"engineer","id":10,"tags":["profession","people"]},
+        {"word":"律师","pinyin":"lǜ shī","english":"lawyer","id":11,"tags":["profession","people"]},
+        {"word":"经理","pinyin":"jīng lǐ","english":"manager","id":12,"tags":["profession","people"]},
+        {"word":"记者","pinyin":"jì zhě","english":"journalist","id":13,"tags":["profession","people"]},
+        {"word":"设计师","pinyin":"shè jì shī","english":"designer","id":14,"tags":["profession","people"]},
+        {"word":"会计","pinyin":"kuài jì","english":"accountant","id":15,"tags":["profession","people"]}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,290 @@
+{
+  "kind": "english",
+  "groups": [
+    {
+      "group": 1,
+      "name": "Unit 1: The food here is great!",
+      "tags": [],
+      "items": [
+        {"word":"waiter","pinyin":"/ˈweɪtər/","english":"официант","tags":["food"],"id":1},
+        {"word":"waitress","pinyin":"/ˈweɪtrəs/","english":"официантка","tags":["food"],"id":2},
+        {"word":"uniform","pinyin":"/ˈjuːnɪfɔːrm/","english":"форма","tags":["clothes"],"id":3},
+        {"word":"menu","pinyin":"/ˈmenjuː/","english":"меню","tags":["food"],"id":4},
+        {"word":"customer","pinyin":"/ˈkʌstəmər/","english":"клиент","tags":["people"],"id":5},
+        {"word":"bottle","pinyin":"/ˈbɒtəl/","english":"бутылка","tags":["food"],"id":6},
+        {"word":"cup","pinyin":"/kʌp/","english":"чашка","tags":["food"],"id":7},
+        {"word":"glass","pinyin":"/ɡlɑːs/","english":"стакан","tags":["food"],"id":8},
+        {"word":"bowl","pinyin":"/bəʊl/","english":"миска","tags":["food"],"id":9},
+        {"word":"plate","pinyin":"/pleɪt/","english":"тарелка","tags":["food"],"id":10},
+        {"word":"soup","pinyin":"/suːp/","english":"суп","tags":["food"],"id":11},
+        {"word":"salad","pinyin":"/ˈsæləd/","english":"салат","tags":["food"],"id":12}
+      ]
+    },
+    {
+      "group": 2,
+      "name": "Unit 2: We had a concert!",
+      "tags": [],
+      "items": [
+        {"word":"concert","pinyin":"/ˈkɒnsət/","english":"концерт","tags":["music"],"id":1},
+        {"word":"stage","pinyin":"/steɪdʒ/","english":"сцена","tags":["music"],"id":2},
+        {"word":"audience","pinyin":"/ˈɔːdiəns/","english":"публика","tags":["people"],"id":3},
+        {"word":"guitar","pinyin":"/ɡɪˈtɑːr/","english":"гитара","tags":["music"],"id":4},
+        {"word":"violin","pinyin":"/ˌvaɪəˈlɪn/","english":"скрипка","tags":["music"],"id":5},
+        {"word":"drums","pinyin":"/drʌmz/","english":"барабаны","tags":["music"],"id":6},
+        {"word":"piano","pinyin":"/piˈænəʊ/","english":"пианино","tags":["music"],"id":7},
+        {"word":"trumpet","pinyin":"/ˈtrʌmpət/","english":"труба","tags":["music"],"id":8},
+        {"word":"singer","pinyin":"/ˈsɪŋər/","english":"певец","tags":["people"],"id":9},
+        {"word":"song","pinyin":"/sɒŋ/","english":"песня","tags":["music"],"id":10},
+        {"word":"ticket","pinyin":"/ˈtɪkɪt/","english":"билет","tags":["music"],"id":11},
+        {"word":"microphone","pinyin":"/ˈmaɪkrəfəʊn/","english":"микрофон","tags":["music"],"id":12}
+      ]
+    },
+    {
+      "group": 3,
+      "name": "Unit 3: The dinosaur museum",
+      "tags": [],
+      "items": [
+        {"word":"museum","pinyin":"/mjuˈziːəm/","english":"музей","tags":["places"],"id":1},
+        {"word":"dinosaur","pinyin":"/ˈdaɪnəsɔːr/","english":"динозавр","tags":["animals"],"id":2},
+        {"word":"fossil","pinyin":"/ˈfɒsəl/","english":"окаменелость","tags":["museum"],"id":3},
+        {"word":"skeleton","pinyin":"/ˈskelɪtən/","english":"скелет","tags":["museum"],"id":4},
+        {"word":"exhibit","pinyin":"/ɪɡˈzɪbɪt/","english":"экспонат","tags":["museum"],"id":5},
+        {"word":"hall","pinyin":"/hɔːl/","english":"зал","tags":["places"],"id":6},
+        {"word":"ticket","pinyin":"/ˈtɪkɪt/","english":"билет","tags":["museum"],"id":7},
+        {"word":"guide","pinyin":"/ɡaɪd/","english":"гид","tags":["people"],"id":8},
+        {"word":"model","pinyin":"/ˈmɒdəl/","english":"модель","tags":["museum"],"id":9},
+        {"word":"statue","pinyin":"/ˈstætʃuː/","english":"статуя","tags":["museum"],"id":10},
+        {"word":"bone","pinyin":"/bəʊn/","english":"кость","tags":["body"],"id":11},
+        {"word":"skull","pinyin":"/skʌl/","english":"череп","tags":["body"],"id":12}
+      ]
+    },
+    {
+      "group": 4,
+      "name": "Unit 4: Whose jacket is this?",
+      "tags": [],
+      "items": [
+        {"word":"jacket","pinyin":"/ˈdʒækɪt/","english":"куртка","tags":["clothes"],"id":1},
+        {"word":"sweater","pinyin":"/ˈswetər/","english":"свитер","tags":["clothes"],"id":2},
+        {"word":"coat","pinyin":"/kəʊt/","english":"пальто","tags":["clothes"],"id":3},
+        {"word":"scarf","pinyin":"/skɑːf/","english":"шарф","tags":["clothes"],"id":4},
+        {"word":"gloves","pinyin":"/ɡlʌvz/","english":"перчатки","tags":["clothes"],"id":5},
+        {"word":"belt","pinyin":"/belt/","english":"ремень","tags":["clothes"],"id":6},
+        {"word":"socks","pinyin":"/sɒks/","english":"носки","tags":["clothes"],"id":7},
+        {"word":"boots","pinyin":"/buːts/","english":"ботинки","tags":["clothes"],"id":8},
+        {"word":"hat","pinyin":"/hæt/","english":"шляпа","tags":["clothes"],"id":9},
+        {"word":"handbag","pinyin":"/ˈhændbæɡ/","english":"сумка","tags":["clothes"],"id":10},
+        {"word":"umbrella","pinyin":"/ʌmˈbrelə/","english":"зонт","tags":["clothes"],"id":11},
+        {"word":"pocket","pinyin":"/ˈpɒkɪt/","english":"карман","tags":["clothes"],"id":12}
+      ]
+    },
+    {
+      "group": 5,
+      "name": "Unit 5: Go back to the roundabout",
+      "tags": [],
+      "items": [
+        {"word":"street","pinyin":"/striːt/","english":"улица","tags":["places"],"id":1},
+        {"word":"road","pinyin":"/rəʊd/","english":"дорога","tags":["places"],"id":2},
+        {"word":"roundabout","pinyin":"/ˈraʊndəbaʊt/","english":"круговое","tags":["places"],"id":3},
+        {"word":"crossroads","pinyin":"/ˈkrɒsrəʊdz/","english":"перекрёсток","tags":["places"],"id":4},
+        {"word":"bridge","pinyin":"/brɪdʒ/","english":"мост","tags":["places"],"id":5},
+        {"word":"tunnel","pinyin":"/ˈtʌnəl/","english":"туннель","tags":["places"],"id":6},
+        {"word":"corner","pinyin":"/ˈkɔːnər/","english":"угол","tags":["places"],"id":7},
+        {"word":"sidewalk","pinyin":"/ˈsaɪdwɔːk/","english":"тротуар","tags":["places"],"id":8},
+        {"word":"traffic","pinyin":"/ˈtræfɪk/","english":"движение","tags":["places"],"id":9},
+        {"word":"sign","pinyin":"/saɪn/","english":"знак","tags":["places"],"id":10},
+        {"word":"map","pinyin":"/mæp/","english":"карта","tags":["places"],"id":11},
+        {"word":"station","pinyin":"/ˈsteɪʃən/","english":"станция","tags":["places"],"id":12}
+      ]
+    },
+    {
+      "group": 6,
+      "name": "Unit 6: The best bed!",
+      "tags": [],
+      "items": [
+        {"word":"bed","pinyin":"/bed/","english":"кровать","tags":["home"],"id":1},
+        {"word":"pillow","pinyin":"/ˈpɪləʊ/","english":"подушка","tags":["home"],"id":2},
+        {"word":"blanket","pinyin":"/ˈblæŋkɪt/","english":"одеяло","tags":["home"],"id":3},
+        {"word":"mattress","pinyin":"/ˈmætrəs/","english":"матрас","tags":["home"],"id":4},
+        {"word":"bedroom","pinyin":"/ˈbedruːm/","english":"спальня","tags":["home"],"id":5},
+        {"word":"mirror","pinyin":"/ˈmɪrər/","english":"зеркало","tags":["home"],"id":6},
+        {"word":"wardrobe","pinyin":"/ˈwɔːdrəʊb/","english":"гардероб","tags":["home"],"id":7},
+        {"word":"shelf","pinyin":"/ʃelf/","english":"полка","tags":["home"],"id":8},
+        {"word":"lamp","pinyin":"/læmp/","english":"лампа","tags":["home"],"id":9},
+        {"word":"curtain","pinyin":"/ˈkɜːtən/","english":"занавеска","tags":["home"],"id":10},
+        {"word":"carpet","pinyin":"/ˈkɑːpɪt/","english":"ковёр","tags":["home"],"id":11},
+        {"word":"drawer","pinyin":"/drɔːr/","english":"ящик","tags":["home"],"id":12}
+      ]
+    },
+    {
+      "group": 7,
+      "name": "Unit 7: Will it really happen?",
+      "tags": [],
+      "items": [
+        {"word":"future","pinyin":"/ˈfjuːtʃər/","english":"будущее","tags":["time"],"id":1},
+        {"word":"plan","pinyin":"/plæn/","english":"план","tags":["time"],"id":2},
+        {"word":"promise","pinyin":"/ˈprɒmɪs/","english":"обещание","tags":["time"],"id":3},
+        {"word":"maybe","pinyin":"/ˈmeɪbi/","english":"возможно","tags":["time"],"id":4},
+        {"word":"probably","pinyin":"/ˈprɒbəbli/","english":"вероятно","tags":["time"],"id":5},
+        {"word":"certainly","pinyin":"/ˈsɜːtənli/","english":"конечно","tags":["time"],"id":6},
+        {"word":"storm","pinyin":"/stɔːm/","english":"буря","tags":["weather"],"id":7},
+        {"word":"rain","pinyin":"/reɪn/","english":"дождь","tags":["weather"],"id":8},
+        {"word":"sunny","pinyin":"/ˈsʌni/","english":"солнечный","tags":["weather"],"id":9},
+        {"word":"cloudy","pinyin":"/ˈklaʊdi/","english":"облачный","tags":["weather"],"id":10},
+        {"word":"forecast","pinyin":"/ˈfɔːkɑːst/","english":"прогноз","tags":["weather"],"id":11},
+        {"word":"tomorrow","pinyin":"/təˈmɒrəʊ/","english":"завтра","tags":["time"],"id":12}
+      ]
+    },
+    {
+      "group": 8,
+      "name": "Unit 8: How much time have we got?",
+      "tags": [],
+      "items": [
+        {"word":"time","pinyin":"/taɪm/","english":"время","tags":["time"],"id":1},
+        {"word":"second","pinyin":"/ˈsekənd/","english":"секунда","tags":["time"],"id":2},
+        {"word":"minute","pinyin":"/ˈmɪnɪt/","english":"минута","tags":["time"],"id":3},
+        {"word":"hour","pinyin":"/aʊər/","english":"час","tags":["time"],"id":4},
+        {"word":"day","pinyin":"/deɪ/","english":"день","tags":["time"],"id":5},
+        {"word":"week","pinyin":"/wiːk/","english":"неделя","tags":["time"],"id":6},
+        {"word":"month","pinyin":"/mʌnθ/","english":"месяц","tags":["time"],"id":7},
+        {"word":"year","pinyin":"/jɪər/","english":"год","tags":["time"],"id":8},
+        {"word":"calendar","pinyin":"/ˈkælɪndər/","english":"календарь","tags":["time"],"id":9},
+        {"word":"clock","pinyin":"/klɒk/","english":"часы","tags":["time"],"id":10},
+        {"word":"watch","pinyin":"/wɒtʃ/","english":"наручные часы","tags":["time"],"id":11},
+        {"word":"schedule","pinyin":"/ˈʃedjuːl/","english":"расписание","tags":["time"],"id":12}
+      ]
+    },
+    {
+      "group": 9,
+      "name": "Unit 9: Something new to watch!",
+      "tags": [],
+      "items": [
+        {"word":"movie","pinyin":"/ˈmuːvi/","english":"фильм","tags":["media"],"id":1},
+        {"word":"film","pinyin":"/fɪlm/","english":"кинофильм","tags":["media"],"id":2},
+        {"word":"cartoon","pinyin":"/kɑːˈtuːn/","english":"мультфильм","tags":["media"],"id":3},
+        {"word":"channel","pinyin":"/ˈtʃænəl/","english":"канал","tags":["media"],"id":4},
+        {"word":"remote","pinyin":"/rɪˈməʊt/","english":"пульт","tags":["media"],"id":5},
+        {"word":"screen","pinyin":"/skriːn/","english":"экран","tags":["media"],"id":6},
+        {"word":"program","pinyin":"/ˈprəʊɡræm/","english":"программа","tags":["media"],"id":7},
+        {"word":"episode","pinyin":"/ˈepɪsəʊd/","english":"серия","tags":["media"],"id":8},
+        {"word":"actor","pinyin":"/ˈæktər/","english":"актёр","tags":["people"],"id":9},
+        {"word":"actress","pinyin":"/ˈæktrəs/","english":"актриса","tags":["people"],"id":10},
+        {"word":"series","pinyin":"/ˈsɪəriːz/","english":"сериал","tags":["media"],"id":11},
+        {"word":"comedy","pinyin":"/ˈkɒmədi/","english":"комедия","tags":["media"],"id":12}
+      ]
+    },
+    {
+      "group": 10,
+      "name": "Unit 10: I've printed my homework",
+      "tags": [],
+      "items": [
+        {"word":"computer","pinyin":"/kəmˈpjuːtər/","english":"компьютер","tags":["technology"],"id":1},
+        {"word":"printer","pinyin":"/ˈprɪntər/","english":"принтер","tags":["technology"],"id":2},
+        {"word":"keyboard","pinyin":"/ˈkiːbɔːd/","english":"клавиатура","tags":["technology"],"id":3},
+        {"word":"screen","pinyin":"/skriːn/","english":"экран","tags":["technology"],"id":4},
+        {"word":"mouse","pinyin":"/maʊs/","english":"мышь","tags":["technology"],"id":5},
+        {"word":"internet","pinyin":"/ˈɪntənet/","english":"интернет","tags":["technology"],"id":6},
+        {"word":"email","pinyin":"/ˈiːmeɪl/","english":"электронная почта","tags":["technology"],"id":7},
+        {"word":"file","pinyin":"/faɪl/","english":"файл","tags":["technology"],"id":8},
+        {"word":"folder","pinyin":"/ˈfəʊldər/","english":"папка","tags":["technology"],"id":9},
+        {"word":"document","pinyin":"/ˈdɒkjʊmənt/","english":"документ","tags":["technology"],"id":10},
+        {"word":"homework","pinyin":"/ˈhəʊmwɜːk/","english":"домашнее задание","tags":["school"],"id":11},
+        {"word":"project","pinyin":"/ˈprɒdʒekt/","english":"проект","tags":["school"],"id":12}
+      ]
+    },
+    {
+      "group": 11,
+      "name": "Unit 11: Have you ever been...?",
+      "tags": [],
+      "items": [
+        {"word":"airport","pinyin":"/ˈeəpɔːt/","english":"аэропорт","tags":["travel"],"id":1},
+        {"word":"passport","pinyin":"/ˈpɑːspɔːt/","english":"паспорт","tags":["travel"],"id":2},
+        {"word":"suitcase","pinyin":"/ˈsuːtkeɪs/","english":"чемодан","tags":["travel"],"id":3},
+        {"word":"luggage","pinyin":"/ˈlʌɡɪdʒ/","english":"багаж","tags":["travel"],"id":4},
+        {"word":"ticket","pinyin":"/ˈtɪkɪt/","english":"билет","tags":["travel"],"id":5},
+        {"word":"journey","pinyin":"/ˈdʒɜːni/","english":"путешествие","tags":["travel"],"id":6},
+        {"word":"trip","pinyin":"/trɪp/","english":"поездка","tags":["travel"],"id":7},
+        {"word":"vacation","pinyin":"/vəˈkeɪʃən/","english":"каникулы","tags":["travel"],"id":8},
+        {"word":"hotel","pinyin":"/həʊˈtel/","english":"отель","tags":["travel"],"id":9},
+        {"word":"tourist","pinyin":"/ˈtʊərɪst/","english":"турист","tags":["travel"],"id":10},
+        {"word":"guidebook","pinyin":"/ˈɡaɪdbʊk/","english":"путеводитель","tags":["travel"],"id":11},
+        {"word":"souvenir","pinyin":"/ˌsuːvəˈnɪər/","english":"сувенир","tags":["travel"],"id":12}
+      ]
+    },
+    {
+      "group": 12,
+      "name": "Unit 12: What's the matter?",
+      "tags": [],
+      "items": [
+        {"word":"headache","pinyin":"/ˈhedeɪk/","english":"головная боль","tags":["health"],"id":1},
+        {"word":"stomachache","pinyin":"/ˈstʌməkˌeɪk/","english":"боль в животе","tags":["health"],"id":2},
+        {"word":"cough","pinyin":"/kɒf/","english":"кашель","tags":["health"],"id":3},
+        {"word":"cold","pinyin":"/kəʊld/","english":"простуда","tags":["health"],"id":4},
+        {"word":"fever","pinyin":"/ˈfiːvər/","english":"температура","tags":["health"],"id":5},
+        {"word":"toothache","pinyin":"/ˈtuːθeɪk/","english":"зубная боль","tags":["health"],"id":6},
+        {"word":"nurse","pinyin":"/nɜːs/","english":"медсестра","tags":["health"],"id":7},
+        {"word":"doctor","pinyin":"/ˈdɒktər/","english":"врач","tags":["health"],"id":8},
+        {"word":"medicine","pinyin":"/ˈmedɪsən/","english":"лекарство","tags":["health"],"id":9},
+        {"word":"clinic","pinyin":"/ˈklɪnɪk/","english":"клиника","tags":["health"],"id":10},
+        {"word":"injury","pinyin":"/ˈɪndʒəri/","english":"травма","tags":["health"],"id":11},
+        {"word":"bandage","pinyin":"/ˈbændɪdʒ/","english":"бинт","tags":["health"],"id":12}
+      ]
+    },
+    {
+      "group": 13,
+      "name": "Unit 13: Can you help me?",
+      "tags": [],
+      "items": [
+        {"word":"help","pinyin":"/help/","english":"помощь","tags":["actions"],"id":1},
+        {"word":"carry","pinyin":"/ˈkæri/","english":"нести","tags":["actions"],"id":2},
+        {"word":"lift","pinyin":"/lɪft/","english":"поднимать","tags":["actions"],"id":3},
+        {"word":"fix","pinyin":"/fɪks/","english":"чинить","tags":["actions"],"id":4},
+        {"word":"repair","pinyin":"/rɪˈpeər/","english":"ремонтировать","tags":["actions"],"id":5},
+        {"word":"clean","pinyin":"/kliːn/","english":"убирать","tags":["actions"],"id":6},
+        {"word":"wash","pinyin":"/wɒʃ/","english":"мыть","tags":["actions"],"id":7},
+        {"word":"sweep","pinyin":"/swiːp/","english":"подметать","tags":["actions"],"id":8},
+        {"word":"move","pinyin":"/muːv/","english":"двигать","tags":["actions"],"id":9},
+        {"word":"open","pinyin":"/ˈəʊpən/","english":"открывать","tags":["actions"],"id":10},
+        {"word":"close","pinyin":"/kləʊz/","english":"закрывать","tags":["actions"],"id":11},
+        {"word":"borrow","pinyin":"/ˈbɒrəʊ/","english":"одалживать","tags":["actions"],"id":12}
+      ]
+    },
+    {
+      "group": 14,
+      "name": "Unit 14: We were fishing",
+      "tags": [],
+      "items": [
+        {"word":"fishing","pinyin":"/ˈfɪʃɪŋ/","english":"рыбалка","tags":["outdoors"],"id":1},
+        {"word":"camping","pinyin":"/ˈkæmpɪŋ/","english":"кемпинг","tags":["outdoors"],"id":2},
+        {"word":"hiking","pinyin":"/ˈhaɪkɪŋ/","english":"пеший туризм","tags":["outdoors"],"id":3},
+        {"word":"swimming","pinyin":"/ˈswɪmɪŋ/","english":"плавание","tags":["outdoors"],"id":4},
+        {"word":"sailing","pinyin":"/ˈseɪlɪŋ/","english":"парусный спорт","tags":["outdoors"],"id":5},
+        {"word":"climbing","pinyin":"/ˈklaɪmɪŋ/","english":"скалолазание","tags":["outdoors"],"id":6},
+        {"word":"riding","pinyin":"/ˈraɪdɪŋ/","english":"верховая езда","tags":["outdoors"],"id":7},
+        {"word":"picnic","pinyin":"/ˈpɪknɪk/","english":"пикник","tags":["outdoors"],"id":8},
+        {"word":"forest","pinyin":"/ˈfɒrɪst/","english":"лес","tags":["outdoors"],"id":9},
+        {"word":"river","pinyin":"/ˈrɪvər/","english":"река","tags":["outdoors"],"id":10},
+        {"word":"lake","pinyin":"/leɪk/","english":"озеро","tags":["outdoors"],"id":11},
+        {"word":"tent","pinyin":"/tent/","english":"палатка","tags":["outdoors"],"id":12}
+      ]
+    },
+    {
+      "group": 15,
+      "name": "Unit 15: Good news, bad news",
+      "tags": [],
+      "items": [
+        {"word":"news","pinyin":"/njuːz/","english":"новости","tags":["media"],"id":1},
+        {"word":"message","pinyin":"/ˈmesɪdʒ/","english":"сообщение","tags":["media"],"id":2},
+        {"word":"letter","pinyin":"/ˈletər/","english":"письмо","tags":["media"],"id":3},
+        {"word":"email","pinyin":"/ˈiːmeɪl/","english":"электронная почта","tags":["media"],"id":4},
+        {"word":"phone","pinyin":"/fəʊn/","english":"телефон","tags":["media"],"id":5},
+        {"word":"call","pinyin":"/kɔːl/","english":"звонок","tags":["media"],"id":6},
+        {"word":"report","pinyin":"/rɪˈpɔːt/","english":"отчёт","tags":["media"],"id":7},
+        {"word":"headline","pinyin":"/ˈhedlaɪn/","english":"заголовок","tags":["media"],"id":8},
+        {"word":"rumor","pinyin":"/ˈruːmər/","english":"слух","tags":["media"],"id":9},
+        {"word":"problem","pinyin":"/ˈprɒbləm/","english":"проблема","tags":["media"],"id":10},
+        {"word":"accident","pinyin":"/ˈæksɪdənt/","english":"авария","tags":["media"],"id":11},
+        {"word":"surprise","pinyin":"/səˈpraɪz/","english":"сюрприз","tags":["media"],"id":12}
+      ]
+    }
+  ]
+}
