@@ -20,7 +20,7 @@
         {"word":"bowl of soup","phonetics":"/bəʊl əv suːp//","russian":"миска","tags":["food"],"id":9},
         {"word":"plate of salad","phonetics":"/pleɪt əv ˈsæl.əd/","russian":"тарелка салата","tags":["food"],"id":10},
         {"word":"always","phonetics":"/ˈɔːl.weɪz//","russian":"всегда","tags":["частота"],"id":11},
-        {"word":"usually","phonetics":"/ˈjuː.ʒu.ə.li/","russian":"обычно","tags":["food"],"id":12}
+        {"word":"usually","phonetics":"/ˈjuː.ʒu.ə.li/","russian":"обычно","tags":["food"],"id":12},
         {"word":"sometimes","phonetics":"/ˈsʌm.taɪmz/","russian":"иногда","tags":["food"],"id":13}
       ]
     },
