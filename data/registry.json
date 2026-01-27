@@ -1,7 +1,7 @@
 [
   {
     "id": "chinese-sherzod",
-    "name": "Sherzod's Mandarin Lexicon",
+    "name": "Mandarin Basic",
     "path": "data/chinese/sherzod.json",
     "description": "Beginner-friendly Chinese word list grouped by 15-item sets.",
     "tags": [
