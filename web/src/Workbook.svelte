@@ -2,10 +2,10 @@
   import { onMount } from 'svelte'
   import { datasetId, currentDataset, setDatasetById } from './state/registry.js'
   import { formatGroup } from './utils/format.js'
-  const givenCols = 3
+  import WorkbookChinese from './kind/chinese/Workbook.svelte'
+  import WorkbookEnglish from './kind/english/Workbook.svelte'
+
   const exerciseSets = 2
-  const exerciseChineseRepeats = 3
-  const totalCols = givenCols + exerciseSets * 3
 
   const getSearchParams = () => {
     if (typeof window === 'undefined') return new URLSearchParams()
@@ -25,6 +25,7 @@
 
   let groupFilter = $state(getInitialGroup())
   const groups = $derived.by(() => $currentDataset?.data?.groups ?? [])
+
   const formatPrintDate = () => {
     const now = new Date()
     const day = String(now.getDate()).padStart(2, '0')
@@ -64,12 +65,6 @@
       setTimeout(() => window.print(), 300)
     }
   })
-
-  const renderGivenCell = (item, col) => {
-    if (col === 'Chinese') return item.word
-    if (col === 'Pinyin') return item.pinyin
-    return item.english
-  }
 </script>
 
 <main>
@@ -96,19 +91,9 @@
     </div>
   </header>
 
-  <section class="sheet">
-    <div class="grid" style={`--sets:${totalCols}`}>
-      {#each activeGroup.items as item}
-        <div class="cell filled chinese">{renderGivenCell(item, 'Chinese')}</div>
-        <div class="cell filled pinyin">{renderGivenCell(item, 'Pinyin')}</div>
-        <div class="cell filled english">{renderGivenCell(item, 'English')}</div>
-
-        {#each Array(exerciseSets) as _, setIndex}
-          <div class="cell blank chinese"></div>
-          <div class="cell blank pinyin"></div>
-          <div class="cell blank english"></div>
-        {/each}
-      {/each}
-    </div>
-  </section>
+  {#if $currentDataset?.kind === 'chinese'}
+    <WorkbookChinese group={activeGroup} {exerciseSets} />
+  {:else if $currentDataset?.kind === 'english'}
+    <WorkbookEnglish group={activeGroup} {exerciseSets} />
+  {/if}
 </main>

@@ -1,7 +1,7 @@
 import { mount } from 'svelte'
 import './workbook.css'
-import Print from './Print.svelte'
+import Workbook from './Workbook.svelte'
 
-mount(Print, {
+mount(Workbook, {
   target: document.getElementById('app'),
 })

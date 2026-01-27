@@ -1,23 +1,26 @@
 {
   "kind": "english",
+  "from": "english",
+  "to": "russian",
+  "search": ["word", "phonetics", "russian"],
   "groups": [
     {
       "group": 1,
       "name": "Unit 1",
       "tags": ["introductions","people"],
       "items": [
-        {"word":"teenager","pinyin":"/ˈtiːnˌeɪdʒər/","english":"подросток","tags":["people"],"id":1},
-        {"word":"neighbor","pinyin":"/ˈneɪbər/","english":"сосед","tags":["people"],"id":2},
-        {"word":"friendship","pinyin":"/ˈfrendʃɪp/","english":"дружба","tags":["people"],"id":3},
-        {"word":"argument","pinyin":"/ˈɑːrɡjəmənt/","english":"ссора","tags":["people"],"id":4},
-        {"word":"confidence","pinyin":"/ˈkɒnfɪdəns/","english":"уверенность","tags":["people"],"id":5},
-        {"word":"experience","pinyin":"/ɪkˈspɪəriəns/","english":"опыт","tags":["general"],"id":6},
-        {"word":"advice","pinyin":"/ədˈvaɪs/","english":"совет","tags":["general"],"id":7},
-        {"word":"decision","pinyin":"/dɪˈsɪʒən/","english":"решение","tags":["general"],"id":8},
-        {"word":"habit","pinyin":"/ˈhæbɪt/","english":"привычка","tags":["general"],"id":9},
-        {"word":"goal","pinyin":"/ɡəʊl/","english":"цель","tags":["general"],"id":10},
-        {"word":"promise","pinyin":"/ˈprɒmɪs/","english":"обещание","tags":["general"],"id":11},
-        {"word":"secret","pinyin":"/ˈsiːkrɪt/","english":"секрет","tags":["general"],"id":12}
+        {"word":"teenager","phonetics":"/ˈtiːnˌeɪdʒər/","russian":"подросток","tags":["people"],"id":1},
+        {"word":"neighbor","phonetics":"/ˈneɪbər/","russian":"сосед","tags":["people"],"id":2},
+        {"word":"friendship","phonetics":"/ˈfrendʃɪp/","russian":"дружба","tags":["people"],"id":3},
+        {"word":"argument","phonetics":"/ˈɑːrɡjəmənt/","russian":"ссора","tags":["people"],"id":4},
+        {"word":"confidence","phonetics":"/ˈkɒnfɪdəns/","russian":"уверенность","tags":["people"],"id":5},
+        {"word":"experience","phonetics":"/ɪkˈspɪəriəns/","russian":"опыт","tags":["general"],"id":6},
+        {"word":"advice","phonetics":"/ədˈvaɪs/","russian":"совет","tags":["general"],"id":7},
+        {"word":"decision","phonetics":"/dɪˈsɪʒən/","russian":"решение","tags":["general"],"id":8},
+        {"word":"habit","phonetics":"/ˈhæbɪt/","russian":"привычка","tags":["general"],"id":9},
+        {"word":"goal","phonetics":"/ɡəʊl/","russian":"цель","tags":["general"],"id":10},
+        {"word":"promise","phonetics":"/ˈprɒmɪs/","russian":"обещание","tags":["general"],"id":11},
+        {"word":"secret","phonetics":"/ˈsiːkrɪt/","russian":"секрет","tags":["general"],"id":12}
       ]
     },
     {
@@ -25,18 +28,18 @@
       "name": "Unit 2",
       "tags": ["school","learning"],
       "items": [
-        {"word":"lesson","pinyin":"/ˈlesən/","english":"урок","tags":["school"],"id":1},
-        {"word":"subject","pinyin":"/ˈsʌbdʒekt/","english":"предмет","tags":["school"],"id":2},
-        {"word":"grade","pinyin":"/ɡreɪd/","english":"оценка","tags":["school"],"id":3},
-        {"word":"exam","pinyin":"/ɪɡˈzæm/","english":"экзамен","tags":["school"],"id":4},
-        {"word":"revision","pinyin":"/rɪˈvɪʒən/","english":"повторение","tags":["school"],"id":5},
-        {"word":"essay","pinyin":"/ˈeseɪ/","english":"эссе","tags":["school"],"id":6},
-        {"word":"project","pinyin":"/ˈprɒdʒekt/","english":"проект","tags":["school"],"id":7},
-        {"word":"deadline","pinyin":"/ˈdedlaɪn/","english":"срок","tags":["school"],"id":8},
-        {"word":"presentation","pinyin":"/ˌprezənˈteɪʃən/","english":"презентация","tags":["school"],"id":9},
-        {"word":"library","pinyin":"/ˈlaɪbrəri/","english":"библиотека","tags":["school"],"id":10},
-        {"word":"research","pinyin":"/rɪˈsɜːrtʃ/","english":"исследование","tags":["school"],"id":11},
-        {"word":"result","pinyin":"/rɪˈzʌlt/","english":"результат","tags":["school"],"id":12}
+        {"word":"lesson","phonetics":"/ˈlesən/","russian":"урок","tags":["school"],"id":1},
+        {"word":"subject","phonetics":"/ˈsʌbdʒekt/","russian":"предмет","tags":["school"],"id":2},
+        {"word":"grade","phonetics":"/ɡreɪd/","russian":"оценка","tags":["school"],"id":3},
+        {"word":"exam","phonetics":"/ɪɡˈzæm/","russian":"экзамен","tags":["school"],"id":4},
+        {"word":"revision","phonetics":"/rɪˈvɪʒən/","russian":"повторение","tags":["school"],"id":5},
+        {"word":"essay","phonetics":"/ˈeseɪ/","russian":"эссе","tags":["school"],"id":6},
+        {"word":"project","phonetics":"/ˈprɒdʒekt/","russian":"проект","tags":["school"],"id":7},
+        {"word":"deadline","phonetics":"/ˈdedlaɪn/","russian":"срок","tags":["school"],"id":8},
+        {"word":"presentation","phonetics":"/ˌprezənˈteɪʃən/","russian":"презентация","tags":["school"],"id":9},
+        {"word":"library","phonetics":"/ˈlaɪbrəri/","russian":"библиотека","tags":["school"],"id":10},
+        {"word":"research","phonetics":"/rɪˈsɜːrtʃ/","russian":"исследование","tags":["school"],"id":11},
+        {"word":"result","phonetics":"/rɪˈzʌlt/","russian":"результат","tags":["school"],"id":12}
       ]
     },
     {
@@ -44,18 +47,18 @@
       "name": "Unit 3",
       "tags": ["work","jobs"],
       "items": [
-        {"word":"career","pinyin":"/kəˈrɪər/","english":"карьера","tags":["work"],"id":1},
-        {"word":"salary","pinyin":"/ˈsæləri/","english":"зарплата","tags":["work"],"id":2},
-        {"word":"boss","pinyin":"/bɒs/","english":"начальник","tags":["work"],"id":3},
-        {"word":"colleague","pinyin":"/ˈkɒliːɡ/","english":"коллега","tags":["work"],"id":4},
-        {"word":"interview","pinyin":"/ˈɪntəvjuː/","english":"собеседование","tags":["work"],"id":5},
-        {"word":"application","pinyin":"/ˌæplɪˈkeɪʃən/","english":"заявление","tags":["work"],"id":6},
-        {"word":"resume","pinyin":"/ˈrezjʊmeɪ/","english":"резюме","tags":["work"],"id":7},
-        {"word":"skill","pinyin":"/skɪl/","english":"навык","tags":["work"],"id":8},
-        {"word":"training","pinyin":"/ˈtreɪnɪŋ/","english":"обучение","tags":["work"],"id":9},
-        {"word":"promotion","pinyin":"/prəˈməʊʃən/","english":"повышение","tags":["work"],"id":10},
-        {"word":"contract","pinyin":"/ˈkɒntrækt/","english":"контракт","tags":["work"],"id":11},
-        {"word":"schedule","pinyin":"/ˈʃedjuːl/","english":"график","tags":["work"],"id":12}
+        {"word":"career","phonetics":"/kəˈrɪər/","russian":"карьера","tags":["work"],"id":1},
+        {"word":"salary","phonetics":"/ˈsæləri/","russian":"зарплата","tags":["work"],"id":2},
+        {"word":"boss","phonetics":"/bɒs/","russian":"начальник","tags":["work"],"id":3},
+        {"word":"colleague","phonetics":"/ˈkɒliːɡ/","russian":"коллега","tags":["work"],"id":4},
+        {"word":"interview","phonetics":"/ˈɪntəvjuː/","russian":"собеседование","tags":["work"],"id":5},
+        {"word":"application","phonetics":"/ˌæplɪˈkeɪʃən/","russian":"заявление","tags":["work"],"id":6},
+        {"word":"resume","phonetics":"/ˈrezjʊmeɪ/","russian":"резюме","tags":["work"],"id":7},
+        {"word":"skill","phonetics":"/skɪl/","russian":"навык","tags":["work"],"id":8},
+        {"word":"training","phonetics":"/ˈtreɪnɪŋ/","russian":"обучение","tags":["work"],"id":9},
+        {"word":"promotion","phonetics":"/prəˈməʊʃən/","russian":"повышение","tags":["work"],"id":10},
+        {"word":"contract","phonetics":"/ˈkɒntrækt/","russian":"контракт","tags":["work"],"id":11},
+        {"word":"schedule","phonetics":"/ˈʃedjuːl/","russian":"график","tags":["work"],"id":12}
       ]
     },
     {
@@ -63,18 +66,18 @@
       "name": "Unit 4",
       "tags": ["science","environment"],
       "items": [
-        {"word":"planet","pinyin":"/ˈplænɪt/","english":"планета","tags":["science"],"id":1},
-        {"word":"energy","pinyin":"/ˈenədʒi/","english":"энергия","tags":["science"],"id":2},
-        {"word":"experiment","pinyin":"/ɪkˈsperɪmənt/","english":"эксперимент","tags":["science"],"id":3},
-        {"word":"chemical","pinyin":"/ˈkemɪkəl/","english":"химикат","tags":["science"],"id":4},
-        {"word":"pollution","pinyin":"/pəˈluːʃən/","english":"загрязнение","tags":["environment"],"id":5},
-        {"word":"recycle","pinyin":"/ˌriːˈsaɪkəl/","english":"переработка","tags":["environment"],"id":6},
-        {"word":"resource","pinyin":"/rɪˈsɔːs/","english":"ресурс","tags":["environment"],"id":7},
-        {"word":"climate","pinyin":"/ˈklaɪmət/","english":"климат","tags":["environment"],"id":8},
-        {"word":"temperature","pinyin":"/ˈtemprətʃər/","english":"температура","tags":["science"],"id":9},
-        {"word":"engine","pinyin":"/ˈendʒɪn/","english":"двигатель","tags":["science"],"id":10},
-        {"word":"machine","pinyin":"/məˈʃiːn/","english":"машина","tags":["science"],"id":11},
-        {"word":"robot","pinyin":"/ˈrəʊbɒt/","english":"робот","tags":["science"],"id":12}
+        {"word":"planet","phonetics":"/ˈplænɪt/","russian":"планета","tags":["science"],"id":1},
+        {"word":"energy","phonetics":"/ˈenədʒi/","russian":"энергия","tags":["science"],"id":2},
+        {"word":"experiment","phonetics":"/ɪkˈsperɪmənt/","russian":"эксперимент","tags":["science"],"id":3},
+        {"word":"chemical","phonetics":"/ˈkemɪkəl/","russian":"химикат","tags":["science"],"id":4},
+        {"word":"pollution","phonetics":"/pəˈluːʃən/","russian":"загрязнение","tags":["environment"],"id":5},
+        {"word":"recycle","phonetics":"/ˌriːˈsaɪkəl/","russian":"переработка","tags":["environment"],"id":6},
+        {"word":"resource","phonetics":"/rɪˈsɔːs/","russian":"ресурс","tags":["environment"],"id":7},
+        {"word":"climate","phonetics":"/ˈklaɪmət/","russian":"климат","tags":["environment"],"id":8},
+        {"word":"temperature","phonetics":"/ˈtemprətʃər/","russian":"температура","tags":["science"],"id":9},
+        {"word":"engine","phonetics":"/ˈendʒɪn/","russian":"двигатель","tags":["science"],"id":10},
+        {"word":"machine","phonetics":"/məˈʃiːn/","russian":"машина","tags":["science"],"id":11},
+        {"word":"robot","phonetics":"/ˈrəʊbɒt/","russian":"робот","tags":["science"],"id":12}
       ]
     },
     {
@@ -82,18 +85,18 @@
       "name": "Unit 5",
       "tags": ["travel","city"],
       "items": [
-        {"word":"journey","pinyin":"/ˈdʒɜːni/","english":"путешествие","tags":["travel"],"id":1},
-        {"word":"passport","pinyin":"/ˈpɑːspɔːt/","english":"паспорт","tags":["travel"],"id":2},
-        {"word":"flight","pinyin":"/flaɪt/","english":"рейс","tags":["travel"],"id":3},
-        {"word":"hotel","pinyin":"/həʊˈtel/","english":"отель","tags":["travel"],"id":4},
-        {"word":"reservation","pinyin":"/ˌrezəˈveɪʃən/","english":"бронь","tags":["travel"],"id":5},
-        {"word":"tourist","pinyin":"/ˈtʊərɪst/","english":"турист","tags":["travel"],"id":6},
-        {"word":"map","pinyin":"/mæp/","english":"карта","tags":["travel"],"id":7},
-        {"word":"direction","pinyin":"/dəˈrekʃən/","english":"направление","tags":["travel"],"id":8},
-        {"word":"station","pinyin":"/ˈsteɪʃən/","english":"станция","tags":["city"],"id":9},
-        {"word":"square","pinyin":"/skweər/","english":"площадь","tags":["city"],"id":10},
-        {"word":"bridge","pinyin":"/brɪdʒ/","english":"мост","tags":["city"],"id":11},
-        {"word":"museum","pinyin":"/mjuˈziːəm/","english":"музей","tags":["city"],"id":12}
+        {"word":"journey","phonetics":"/ˈdʒɜːni/","russian":"путешествие","tags":["travel"],"id":1},
+        {"word":"passport","phonetics":"/ˈpɑːspɔːt/","russian":"паспорт","tags":["travel"],"id":2},
+        {"word":"flight","phonetics":"/flaɪt/","russian":"рейс","tags":["travel"],"id":3},
+        {"word":"hotel","phonetics":"/həʊˈtel/","russian":"отель","tags":["travel"],"id":4},
+        {"word":"reservation","phonetics":"/ˌrezəˈveɪʃən/","russian":"бронь","tags":["travel"],"id":5},
+        {"word":"tourist","phonetics":"/ˈtʊərɪst/","russian":"турист","tags":["travel"],"id":6},
+        {"word":"map","phonetics":"/mæp/","russian":"карта","tags":["travel"],"id":7},
+        {"word":"direction","phonetics":"/dəˈrekʃən/","russian":"направление","tags":["travel"],"id":8},
+        {"word":"station","phonetics":"/ˈsteɪʃən/","russian":"станция","tags":["city"],"id":9},
+        {"word":"square","phonetics":"/skweər/","russian":"площадь","tags":["city"],"id":10},
+        {"word":"bridge","phonetics":"/brɪdʒ/","russian":"мост","tags":["city"],"id":11},
+        {"word":"museum","phonetics":"/mjuˈziːəm/","russian":"музей","tags":["city"],"id":12}
       ]
     },
     {
@@ -101,18 +104,18 @@
       "name": "Unit 6",
       "tags": ["technology","media"],
       "items": [
-        {"word":"device","pinyin":"/dɪˈvaɪs/","english":"устройство","tags":["technology"],"id":1},
-        {"word":"screen","pinyin":"/skriːn/","english":"экран","tags":["technology"],"id":2},
-        {"word":"keyboard","pinyin":"/ˈkiːbɔːd/","english":"клавиатура","tags":["technology"],"id":3},
-        {"word":"battery","pinyin":"/ˈbætəri/","english":"батарея","tags":["technology"],"id":4},
-        {"word":"signal","pinyin":"/ˈsɪɡnəl/","english":"сигнал","tags":["technology"],"id":5},
-        {"word":"network","pinyin":"/ˈnetwɜːk/","english":"сеть","tags":["technology"],"id":6},
-        {"word":"website","pinyin":"/ˈwebsaɪt/","english":"веб‑сайт","tags":["media"],"id":7},
-        {"word":"message","pinyin":"/ˈmesɪdʒ/","english":"сообщение","tags":["media"],"id":8},
-        {"word":"upload","pinyin":"/ˈʌpləʊd/","english":"загрузка","tags":["media"],"id":9},
-        {"word":"download","pinyin":"/ˈdaʊnləʊd/","english":"скачивание","tags":["media"],"id":10},
-        {"word":"document","pinyin":"/ˈdɒkjʊmənt/","english":"документ","tags":["media"],"id":11},
-        {"word":"password","pinyin":"/ˈpɑːswɜːd/","english":"пароль","tags":["media"],"id":12}
+        {"word":"device","phonetics":"/dɪˈvaɪs/","russian":"устройство","tags":["technology"],"id":1},
+        {"word":"screen","phonetics":"/skriːn/","russian":"экран","tags":["technology"],"id":2},
+        {"word":"keyboard","phonetics":"/ˈkiːbɔːd/","russian":"клавиатура","tags":["technology"],"id":3},
+        {"word":"battery","phonetics":"/ˈbætəri/","russian":"батарея","tags":["technology"],"id":4},
+        {"word":"signal","phonetics":"/ˈsɪɡnəl/","russian":"сигнал","tags":["technology"],"id":5},
+        {"word":"network","phonetics":"/ˈnetwɜːk/","russian":"сеть","tags":["technology"],"id":6},
+        {"word":"website","phonetics":"/ˈwebsaɪt/","russian":"веб‑сайт","tags":["media"],"id":7},
+        {"word":"message","phonetics":"/ˈmesɪdʒ/","russian":"сообщение","tags":["media"],"id":8},
+        {"word":"upload","phonetics":"/ˈʌpləʊd/","russian":"загрузка","tags":["media"],"id":9},
+        {"word":"download","phonetics":"/ˈdaʊnləʊd/","russian":"скачивание","tags":["media"],"id":10},
+        {"word":"document","phonetics":"/ˈdɒkjʊmənt/","russian":"документ","tags":["media"],"id":11},
+        {"word":"password","phonetics":"/ˈpɑːswɜːd/","russian":"пароль","tags":["media"],"id":12}
       ]
     },
     {
@@ -120,18 +123,18 @@
       "name": "Unit 7",
       "tags": ["health","sport"],
       "items": [
-        {"word":"injury","pinyin":"/ˈɪndʒəri/","english":"травма","tags":["health"],"id":1},
-        {"word":"medicine","pinyin":"/ˈmedɪsən/","english":"лекарство","tags":["health"],"id":2},
-        {"word":"doctor","pinyin":"/ˈdɒktər/","english":"врач","tags":["health"],"id":3},
-        {"word":"nurse","pinyin":"/nɜːs/","english":"медсестра","tags":["health"],"id":4},
-        {"word":"fever","pinyin":"/ˈfiːvər/","english":"температура","tags":["health"],"id":5},
-        {"word":"exercise","pinyin":"/ˈeksəsaɪz/","english":"упражнение","tags":["sport"],"id":6},
-        {"word":"training","pinyin":"/ˈtreɪnɪŋ/","english":"тренировка","tags":["sport"],"id":7},
-        {"word":"athlete","pinyin":"/ˈæθliːt/","english":"спортсмен","tags":["sport"],"id":8},
-        {"word":"coach","pinyin":"/kəʊtʃ/","english":"тренер","tags":["sport"],"id":9},
-        {"word":"match","pinyin":"/mætʃ/","english":"матч","tags":["sport"],"id":10},
-        {"word":"stadium","pinyin":"/ˈsteɪdiəm/","english":"стадион","tags":["sport"],"id":11},
-        {"word":"score","pinyin":"/skɔːr/","english":"счёт","tags":["sport"],"id":12}
+        {"word":"injury","phonetics":"/ˈɪndʒəri/","russian":"травма","tags":["health"],"id":1},
+        {"word":"medicine","phonetics":"/ˈmedɪsən/","russian":"лекарство","tags":["health"],"id":2},
+        {"word":"doctor","phonetics":"/ˈdɒktər/","russian":"врач","tags":["health"],"id":3},
+        {"word":"nurse","phonetics":"/nɜːs/","russian":"медсестра","tags":["health"],"id":4},
+        {"word":"fever","phonetics":"/ˈfiːvər/","russian":"температура","tags":["health"],"id":5},
+        {"word":"exercise","phonetics":"/ˈeksəsaɪz/","russian":"упражнение","tags":["sport"],"id":6},
+        {"word":"training","phonetics":"/ˈtreɪnɪŋ/","russian":"тренировка","tags":["sport"],"id":7},
+        {"word":"athlete","phonetics":"/ˈæθliːt/","russian":"спортсмен","tags":["sport"],"id":8},
+        {"word":"coach","phonetics":"/kəʊtʃ/","russian":"тренер","tags":["sport"],"id":9},
+        {"word":"match","phonetics":"/mætʃ/","russian":"матч","tags":["sport"],"id":10},
+        {"word":"stadium","phonetics":"/ˈsteɪdiəm/","russian":"стадион","tags":["sport"],"id":11},
+        {"word":"score","phonetics":"/skɔːr/","russian":"счёт","tags":["sport"],"id":12}
       ]
     },
     {
@@ -139,18 +142,18 @@
       "name": "Unit 8",
       "tags": ["crime","law"],
       "items": [
-        {"word":"crime","pinyin":"/kraɪm/","english":"преступление","tags":["crime"],"id":1},
-        {"word":"thief","pinyin":"/θiːf/","english":"вор","tags":["crime"],"id":2},
-        {"word":"robbery","pinyin":"/ˈrɒbəri/","english":"ограбление","tags":["crime"],"id":3},
-        {"word":"police","pinyin":"/pəˈliːs/","english":"полиция","tags":["law"],"id":4},
-        {"word":"detective","pinyin":"/dɪˈtektɪv/","english":"детектив","tags":["law"],"id":5},
-        {"word":"witness","pinyin":"/ˈwɪtnəs/","english":"свидетель","tags":["law"],"id":6},
-        {"word":"evidence","pinyin":"/ˈevɪdəns/","english":"доказательство","tags":["law"],"id":7},
-        {"word":"arrest","pinyin":"/əˈrest/","english":"арест","tags":["law"],"id":8},
-        {"word":"court","pinyin":"/kɔːt/","english":"суд","tags":["law"],"id":9},
-        {"word":"lawyer","pinyin":"/ˈlɔːjər/","english":"юрист","tags":["law"],"id":10},
-        {"word":"judge","pinyin":"/dʒʌdʒ/","english":"судья","tags":["law"],"id":11},
-        {"word":"sentence","pinyin":"/ˈsentəns/","english":"приговор","tags":["law"],"id":12}
+        {"word":"crime","phonetics":"/kraɪm/","russian":"преступление","tags":["crime"],"id":1},
+        {"word":"thief","phonetics":"/θiːf/","russian":"вор","tags":["crime"],"id":2},
+        {"word":"robbery","phonetics":"/ˈrɒbəri/","russian":"ограбление","tags":["crime"],"id":3},
+        {"word":"police","phonetics":"/pəˈliːs/","russian":"полиция","tags":["law"],"id":4},
+        {"word":"detective","phonetics":"/dɪˈtektɪv/","russian":"детектив","tags":["law"],"id":5},
+        {"word":"witness","phonetics":"/ˈwɪtnəs/","russian":"свидетель","tags":["law"],"id":6},
+        {"word":"evidence","phonetics":"/ˈevɪdəns/","russian":"доказательство","tags":["law"],"id":7},
+        {"word":"arrest","phonetics":"/əˈrest/","russian":"арест","tags":["law"],"id":8},
+        {"word":"court","phonetics":"/kɔːt/","russian":"суд","tags":["law"],"id":9},
+        {"word":"lawyer","phonetics":"/ˈlɔːjər/","russian":"юрист","tags":["law"],"id":10},
+        {"word":"judge","phonetics":"/dʒʌdʒ/","russian":"судья","tags":["law"],"id":11},
+        {"word":"sentence","phonetics":"/ˈsentəns/","russian":"приговор","tags":["law"],"id":12}
       ]
     },
     {
@@ -158,18 +161,18 @@
       "name": "Unit 9",
       "tags": ["culture","arts"],
       "items": [
-        {"word":"artist","pinyin":"/ˈɑːtɪst/","english":"художник","tags":["arts"],"id":1},
-        {"word":"painting","pinyin":"/ˈpeɪntɪŋ/","english":"картина","tags":["arts"],"id":2},
-        {"word":"gallery","pinyin":"/ˈɡæləri/","english":"галерея","tags":["arts"],"id":3},
-        {"word":"theater","pinyin":"/ˈθɪətər/","english":"театр","tags":["arts"],"id":4},
-        {"word":"actor","pinyin":"/ˈæktər/","english":"актёр","tags":["arts"],"id":5},
-        {"word":"director","pinyin":"/dɪˈrektər/","english":"режиссёр","tags":["arts"],"id":6},
-        {"word":"audience","pinyin":"/ˈɔːdiəns/","english":"публика","tags":["arts"],"id":7},
-        {"word":"performance","pinyin":"/pəˈfɔːməns/","english":"выступление","tags":["arts"],"id":8},
-        {"word":"festival","pinyin":"/ˈfestɪvəl/","english":"фестиваль","tags":["culture"],"id":9},
-        {"word":"tradition","pinyin":"/trəˈdɪʃən/","english":"традиция","tags":["culture"],"id":10},
-        {"word":"history","pinyin":"/ˈhɪstəri/","english":"история","tags":["culture"],"id":11},
-        {"word":"legend","pinyin":"/ˈledʒənd/","english":"легенда","tags":["culture"],"id":12}
+        {"word":"artist","phonetics":"/ˈɑːtɪst/","russian":"художник","tags":["arts"],"id":1},
+        {"word":"painting","phonetics":"/ˈpeɪntɪŋ/","russian":"картина","tags":["arts"],"id":2},
+        {"word":"gallery","phonetics":"/ˈɡæləri/","russian":"галерея","tags":["arts"],"id":3},
+        {"word":"theater","phonetics":"/ˈθɪətər/","russian":"театр","tags":["arts"],"id":4},
+        {"word":"actor","phonetics":"/ˈæktər/","russian":"актёр","tags":["arts"],"id":5},
+        {"word":"director","phonetics":"/dɪˈrektər/","russian":"режиссёр","tags":["arts"],"id":6},
+        {"word":"audience","phonetics":"/ˈɔːdiəns/","russian":"публика","tags":["arts"],"id":7},
+        {"word":"performance","phonetics":"/pəˈfɔːməns/","russian":"выступление","tags":["arts"],"id":8},
+        {"word":"festival","phonetics":"/ˈfestɪvəl/","russian":"фестиваль","tags":["culture"],"id":9},
+        {"word":"tradition","phonetics":"/trəˈdɪʃən/","russian":"традиция","tags":["culture"],"id":10},
+        {"word":"history","phonetics":"/ˈhɪstəri/","russian":"история","tags":["culture"],"id":11},
+        {"word":"legend","phonetics":"/ˈledʒənd/","russian":"легенда","tags":["culture"],"id":12}
       ]
     },
     {
@@ -177,18 +180,18 @@
       "name": "Unit 10",
       "tags": ["society","money"],
       "items": [
-        {"word":"money","pinyin":"/ˈmʌni/","english":"деньги","tags":["money"],"id":1},
-        {"word":"price","pinyin":"/praɪs/","english":"цена","tags":["money"],"id":2},
-        {"word":"discount","pinyin":"/ˈdɪskaʊnt/","english":"скидка","tags":["money"],"id":3},
-        {"word":"bill","pinyin":"/bɪl/","english":"счёт","tags":["money"],"id":4},
-        {"word":"coin","pinyin":"/kɔɪn/","english":"монета","tags":["money"],"id":5},
-        {"word":"wallet","pinyin":"/ˈwɒlɪt/","english":"кошелёк","tags":["money"],"id":6},
-        {"word":"bank","pinyin":"/bæŋk/","english":"банк","tags":["money"],"id":7},
-        {"word":"account","pinyin":"/əˈkaʊnt/","english":"счёт","tags":["money"],"id":8},
-        {"word":"salary","pinyin":"/ˈsæləri/","english":"зарплата","tags":["money"],"id":9},
-        {"word":"budget","pinyin":"/ˈbʌdʒɪt/","english":"бюджет","tags":["money"],"id":10},
-        {"word":"advert","pinyin":"/ˈædvɜːt/","english":"реклама","tags":["society"],"id":11},
-        {"word":"consumer","pinyin":"/kənˈsjuːmər/","english":"потребитель","tags":["society"],"id":12}
+        {"word":"money","phonetics":"/ˈmʌni/","russian":"деньги","tags":["money"],"id":1},
+        {"word":"price","phonetics":"/praɪs/","russian":"цена","tags":["money"],"id":2},
+        {"word":"discount","phonetics":"/ˈdɪskaʊnt/","russian":"скидка","tags":["money"],"id":3},
+        {"word":"bill","phonetics":"/bɪl/","russian":"счёт","tags":["money"],"id":4},
+        {"word":"coin","phonetics":"/kɔɪn/","russian":"монета","tags":["money"],"id":5},
+        {"word":"wallet","phonetics":"/ˈwɒlɪt/","russian":"кошелёк","tags":["money"],"id":6},
+        {"word":"bank","phonetics":"/bæŋk/","russian":"банк","tags":["money"],"id":7},
+        {"word":"account","phonetics":"/əˈkaʊnt/","russian":"счёт","tags":["money"],"id":8},
+        {"word":"salary","phonetics":"/ˈsæləri/","russian":"зарплата","tags":["money"],"id":9},
+        {"word":"budget","phonetics":"/ˈbʌdʒɪt/","russian":"бюджет","tags":["money"],"id":10},
+        {"word":"advert","phonetics":"/ˈædvɜːt/","russian":"реклама","tags":["society"],"id":11},
+        {"word":"consumer","phonetics":"/kənˈsjuːmər/","russian":"потребитель","tags":["society"],"id":12}
       ]
     }
   ]

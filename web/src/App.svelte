@@ -1,8 +1,10 @@
 <script>
-  import { tick } from 'svelte'
-  import HanziWriter from 'hanzi-writer'
   import { datasets, datasetId, currentDataset } from './state/registry.js'
   import { formatGroup } from './utils/format.js'
+  import GroupItemChinese from './kind/chinese/GroupItem.svelte'
+  import GroupItemEnglish from './kind/english/GroupItem.svelte'
+  import WordCardChinese from './kind/chinese/WordCard.svelte'
+  import WordCardEnglish from './kind/english/WordCard.svelte'
 
   const basePath = $derived.by(() =>
     $currentDataset?.kind === 'english' ? '/english' : '/chinese'
@@ -23,11 +25,6 @@
   let groupFilter = $state('all')
   let activeWord = $state(null)
   let modalOpen = $state(false)
-  const writers = new Map()
-
-  const wordChars = $derived.by(() => (activeWord ? activeWord.word.split('') : []))
-
-  const isHanChar = (char) => /[\u4e00-\u9fff]/.test(char)
 
   const toggleTag = (tag) => {
     selectedTags = selectedTags.includes(tag)
@@ -50,7 +47,11 @@
   const matchesQuery = (item) => {
     const q = query.trim()
     if (!q) return true
-    const raw = [item.word, item.pinyin, item.english, ...(item.tags || [])].join(' ')
+
+    const searchFields = $currentDataset?.data?.search || []
+    const values = searchFields.map((field) => item[field] || '').concat(item.tags || [])
+    const raw = values.join(' ')
+
     const hayLower = raw.toLowerCase()
     const hayNorm = normalize(raw)
     const qLower = q.toLowerCase()
@@ -77,38 +78,7 @@
   const closeModal = () => {
     modalOpen = false
     activeWord = null
-    writers.forEach((writer) => writer?.cancelAnimation?.())
-    writers.clear()
   }
-
-  const animateChar = (idx) => {
-    const writer = writers.get(idx)
-    if (writer) writer.animateCharacter()
-  }
-
-  const initWriters = async () => {
-    writers.forEach((writer) => writer?.cancelAnimation?.())
-    writers.clear()
-    await tick()
-    wordChars.forEach((char, idx) => {
-      const target = document.getElementById(`hanzi-${idx}`)
-      if (!target || !isHanChar(char)) return
-      const writer = HanziWriter.create(target, char, {
-        width: 140,
-        height: 140,
-        padding: 8,
-        showCharacter: false,
-      })
-      writers.set(idx, writer)
-      writer.animateCharacter()
-    })
-  }
-
-  $effect(() => {
-    if (modalOpen && activeWord) {
-      initWriters()
-    }
-  })
 
   $effect(() => {
     if (!groups.some((g) => g.group === Number(groupFilter))) {
@@ -252,19 +222,11 @@
 
           <div class="word-grid">
             {#each group.items as item (item.word)}
-              <button class="word-card" type="button" onclick={() => openWord(item)}>
-                <div class="word-top">
-                  <span class="hanzi">{item.word}</span>
-                  <span class="id">{(item.id ?? 0).toString().padStart(2, '0')}</span>
-                </div>
-                <div class="pinyin">{item.pinyin}</div>
-                <div class="english">{item.english}</div>
-                <div class="word-tags">
-                  {#each item.tags as tag}
-                    <span>#{tag}</span>
-                  {/each}
-                </div>
-              </button>
+              {#if $currentDataset?.kind === 'chinese'}
+                <GroupItemChinese {item} onclick={() => openWord(item)} />
+              {:else if $currentDataset?.kind === 'english'}
+                <GroupItemEnglish {item} onclick={() => openWord(item)} />
+              {/if}
             {/each}
           </div>
         </article>
@@ -280,31 +242,11 @@
         aria-label="Close dialog"
         onclick={closeModal}
       ></button>
-      <div class="modal-card" role="dialog" aria-modal="true">
-        <header class="modal-header">
-          <div>
-            <h3>{activeWord.word}</h3>
-            <p>{activeWord.pinyin} · {activeWord.english}</p>
-          </div>
-          <button class="close" type="button" onclick={closeModal}>Close</button>
-        </header>
-
-        <div class="stroke-grid">
-          {#each wordChars as char, idx}
-            <div class="stroke-card">
-              <div class="stroke-title">{char}</div>
-              {#if isHanChar(char)}
-                <div class="stroke-canvas" id={`hanzi-${idx}`}></div>
-                <button class="stroke-btn" type="button" onclick={() => animateChar(idx)}>
-                  Animate
-                </button>
-              {:else}
-                <div class="stroke-fallback">No stroke data</div>
-              {/if}
-            </div>
-          {/each}
-        </div>
-      </div>
+      {#if $currentDataset?.kind === 'chinese'}
+        <WordCardChinese item={activeWord} onClose={closeModal} />
+      {:else if $currentDataset?.kind === 'english'}
+        <WordCardEnglish item={activeWord} onClose={closeModal} />
+      {/if}
     </div>
   {/if}
 </main>

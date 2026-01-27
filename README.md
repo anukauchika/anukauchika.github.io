@@ -49,6 +49,29 @@ Each fold transforms one sheet into a different practice pass, enabling tactile,
 
 **Stable word IDs within groups** - Each word has a stable identifier within its group, enabling tracking of which specific words have been learned.
 
+**Fields diverge by `kind`** - Different learning methodologies use different field names:
+- **Chinese datasets**: `word` (character), `pinyin`, `english` (translation)
+- **English datasets**: `word`, `phonetics` (IPA), `russian` (translation)
+
+**Translation direction** - Each dataset declares `from` and `to` fields to specify the source and target languages.
+
+**Search fields** - Each dataset declares which fields are searchable via the `search` array:
+```json
+{
+  "kind": "chinese",
+  "from": "chinese",
+  "to": "english",
+  "search": ["word", "pinyin", "english"],
+  "groups": [...]
+}
+```
+This allows different datasets to define their own searchable fields without code changes. Tags are always included in search automatically.
+
+**Unified vs Kind-Specific Structure:**
+- **Dataset header** (unified): `kind`, `from`, `to`, `groups` array
+- **Group structure** (unified): `group`, `name`, `tags`, `items` array
+- **Item objects** (kind-specific): Only `id` and `tags` are unified. All other fields (`word`, `pinyin`, `phonetics`, etc.) are kind-specific.
+
 ### Dataset `kind` = Learning Methodology
 
 The `kind` field in each dataset represents **the learning methodology**, not just the language. Each kind determines which features are available in the UI.

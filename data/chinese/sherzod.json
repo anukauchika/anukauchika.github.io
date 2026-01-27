@@ -1,5 +1,8 @@
 {
-  "kind": "mandarin",
+  "kind": "chinese",
+  "from": "chinese",
+  "to": "english",
+  "search": ["word", "pinyin", "english"],
   "groups": [
     {
       "group": 1,
