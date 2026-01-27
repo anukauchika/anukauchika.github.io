@@ -109,44 +109,40 @@
 <main>
   <header class="hero">
     <div class="hero-top">
-      <div class="title-row">
-        <div class="top-bar">
-          <p class="eyebrow">MEMRIS</p>
-          <label class="dataset-picker">
-            <span>Dataset</span>
-            <select bind:value={$datasetId}>
-              {#each datasets as dataset}
-                <option value={dataset.id}>{dataset.name}</option>
-              {/each}
-            </select>
-          </label>
-        </div>
-        <div>
-          <h1>{$currentDataset?.name ?? 'Vocabulary'}</h1>
-          <p class="subhead">{$currentDataset?.description ?? ''}</p>
-          {#if $currentDataset?.tags?.length}
-            <div class="dataset-tags">
-              {#each $currentDataset.tags as tag}
-                <span>#{tag}</span>
-              {/each}
-            </div>
-          {/if}
-        </div>
+      <p class="eyebrow">MEMRIS</p>
+      <select class="dataset-picker" bind:value={$datasetId}>
+        {#each datasets as dataset}
+          <option value={dataset.id}>{dataset.name}</option>
+        {/each}
+      </select>
+    </div>
+
+    <div class="hero-content">
+      <div>
+        <h1>{$currentDataset?.name ?? 'Vocabulary'}</h1>
+        <p class="subhead">{$currentDataset?.description ?? ''}</p>
+        {#if $currentDataset?.tags?.length}
+          <div class="dataset-tags">
+            {#each $currentDataset.tags as tag}
+              <span>#{tag}</span>
+            {/each}
+          </div>
+        {/if}
       </div>
       <div class="stats">
-          <div>
-            <span class="stat-label">Groups</span>
-            <span class="stat-value">{groupCount}</span>
-          </div>
-          <div>
-            <span class="stat-label">Words</span>
-            <span class="stat-value">{totalCount}</span>
-          </div>
-          <div>
-            <span class="stat-label">Shown</span>
-            <span class="stat-value">{filteredCount}</span>
-          </div>
+        <div>
+          <span class="stat-label">Groups</span>
+          <span class="stat-value">{groupCount}</span>
         </div>
+        <div>
+          <span class="stat-label">Words</span>
+          <span class="stat-value">{totalCount}</span>
+        </div>
+        <div>
+          <span class="stat-label">Shown</span>
+          <span class="stat-value">{filteredCount}</span>
+        </div>
+      </div>
     </div>
 
     <div class="controls">
