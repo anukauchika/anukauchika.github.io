@@ -6,9 +6,8 @@
   import WordCardChinese from './kind/chinese/WordCard.svelte'
   import WordCardEnglish from './kind/english/WordCard.svelte'
 
-  const basePath = $derived.by(() =>
-    $currentDataset?.kind === 'english' ? '/english' : '/chinese'
-  )
+  const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || ''
+  const basePath = $derived.by(() => `${baseUrl}/${$currentDataset.kind}`)
   const groups = $derived.by(() => $currentDataset?.data?.groups ?? [])
 
   const allTags = $derived.by(() => {

@@ -6,6 +6,17 @@ import path from 'node:path'
 export default defineConfig({
   base: '/memris/',
   plugins: [svelte()],
+  build: {
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        chinese: path.resolve(__dirname, 'chinese/index.html'),
+        chineseWorkbook: path.resolve(__dirname, 'chinese/workbook.html'),
+        english: path.resolve(__dirname, 'english/index.html'),
+        englishWorkbook: path.resolve(__dirname, 'english/workbook.html'),
+      },
+    },
+  },
   server: {
     fs: {
       allow: [
