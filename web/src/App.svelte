@@ -196,6 +196,16 @@
             </div>
             <div class="group-title">{formatGroup(group.group)}</div>
             <div class="group-actions">
+              {#if $currentDataset?.kind === 'chinese'}
+                <a
+                  class="print-link"
+                  href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Practice
+                </a>
+              {/if}
               <a
                 class="print-link"
                 href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}`}

@@ -12,6 +12,7 @@ export default defineConfig({
         main: path.resolve(__dirname, 'index.html'),
         chinese: path.resolve(__dirname, 'chinese/index.html'),
         chineseWorkbook: path.resolve(__dirname, 'chinese/workbook.html'),
+        chinesePractice: path.resolve(__dirname, 'chinese/practice.html'),
         english: path.resolve(__dirname, 'english/index.html'),
         englishWorkbook: path.resolve(__dirname, 'english/workbook.html'),
       },
