@@ -20,7 +20,8 @@
         {"word":"habit","phonetics":"/ˈhæbɪt/","russian":"привычка","tags":["general"],"id":9},
         {"word":"goal","phonetics":"/ɡəʊl/","russian":"цель","tags":["general"],"id":10},
         {"word":"promise","phonetics":"/ˈprɒmɪs/","russian":"обещание","tags":["general"],"id":11},
-        {"word":"secret","phonetics":"/ˈsiːkrɪt/","russian":"секрет","tags":["general"],"id":12}
+        {"word":"secret","phonetics":"/ˈsiːkrɪt/","russian":"секрет","tags":["general"],"id":12},
+        {"word":"generous","phonetics":"/ˈdʒɛnərəs/","russian":"щедрый","tags":["character"],"id":13}
       ]
     },
     {
