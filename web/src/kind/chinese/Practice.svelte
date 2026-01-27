@@ -20,6 +20,15 @@
     items.length > 0 ? Math.round((completedWords.size / items.length) * 100) : 0
   )
 
+  const speak = (text) => {
+    if (!('speechSynthesis' in window)) return
+    speechSynthesis.cancel()
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = 'zh-CN'
+    utterance.rate = 0.8
+    speechSynthesis.speak(utterance)
+  }
+
   let writer = null
 
   const destroyWriter = () => {
@@ -40,6 +49,8 @@
 
     const target = document.getElementById('practice-canvas')
     if (!target) return
+
+    if (charIndex === 0) speak(currentItem.word)
 
     writer = HanziWriter.create(target, currentChar, {
       width: 280,
@@ -114,7 +125,7 @@
   {#if currentItem}
     <div class="quiz-area">
       <div class="word-info" translate="no">
-        <span class="word-pinyin">{currentItem.pinyin}</span>
+        <button class="word-pinyin" type="button" onclick={() => speak(currentItem.word)}>{currentItem.pinyin}</button>
       </div>
 
       <div class="char-tabs" translate="no" lang="zh">
@@ -275,6 +286,11 @@
     font-size: 1.3rem;
     font-weight: 600;
     color: var(--accent);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
   }
 
   .word-english {
