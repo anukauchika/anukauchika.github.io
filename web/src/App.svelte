@@ -1,7 +1,7 @@
 <script>
   import { tick } from 'svelte'
   import HanziWriter from 'hanzi-writer'
-  import { datasets, datasetId, currentDataset } from './state/dataset.js'
+  import { datasets, datasetId, currentDataset } from './state/registry.js'
   import { formatGroup } from './utils/format.js'
 
   const basePath = $derived.by(() =>

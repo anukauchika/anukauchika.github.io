@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import { datasetId, currentDataset, setDatasetById } from './state/dataset.js'
+  import { datasetId, currentDataset, setDatasetById } from './state/registry.js'
   import { formatGroup } from './utils/format.js'
   const givenCols = 3
   const exerciseSets = 2

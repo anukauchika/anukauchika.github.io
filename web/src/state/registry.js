@@ -1,13 +1,17 @@
 import { writable, derived } from 'svelte/store'
 import registry from '../../../data/registry.json'
-import sherzod from '../../../data/chinese/sherzod.json'
-import familyAndFriends from '../../../data/english/family-and-friends-2nd-4.json'
-import solutions from '../../../data/english/solutions-2-2.json'
 
-const dataByPath = {
-  'data/chinese/sherzod.json': sherzod,
-  'data/english/family-and-friends-2nd-4.json': familyAndFriends,
-  'data/english/solutions-2-2.json': solutions,
+// Dynamically import all JSON files from data directory
+const dataModules = import.meta.glob('../../../data/**/*.json', { eager: true, import: 'default' })
+
+// Build path mapping from glob results
+// Glob paths are relative: '../../../data/chinese/sherzod.json'
+// Registry paths are absolute: 'data/chinese/sherzod.json'
+const dataByPath = {}
+for (const [key, value] of Object.entries(dataModules)) {
+  // Convert '../../../data/chinese/sherzod.json' -> 'data/chinese/sherzod.json'
+  const normalizedPath = key.replace(/^\.\.\/\.\.\/\.\.\//, '')
+  dataByPath[normalizedPath] = value
 }
 
 export const datasets = registry.map((entry) => ({
