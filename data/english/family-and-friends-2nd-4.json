@@ -14,13 +14,14 @@
         {"word":"uniform","phonetics":"/ˈjuːnɪfɔːrm/","russian":"форма","tags":["clothes"],"id":3},
         {"word":"menu","phonetics":"/ˈmenjuː/","russian":"меню","tags":["food"],"id":4},
         {"word":"customer","phonetics":"/ˈkʌstəmər/","russian":"клиент","tags":["people"],"id":5},
-        {"word":"bottle","phonetics":"/ˈbɒtəl/","russian":"бутылка","tags":["food"],"id":6},
-        {"word":"cup","phonetics":"/kʌp/","russian":"чашка","tags":["food"],"id":7},
-        {"word":"glass","phonetics":"/ɡlɑːs/","russian":"стакан","tags":["food"],"id":8},
-        {"word":"bowl","phonetics":"/bəʊl/","russian":"миска","tags":["food"],"id":9},
-        {"word":"plate","phonetics":"/pleɪt/","russian":"тарелка","tags":["food"],"id":10},
-        {"word":"soup","phonetics":"/suːp/","russian":"суп","tags":["food"],"id":11},
-        {"word":"salad","phonetics":"/ˈsæləd/","russian":"салат","tags":["food"],"id":12}
+        {"word":"bottle of water","phonetics":"/ˈbɒt.əl əv ˈwɔː.tə/","russian":"бутылка воды","tags":["food"],"id":6},
+        {"word":"cup of coffee","phonetics":"/ˌkʌp əv ˈkɒf.i/","russian":"чашка кофе","tags":["food"],"id":7},
+        {"word":"glass of milk","phonetics":"/ɡlɑːs əv mɪlk/","russian":"стакан молока","tags":["food"],"id":8},
+        {"word":"bowl of soup","phonetics":"/bəʊl əv suːp//","russian":"миска","tags":["food"],"id":9},
+        {"word":"plate of salad","phonetics":"/pleɪt əv ˈsæl.əd/","russian":"тарелка салата","tags":["food"],"id":10},
+        {"word":"always","phonetics":"/ˈɔːl.weɪz//","russian":"всегда","tags":["частота"],"id":11},
+        {"word":"usually","phonetics":"/ˈjuː.ʒu.ə.li/","russian":"обычно","tags":["food"],"id":12}
+        {"word":"sometimes","phonetics":"/ˈsʌm.taɪmz/","russian":"иногда","tags":["food"],"id":13}
       ]
     },
     {
