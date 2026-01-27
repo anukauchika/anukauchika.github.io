@@ -1,5 +1,9 @@
 import { writable, derived } from 'svelte/store'
 import registry from '../../../data/registry.json'
+import { createLocalPrefsRepo } from '../data/local-prefs-repo.js'
+
+const prefs = createLocalPrefsRepo()
+const PREF_DATASET = 'datasetId'
 
 // Dynamically import all JSON files from data directory
 const dataModules = import.meta.glob('../../../data/**/*.json', { eager: true, import: 'default' })
@@ -9,7 +13,6 @@ const dataModules = import.meta.glob('../../../data/**/*.json', { eager: true, i
 // Registry paths are absolute: 'data/chinese/sherzod.json'
 const dataByPath = {}
 for (const [key, value] of Object.entries(dataModules)) {
-  // Convert '../../../data/chinese/sherzod.json' -> 'data/chinese/sherzod.json'
   const normalizedPath = key.replace(/^\.\.\/\.\.\/\.\.\//, '')
   dataByPath[normalizedPath] = value
 }
@@ -19,7 +22,18 @@ export const datasets = registry.map((entry) => ({
   data: dataByPath[entry.path] ?? null,
 }))
 
-export const datasetId = writable(datasets[0]?.id ?? '')
+function resolveInitialDataset() {
+  const saved = prefs.get(PREF_DATASET)
+  if (saved && datasets.some((d) => d.id === saved)) return saved
+  return datasets[0]?.id ?? ''
+}
+
+export const datasetId = writable(resolveInitialDataset())
+
+// Persist whenever datasetId changes
+datasetId.subscribe((id) => {
+  if (id) prefs.set(PREF_DATASET, id)
+})
 
 export const currentDataset = derived(datasetId, ($datasetId) => {
   return datasets.find((d) => d.id === $datasetId) ?? datasets[0] ?? null

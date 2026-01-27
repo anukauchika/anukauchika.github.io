@@ -1,0 +1,35 @@
+{
+  "kind": "chinese",
+  "from": "chinese",
+  "to": "english",
+  "search": ["word", "pinyin", "english"],
+  "groups": [
+    {
+      "group": 1,
+      "tags": ["number"],
+      "items": [
+        {"word":"一","pinyin":"yī","english":"one","id":1,"tags":["number"]},
+        {"word":"二","pinyin":"èr","english":"two","id":2,"tags":["number"]},
+        {"word":"三","pinyin":"sān","english":"three","id":3,"tags":["number"]}
+      ]
+    },
+    {
+      "group": 2,
+      "tags": ["color"],
+      "items": [
+        {"word":"红","pinyin":"hóng","english":"red","id":1,"tags":["color"]},
+        {"word":"蓝","pinyin":"lán","english":"blue","id":2,"tags":["color"]},
+        {"word":"白","pinyin":"bái","english":"white","id":3,"tags":["color"]}
+      ]
+    },
+    {
+      "group": 3,
+      "tags": ["animal"],
+      "items": [
+        {"word":"猫","pinyin":"māo","english":"cat","id":1,"tags":["animal"]},
+        {"word":"狗","pinyin":"gǒu","english":"dog","id":2,"tags":["animal"]},
+        {"word":"鱼","pinyin":"yú","english":"fish","id":3,"tags":["animal"]}
+      ]
+    }
+  ]
+}

@@ -1,16 +1,24 @@
 <script>
   import { tick } from 'svelte'
   import HanziWriter from 'hanzi-writer'
+  import { recordSuccess, recordGroupSession, loadGroupStats, groupStats } from '../../state/practice-stats.js'
 
-  let { group } = $props()
+  let { group, datasetId } = $props()
+  const practiceType = 'stroke'
 
-  const items = $derived.by(() => group?.items ?? [])
+  const rawItems = $derived.by(() => group?.items ?? [])
+  let items = $state([])
   let currentIndex = $state(0)
   let charIndex = $state(0)
-  let quizResult = $state(null) // null | 'correct' | 'incorrect'
+  let quizResult = $state(null) // null | 'correct' | 'skipped'
   let completedWords = $state(new Set())
+  let sessionStartedAt = $state(null)
+  let practicedCount = $state(0)
+  let skippedCount = $state(0)
+  let sessionDone = $state(false)
 
   const currentItem = $derived.by(() => items[currentIndex] ?? null)
+  const currentStat = $derived.by(() => currentItem ? $groupStats.get(currentItem.id) : null)
   const isHanChar = (char) => /[\u4e00-\u9fff]/.test(char)
   const hanChars = $derived.by(() =>
     currentItem ? currentItem.word.split('').filter(isHanChar) : []
@@ -75,11 +83,38 @@
           }, 600)
         } else {
           // Completed all characters in this word
-          quizResult = 'correct'
           completedWords = new Set([...completedWords, currentIndex])
+          practicedCount += 1
+          const item = items[currentIndex]
+          if (item) recordSuccess(datasetId, practiceType, group.group, item.id)
+          if (currentIndex < items.length - 1) {
+            setTimeout(() => {
+              currentIndex += 1
+              charIndex = 0
+              quizResult = null
+            }, 600)
+          } else {
+            quizResult = 'correct'
+            maybeFinishSession()
+          }
         }
       },
     })
+  }
+
+  const maybeFinishSession = () => {
+    if (completedWords.size >= items.length) {
+      sessionDone = true
+      recordGroupSession({
+        datasetId,
+        practiceType,
+        groupId: group.group,
+        practicedCount,
+        skippedCount,
+        startedAt: sessionStartedAt,
+        completedAt: new Date().toISOString(),
+      })
+    }
   }
 
   $effect(() => {
@@ -89,41 +124,51 @@
     return () => destroyWriter()
   })
 
-  const goToWord = (index) => {
-    currentIndex = index
-    charIndex = 0
-    quizResult = null
-  }
-
-  const nextWord = () => {
+  const skipWord = () => {
+    completedWords = new Set([...completedWords, currentIndex])
+    skippedCount += 1
     if (currentIndex < items.length - 1) {
-      goToWord(currentIndex + 1)
+      currentIndex += 1
+      charIndex = 0
+      quizResult = null
+    } else {
+      quizResult = 'skipped'
+      maybeFinishSession()
     }
   }
 
-  const prevWord = () => {
-    if (currentIndex > 0) {
-      goToWord(currentIndex - 1)
-    }
-  }
-
-  const retryWord = () => {
-    charIndex = 0
-  }
-
-  // Reset when group changes
+  // Reset when group changes — sort once at session start
   $effect(() => {
     if (group) {
       currentIndex = 0
       charIndex = 0
       completedWords = new Set()
+      sessionStartedAt = new Date().toISOString()
+      practicedCount = 0
+      skippedCount = 0
+      sessionDone = false
+      if (datasetId) {
+        loadGroupStats(datasetId, practiceType, group.group).then(() => {
+          const stats = $groupStats
+          items = [...rawItems].sort((a, b) => {
+            const ca = stats.get(a.id)?.successCount ?? 0
+            const cb = stats.get(b.id)?.successCount ?? 0
+            return ca - cb
+          })
+        })
+      } else {
+        items = [...rawItems]
+      }
     }
   })
 </script>
 
 <div class="practice-container">
-  {#if currentItem}
+  {#if currentItem && !sessionDone}
     <div class="quiz-area">
+      {#if currentStat}
+        <span class="quiz-count" title="Times practiced">{currentStat.successCount}x</span>
+      {/if}
       <div class="word-info" translate="no">
         <button class="word-pinyin" type="button" onclick={() => speak(currentItem.word)}>{currentItem.pinyin}</button>
       </div>
@@ -148,30 +193,20 @@
         <div id="practice-canvas"></div>
       </div>
 
-      {#if quizResult === 'correct'}
-        <div class="result-banner">
-          <p class="result-word" translate="no" lang="zh">{currentItem.word}</p>
-          <p class="result-detail">{currentItem.pinyin} &middot; {currentItem.english}</p>
-          <div class="result-actions">
-            <button type="button" class="btn-secondary" onclick={retryWord}>Retry</button>
-            {#if currentIndex < items.length - 1}
-              <button type="button" class="btn-primary" onclick={nextWord}>Next word</button>
-            {:else}
-              <p class="result-msg">All words done!</p>
-            {/if}
-          </div>
+      {#if !quizResult}
+        <div class="skip-area">
+          <button type="button" class="btn-skip" onclick={skipWord}>Skip</button>
         </div>
       {/if}
 
-      <div class="nav-buttons">
-        <button type="button" class="btn-secondary" onclick={prevWord} disabled={currentIndex === 0}>
-          Previous
-        </button>
-        <span class="nav-pos">{currentIndex + 1} / {items.length}</span>
-        <button type="button" class="btn-secondary" onclick={nextWord} disabled={currentIndex === items.length - 1}>
-          Next
-        </button>
-      </div>
+      <span class="nav-pos">{currentIndex + 1} / {items.length}</span>
+    </div>
+  {/if}
+
+  {#if sessionDone}
+    <div class="session-banner">
+      <p class="session-title">Session complete</p>
+      <p class="session-detail">{practicedCount} practiced &middot; {skippedCount} skipped</p>
     </div>
   {/if}
 
@@ -182,16 +217,18 @@
 
   <div class="word-nav" translate="no" lang="zh">
     {#each items as item, idx}
-      <button
+      {@const stat = $groupStats.get(item.id)}
+      <span
         class="word-dot"
         class:active={idx === currentIndex}
         class:done={completedWords.has(idx)}
-        type="button"
-        onclick={() => goToWord(idx)}
-        title={item.word}
+        title="{item.word}{stat ? ` (${stat.successCount}x)` : ''}"
       >
         {item.word}
-      </button>
+        {#if stat}
+          <span class="dot-count">{stat.successCount}</span>
+        {/if}
+      </span>
     {/each}
   </div>
 </div>
@@ -235,15 +272,10 @@
     background: var(--card);
     padding: 0.3rem 0.6rem;
     border-radius: 10px;
-    cursor: pointer;
     font-size: 0.9rem;
     font-family: var(--font-chinese);
     color: var(--ink);
     transition: all 0.2s ease;
-  }
-
-  .word-dot:hover {
-    background: rgba(31, 111, 92, 0.08);
   }
 
   .word-dot.active {
@@ -263,7 +295,15 @@
     border-color: var(--accent);
   }
 
+  .dot-count {
+    font-size: 0.65rem;
+    font-weight: 700;
+    opacity: 0.7;
+    margin-left: 0.15rem;
+  }
+
   .quiz-area {
+    position: relative;
     background: var(--card);
     border-radius: 24px;
     padding: 2rem;
@@ -273,6 +313,18 @@
     flex-direction: column;
     align-items: center;
     gap: 1.2rem;
+  }
+
+  .quiz-count {
+    position: absolute;
+    top: 1rem;
+    right: 1.2rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: rgba(31, 111, 92, 0.08);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
   }
 
   .word-info {
@@ -293,10 +345,6 @@
     font-family: inherit;
   }
 
-  .word-english {
-    font-size: 1rem;
-    color: var(--muted);
-  }
 
   .char-tabs {
     display: flex;
@@ -335,87 +383,53 @@
     touch-action: none;
   }
 
-  .result-banner {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 1rem 0 0;
-  }
-
-  .result-word {
-    font-family: var(--font-chinese);
-    font-size: 2rem;
-    font-weight: 700;
-    margin: 0;
-  }
-
-  .result-detail {
-    margin: 0;
-    color: var(--muted);
-  }
-
-  .result-msg {
-    margin: 0;
-    font-weight: 600;
-    color: var(--accent);
-  }
-
-  .result-actions {
-    display: flex;
-    gap: 0.8rem;
-    margin-top: 0.6rem;
-  }
-
-  .nav-buttons {
+  .skip-area {
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
+  }
+
+  .btn-skip {
+    border: 1px dashed rgba(31, 111, 92, 0.3);
+    background: none;
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 0.4rem 1.2rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.2s ease;
+  }
+
+  .btn-skip:hover {
+    background: rgba(31, 111, 92, 0.06);
   }
 
   .nav-pos {
+    display: block;
+    text-align: center;
     font-size: 0.9rem;
     color: var(--muted);
   }
 
-  .btn-primary {
-    border: none;
-    background: var(--accent);
-    color: #fff;
-    border-radius: 999px;
-    padding: 0.6rem 1.4rem;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(31, 111, 92, 0.25);
-  }
-
-  .btn-secondary {
-    border: 1px solid rgba(31, 111, 92, 0.3);
-    background: #fffdf7;
-    color: var(--ink);
-    border-radius: 999px;
-    padding: 0.6rem 1.4rem;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 0.95rem;
-    transition: background 0.2s ease;
-  }
-
-  .btn-secondary:hover:not(:disabled) {
+  .session-banner {
+    text-align: center;
     background: rgba(31, 111, 92, 0.08);
+    border: 1px solid rgba(31, 111, 92, 0.2);
+    border-radius: 16px;
+    padding: 1.2rem;
   }
 
-  .btn-secondary:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+  .session-title {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--accent);
+  }
+
+  .session-detail {
+    margin: 0.3rem 0 0;
+    font-size: 0.85rem;
+    color: var(--muted);
   }
 
   @media (max-width: 600px) {

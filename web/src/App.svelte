@@ -1,5 +1,6 @@
 <script>
   import { datasets, datasetId, currentDataset } from './state/registry.js'
+  import { loadDatasetStats, datasetStats, loadDatasetGroupSessions, datasetGroupSessions } from './state/practice-stats.js'
   import { formatGroup } from './utils/format.js'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
   import GroupItemEnglish from './kind/english/GroupItem.svelte'
@@ -9,6 +10,16 @@
   const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || ''
   const basePath = $derived.by(() => `${baseUrl}/${$currentDataset.kind}`)
   const groups = $derived.by(() => $currentDataset?.data?.groups ?? [])
+
+  // TODO: when multiple practice types exist, aggregate or let user pick
+  const practiceType = 'stroke'
+
+  $effect(() => {
+    if ($datasetId) {
+      loadDatasetStats($datasetId, practiceType)
+      loadDatasetGroupSessions($datasetId, practiceType)
+    }
+  })
 
   const allTags = $derived.by(() => {
     const tagSet = new Set()
@@ -86,16 +97,26 @@
   })
 
 
-  const filteredGroups = $derived.by(() =>
-    groups
+  const filteredGroups = $derived.by(() => {
+    const sessions = $datasetGroupSessions
+    return groups
       .filter((g) => matchesGroup(g.group))
       .map((g) => ({
         ...g,
         items: g.items.filter((item) => matchesQuery(item) && matchesTags(item)),
       }))
       .filter((g) => g.items.length > 0)
-  )
+      .sort((a, b) => {
+        const sa = sessions.get(a.group)?.lastPracticedAt ?? ''
+        const sb = sessions.get(b.group)?.lastPracticedAt ?? ''
+        if (!sa && !sb) return 0
+        if (!sa) return -1
+        if (!sb) return 1
+        return sa < sb ? -1 : sa > sb ? 1 : 0
+      })
+  })
 
+  const practicedCount = $derived.by(() => $datasetStats.size)
   const totalCount = $derived.by(() =>
     groups.reduce((sum, g) => sum + g.items.length, 0)
   )
@@ -140,6 +161,10 @@
         <div>
           <span class="stat-label">Shown</span>
           <span class="stat-value">{filteredCount}</span>
+        </div>
+        <div>
+          <span class="stat-label">Practiced</span>
+          <span class="stat-value">{practicedCount}</span>
         </div>
       </div>
     </div>
@@ -187,6 +212,7 @@
       </div>
     {:else}
       {#each filteredGroups as group (group.group)}
+        {@const gs = $datasetGroupSessions.get(group.group)}
         <article class="group-card" style={`--delay:${group.group * 70}ms`}>
           <div class="group-header">
             <div class="group-tags">
@@ -194,6 +220,9 @@
                 <span>#{tag}</span>
               {/each}
             </div>
+            {#if gs}
+              <div class="group-passes">{gs.total} passes ({gs.full} full)</div>
+            {/if}
             <div class="group-title">{formatGroup(group.group)}</div>
             <div class="group-actions">
               {#if $currentDataset?.kind === 'chinese'}
@@ -228,7 +257,7 @@
           <div class="word-grid">
             {#each group.items as item (item.word)}
               {#if $currentDataset?.kind === 'chinese'}
-                <GroupItemChinese {item} onclick={() => openWord(item)} />
+                <GroupItemChinese {item} stat={$datasetStats.get(`${group.group}::${item.id}`)} onclick={() => openWord(item)} />
               {:else if $currentDataset?.kind === 'english'}
                 <GroupItemEnglish {item} onclick={() => openWord(item)} />
               {/if}

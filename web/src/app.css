@@ -207,6 +207,12 @@ select:focus {
   font-weight: 700;
 }
 
+.group-passes {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
 .group-tags {
   display: flex;
   gap: 0.5rem;
@@ -346,6 +352,13 @@ select:focus {
   border-radius: 999px;
   font-size: 0.7rem;
   color: var(--muted);
+}
+
+.success-count {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 0.3rem;
 }
 
 .modal-backdrop {
@@ -496,6 +509,7 @@ select:focus {
 
   .stats {
     width: 100%;
+    flex-wrap: wrap;
     justify-content: space-between;
   }
 

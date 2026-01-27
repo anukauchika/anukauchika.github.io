@@ -1,5 +1,13 @@
 [
   {
+    "id": "chinese-test",
+    "name": "Chinese Test",
+    "path": "data/chinese/test.json",
+    "description": "Tiny dataset for testing (3 groups x 3 words).",
+    "tags": ["chinese", "test"],
+    "kind": "chinese"
+  },
+  {
     "id": "chinese-sherzod",
     "name": "Mandarin Basic",
     "path": "data/chinese/sherzod.json",

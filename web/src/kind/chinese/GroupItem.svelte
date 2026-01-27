@@ -1,5 +1,5 @@
 <script>
-  let { item, onclick } = $props()
+  let { item, stat, onclick } = $props()
 </script>
 
 <button class="word-card" type="button" {onclick}>
@@ -14,4 +14,7 @@
       <span>#{tag}</span>
     {/each}
   </div>
+  {#if stat}
+    <div class="success-count">{stat.successCount}x</div>
+  {/if}
 </button>

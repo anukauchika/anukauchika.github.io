@@ -45,7 +45,7 @@
 
 <main>
   {#if activeGroup}
-    <PracticeChinese group={activeGroup} />
+    <PracticeChinese group={activeGroup} datasetId={$datasetId} />
   {/if}
 
   <header class="practice-header">
