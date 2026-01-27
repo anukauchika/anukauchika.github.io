@@ -1,12 +1,8 @@
-:root {
-  font-family: "Avenir Next", "Gill Sans", "Trebuchet MS", "Noto Sans SC",
-    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC",
-    sans-serif;
-  color: #1d1a15;
-}
+@import './shared.css';
 
-* {
-  box-sizing: border-box;
+:root {
+  font-family: var(--font-sans);
+  color: var(--ink);
 }
 
 body {
@@ -39,6 +35,7 @@ main {
   align-items: center;
   gap: 0.8rem;
   flex-wrap: wrap;
+  flex: 1;
 }
 
 .group-title {
@@ -48,22 +45,22 @@ main {
 
 .print-date {
   font-size: 1rem;
-  color: #5a5147;
+  color: var(--muted);
   font-weight: 600;
 }
 
 .group-tags {
   display: inline-flex;
-  gap: 0.4rem;
+  gap: var(--space-xs);
   flex-wrap: wrap;
   font-size: 1rem;
 }
 
 .group-tags span {
   background: rgba(31, 111, 92, 0.12);
-  color: #5a5147;
+  color: var(--muted);
   padding: 0.2rem 0.6rem;
-  border-radius: 999px;
+  border-radius: var(--radius-full);
   font-weight: 600;
 }
 
@@ -71,10 +68,6 @@ main {
   display: flex;
   gap: 1rem;
   align-items: center;
-}
-
-.group-line {
-  flex: 1;
 }
 
 @media (max-width: 720px) {
@@ -86,9 +79,9 @@ main {
 label {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: var(--space-xs);
   font-size: 0.85rem;
-  color: #5a5147;
+  color: var(--muted);
 }
 
 .header-actions label {
@@ -107,18 +100,18 @@ select {
 
 button {
   border: none;
-  background: #1f6f5c;
-  color: #fff;
-  border-radius: 999px;
+  background: var(--accent);
+  color: var(--white);
+  border-radius: var(--radius-full);
   padding: 0.6rem 1.2rem;
   cursor: pointer;
   font-weight: 600;
 }
 
 .sheet {
-  background: #fffaf2;
+  background: var(--card);
   padding: 0.8rem;
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   border: 1px solid rgba(31, 111, 92, 0.12);
 }
 
@@ -159,7 +152,7 @@ button {
   }
 
   body {
-    background: #fff;
+    background: var(--white);
   }
 
   main {

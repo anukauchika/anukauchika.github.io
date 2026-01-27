@@ -1,0 +1,45 @@
+/* Shared design tokens and base styles */
+
+:root {
+  /* Colors */
+  --ink: #1d1a15;
+  --muted: #5a5147;
+  --paper: #f5efe6;
+  --paper-2: #efe5d7;
+  --accent: #1f6f5c;
+  --accent-soft: #8cc4b5;
+  --sun: #f4c07a;
+  --card: #fffaf2;
+  --white: #fff;
+
+  /* Shadows */
+  --shadow: 0 20px 50px rgba(47, 39, 28, 0.18);
+
+  /* Border radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-3xl: 28px;
+  --radius-full: 999px;
+
+  /* Spacing */
+  --space-xs: 0.4rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+
+  /* Typography */
+  --font-sans: "Avenir Next", "Gill Sans", "Trebuchet MS", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-chinese: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Heiti SC", "Noto Sans CJK SC", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
