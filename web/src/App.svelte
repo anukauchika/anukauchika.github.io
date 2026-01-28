@@ -124,6 +124,20 @@
     filteredGroups.reduce((sum, g) => sum + g.items.length, 0)
   )
   const groupCount = $derived.by(() => groups.length)
+  const datasetProgress = $derived.by(() =>
+    totalCount > 0 ? Math.round((practicedCount / totalCount) * 100) : 0
+  )
+  const getGroupProgress = (group) => {
+    const practiced = group.items.filter(item =>
+      $datasetStats.has(`${group.group}::${item.id}`)
+    ).length
+    return group.items.length > 0 ? Math.round((practiced / group.items.length) * 100) : 0
+  }
+  const getGroupMastery = (group) => {
+    const gs = $datasetGroupSessions.get(group.group)
+    const fullSessions = gs?.full ?? 0
+    return Math.min(Math.round((fullSessions / 5) * 100), 100)
+  }
 </script>
 
 <main>
@@ -173,6 +187,9 @@
           <span class="stat-value">{practicedCount}</span>
         </div>
       </div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: {datasetProgress}%"></div>
     </div>
 
     <div class="controls">
@@ -255,6 +272,10 @@
               >
                 Print workbook
               </a>
+            </div>
+            <div class="group-progress">
+              <div class="group-progress-words" style="width: {getGroupProgress(group)}%"></div>
+              <div class="group-progress-mastery" style="width: {getGroupMastery(group)}%"></div>
             </div>
           </div>
 

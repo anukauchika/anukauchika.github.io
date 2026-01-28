@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { datasetId, currentDataset, setDatasetById } from './state/registry.js'
   import { formatGroup } from './utils/format.js'
+  import { loadDatasetGroupSessions, datasetGroupSessions } from './state/practice-stats.js'
   import PracticeChinese from './kind/chinese/Practice.svelte'
 
   const getSearchParams = () => {
@@ -14,6 +15,16 @@
     const requested = params.get('dataset')
     if (requested) setDatasetById(requested)
   })
+
+  $effect(() => {
+    if ($datasetId) {
+      loadDatasetGroupSessions($datasetId, 'stroke')
+    }
+  })
+
+  const groupStats = $derived.by(() =>
+    activeGroup ? $datasetGroupSessions.get(activeGroup.group) : null
+  )
 
   const getInitialGroup = () => {
     const value = Number(getSearchParams().get('group'))
@@ -49,10 +60,9 @@
   {/if}
 
   <header class="practice-header">
-    <a class="back-link" href="{basePath ?? baseUrl}/?dataset={$datasetId}">Back</a>
-    <h1>Stroke Practice</h1>
-    <div class="header-controls">
-      <label>
+    <div class="header-top">
+      <a class="back-link" href="{basePath ?? baseUrl}/?dataset={$datasetId}">Back</a>
+      <label class="group-picker">
         Group
         <select bind:value={groupFilter}>
           {#each groups as g}
@@ -61,15 +71,18 @@
         </select>
       </label>
     </div>
+    <h1>Stroke Practice</h1>
     {#if activeGroup}
       <div class="group-meta">
-        <span class="group-title">{formatGroup(activeGroup.group)}</span>
         <span class="group-tags">
           {#each activeGroup.tags as tag}
             <span>#{tag}</span>
           {/each}
         </span>
         <span class="item-count">{activeGroup.items.length} words</span>
+        {#if groupStats}
+          <span class="group-stats">{groupStats.total} passes ({groupStats.full} full)</span>
+        {/if}
       </div>
     {/if}
   </header>
@@ -104,18 +117,20 @@
   h1 {
     font-family: var(--font-serif);
     font-size: 2.2rem;
-    margin: 0 0 1.2rem;
+    margin: 0.5rem 0;
+    text-align: center;
   }
 
-  .header-controls {
+  .header-top {
     display: flex;
-    gap: 1rem;
-    align-items: end;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
   }
 
-  label {
+  .group-picker {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
     font-size: 0.85rem;
     color: var(--muted);
@@ -140,8 +155,6 @@
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-top: 1.2rem;
-    flex-wrap: wrap;
   }
 
   .group-title {
@@ -166,5 +179,11 @@
   .item-count {
     font-size: 0.85rem;
     color: var(--muted);
+  }
+
+  .group-stats {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
   }
 </style>
