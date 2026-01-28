@@ -148,6 +148,16 @@
     }
   }
 
+  const restartSession = () => {
+    currentIndex = 0
+    charIndex = 0
+    completedWords = new Set()
+    sessionStartedAt = new Date().toISOString()
+    practicedCount = 0
+    skippedCount = 0
+    sessionDone = false
+  }
+
   // Reset when group changes — sort once at session start
   $effect(() => {
     if (group) {
@@ -227,6 +237,7 @@
     <div class="session-banner">
       <p class="session-title">Session complete</p>
       <p class="session-detail">{practicedCount} practiced &middot; {skippedCount} skipped</p>
+      <button type="button" class="btn-restart" onclick={restartSession}>Restart</button>
     </div>
   {/if}
 
@@ -501,6 +512,23 @@
     margin: 0.3rem 0 0;
     font-size: 0.85rem;
     color: var(--muted);
+  }
+
+  .btn-restart {
+    margin-top: 1rem;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+  }
+
+  .btn-restart:hover {
+    opacity: 0.9;
   }
 
   @media (max-width: 600px) {
