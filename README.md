@@ -23,6 +23,25 @@ A vocabulary learning application with two modes:
 
 Each fold transforms one sheet into a different practice pass, enabling tactile, self-checking spaced repetition.
 
+## Stroke Practice Algorithm (Chinese)
+
+**Session flow**: Practice all words in a group, one character at a time. Each character uses HanziWriter quiz mode.
+
+**Word ordering**: Words sorted by success count (ascending) — least practiced first.
+
+**Hint logic**:
+- Auto-enabled for words with 0 successful practices (shows gray outline)
+- Auto-disabled for practiced words
+- Toggleable via button, resets on each character
+
+**Error handling**: Shows hint outline after 2nd mistake on a stroke.
+
+**Delays**: 1500ms pause between characters within a word.
+
+**Group ordering** (in browser): Groups sorted by last *full* session (no skips). Partial sessions don't affect order — only completing all words moves a group down the list.
+
+**Stats tracked**: Per-word success count, per-group session count (total/full), timestamps.
+
 ## Project Structure
 
 ```
