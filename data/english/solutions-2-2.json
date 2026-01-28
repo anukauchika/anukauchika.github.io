@@ -21,6 +21,7 @@
         {"word":"confident","phonetics":"/ˈkɒn.fɪ.dənt/","russian":"уверенный","tags":["характер"],"id":10},
         {"word":"arrogant","phonetics":"/ˈær.ə.ɡənt/","russian":"высокомерный","tags":["характер"],"id":11},
         {"word":"generous","phonetics":"/ˈdʒɛnərəs/","russian":"щедрый","tags":["характер"],"id":12}
+      ]
     },
     {
       "group": 2,

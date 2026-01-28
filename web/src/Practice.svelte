@@ -40,18 +40,16 @@
   )
 
   const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || ''
-  const basePath = $derived.by(() => `${baseUrl}/${$currentDataset.kind}`)
+  const basePath = $derived.by(() => $currentDataset?.kind ? `${baseUrl}/${$currentDataset.kind}` : null)
 </script>
 
 <main>
   {#if activeGroup}
-    <PracticeChinese group={activeGroup} datasetId={$datasetId} />
+    <PracticeChinese group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} />
   {/if}
 
   <header class="practice-header">
-    <div class="header-top">
-      <a class="back-link" href="{basePath}/?dataset={$datasetId}">Back to browser</a>
-    </div>
+    <a class="back-link" href="{basePath ?? baseUrl}/?dataset={$datasetId}">Back</a>
     <h1>Stroke Practice</h1>
     <div class="header-controls">
       <label>
@@ -90,10 +88,6 @@
     border-radius: 28px;
     box-shadow: var(--shadow);
     border: 1px solid rgba(31, 111, 92, 0.08);
-  }
-
-  .header-top {
-    margin-bottom: 1rem;
   }
 
   .back-link {

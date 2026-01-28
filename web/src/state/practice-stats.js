@@ -11,7 +11,7 @@ export const groupStats = writable(new Map())
 export const datasetStats = writable(new Map())
 
 /**
- * Per-group session summaries: Map<groupId, { total, full, lastPracticedAt }>
+ * Per-group session summaries: Map<groupId, { total, full, lastPracticedAt, lastFullSessionAt }>
  * "full" = sessions with zero skips
  */
 export const datasetGroupSessions = writable(new Map())
@@ -51,7 +51,12 @@ export async function loadDatasetGroupSessions(datasetId, practiceType) {
     const isFull = s.skippedCount === 0
     if (existing) {
       existing.total += 1
-      if (isFull) existing.full += 1
+      if (isFull) {
+        existing.full += 1
+        if (!existing.lastFullSessionAt || s.completedAt > existing.lastFullSessionAt) {
+          existing.lastFullSessionAt = s.completedAt
+        }
+      }
       if (s.completedAt > existing.lastPracticedAt) {
         existing.lastPracticedAt = s.completedAt
       }
@@ -60,6 +65,7 @@ export async function loadDatasetGroupSessions(datasetId, practiceType) {
         total: 1,
         full: isFull ? 1 : 0,
         lastPracticedAt: s.completedAt,
+        lastFullSessionAt: isFull ? s.completedAt : null,
       })
     }
   }
@@ -81,12 +87,16 @@ export async function recordGroupSession(session) {
         full: existing.full + (isFull ? 1 : 0),
         lastPracticedAt: session.completedAt > existing.lastPracticedAt
           ? session.completedAt : existing.lastPracticedAt,
+        lastFullSessionAt: isFull
+          ? (session.completedAt > (existing.lastFullSessionAt ?? '') ? session.completedAt : existing.lastFullSessionAt)
+          : existing.lastFullSessionAt,
       })
     } else {
       next.set(session.groupId, {
         total: 1,
         full: isFull ? 1 : 0,
         lastPracticedAt: session.completedAt,
+        lastFullSessionAt: isFull ? session.completedAt : null,
       })
     }
     return next

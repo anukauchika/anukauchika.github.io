@@ -107,8 +107,8 @@
       }))
       .filter((g) => g.items.length > 0)
       .sort((a, b) => {
-        const sa = sessions.get(a.group)?.lastPracticedAt ?? ''
-        const sb = sessions.get(b.group)?.lastPracticedAt ?? ''
+        const sa = sessions.get(a.group)?.lastFullSessionAt ?? ''
+        const sb = sessions.get(b.group)?.lastFullSessionAt ?? ''
         if (!sa && !sb) return 0
         if (!sa) return -1
         if (!sb) return 1

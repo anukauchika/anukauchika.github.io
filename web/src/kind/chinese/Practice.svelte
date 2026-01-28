@@ -3,7 +3,7 @@
   import HanziWriter from 'hanzi-writer'
   import { recordSuccess, recordGroupSession, loadGroupStats, groupStats } from '../../state/practice-stats.js'
 
-  let { group, datasetId } = $props()
+  let { group, datasetId, translationField } = $props()
   const practiceType = 'stroke'
 
   const rawItems = $derived.by(() => group?.items ?? [])
@@ -16,6 +16,7 @@
   let practicedCount = $state(0)
   let skippedCount = $state(0)
   let sessionDone = $state(false)
+  let showHint = $state(false)
 
   const currentItem = $derived.by(() => items[currentIndex] ?? null)
   const currentStat = $derived.by(() => currentItem ? $groupStats.get(currentItem.id) : null)
@@ -65,13 +66,13 @@
       height: 280,
       padding: 20,
       showCharacter: false,
-      showOutline: false,
+      showOutline: showHint,
       strokeAnimationSpeed: 1,
       delayBetweenStrokes: 100,
       highlightOnComplete: true,
       drawingWidth: 20,
       leniency: 1.4,
-      showHintAfterMisses: false,
+      showHintAfterMisses: 2,
     })
 
     writer.quiz({
@@ -80,7 +81,7 @@
           // Move to next character in the word
           setTimeout(() => {
             charIndex += 1
-          }, 600)
+          }, 1500)
         } else {
           // Completed all characters in this word
           completedWords = new Set([...completedWords, currentIndex])
@@ -116,6 +117,15 @@
       })
     }
   }
+
+  // Auto-enable hint for unpracticed words, reset on each char
+  $effect(() => {
+    if (currentItem) {
+      const _ = charIndex // track charIndex to reset on char change
+      const successCount = currentStat?.successCount ?? 0
+      showHint = successCount === 0
+    }
+  })
 
   $effect(() => {
     if (currentChar) {
@@ -195,6 +205,7 @@
 
       {#if !quizResult}
         <div class="skip-area">
+          <button type="button" class="btn-hint" class:active={showHint} onclick={() => { showHint = !showHint; initQuiz() }}>Hint</button>
           <button type="button" class="btn-skip" onclick={skipWord}>Skip</button>
         </div>
       {/if}
@@ -215,7 +226,7 @@
   </div>
   <div class="progress-text">{completedWords.size} / {items.length} completed</div>
 
-  <div class="word-nav" translate="no" lang="zh">
+  <div class="word-nav">
     {#each items as item, idx}
       {@const stat = $groupStats.get(item.id)}
       <span
@@ -224,7 +235,7 @@
         class:done={completedWords.has(idx)}
         title="{item.word}{stat ? ` (${stat.successCount}x)` : ''}"
       >
-        {item.word}
+        {item[translationField]}
         {#if stat}
           <span class="dot-count">{stat.successCount}</span>
         {/if}
@@ -386,6 +397,29 @@
   .skip-area {
     display: flex;
     justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .btn-hint {
+    border: 1px solid rgba(31, 111, 92, 0.3);
+    background: none;
+    color: var(--muted);
+    border-radius: 999px;
+    padding: 0.4rem 1.2rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .btn-hint:hover {
+    background: rgba(31, 111, 92, 0.06);
+  }
+
+  .btn-hint.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
   }
 
   .btn-skip {
