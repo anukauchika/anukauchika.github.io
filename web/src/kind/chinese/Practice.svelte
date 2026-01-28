@@ -17,6 +17,7 @@
   let skippedCount = $state(0)
   let sessionDone = $state(false)
   let showHint = $state(false)
+  let showPinyin = $state(true)
 
   const currentItem = $derived.by(() => items[currentIndex] ?? null)
   const currentStat = $derived.by(() => currentItem ? $groupStats.get(currentItem.id) : null)
@@ -49,7 +50,7 @@
     if (target) target.innerHTML = ''
   }
 
-  const initQuiz = async () => {
+  const initQuiz = async (skipSpeak = false) => {
     destroyWriter()
     quizResult = null
     await tick()
@@ -59,7 +60,7 @@
     const target = document.getElementById('practice-canvas')
     if (!target) return
 
-    if (charIndex === 0) speak(currentItem.word)
+    if (charIndex === 0 && !skipSpeak) speak(currentItem.word)
 
     writer = HanziWriter.create(target, currentChar, {
       width: 280,
@@ -179,8 +180,12 @@
       {#if currentStat}
         <span class="quiz-count" title="Times practiced">{currentStat.successCount}x</span>
       {/if}
-      <div class="word-info" translate="no">
-        <button class="word-pinyin" type="button" onclick={() => speak(currentItem.word)}>{currentItem.pinyin}</button>
+      <div class="word-info">
+        <span class="word-translation">{currentItem[translationField]}</span>
+        {#if showPinyin}
+          <span class="word-separator">·</span>
+          <button class="word-pinyin" type="button" translate="no" onclick={() => speak(currentItem.word)}>{currentItem.pinyin}</button>
+        {/if}
       </div>
 
       <div class="char-tabs" translate="no" lang="zh">
@@ -205,7 +210,11 @@
 
       {#if !quizResult}
         <div class="skip-area">
-          <button type="button" class="btn-hint" class:active={showHint} onclick={() => { showHint = !showHint; initQuiz() }}>Hint</button>
+          <button type="button" class="btn-icon" onclick={() => speak(currentItem.word)} title="Play audio">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+          </button>
+          <button type="button" class="btn-toggle" class:active={showPinyin} onclick={() => showPinyin = !showPinyin}>Pinyin</button>
+          <button type="button" class="btn-toggle" class:active={showHint} onclick={() => { showHint = !showHint; initQuiz(true) }}>Hint</button>
           <button type="button" class="btn-skip" onclick={skipWord}>Skip</button>
         </div>
       {/if}
@@ -339,14 +348,23 @@
   }
 
   .word-info {
-    text-align: center;
     display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .word-translation {
+    font-size: 1.1rem;
+    color: var(--ink);
+  }
+
+  .word-separator {
+    color: var(--muted);
   }
 
   .word-pinyin {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--accent);
     background: none;
@@ -400,7 +418,26 @@
     gap: 0.75rem;
   }
 
-  .btn-hint {
+  .btn-icon {
+    border: 1px solid rgba(31, 111, 92, 0.3);
+    background: none;
+    color: var(--muted);
+    border-radius: 999px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  .btn-icon:hover {
+    background: rgba(31, 111, 92, 0.06);
+    color: var(--accent);
+  }
+
+  .btn-toggle {
     border: 1px solid rgba(31, 111, 92, 0.3);
     background: none;
     color: var(--muted);
@@ -412,11 +449,11 @@
     transition: background 0.2s ease, border-color 0.2s ease;
   }
 
-  .btn-hint:hover {
+  .btn-toggle:hover {
     background: rgba(31, 111, 92, 0.06);
   }
 
-  .btn-hint.active {
+  .btn-toggle.active {
     background: var(--accent);
     color: #fff;
     border-color: var(--accent);
