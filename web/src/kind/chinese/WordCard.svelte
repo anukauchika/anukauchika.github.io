@@ -24,10 +24,11 @@
         width: 140,
         height: 140,
         padding: 8,
-        showCharacter: false,
+        showCharacter: true,
+        strokeAnimationSpeed: 2,
+        delayBetweenStrokes: 80,
       })
       writers.set(idx, writer)
-      writer.animateCharacter()
     })
   }
 

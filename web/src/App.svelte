@@ -229,8 +229,6 @@
                 <a
                   class="print-link"
                   href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}`}
-                  target="_blank"
-                  rel="noreferrer"
                 >
                   Practice
                 </a>
