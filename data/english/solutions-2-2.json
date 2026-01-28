@@ -9,21 +9,18 @@
       "name": "Unit 1",
       "tags": ["introductions","people"],
       "items": [
-        {"word":"determined","phonetics":"/ˈtiːnˌeɪdʒər/","russian":"подросток","tags":["people"],"id":1},
-        {"word":"lazy","phonetics":"/ˈneɪbər/","russian":"сосед","tags":["people"],"id":2},
-        {"word":"rude","phonetics":"/ˈfrendʃɪp/","russian":"дружба","tags":["people"],"id":3},
-        {"word":"patient","phonetics":"/ˈɑːrɡjəmənt/","russian":"ссора","tags":["people"],"id":4},
-        {"word":"nasty","phonetics":"/ˈkɒnfɪdəns/","russian":"уверенность","tags":["people"],"id":5},
-        {"word":"dishonest","phonetics":"/ɪkˈspɪəriəns/","russian":"опыт","tags":["general"],"id":6},
-        {"word":"clever","phonetics":"/ədˈvaɪs/","russian":"совет","tags":["general"],"id":7},
-        {"word":"quiet","phonetics":"/dɪˈsɪʒən/","russian":"решение","tags":["general"],"id":8},
-        {"word":"strong","phonetics":"/ˈhæbɪt/","russian":"привычка","tags":["general"],"id":9},
-        {"word":"confident","phonetics":"/ɡəʊl/","russian":"цель","tags":["general"],"id":10},
-        {"word":"arrogant","phonetics":"/ˈprɒmɪs/","russian":"обещание","tags":["general"],"id":11},
-        {"word":"serious","phonetics":"/ˈsiːkrɪt/","russian":"секрет","tags":["general"],"id":12},
-        {"word":"generous","phonetics":"/ˈdʒɛnərəs/","russian":"щедрый","tags":["character"],"id":13}
-      ]
-    },
+        {"word":"determined","phonetics":"/dɪˈtɜː.mɪnd/","russian":"решительный","tags":["характер"],"id":1},
+        {"word":"lazy","phonetics":"/ˈleɪ.zi/","russian":"ленивый","tags":["характер"],"id":2},
+        {"word":"rude","phonetics":"/ruːd/","russian":"грубый","tags":["характер"],"id":3},
+        {"word":"patient","phonetics":"/ˈpeɪ.ʃənt/","russian":"терпеливый","tags":["характер"],"id":4},
+        {"word":"nasty","phonetics":"/ˈnɑː.sti/","russian":"отвратительный","tags":["характер"],"id":5},
+        {"word":"dishonest","phonetics":"/dɪsˈɒn.ɪst/","russian":"нечестный","tags":["характер"],"id":6},
+        {"word":"clever","phonetics":"/ˈklev.ər/","russian":"умный","tags":["характер"],"id":7},
+        {"word":"quiet","phonetics":"/ˈkwaɪ.ət/","russian":"тихий","tags":["характер"],"id":8},
+        {"word":"strong","phonetics":"/strɒŋ/","russian":"сильный","tags":["характер"],"id":9},
+        {"word":"confident","phonetics":"/ˈkɒn.fɪ.dənt/","russian":"уверенный","tags":["характер"],"id":10},
+        {"word":"arrogant","phonetics":"/ˈær.ə.ɡənt/","russian":"высокомерный","tags":["характер"],"id":11},
+        {"word":"generous","phonetics":"/ˈdʒɛnərəs/","russian":"щедрый","tags":["характер"],"id":13}
     {
       "group": 2,
       "name": "Unit 2",
