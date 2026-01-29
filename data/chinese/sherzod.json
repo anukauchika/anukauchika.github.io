@@ -444,6 +444,216 @@
         {"word":"请稍等","pinyin":"qǐng shāo děng","english":"please wait","id":14,"tags":["polite","phrases"]},
         {"word":"祝你好运","pinyin":"zhù nǐ hǎo yùn","english":"good luck","id":15,"tags":["polite","phrases"]}
       ]
+    },
+    {
+      "group": 22,
+      "tags": ["duo","food","cooking","dining"],
+      "items": [
+        {"word":"豆腐","pinyin":"dòu fu","english":"tofu","id":1,"tags":["duo","food","cooking","dining"]},
+        {"word":"烤鸭","pinyin":"kǎo yā","english":"roast duck","id":2,"tags":["duo","food","cooking","dining"]},
+        {"word":"火锅","pinyin":"huǒ guō","english":"hot pot","id":3,"tags":["duo","food","cooking","dining"]},
+        {"word":"西红柿","pinyin":"xī hóng shì","english":"tomato","id":4,"tags":["duo","food","cooking","dining"]},
+        {"word":"土豆","pinyin":"tǔ dòu","english":"potato","id":5,"tags":["duo","food","cooking","dining"]},
+        {"word":"盐","pinyin":"yán","english":"salt","id":6,"tags":["duo","food","cooking","dining"]},
+        {"word":"辣","pinyin":"là","english":"spicy","id":7,"tags":["duo","food","cooking","dining"]},
+        {"word":"冰","pinyin":"bīng","english":"ice","id":8,"tags":["duo","food","cooking","dining"]},
+        {"word":"米","pinyin":"mǐ","english":"rice (uncooked)","id":9,"tags":["duo","food","cooking","dining"]},
+        {"word":"碗","pinyin":"wǎn","english":"bowl","id":10,"tags":["duo","food","cooking","dining"]},
+        {"word":"筷子","pinyin":"kuài zi","english":"chopsticks","id":11,"tags":["duo","food","cooking","dining"]},
+        {"word":"盘子","pinyin":"pán zi","english":"plate","id":12,"tags":["duo","food","cooking","dining"]},
+        {"word":"勺子","pinyin":"sháo zi","english":"spoon","id":13,"tags":["duo","food","cooking","dining"]},
+        {"word":"杯","pinyin":"bēi","english":"cup/glass","id":14,"tags":["duo","food","cooking","dining"]},
+        {"word":"晚饭","pinyin":"wǎn fàn","english":"dinner","id":15,"tags":["duo","food","cooking","dining"]}
+      ]
+    },
+    {
+      "group": 23,
+      "tags": ["duo","snacks","entertainment","music"],
+      "items": [
+        {"word":"蛋糕","pinyin":"dàn gāo","english":"cake","id":1,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"饼干","pinyin":"bǐng gān","english":"cookie/biscuit","id":2,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"巧克力","pinyin":"qiǎo kè lì","english":"chocolate","id":3,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"爆米花","pinyin":"bào mǐ huā","english":"popcorn","id":4,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"零食","pinyin":"líng shí","english":"snacks","id":5,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"可乐","pinyin":"kě lè","english":"cola","id":6,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"果汁","pinyin":"guǒ zhī","english":"juice","id":7,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"钢琴","pinyin":"gāng qín","english":"piano","id":8,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"吉他","pinyin":"jí tā","english":"guitar","id":9,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"小提琴","pinyin":"xiǎo tí qín","english":"violin","id":10,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"摇滚","pinyin":"yáo gǔn","english":"rock music","id":11,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"喜剧","pinyin":"xǐ jù","english":"comedy","id":12,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"飞盘","pinyin":"fēi pán","english":"frisbee","id":13,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"历史","pinyin":"lì shǐ","english":"history","id":14,"tags":["duo","snacks","entertainment","music"]},
+        {"word":"歌","pinyin":"gē","english":"song","id":15,"tags":["duo","snacks","entertainment","music"]}
+      ]
+    },
+    {
+      "group": 24,
+      "tags": ["duo","places","travel","locations"],
+      "items": [
+        {"word":"商场","pinyin":"shāng chǎng","english":"shopping mall","id":1,"tags":["duo","places","travel","locations"]},
+        {"word":"博物馆","pinyin":"bó wù guǎn","english":"museum","id":2,"tags":["duo","places","travel","locations"]},
+        {"word":"俱乐部","pinyin":"jù lè bù","english":"club","id":3,"tags":["duo","places","travel","locations"]},
+        {"word":"健身房","pinyin":"jiàn shēn fáng","english":"gym","id":4,"tags":["duo","places","travel","locations"]},
+        {"word":"公园","pinyin":"gōng yuán","english":"park","id":5,"tags":["duo","places","travel","locations"]},
+        {"word":"动物园","pinyin":"dòng wù yuán","english":"zoo","id":6,"tags":["duo","places","travel","locations"]},
+        {"word":"地方","pinyin":"dì fang","english":"place","id":7,"tags":["duo","places","travel","locations"]},
+        {"word":"公寓","pinyin":"gōng yù","english":"apartment","id":8,"tags":["duo","places","travel","locations"]},
+        {"word":"故宫","pinyin":"Gù gōng","english":"Forbidden City","id":9,"tags":["duo","places","travel","locations"]},
+        {"word":"长城","pinyin":"Cháng chéng","english":"Great Wall","id":10,"tags":["duo","places","travel","locations"]},
+        {"word":"上海","pinyin":"Shàng hǎi","english":"Shanghai","id":11,"tags":["duo","places","travel","locations"]},
+        {"word":"公交车","pinyin":"gōng jiāo chē","english":"bus","id":12,"tags":["duo","places","travel","locations"]},
+        {"word":"站台","pinyin":"zhàn tái","english":"platform","id":13,"tags":["duo","places","travel","locations"]},
+        {"word":"车票","pinyin":"chē piào","english":"ticket (vehicle)","id":14,"tags":["duo","places","travel","locations"]},
+        {"word":"周末","pinyin":"zhōu mò","english":"weekend","id":15,"tags":["duo","places","travel","locations"]}
+      ]
+    },
+    {
+      "group": 25,
+      "tags": ["duo","home","family","seasons"],
+      "items": [
+        {"word":"书架","pinyin":"shū jià","english":"bookshelf","id":1,"tags":["duo","home","family","seasons"]},
+        {"word":"台灯","pinyin":"tái dēng","english":"desk lamp","id":2,"tags":["duo","home","family","seasons"]},
+        {"word":"沙发","pinyin":"shā fā","english":"sofa","id":3,"tags":["duo","home","family","seasons"]},
+        {"word":"窗户","pinyin":"chuāng hu","english":"window","id":4,"tags":["duo","home","family","seasons"]},
+        {"word":"衣服","pinyin":"yī fu","english":"clothes","id":5,"tags":["duo","home","family","seasons"]},
+        {"word":"帽子","pinyin":"mào zi","english":"hat","id":6,"tags":["duo","home","family","seasons"]},
+        {"word":"春天","pinyin":"chūn tiān","english":"spring","id":7,"tags":["duo","home","family","seasons"]},
+        {"word":"夏天","pinyin":"xià tiān","english":"summer","id":8,"tags":["duo","home","family","seasons"]},
+        {"word":"秋天","pinyin":"qiū tiān","english":"autumn","id":9,"tags":["duo","home","family","seasons"]},
+        {"word":"冬天","pinyin":"dōng tiān","english":"winter","id":10,"tags":["duo","home","family","seasons"]},
+        {"word":"爷爷","pinyin":"yé ye","english":"grandfather (paternal)","id":11,"tags":["duo","home","family","seasons"]},
+        {"word":"老婆","pinyin":"lǎo po","english":"wife (informal)","id":12,"tags":["duo","home","family","seasons"]},
+        {"word":"妻子","pinyin":"qī zi","english":"wife (formal)","id":13,"tags":["duo","home","family","seasons"]},
+        {"word":"邻居","pinyin":"lín jū","english":"neighbor","id":14,"tags":["duo","home","family","seasons"]},
+        {"word":"女孩儿","pinyin":"nǚ háir","english":"girl","id":15,"tags":["duo","home","family","seasons"]}
+      ]
+    },
+    {
+      "group": 26,
+      "tags": ["duo","verbs","expressions"],
+      "items": [
+        {"word":"帮助","pinyin":"bāng zhù","english":"help","id":1,"tags":["duo","verbs","expressions"]},
+        {"word":"需要","pinyin":"xū yào","english":"need","id":2,"tags":["duo","verbs","expressions"]},
+        {"word":"坐","pinyin":"zuò","english":"sit","id":3,"tags":["duo","verbs","expressions"]},
+        {"word":"带","pinyin":"dài","english":"bring","id":4,"tags":["duo","verbs","expressions"]},
+        {"word":"养","pinyin":"yǎng","english":"raise/keep","id":5,"tags":["duo","verbs","expressions"]},
+        {"word":"练习","pinyin":"liàn xí","english":"practice","id":6,"tags":["duo","verbs","expressions"]},
+        {"word":"爱","pinyin":"ài","english":"love","id":7,"tags":["duo","verbs","expressions"]},
+        {"word":"上网","pinyin":"shàng wǎng","english":"go online","id":8,"tags":["duo","verbs","expressions"]},
+        {"word":"下车","pinyin":"xià chē","english":"get off (vehicle)","id":9,"tags":["duo","verbs","expressions"]},
+        {"word":"吧","pinyin":"ba","english":"(suggestion particle)","id":10,"tags":["duo","verbs","expressions"]},
+        {"word":"真的吗","pinyin":"zhēn de ma","english":"really?","id":11,"tags":["duo","verbs","expressions"]},
+        {"word":"哎呀","pinyin":"āi yā","english":"oh no","id":12,"tags":["duo","verbs","expressions"]},
+        {"word":"喂","pinyin":"wèi","english":"hello (phone)/hey","id":13,"tags":["duo","verbs","expressions"]},
+        {"word":"哇","pinyin":"wā","english":"wow","id":14,"tags":["duo","verbs","expressions"]},
+        {"word":"小心","pinyin":"xiǎo xīn","english":"be careful","id":15,"tags":["duo","verbs","expressions"]}
+      ]
+    },
+    {
+      "group": 27,
+      "tags": ["duo","grammar","nouns"],
+      "items": [
+        {"word":"玩具","pinyin":"wán jù","english":"toy","id":1,"tags":["duo","grammar","nouns"]},
+        {"word":"东西","pinyin":"dōng xi","english":"thing","id":2,"tags":["duo","grammar","nouns"]},
+        {"word":"报纸","pinyin":"bào zhǐ","english":"newspaper","id":3,"tags":["duo","grammar","nouns"]},
+        {"word":"生活","pinyin":"shēng huó","english":"life","id":4,"tags":["duo","grammar","nouns"]},
+        {"word":"时候","pinyin":"shí hou","english":"time/moment","id":5,"tags":["duo","grammar","nouns"]},
+        {"word":"空儿","pinyin":"kòngr","english":"free time","id":6,"tags":["duo","grammar","nouns"]},
+        {"word":"钱包","pinyin":"qián bāo","english":"wallet","id":7,"tags":["duo","grammar","nouns"]},
+        {"word":"花","pinyin":"huā","english":"flower","id":8,"tags":["duo","grammar","nouns"]},
+        {"word":"那","pinyin":"nà","english":"that","id":9,"tags":["duo","grammar","nouns"]},
+        {"word":"些","pinyin":"xiē","english":"some","id":10,"tags":["duo","grammar","nouns"]},
+        {"word":"种","pinyin":"zhǒng","english":"kind/type","id":11,"tags":["duo","grammar","nouns"]},
+        {"word":"块","pinyin":"kuài","english":"piece/yuan","id":12,"tags":["duo","grammar","nouns"]},
+        {"word":"岁","pinyin":"suì","english":"years old","id":13,"tags":["duo","grammar","nouns"]},
+        {"word":"都","pinyin":"dōu","english":"all/both","id":14,"tags":["duo","grammar","nouns"]},
+        {"word":"和","pinyin":"hé","english":"and","id":15,"tags":["duo","grammar","nouns"]}
+      ]
+    },
+    {
+      "group": 28,
+      "tags": ["duo","adjectives","descriptive"],
+      "items": [
+        {"word":"有趣","pinyin":"yǒu qù","english":"interesting","id":1,"tags":["duo","adjectives","descriptive"]},
+        {"word":"吵","pinyin":"chǎo","english":"noisy","id":2,"tags":["duo","adjectives","descriptive"]},
+        {"word":"乱","pinyin":"luàn","english":"messy","id":3,"tags":["duo","adjectives","descriptive"]},
+        {"word":"重","pinyin":"zhòng","english":"heavy","id":4,"tags":["duo","adjectives","descriptive"]},
+        {"word":"流行","pinyin":"liú xíng","english":"popular","id":5,"tags":["duo","adjectives","descriptive"]},
+        {"word":"热闹","pinyin":"rè nao","english":"lively","id":6,"tags":["duo","adjectives","descriptive"]},
+        {"word":"脏","pinyin":"zāng","english":"dirty","id":7,"tags":["duo","adjectives","descriptive"]},
+        {"word":"特别","pinyin":"tè bié","english":"special","id":8,"tags":["duo","adjectives","descriptive"]},
+        {"word":"国际","pinyin":"guó jì","english":"international","id":9,"tags":["duo","adjectives","descriptive"]},
+        {"word":"干净","pinyin":"gān jìng","english":"clean","id":10,"tags":["duo","adjectives","descriptive"]},
+        {"word":"忙","pinyin":"máng","english":"busy","id":11,"tags":["duo","adjectives","descriptive"]},
+        {"word":"累","pinyin":"lèi","english":"tired","id":12,"tags":["duo","adjectives","descriptive"]},
+        {"word":"可爱","pinyin":"kě ài","english":"cute","id":13,"tags":["duo","adjectives","descriptive"]},
+        {"word":"漂亮","pinyin":"piào liang","english":"beautiful","id":14,"tags":["duo","adjectives","descriptive"]},
+        {"word":"健康","pinyin":"jiàn kāng","english":"healthy","id":15,"tags":["duo","adjectives","descriptive"]}
+      ]
+    },
+    {
+      "group": 29,
+      "tags": ["duo","verbs","actions"],
+      "items": [
+        {"word":"用","pinyin":"yòng","english":"use","id":1,"tags":["duo","verbs","actions"]},
+        {"word":"找","pinyin":"zhǎo","english":"find/look for","id":2,"tags":["duo","verbs","actions"]},
+        {"word":"借","pinyin":"jiè","english":"borrow","id":3,"tags":["duo","verbs","actions"]},
+        {"word":"擦","pinyin":"cā","english":"wipe","id":4,"tags":["duo","verbs","actions"]},
+        {"word":"弹","pinyin":"tán","english":"play (instrument)","id":5,"tags":["duo","verbs","actions"]},
+        {"word":"掉","pinyin":"diào","english":"drop/fall","id":6,"tags":["duo","verbs","actions"]},
+        {"word":"扔","pinyin":"rēng","english":"throw","id":7,"tags":["duo","verbs","actions"]},
+        {"word":"打","pinyin":"dǎ","english":"hit/play","id":8,"tags":["duo","verbs","actions"]},
+        {"word":"数","pinyin":"shǔ","english":"count","id":9,"tags":["duo","verbs","actions"]},
+        {"word":"扫","pinyin":"sǎo","english":"sweep","id":10,"tags":["duo","verbs","actions"]},
+        {"word":"烤","pinyin":"kǎo","english":"roast/grill","id":11,"tags":["duo","verbs","actions"]},
+        {"word":"唱","pinyin":"chàng","english":"sing","id":12,"tags":["duo","verbs","actions"]},
+        {"word":"卖","pinyin":"mài","english":"sell","id":13,"tags":["duo","verbs","actions"]},
+        {"word":"买","pinyin":"mǎi","english":"buy","id":14,"tags":["duo","verbs","actions"]},
+        {"word":"拉","pinyin":"lā","english":"pull","id":15,"tags":["duo","verbs","actions"]}
+      ]
+    },
+    {
+      "group": 30,
+      "tags": ["duo","grammar","adverbs"],
+      "items": [
+        {"word":"先","pinyin":"xiān","english":"first","id":1,"tags":["duo","grammar","adverbs"]},
+        {"word":"比较","pinyin":"bǐ jiào","english":"relatively","id":2,"tags":["duo","grammar","adverbs"]},
+        {"word":"别","pinyin":"bié","english":"don't","id":3,"tags":["duo","grammar","adverbs"]},
+        {"word":"还","pinyin":"hái","english":"still/also","id":4,"tags":["duo","grammar","adverbs"]},
+        {"word":"前","pinyin":"qián","english":"before/front","id":5,"tags":["duo","grammar","adverbs"]},
+        {"word":"很","pinyin":"hěn","english":"very","id":6,"tags":["duo","grammar","adverbs"]},
+        {"word":"太","pinyin":"tài","english":"too","id":7,"tags":["duo","grammar","adverbs"]},
+        {"word":"最","pinyin":"zuì","english":"most","id":8,"tags":["duo","grammar","adverbs"]},
+        {"word":"也","pinyin":"yě","english":"also","id":9,"tags":["duo","grammar","adverbs"]},
+        {"word":"就","pinyin":"jiù","english":"then/just","id":10,"tags":["duo","grammar","adverbs"]},
+        {"word":"才","pinyin":"cái","english":"only then","id":11,"tags":["duo","grammar","adverbs"]},
+        {"word":"又","pinyin":"yòu","english":"again (past)","id":12,"tags":["duo","grammar","adverbs"]},
+        {"word":"再","pinyin":"zài","english":"again (future)","id":13,"tags":["duo","grammar","adverbs"]},
+        {"word":"没","pinyin":"méi","english":"not (have)","id":14,"tags":["duo","grammar","adverbs"]},
+        {"word":"不","pinyin":"bù","english":"not","id":15,"tags":["duo","grammar","adverbs"]}
+      ]
+    },
+    {
+      "group": 31,
+      "tags": ["duo","names","people"],
+      "items": [
+        {"word":"王明","pinyin":"Wáng Míng","english":"Wang Ming","id":1,"tags":["duo","names","people"]},
+        {"word":"李天美","pinyin":"Lǐ Tiān měi","english":"Li Tianmei","id":2,"tags":["duo","names","people"]},
+        {"word":"李梅","pinyin":"Lǐ Méi","english":"Li Mei","id":3,"tags":["duo","names","people"]},
+        {"word":"小明","pinyin":"Xiǎo Míng","english":"Xiao Ming","id":4,"tags":["duo","names","people"]},
+        {"word":"小红","pinyin":"Xiǎo Hóng","english":"Xiao Hong","id":5,"tags":["duo","names","people"]},
+        {"word":"小丽","pinyin":"Xiǎo Lì","english":"Xiao Li","id":6,"tags":["duo","names","people"]},
+        {"word":"张伟","pinyin":"Zhāng Wěi","english":"Zhang Wei","id":7,"tags":["duo","names","people"]},
+        {"word":"李华","pinyin":"Lǐ Huá","english":"Li Hua","id":8,"tags":["duo","names","people"]},
+        {"word":"王芳","pinyin":"Wáng Fāng","english":"Wang Fang","id":9,"tags":["duo","names","people"]},
+        {"word":"刘洋","pinyin":"Liú Yáng","english":"Liu Yang","id":10,"tags":["duo","names","people"]},
+        {"word":"林娜","pinyin":"Lín Nà","english":"Lin Na","id":11,"tags":["duo","names","people"]},
+        {"word":"马力","pinyin":"Mǎ Lì","english":"Ma Li","id":12,"tags":["duo","names","people"]},
+        {"word":"冰果","pinyin":"Bīng Guǒ","english":"Bing Guo","id":13,"tags":["duo","names","people"]},
+        {"word":"韩梅梅","pinyin":"Hán Méi méi","english":"Han Meimei","id":14,"tags":["duo","names","people"]},
+        {"word":"大卫","pinyin":"Dà Wèi","english":"David","id":15,"tags":["duo","names","people"]}
+      ]
     }
   ]
 }
