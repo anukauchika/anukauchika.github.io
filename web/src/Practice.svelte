@@ -157,11 +157,6 @@
     gap: 1rem;
   }
 
-  .group-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-  }
-
   .group-tags {
     display: flex;
     gap: 0.5rem;
