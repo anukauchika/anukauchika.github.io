@@ -128,6 +128,9 @@
   })
 
   $effect(() => {
+    // Track charIndex and currentIndex to re-init even when same character repeats
+    const _charIdx = charIndex
+    const _wordIdx = currentIndex
     if (currentChar) {
       initQuiz()
     }

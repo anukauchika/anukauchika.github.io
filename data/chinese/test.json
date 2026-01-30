@@ -30,6 +30,24 @@
         {"word":"狗","pinyin":"gǒu","english":"dog","id":2,"tags":["animal"]},
         {"word":"鱼","pinyin":"yú","english":"fish","id":3,"tags":["animal"]}
       ]
+    },
+    {
+      "group": 4,
+      "tags": ["family", "test-repeat-in-word"],
+      "items": [
+        {"word":"妈妈","pinyin":"māma","english":"mom","id":1,"tags":["family"]},
+        {"word":"爸爸","pinyin":"bàba","english":"dad","id":2,"tags":["family"]},
+        {"word":"妹妹","pinyin":"mèimei","english":"younger sister","id":6,"tags":["family"]}
+      ]
+    },
+    {
+      "group": 5,
+      "tags": ["test-repeat-between-words"],
+      "items": [
+        {"word":"大人","pinyin":"dàrén","english":"adult","id":1,"tags":[]},
+        {"word":"人口","pinyin":"rénkǒu","english":"population","id":2,"tags":[]},
+        {"word":"口水","pinyin":"kǒushuǐ","english":"saliva","id":3,"tags":[]}
+      ]
     }
   ]
 }
