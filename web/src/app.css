@@ -514,6 +514,7 @@ select:focus {
 .compact-main {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.75rem;
 }
 
@@ -525,18 +526,17 @@ select:focus {
 .compact-passes {
   font-weight: 600;
   color: var(--accent);
-  font-size: 1rem;
+  font-size: 0.85rem;
 }
 
 .compact-date {
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .compact-actions {
   display: flex;
   gap: 0.35rem;
-  margin-left: auto;
 }
 
 .compact-icon {
@@ -875,6 +875,10 @@ select:focus {
 
   .hero-top {
     gap: 1rem;
+  }
+
+  .compact-icon-workbook {
+    display: none;
   }
 }
 

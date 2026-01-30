@@ -242,6 +242,7 @@
       <p class="session-title">Session complete</p>
       <p class="session-detail">{practicedCount} practiced &middot; {skippedCount} skipped</p>
       <button type="button" class="btn-restart" onclick={restartSession}>Restart</button>
+      <button type="button" class="btn-groups" onclick={() => window.location.href = backUrl}>Groups</button>
     </div>
   {/if}
 
@@ -551,6 +552,23 @@
   }
 
   .btn-restart:hover {
+    opacity: 0.9;
+  }
+
+  .btn-groups {
+    margin-top: 0.75rem;
+    border: 1px solid #b8b8b8;
+    background: #b8b8b8;
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.5rem 1.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+  }
+
+  .btn-groups:hover {
     opacity: 0.9;
   }
 
