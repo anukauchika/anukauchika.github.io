@@ -1,7 +1,7 @@
 <script>
   import { datasets, datasetId, currentDataset } from './state/registry.js'
   import { loadDatasetStats, datasetStats, loadDatasetGroupSessions, datasetGroupSessions } from './state/practice-stats.js'
-  import { mainSearch, mainTags, mainGroup, loadMainFilters } from './state/filters.js'
+  import { mainSearch, mainTags, mainGroup, mainCompact, loadMainFilters } from './state/filters.js'
   import { formatGroup } from './utils/format.js'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
   import GroupItemEnglish from './kind/english/GroupItem.svelte'
@@ -37,6 +37,12 @@
   let tagQuery = $state('')
   let showSuggestions = $state(false)
   let highlightedIndex = $state(0)
+  
+  const formatDate = (isoString) => {
+    if (!isoString) return ''
+    const date = new Date(isoString)
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
 
   const suggestions = $derived.by(() => {
     const q = tagQuery.trim().toLowerCase()
@@ -220,10 +226,10 @@
         {/if}
       </div>
       <div class="stats">
-        <a href={`${basePath}/groups.html`} class="stat-link">
+        <div>
           <span class="stat-label">Groups</span>
           <span class="stat-value">{groupCount}</span>
-        </a>
+        </div>
         <div>
           <span class="stat-label">Words</span>
           <span class="stat-value">{totalCount}</span>
@@ -290,13 +296,60 @@
           {/each}
         </select>
       </label>
+
+      <label class="view-toggle">
+        <span>View</span>
+        <div class="view-buttons">
+          <button type="button" class:active={!$mainCompact} onclick={() => $mainCompact = false} title="Grid view">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          </button>
+          <button type="button" class:active={$mainCompact} onclick={() => $mainCompact = true} title="List view">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+        </div>
+      </label>
     </div>
   </header>
 
-  <section class="groups">
+  <section class="groups" class:compact={$mainCompact}>
     {#if filteredGroups.length === 0}
       <div class="empty">
         <p>No matches. Try clearing filters or searching a different term.</p>
+      </div>
+    {:else if $mainCompact}
+      <div class="compact-list">
+        {#each filteredGroups as group (group.group)}
+          {@const gs = $datasetGroupSessions.get(group.group)}
+          <article class="compact-row">
+            <div class="compact-main">
+              <span class="compact-gid">{formatGroup(group.group)}</span>
+              <span class="compact-passes">{#if gs}[{gs.full} of {gs.total}]{/if}</span>
+              <span class="compact-date">{#if gs}{formatDate(gs.lastFullSessionAt)}{/if}</span>
+              <span class="compact-actions">
+                {#if $currentDataset?.kind === 'chinese'}
+                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}`} title="Practice">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                  </a>
+                {/if}
+                <a class="compact-icon" href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}`} target="_blank" rel="noreferrer" title="Workbook">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                </a>
+                <a class="compact-icon" href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}&autoprint=1`} target="_blank" rel="noreferrer" title="Print workbook">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                </a>
+              </span>
+            </div>
+            {#if group.tags?.length}
+              <div class="compact-tags">
+                {#each group.tags as tag}<span class="compact-tag">#{tag}</span>{/each}
+              </div>
+            {/if}
+            <div class="compact-progress">
+              <div class="compact-progress-words" style="width: {getGroupProgress(group)}%"></div>
+              <div class="compact-progress-mastery" style="width: {getGroupMastery(group)}%"></div>
+            </div>
+          </article>
+        {/each}
       </div>
     {:else}
       {#each filteredGroups as group (group.group)}

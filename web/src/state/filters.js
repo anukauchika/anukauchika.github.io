@@ -1,42 +1,10 @@
 import { writable } from 'svelte/store'
 import { filtersApi } from '../api/filters.js'
 
-// ============ Groups page ============
-export const groupsSelectedTags = writable([])
-
-let groupsDatasetId = null
-
-export async function loadGroupsTags(datasetId) {
-  groupsDatasetId = datasetId
-  const tags = await filtersApi.getGroupsTags(datasetId)
-  groupsSelectedTags.set(tags)
-}
-
-export async function addGroupsTag(tag) {
-  groupsSelectedTags.update((tags) => {
-    if (tags.includes(tag)) return tags
-    const next = [...tags, tag]
-    if (groupsDatasetId) {
-      filtersApi.setGroupsTags(groupsDatasetId, next)
-    }
-    return next
-  })
-}
-
-export async function removeGroupsTag(tag) {
-  groupsSelectedTags.update((tags) => {
-    const next = tags.filter((t) => t !== tag)
-    if (groupsDatasetId) {
-      filtersApi.setGroupsTags(groupsDatasetId, next)
-    }
-    return next
-  })
-}
-
-// ============ Main page ============
 export const mainSearch = writable('')
 export const mainTags = writable([])
 export const mainGroup = writable('all')
+export const mainCompact = writable(false)
 
 let mainDatasetId = null
 let initialized = false
@@ -48,6 +16,7 @@ export async function loadMainFilters(datasetId) {
   mainSearch.set(filters.search)
   mainTags.set(filters.tags)
   mainGroup.set(filters.group)
+  mainCompact.set(filters.compact)
   initialized = true
 }
 
@@ -67,5 +36,11 @@ mainTags.subscribe((value) => {
 mainGroup.subscribe((value) => {
   if (initialized && mainDatasetId) {
     filtersApi.setMainGroup(mainDatasetId, value)
+  }
+})
+
+mainCompact.subscribe((value) => {
+  if (initialized && mainDatasetId) {
+    filtersApi.setMainCompact(mainDatasetId, value)
   }
 })
