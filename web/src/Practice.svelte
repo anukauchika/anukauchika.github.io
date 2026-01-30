@@ -1,7 +1,6 @@
 <script>
   import { onMount } from 'svelte'
   import { datasetId, currentDataset, setDatasetById } from './state/registry.js'
-  import { formatGroup } from './utils/format.js'
   import { loadDatasetGroupSessions, datasetGroupSessions } from './state/practice-stats.js'
   import PracticeChinese from './kind/chinese/Practice.svelte'
 
@@ -26,28 +25,15 @@
     activeGroup ? $datasetGroupSessions.get(activeGroup.group) : null
   )
 
-  const getInitialGroup = () => {
+  const groupId = $derived.by(() => {
     const value = Number(getSearchParams().get('group'))
     return Number.isFinite(value) && value > 0 ? value : 1
-  }
-
-  let groupFilter = $state(getInitialGroup())
-  const groups = $derived.by(() => $currentDataset?.data?.groups ?? [])
-
-  const updateUrl = () => {
-    if (typeof window === 'undefined') return
-    const url = new URL(window.location.href)
-    url.searchParams.set('group', String(groupFilter))
-    if ($datasetId) url.searchParams.set('dataset', $datasetId)
-    window.history.replaceState({}, '', url)
-  }
-
-  $effect(() => {
-    updateUrl()
   })
 
+  const groups = $derived.by(() => $currentDataset?.data?.groups ?? [])
+
   const activeGroup = $derived.by(() =>
-    groups.find((g) => g.group === Number(groupFilter)) || groups[0]
+    groups.find((g) => g.group === groupId) || groups[0]
   )
 
   const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || ''
@@ -56,21 +42,10 @@
 
 <main>
   {#if activeGroup}
-    <PracticeChinese group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} />
+    <PracticeChinese group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} backUrl="{basePath ?? baseUrl}/?dataset={$datasetId}" />
   {/if}
 
   <header class="practice-header">
-    <div class="header-top">
-      <a class="back-link" href="{basePath ?? baseUrl}/?dataset={$datasetId}">Back</a>
-      <label class="group-picker">
-        Group
-        <select bind:value={groupFilter}>
-          {#each groups as g}
-            <option value={g.group}>{formatGroup(g.group)}</option>
-          {/each}
-        </select>
-      </label>
-    </div>
     <h1>Stroke Practice</h1>
     {#if activeGroup}
       <div class="group-meta">
@@ -97,64 +72,25 @@
 
   .practice-header {
     background: var(--card);
-    padding: 2rem 2.5rem;
-    border-radius: 28px;
+    padding: 1.5rem 2rem;
+    border-radius: 20px;
     box-shadow: var(--shadow);
     border: 1px solid rgba(31, 111, 92, 0.08);
-  }
-
-  .back-link {
-    text-decoration: none;
-    color: var(--accent);
-    font-weight: 600;
-    font-size: 0.9rem;
-  }
-
-  .back-link:hover {
-    text-decoration: underline;
+    text-align: center;
   }
 
   h1 {
     font-family: var(--font-serif);
-    font-size: 2.2rem;
-    margin: 0.5rem 0;
-    text-align: center;
-  }
-
-  .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-
-  .group-picker {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    color: var(--muted);
-  }
-
-  select {
-    border: 1px solid rgba(31, 111, 92, 0.3);
-    background: #fffdf7;
-    padding: 0.75rem 1rem;
-    border-radius: 12px;
-    font-size: 1rem;
-    color: var(--ink);
-    outline: none;
-  }
-
-  select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(31, 111, 92, 0.2);
+    font-size: 1.8rem;
+    margin: 0 0 0.5rem;
   }
 
   .group-meta {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
+    flex-wrap: wrap;
   }
 
   .group-tags {

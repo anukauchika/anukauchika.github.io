@@ -100,6 +100,20 @@ h1 {
   display: block;
 }
 
+.stat-link {
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease;
+}
+
+.stat-link:hover {
+  transform: translateY(-2px);
+}
+
+.stat-link:hover .stat-label {
+  color: var(--accent);
+}
+
 .progress-bar {
   height: 4px;
   background: rgba(31, 111, 92, 0.12);

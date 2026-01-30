@@ -170,10 +170,10 @@
         {/if}
       </div>
       <div class="stats">
-        <div>
+        <a href={`${basePath}/groups.html`} class="stat-link">
           <span class="stat-label">Groups</span>
           <span class="stat-value">{groupCount}</span>
-        </div>
+        </a>
         <div>
           <span class="stat-label">Words</span>
           <span class="stat-value">{totalCount}</span>

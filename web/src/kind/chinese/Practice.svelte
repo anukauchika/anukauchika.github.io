@@ -3,7 +3,7 @@
   import HanziWriter from 'hanzi-writer'
   import { recordSuccess, recordGroupSession, loadGroupStats, groupStats } from '../../state/practice-stats.js'
 
-  let { group, datasetId, translationField } = $props()
+  let { group, datasetId, translationField, backUrl } = $props()
   const practiceType = 'stroke'
 
   const rawItems = $derived.by(() => group?.items ?? [])
@@ -188,6 +188,9 @@
 <div class="practice-container">
   {#if currentItem && !sessionDone}
     <div class="quiz-area">
+      <a class="close-btn" href={backUrl} title="Back">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </a>
       {#if currentStat}
         <span class="quiz-count" title="Times practiced">{currentStat.successCount}x</span>
       {/if}
@@ -347,10 +350,29 @@
     gap: 1.2rem;
   }
 
+  .close-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    color: var(--muted);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .close-btn:hover {
+    background: rgba(31, 111, 92, 0.1);
+    color: var(--ink);
+  }
+
   .quiz-count {
     position: absolute;
     top: 1rem;
-    right: 1.2rem;
+    left: 1.2rem;
     font-size: 0.8rem;
     font-weight: 700;
     color: var(--accent);
