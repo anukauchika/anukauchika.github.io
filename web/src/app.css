@@ -132,7 +132,7 @@ h1 {
 
 .controls {
   display: grid;
-  grid-template-columns: 1.4fr 0.8fr auto;
+  grid-template-columns: 1fr 1fr 0.6fr;
   gap: 1.2rem;
   margin-top: 2rem;
 }
@@ -162,49 +162,102 @@ select:focus {
   box-shadow: 0 0 0 3px rgba(31, 111, 92, 0.2);
 }
 
-.reset {
-  align-self: end;
-  padding: 0.8rem 1.4rem;
-  border-radius: 999px;
-  border: none;
-  background: var(--accent);
-  color: #fffdf7;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.reset:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 20px rgba(31, 111, 92, 0.25);
-}
-
-.tag-row {
+.tag-input-wrap {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid rgba(31, 111, 92, 0.3);
+  background: #fffdf7;
+  padding: 0.4rem 0.6rem;
+  border-radius: 12px;
+  min-height: 46px;
 }
 
-.tag-row button {
-  border-radius: 999px;
-  border: 1px solid rgba(31, 111, 92, 0.25);
-  background: rgba(31, 111, 92, 0.08);
-  padding: 0.4rem 0.95rem;
-  cursor: pointer;
-  font-size: 0.85rem;
-  color: var(--ink);
-  transition: all 0.2s ease;
+.tags-filter {
+  min-width: 0;
 }
 
-.tag-row button:hover {
-  background: rgba(31, 111, 92, 0.16);
-}
-
-.tag-row button.active {
+.selected-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
   background: var(--accent);
   color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.selected-tag button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.selected-tag button:hover {
+  opacity: 1;
+}
+
+.autocomplete {
+  position: relative;
+  flex: 1;
+  min-width: 80px;
+}
+
+.autocomplete input {
+  border: none;
+  background: transparent;
+  padding: 0.3rem 0.4rem;
+  font-size: 0.95rem;
+  color: var(--ink);
+  outline: none;
+  width: 100%;
+}
+
+.tag-input-wrap:focus-within {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(31, 111, 92, 0.2);
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--card);
+  border: 1px solid rgba(31, 111, 92, 0.2);
+  border-radius: 10px;
+  margin-top: 0.25rem;
+  padding: 0.3rem;
+  list-style: none;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.suggestions li button {
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.45rem 0.7rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--ink);
+  border-radius: 6px;
+}
+
+.suggestions li button:hover,
+.suggestions li button.highlighted {
+  background: rgba(31, 111, 92, 0.1);
 }
 
 .groups {

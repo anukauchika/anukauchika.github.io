@@ -25,17 +25,25 @@
 
   let tagQuery = $state('')
   let showSuggestions = $state(false)
+  let highlightedIndex = $state(0)
 
   const suggestions = $derived.by(() => {
-    if (!tagQuery.trim()) return []
-    const q = tagQuery.toLowerCase()
-    return allTags.filter((t) => t.toLowerCase().includes(q) && !$groupsSelectedTags.includes(t))
+    const q = tagQuery.trim().toLowerCase()
+    return allTags.filter((t) =>
+      (!q || t.toLowerCase().includes(q)) && !$groupsSelectedTags.includes(t)
+    )
+  })
+
+  $effect(() => {
+    suggestions
+    highlightedIndex = 0
   })
 
   const addTag = (tag) => {
     addGroupsTag(tag)
     tagQuery = ''
     showSuggestions = false
+    highlightedIndex = 0
   }
 
   const removeTag = (tag) => {
@@ -43,9 +51,15 @@
   }
 
   const handleKeydown = (e) => {
-    if (e.key === 'Enter' && suggestions.length > 0) {
+    if (e.key === 'ArrowDown') {
       e.preventDefault()
-      addTag(suggestions[0])
+      highlightedIndex = Math.min(highlightedIndex + 1, suggestions.length - 1)
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      highlightedIndex = Math.max(highlightedIndex - 1, 0)
+    } else if (e.key === 'Enter' && suggestions.length > 0) {
+      e.preventDefault()
+      addTag(suggestions[highlightedIndex])
     } else if (e.key === 'Backspace' && tagQuery === '' && $groupsSelectedTags.length > 0) {
       removeTag($groupsSelectedTags[$groupsSelectedTags.length - 1])
     } else if (e.key === 'Escape') {
@@ -117,8 +131,8 @@
     </div>
     {#if allTags.length > 0}
       <div class="tag-input-wrap">
-        {#each $groupsSelectedTags as tag}
-          <span class="selected-tag">#{tag}<button type="button" onclick={() => removeTag(tag)}>&times;</button></span>
+        {#each $groupsSelectedTags as tag (tag)}
+          <span class="selected-tag">#{tag}<button type="button" onmousedown={(e) => { e.preventDefault(); e.stopPropagation(); removeTag(tag) }}>&times;</button></span>
         {/each}
         <div class="autocomplete">
           <input
@@ -127,12 +141,13 @@
             bind:value={tagQuery}
             onfocus={() => showSuggestions = true}
             onblur={() => setTimeout(() => showSuggestions = false, 150)}
+            oninput={() => showSuggestions = true}
             onkeydown={handleKeydown}
           />
           {#if showSuggestions && suggestions.length > 0}
             <ul class="suggestions">
-              {#each suggestions as tag}
-                <li><button type="button" onmousedown={() => addTag(tag)}>#{tag}</button></li>
+              {#each suggestions as tag, i}
+                <li><button type="button" class:highlighted={i === highlightedIndex} onmousedown={() => addTag(tag)}>#{tag}</button></li>
               {/each}
             </ul>
           {/if}
@@ -336,7 +351,8 @@
     border-radius: 4px;
   }
 
-  .suggestions li button:hover {
+  .suggestions li button:hover,
+  .suggestions li button.highlighted {
     background: rgba(31, 111, 92, 0.1);
   }
 

@@ -1,6 +1,7 @@
 <script>
   import { datasets, datasetId, currentDataset } from './state/registry.js'
   import { loadDatasetStats, datasetStats, loadDatasetGroupSessions, datasetGroupSessions } from './state/practice-stats.js'
+  import { mainSearch, mainTags, mainGroup, loadMainFilters } from './state/filters.js'
   import { formatGroup } from './utils/format.js'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
   import GroupItemEnglish from './kind/english/GroupItem.svelte'
@@ -18,6 +19,7 @@
     if ($datasetId) {
       loadDatasetStats($datasetId, practiceType)
       loadDatasetGroupSessions($datasetId, practiceType)
+      loadMainFilters($datasetId)
     }
   })
 
@@ -30,22 +32,52 @@
     return Array.from(tagSet).sort()
   })
 
-  let query = $state('')
-  let selectedTags = $state([])
-  let groupFilter = $state('all')
   let activeWord = $state(null)
   let modalOpen = $state(false)
+  let tagQuery = $state('')
+  let showSuggestions = $state(false)
+  let highlightedIndex = $state(0)
 
-  const toggleTag = (tag) => {
-    selectedTags = selectedTags.includes(tag)
-      ? selectedTags.filter((t) => t !== tag)
-      : [...selectedTags, tag]
+  const suggestions = $derived.by(() => {
+    const q = tagQuery.trim().toLowerCase()
+    return allTags.filter((t) =>
+      (!q || t.toLowerCase().includes(q)) && !$mainTags.includes(t)
+    )
+  })
+
+  $effect(() => {
+    suggestions
+    highlightedIndex = 0
+  })
+
+  const addTag = (tag) => {
+    if (!$mainTags.includes(tag)) {
+      $mainTags = [...$mainTags, tag]
+    }
+    tagQuery = ''
+    showSuggestions = false
+    highlightedIndex = 0
   }
 
-  const resetFilters = () => {
-    query = ''
-    selectedTags = []
-    groupFilter = 'all'
+  const removeTag = (tag) => {
+    $mainTags = $mainTags.filter((t) => t !== tag)
+  }
+
+  const handleTagKeydown = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      highlightedIndex = Math.min(highlightedIndex + 1, suggestions.length - 1)
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      highlightedIndex = Math.max(highlightedIndex - 1, 0)
+    } else if (e.key === 'Enter' && suggestions.length > 0) {
+      e.preventDefault()
+      addTag(suggestions[highlightedIndex])
+    } else if (e.key === 'Backspace' && tagQuery === '' && $mainTags.length > 0) {
+      removeTag($mainTags[$mainTags.length - 1])
+    } else if (e.key === 'Escape') {
+      showSuggestions = false
+    }
   }
 
   const normalize = (value) =>
@@ -55,7 +87,7 @@
       .replace(/[\u0300-\u036f]/g, '')
 
   const matchesQuery = (item) => {
-    const q = query.trim()
+    const q = $mainSearch.trim()
     if (!q) return true
 
     const searchFields = $currentDataset?.data?.search || []
@@ -70,14 +102,14 @@
   }
 
   const matchesTags = (item) => {
-    if (selectedTags.length === 0) return true
+    if ($mainTags.length === 0) return true
     const tags = item.tags || []
-    return selectedTags.every((t) => tags.includes(t))
+    return $mainTags.every((t) => tags.includes(t))
   }
 
   const matchesGroup = (groupId) => {
-    if (groupFilter === 'all') return true
-    return Number(groupFilter) === groupId
+    if ($mainGroup === 'all') return true
+    return Number($mainGroup) === groupId
   }
 
   const openWord = (item) => {
@@ -91,8 +123,8 @@
   }
 
   $effect(() => {
-    if (!groups.some((g) => g.group === Number(groupFilter))) {
-      groupFilter = 'all'
+    if ($mainGroup !== 'all' && !groups.some((g) => g.group === Number($mainGroup))) {
+      $mainGroup = 'all'
     }
   })
 
@@ -116,14 +148,32 @@
       })
   })
 
-  const practicedCount = $derived.by(() => $datasetStats.size)
+  const groupCount = $derived.by(() => filteredGroups.length)
   const totalCount = $derived.by(() =>
-    groups.reduce((sum, g) => sum + g.items.length, 0)
-  )
-  const filteredCount = $derived.by(() =>
     filteredGroups.reduce((sum, g) => sum + g.items.length, 0)
   )
-  const groupCount = $derived.by(() => groups.length)
+  const uniqueChars = $derived.by(() => {
+    const chars = new Set()
+    const isCJK = (c) => c >= '\u4E00' && c <= '\u9FFF'
+    filteredGroups.forEach((g) => {
+      g.items.forEach((item) => {
+        const word = item.word || ''
+        for (const char of word) {
+          if (isCJK(char)) chars.add(char)
+        }
+      })
+    })
+    return chars.size
+  })
+  const practicedCount = $derived.by(() => {
+    let count = 0
+    filteredGroups.forEach((g) => {
+      g.items.forEach((item) => {
+        if ($datasetStats.has(`${g.group}::${item.id}`)) count++
+      })
+    })
+    return count
+  })
   const datasetProgress = $derived.by(() =>
     totalCount > 0 ? Math.round((practicedCount / totalCount) * 100) : 0
   )
@@ -179,8 +229,8 @@
           <span class="stat-value">{totalCount}</span>
         </div>
         <div>
-          <span class="stat-label">Shown</span>
-          <span class="stat-value">{filteredCount}</span>
+          <span class="stat-label">Chars</span>
+          <span class="stat-value">{uniqueChars}</span>
         </div>
         <div>
           <span class="stat-label">Practiced</span>
@@ -198,33 +248,48 @@
         <input
           type="search"
           placeholder="word, pinyin, English, tags"
-          bind:value={query}
+          bind:value={$mainSearch}
         />
       </label>
 
+      {#if allTags.length > 0}
+        <label class="tags-filter">
+          <span>Tags</span>
+          <div class="tag-input-wrap">
+            {#each $mainTags as tag (tag)}
+              <span class="selected-tag">#{tag}<button type="button" onmousedown={(e) => { e.preventDefault(); e.stopPropagation(); removeTag(tag) }}>&times;</button></span>
+            {/each}
+            <div class="autocomplete">
+              <input
+                type="text"
+                placeholder="Filter..."
+                bind:value={tagQuery}
+                onfocus={() => showSuggestions = true}
+                onblur={() => setTimeout(() => showSuggestions = false, 150)}
+                oninput={() => showSuggestions = true}
+                onkeydown={handleTagKeydown}
+              />
+              {#if showSuggestions && suggestions.length > 0}
+                <ul class="suggestions">
+                  {#each suggestions as tag, i}
+                    <li><button type="button" class:highlighted={i === highlightedIndex} onmousedown={() => addTag(tag)}>#{tag}</button></li>
+                  {/each}
+                </ul>
+              {/if}
+            </div>
+          </div>
+        </label>
+      {/if}
+
       <label class="group">
         <span>Group</span>
-        <select bind:value={groupFilter}>
+        <select bind:value={$mainGroup}>
           <option value="all">All groups</option>
           {#each groups as g}
             <option value={g.group}>{formatGroup(g.group)}</option>
           {/each}
         </select>
       </label>
-
-      <button class="reset" type="button" onclick={resetFilters}>Reset</button>
-    </div>
-
-    <div class="tag-row">
-      {#each allTags as tag}
-        <button
-          type="button"
-          class:active={selectedTags.includes(tag)}
-          onclick={() => toggleTag(tag)}
-        >
-          #{tag}
-        </button>
-      {/each}
     </div>
   </header>
 
