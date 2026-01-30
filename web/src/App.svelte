@@ -1,6 +1,6 @@
 <script>
   import { datasets, datasetId, currentDataset } from './state/registry.js'
-  import { loadDatasetStats, datasetStats, loadDatasetGroupSessions, datasetGroupSessions } from './state/practice-stats.js'
+  import { loadDatasetStats, datasetStats, loadDatasetGroupSessions, datasetGroupSessions, dailyActivity, loadDailyActivity } from './state/practice-stats.js'
   import { mainSearch, mainTags, mainGroup, mainCompact, loadMainFilters } from './state/filters.js'
   import { formatGroup } from './utils/format.js'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
@@ -15,12 +15,28 @@
   // TODO: when multiple practice types exist, aggregate or let user pick
   const practiceType = 'stroke'
 
-  $effect(() => {
+  const reloadStats = () => {
     if ($datasetId) {
       loadDatasetStats($datasetId, practiceType)
       loadDatasetGroupSessions($datasetId, practiceType)
+      loadDailyActivity($datasetId, practiceType)
+    }
+  }
+
+  $effect(() => {
+    if ($datasetId) {
+      reloadStats()
       loadMainFilters($datasetId)
     }
+  })
+
+  // Reload stats when returning to the page (e.g., after practicing)
+  $effect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') reloadStats()
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
   })
 
   const allTags = $derived.by(() => {
@@ -194,6 +210,88 @@
     const fullSessions = gs?.full ?? 0
     return Math.min(Math.round((fullSessions / 5) * 100), 100)
   }
+
+  // Activity line: practice activity with fixed 0-50 gradation
+  const ACTIVITY_MAX = 50
+  const CELL_SIZE = 10
+  const CELL_GAP = 3
+  const FUTURE_DAYS_DESKTOP = 10
+  const FUTURE_DAYS_MOBILE = 3
+
+  let activityContainer = $state(null)
+  let totalCells = $state(60)
+  let futureDays = $state(FUTURE_DAYS_DESKTOP)
+  let selectedDay = $state(null)
+  let dayCounts = $state(new Map())
+
+  // Sync store to reactive state
+  $effect(() => {
+    return dailyActivity.subscribe(value => {
+      dayCounts = value
+    })
+  })
+
+  $effect(() => {
+    if (!activityContainer) return
+    const updateCells = () => {
+      const isMobile = window.innerWidth <= 600
+      futureDays = isMobile ? FUTURE_DAYS_MOBILE : FUTURE_DAYS_DESKTOP
+      const width = activityContainer.offsetWidth
+      totalCells = Math.floor((width + CELL_GAP) / (CELL_SIZE + CELL_GAP))
+    }
+    updateCells()
+    const observer = new ResizeObserver(updateCells)
+    observer.observe(activityContainer)
+    return () => observer.disconnect()
+  })
+
+  // Helper to format date as YYYY-MM-DD in local timezone
+  const toLocalDateKey = (date) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  const activityData = $derived.by(() => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const pastDays = totalCells - futureDays
+
+    const days = []
+    // Past days (including today)
+    for (let i = pastDays - 1; i >= 0; i--) {
+      const d = new Date(today)
+      d.setDate(d.getDate() - i)
+      const key = toLocalDateKey(d)
+      const count = dayCounts.get(key) || 0
+      let level = 0
+      if (count > 0) {
+        level = Math.min(4, Math.ceil((count / ACTIVITY_MAX) * 4))
+      }
+      days.push({
+        date: key,
+        count,
+        level,
+        isFuture: false,
+        label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      })
+    }
+    // Future days
+    for (let i = 1; i <= futureDays; i++) {
+      const d = new Date(today)
+      d.setDate(d.getDate() + i)
+      const key = toLocalDateKey(d)
+      days.push({
+        date: key,
+        count: 0,
+        level: 0,
+        isFuture: true,
+        label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      })
+    }
+    return days
+  })
 </script>
 
 <main>
@@ -247,6 +345,28 @@
     <div class="progress-bar">
       <div class="progress-fill" style="width: {datasetProgress}%"></div>
     </div>
+
+    <div class="activity-line" bind:this={activityContainer}>
+      {#each activityData as day}
+        <button
+          type="button"
+          class="activity-cell"
+          class:future={day.isFuture}
+          class:selected={selectedDay?.date === day.date}
+          data-level={day.level}
+          title="{day.label}{day.isFuture ? '' : `: ${day.count} word${day.count !== 1 ? 's' : ''}`}"
+          onclick={() => selectedDay = selectedDay?.date === day.date ? null : day}
+        ></button>
+      {/each}
+    </div>
+    {#if selectedDay}
+      <div class="activity-info">
+        <span class="activity-info-date">{selectedDay.label}</span>
+        {#if !selectedDay.isFuture}
+          <span class="activity-info-count">{selectedDay.count} word{selectedDay.count !== 1 ? 's' : ''}</span>
+        {/if}
+      </div>
+    {/if}
 
     <div class="controls">
       <label class="search">

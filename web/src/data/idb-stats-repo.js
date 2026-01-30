@@ -1,5 +1,5 @@
 const DB_NAME = 'memris-stats'
-const DB_VERSION = 3
+const DB_VERSION = 4
 const STATS_STORE = 'word_stats'
 const LOG_STORE = 'practice_log'
 const SESSION_STORE = 'group_sessions'
@@ -24,14 +24,18 @@ function openDb() {
 
         const log = db.createObjectStore(LOG_STORE, { keyPath: 'id', autoIncrement: true })
         log.createIndex('word_key', ['datasetId', 'practiceType', 'groupId', 'wordId'], { unique: false })
+        log.createIndex('dataset_type', ['datasetId', 'practiceType'], { unique: false })
 
         const sessions = db.createObjectStore(SESSION_STORE, { keyPath: 'id', autoIncrement: true })
         sessions.createIndex('dataset_type', ['datasetId', 'practiceType'], { unique: false })
         sessions.createIndex('dataset_type_group', ['datasetId', 'practiceType', 'groupId'], { unique: false })
       }
 
-      // Future migrations go here:
-      // if (oldVersion < 4) { ... }
+      // v4: add dataset_type index to practice_log for activity queries
+      if (oldVersion < 4 && oldVersion >= 3) {
+        const logStore = e.target.transaction.objectStore(LOG_STORE)
+        logStore.createIndex('dataset_type', ['datasetId', 'practiceType'], { unique: false })
+      }
     }
     req.onsuccess = () => resolve(req.result)
     req.onerror = () => reject(req.error)
@@ -58,11 +62,15 @@ export function createIdbStatsRepo() {
       const now = new Date().toISOString()
       const key = makeKey(datasetId, practiceType, groupId, wordId)
 
-      const tx = db.transaction([STATS_STORE, LOG_STORE], 'readwrite')
-      const statsStore = tx.objectStore(STATS_STORE)
-      const logStore = tx.objectStore(LOG_STORE)
+      // Use separate transactions to avoid auto-commit issues with async/await
+      // First, get existing stat
+      const existing = await new Promise((resolve, reject) => {
+        const tx = db.transaction(STATS_STORE, 'readonly')
+        const req = tx.objectStore(STATS_STORE).get(key)
+        req.onsuccess = () => resolve(req.result)
+        req.onerror = () => reject(req.error)
+      })
 
-      const existing = await reqToPromise(statsStore.get(key))
       const record = existing || {
         key,
         datasetId,
@@ -75,10 +83,11 @@ export function createIdbStatsRepo() {
       record.successCount += 1
       record.lastPracticedAt = now
 
-      statsStore.put(record)
-      logStore.add({ datasetId, practiceType, groupId, wordId, practicedAt: now })
-
+      // Then write both in a single transaction
       await new Promise((resolve, reject) => {
+        const tx = db.transaction([STATS_STORE, LOG_STORE], 'readwrite')
+        tx.objectStore(STATS_STORE).put(record)
+        tx.objectStore(LOG_STORE).add({ datasetId, practiceType, groupId, wordId, practicedAt: now })
         tx.oncomplete = resolve
         tx.onerror = () => reject(tx.error)
       })
@@ -109,6 +118,19 @@ export function createIdbStatsRepo() {
       const store = db.transaction(LOG_STORE, 'readonly').objectStore(LOG_STORE)
       const index = store.index('word_key')
       return reqToPromise(index.getAll([datasetId, practiceType, groupId, wordId]))
+    },
+
+    async getDatasetPracticeLog(datasetId, practiceType) {
+      const db = await dbPromise
+      const store = db.transaction(LOG_STORE, 'readonly').objectStore(LOG_STORE)
+      // Try using index, fall back to scanning all records
+      if (store.indexNames.contains('dataset_type')) {
+        const index = store.index('dataset_type')
+        return reqToPromise(index.getAll([datasetId, practiceType]))
+      }
+      // Fallback: scan all records and filter
+      const all = await reqToPromise(store.getAll())
+      return all.filter(log => log.datasetId === datasetId && log.practiceType === practiceType)
     },
 
     async recordGroupSession(session) {

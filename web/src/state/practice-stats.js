@@ -17,6 +17,40 @@ export const datasetStats = writable(new Map())
 export const datasetGroupSessions = writable(new Map())
 
 /**
+ * Daily word practice counts: Map<dateString, count>
+ * Used for activity line visualization
+ */
+export const dailyActivity = writable(new Map())
+
+/**
+ * Load daily word practice counts for a dataset.
+ */
+// Convert Date to YYYY-MM-DD in local timezone
+function toLocalDateKey(date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+export async function loadDailyActivity(datasetId, practiceType) {
+  try {
+    const logs = await repo.getDatasetPracticeLog(datasetId, practiceType)
+    const dayMap = new Map()
+    for (const log of logs) {
+      if (log.practicedAt) {
+        // Convert UTC timestamp to local date
+        const dateKey = toLocalDateKey(new Date(log.practicedAt))
+        dayMap.set(dateKey, (dayMap.get(dateKey) || 0) + 1)
+      }
+    }
+    dailyActivity.set(dayMap)
+  } catch (err) {
+    console.error('Failed to load daily activity:', err)
+  }
+}
+
+/**
  * Load aggregate stats for a group into the reactive store.
  */
 export async function loadGroupStats(datasetId, practiceType, groupId) {
@@ -117,6 +151,13 @@ export async function recordSuccess(datasetId, practiceType, groupId, wordId) {
   datasetStats.update((map) => {
     const next = new Map(map)
     next.set(`${groupId}::${wordId}`, updated)
+    return next
+  })
+  // Update daily activity
+  const today = toLocalDateKey(new Date())
+  dailyActivity.update((map) => {
+    const next = new Map(map)
+    next.set(today, (next.get(today) || 0) + 1)
     return next
   })
 }
