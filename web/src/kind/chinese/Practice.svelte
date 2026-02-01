@@ -94,9 +94,14 @@
 
   const repeatWord = () => {
     clearDelay()
+    const wasZero = charIndex === 0
     charIndex = 0
     quizResult = null
-    initQuiz()
+    // Only call initQuiz directly for single-char words (charIndex already 0)
+    // Otherwise the $effect will handle it when charIndex changes
+    if (wasZero) {
+      initQuiz()
+    }
   }
 
   let writer = null
