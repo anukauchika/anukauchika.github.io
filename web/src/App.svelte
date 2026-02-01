@@ -129,6 +129,12 @@
     return $mainTags.every((t) => tags.includes(t))
   }
 
+  const matchesGroupTags = (group) => {
+    if ($mainTags.length === 0) return true
+    const tags = group.tags || []
+    return $mainTags.every((t) => tags.includes(t))
+  }
+
   const matchesGroup = (groupId) => {
     if ($mainGroup === 'all') return true
     return Number($mainGroup) === groupId
@@ -155,11 +161,14 @@
     const sessions = $datasetGroupSessions
     return groups
       .filter((g) => matchesGroup(g.group))
-      .map((g) => ({
-        ...g,
-        items: g.items.filter((item) => matchesQuery(item) && matchesTags(item)),
-      }))
-      .filter((g) => g.items.length > 0)
+      .map((g) => {
+        const groupMatches = matchesGroupTags(g)
+        const items = g.items.filter(
+          (item) => matchesQuery(item) && (groupMatches || matchesTags(item))
+        )
+        return { ...g, items, _groupMatches: groupMatches }
+      })
+      .filter((g) => g._groupMatches || g.items.length > 0)
       .sort((a, b) => {
         const sa = sessions.get(a.group)?.lastFullSessionAt ?? ''
         const sb = sessions.get(b.group)?.lastFullSessionAt ?? ''
@@ -171,6 +180,8 @@
   })
 
   const groupCount = $derived.by(() => filteredGroups.length)
+  const MAX_MAIN_GROUPS = 10
+  const fullViewGroups = $derived.by(() => filteredGroups.slice(0, MAX_MAIN_GROUPS))
   const totalCount = $derived.by(() =>
     filteredGroups.reduce((sum, g) => sum + g.items.length, 0)
   )
@@ -472,7 +483,7 @@
         {/each}
       </div>
     {:else}
-      {#each filteredGroups as group (group.group)}
+      {#each fullViewGroups as group (group.group)}
         {@const gs = $datasetGroupSessions.get(group.group)}
         <article class="group-card" style={`--delay:${group.group * 70}ms`}>
           <div class="group-header">
@@ -518,7 +529,7 @@
           </div>
 
           <div class="word-grid">
-            {#each group.items as item (item.word)}
+            {#each group.items as item (`${group.group}-${item.id}`)}
               {#if $currentDataset?.kind === 'chinese'}
                 <GroupItemChinese {item} stat={$datasetStats.get(`${group.group}::${item.id}`)} onclick={() => openWord(item)} />
               {:else if $currentDataset?.kind === 'english'}

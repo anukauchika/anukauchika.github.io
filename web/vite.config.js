@@ -9,6 +9,9 @@ export default defineConfig({
   plugins: [
     svelte(),
     VitePWA({
+      devOptions: {
+        enabled: false
+      },
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'],
       manifest: {

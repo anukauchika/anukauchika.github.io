@@ -1,4 +1,5 @@
 /* Shared design tokens and base styles */
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=block');
 
 :root {
   /* Colors */
@@ -38,6 +39,7 @@
   --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
   --font-chinese: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", "Heiti SC", "Noto Sans CJK SC", sans-serif;
+  --font-chinese-hw: "Ma Shan Zheng", "Noto Sans SC", "PingFang SC", sans-serif;
 }
 
 * {

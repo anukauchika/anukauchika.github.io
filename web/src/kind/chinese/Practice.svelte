@@ -19,6 +19,8 @@
   let showHint = $state(false)
   let hintManuallySet = $state(false)
   let showPinyin = $state(true)
+  let wordDelay = $state(null) // { startTime, duration }
+  let wordDelayProgress = $state(100)
 
   const currentItem = $derived.by(() => items[currentIndex] ?? null)
   const currentStat = $derived.by(() => currentItem ? $groupStats.get(currentItem.id) : null)
@@ -38,6 +40,63 @@
     utterance.lang = 'zh-CN'
     utterance.rate = 0.8
     speechSynthesis.speak(utterance)
+  }
+
+  let delayTimerId = null
+  let delayAnimationId = null
+  let delayCallback = null
+
+  const startDelay = (duration, onComplete) => {
+    clearDelay()
+    delayCallback = onComplete
+    const startTime = Date.now()
+    wordDelay = { startTime, duration }
+    wordDelayProgress = 100
+
+    const animate = () => {
+      const elapsed = Date.now() - startTime
+      const remaining = Math.max(0, 100 - (elapsed / duration) * 100)
+      wordDelayProgress = remaining
+      if (remaining > 0) {
+        delayAnimationId = requestAnimationFrame(animate)
+      }
+    }
+    delayAnimationId = requestAnimationFrame(animate)
+
+    delayTimerId = setTimeout(() => {
+      const callback = delayCallback
+      clearDelay()
+      callback()
+    }, duration)
+  }
+
+  const clearDelay = () => {
+    if (delayTimerId) {
+      clearTimeout(delayTimerId)
+      delayTimerId = null
+    }
+    if (delayAnimationId) {
+      cancelAnimationFrame(delayAnimationId)
+      delayAnimationId = null
+    }
+    delayCallback = null
+    wordDelay = null
+    wordDelayProgress = 100
+  }
+
+  const skipDelay = () => {
+    if (delayTimerId && delayCallback) {
+      const callback = delayCallback
+      clearDelay()
+      callback()
+    }
+  }
+
+  const repeatWord = () => {
+    clearDelay()
+    charIndex = 0
+    quizResult = null
+    initQuiz()
   }
 
   let writer = null
@@ -71,33 +130,34 @@
       showOutline: showHint,
       strokeAnimationSpeed: 1,
       delayBetweenStrokes: 100,
-      highlightOnComplete: true,
+      highlightOnComplete: false,
       drawingWidth: 20,
       leniency: 1.4,
       showHintAfterMisses: 2,
+      radicalColor: '#1f6f5c',
     })
 
     writer.quiz({
       onComplete: () => {
         if (charIndex < hanChars.length - 1) {
           // Move to next character in the word
-          setTimeout(() => {
+          startDelay(1500, () => {
             charIndex += 1
-          }, 1500)
+          })
         } else {
           // Completed all characters in this word
           completedWords = new Set([...completedWords, currentIndex])
           practicedCount += 1
+          quizResult = 'correct'
           const item = items[currentIndex]
           if (item) recordSuccess(datasetId, practiceType, group.group, item.id)
           if (currentIndex < items.length - 1) {
-            setTimeout(() => {
+            startDelay(5000, () => {
               currentIndex += 1
               charIndex = 0
               quizResult = null
-            }, 600)
+            })
           } else {
-            quizResult = 'correct'
             maybeFinishSession()
           }
         }
@@ -138,6 +198,7 @@
   })
 
   const skipWord = () => {
+    clearDelay()
     completedWords = new Set([...completedWords, currentIndex])
     skippedCount += 1
     if (currentIndex < items.length - 1) {
@@ -151,6 +212,7 @@
   }
 
   const restartSession = () => {
+    clearDelay()
     currentIndex = 0
     charIndex = 0
     completedWords = new Set()
@@ -164,6 +226,7 @@
   // Reset when group changes — sort once at session start
   $effect(() => {
     if (group) {
+      clearDelay()
       currentIndex = 0
       charIndex = 0
       completedWords = new Set()
@@ -210,9 +273,9 @@
           <span
             class="char-tab"
             class:active={idx === charIndex}
-            class:completed={idx < charIndex || quizResult === 'correct'}
+            class:completed={idx < charIndex || (idx === charIndex && wordDelay) || quizResult === 'correct'}
           >
-            {#if idx < charIndex || quizResult === 'correct'}
+            {#if idx < charIndex || (idx === charIndex && wordDelay) || quizResult === 'correct'}
               {char}
             {:else}
               &nbsp;
@@ -223,20 +286,31 @@
 
       <div class="canvas-wrapper">
         <div id="practice-canvas"></div>
+        {#if wordDelay}
+          <button type="button" class="delay-next-btn" onclick={skipDelay}>Next</button>
+          <button type="button" class="delay-bar-btn" onclick={skipDelay} title="Skip to next word">
+            <div class="delay-bar">
+              <div class="delay-fill" style="width: {wordDelayProgress}%"></div>
+            </div>
+          </button>
+        {/if}
       </div>
 
-      {#if !quizResult}
+      {#if !quizResult || wordDelay}
         <div class="skip-area">
           <button type="button" class="btn-icon" onclick={() => speak(currentItem.word)} title="Play audio">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
           </button>
           <button type="button" class="btn-toggle" class:active={showPinyin} onclick={() => showPinyin = !showPinyin}>Pinyin</button>
           <button type="button" class="btn-toggle" class:active={showHint} onclick={() => { hintManuallySet = true; showHint = !showHint; if (writer) showHint ? writer.showOutline() : writer.hideOutline() }}>Hint</button>
-          <button type="button" class="btn-skip" onclick={skipWord}>Skip</button>
+          {#if wordDelay}
+            <button type="button" class="btn-skip" onclick={repeatWord}>Repeat</button>
+          {:else}
+            <button type="button" class="btn-skip" onclick={skipWord}>Skip</button>
+          {/if}
         </div>
       {/if}
 
-      <span class="nav-pos">{currentIndex + 1} / {items.length}</span>
     </div>
   {/if}
 
@@ -252,7 +326,7 @@
   <div class="progress-bar">
     <div class="progress-fill" style="width: {progress}%"></div>
   </div>
-  <div class="progress-text">{completedWords.size} / {items.length} completed</div>
+  <div class="progress-text">{currentIndex + 1} / {items.length}</div>
 
   <div class="word-nav">
     {#each items as item, idx}
@@ -297,6 +371,7 @@
     text-align: center;
     font-size: 0.85rem;
     color: var(--muted);
+    margin-top: -1.25rem;
   }
 
   .word-nav {
@@ -419,9 +494,14 @@
   }
 
   .char-tab {
-    font-family: var(--font-chinese);
-    font-size: 1.6rem;
-    padding: 0.3rem 0.7rem;
+    font-family: var(--font-chinese-hw);
+    font-size: 3rem;
+    line-height: 1;
+    padding: 0.25rem;
+    min-width: 3.5rem;
+    min-height: 3.5rem;
+    display: grid;
+    place-items: center;
     border-radius: 10px;
     background: rgba(31, 111, 92, 0.06);
     color: var(--muted);
@@ -435,11 +515,12 @@
   }
 
   .char-tab.completed {
-    background: var(--accent-soft);
+    background: var(--accent);
     color: #fff;
   }
 
   .canvas-wrapper {
+    position: relative;
     width: 280px;
     height: 280px;
     background: #fff;
@@ -448,6 +529,50 @@
     display: grid;
     place-items: center;
     touch-action: none;
+  }
+
+  .delay-next-btn {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0.2rem 0.5rem;
+    opacity: 0.7;
+    transition: opacity 0.15s ease;
+  }
+
+  .delay-next-btn:hover {
+    opacity: 1;
+  }
+
+  .delay-bar-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    right: 20px;
+    padding: 4px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .delay-bar {
+    height: 2px;
+    background: rgba(31, 111, 92, 0.06);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .delay-fill {
+    height: 100%;
+    background: rgba(31, 111, 92, 0.25);
+    border-radius: 1px;
+    transition: width 16ms linear;
   }
 
   .skip-area {
@@ -511,13 +636,6 @@
 
   .btn-skip:hover {
     background: rgba(31, 111, 92, 0.06);
-  }
-
-  .nav-pos {
-    display: block;
-    text-align: center;
-    font-size: 0.9rem;
-    color: var(--muted);
   }
 
   .session-banner {
