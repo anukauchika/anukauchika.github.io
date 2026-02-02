@@ -494,9 +494,9 @@
         {/each}
       </div>
     {:else}
-      {#each fullViewGroups as group (group.group)}
+      {#each fullViewGroups as group, i (group.group)}
         {@const gs = $datasetGroupSessions.get(group.group)}
-        <article class="group-card" style={`--delay:${group.group * 70}ms`}>
+        <article class="group-card" style={`--delay:${i * 70}ms`}>
           <div class="group-header">
             <div class="group-tags">
               {#each group.tags as tag}
