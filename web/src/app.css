@@ -795,6 +795,23 @@ select:focus {
   border: 1px dashed rgba(31, 111, 92, 0.2);
 }
 
+.show-all-btn {
+  display: block;
+  margin: 0 auto;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.show-all-btn:hover {
+  text-decoration-thickness: 2px;
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;

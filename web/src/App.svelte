@@ -27,6 +27,7 @@
     if ($datasetId) {
       reloadStats()
       loadMainFilters($datasetId)
+      showAllGroups = false
     }
   })
 
@@ -53,6 +54,7 @@
   let tagQuery = $state('')
   let showSuggestions = $state(false)
   let highlightedIndex = $state(0)
+  let showAllGroups = $state(false)
   
   const formatDate = (isoString) => {
     if (!isoString) return ''
@@ -168,7 +170,12 @@
         )
         return { ...g, items, _groupMatches: groupMatches }
       })
-      .filter((g) => g._groupMatches || g.items.length > 0)
+      .filter((g) => {
+        const hasSearch = $mainSearch.trim().length > 0
+        // When searching, only show groups with matching items
+        if (hasSearch) return g.items.length > 0
+        return g._groupMatches || g.items.length > 0
+      })
       .sort((a, b) => {
         const sa = sessions.get(a.group)?.lastFullSessionAt ?? ''
         const sb = sessions.get(b.group)?.lastFullSessionAt ?? ''
@@ -181,7 +188,11 @@
 
   const groupCount = $derived.by(() => filteredGroups.length)
   const MAX_MAIN_GROUPS = 10
-  const fullViewGroups = $derived.by(() => filteredGroups.slice(0, MAX_MAIN_GROUPS))
+  const hasActiveSearch = $derived.by(() => $mainSearch.trim().length > 0)
+  const isLimited = $derived.by(() => !hasActiveSearch && !showAllGroups && filteredGroups.length > MAX_MAIN_GROUPS)
+  const fullViewGroups = $derived.by(() =>
+    hasActiveSearch || showAllGroups ? filteredGroups : filteredGroups.slice(0, MAX_MAIN_GROUPS)
+  )
   const totalCount = $derived.by(() =>
     filteredGroups.reduce((sum, g) => sum + g.items.length, 0)
   )
@@ -539,6 +550,11 @@
           </div>
         </article>
       {/each}
+      {#if isLimited}
+        <button type="button" class="show-all-btn" onclick={() => showAllGroups = true}>
+          Show all {filteredGroups.length} groups
+        </button>
+      {/if}
     {/if}
   </section>
 
