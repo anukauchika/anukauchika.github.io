@@ -34,6 +34,7 @@ main {
 }
 
 .hero {
+  position: relative;
   background: var(--card);
   padding: 2.5rem;
   border-radius: 28px;
@@ -444,11 +445,154 @@ select:focus {
   outline: none;
   min-width: 280px;
   cursor: pointer;
+  margin-left: auto;
 }
 
 .dataset-picker:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(31, 111, 92, 0.2);
+}
+
+.auth-section {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+}
+
+.auth-user {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.auth-avatar-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.auth-avatar-btn:hover {
+  opacity: 0.9;
+}
+
+.auth-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(31, 111, 92, 0.2);
+}
+
+.auth-avatar-fallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: -0.5px;
+}
+
+.auth-signout {
+  border: 1px solid rgba(31, 111, 92, 0.3);
+  background: #fffdf7;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.auth-signout:hover {
+  border-color: var(--accent);
+}
+
+.auth-signin {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.auth-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(31, 111, 92, 0.1);
+  border-radius: 50%;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.auth-icon-btn:hover {
+  background: rgba(31, 111, 92, 0.2);
+}
+
+.auth-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: var(--card);
+  border: 1px solid rgba(31, 111, 92, 0.15);
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+  min-width: 160px;
+}
+
+.auth-dropdown button {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.auth-dropdown button:hover {
+  background: rgba(31, 111, 92, 0.08);
+}
+
+.auth-dropdown button svg {
+  flex-shrink: 0;
+}
+
+.auth-dropdown-user {
+  display: flex;
+  flex-direction: column;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid rgba(31, 111, 92, 0.1);
+  margin-bottom: 0.3rem;
+}
+
+.auth-dropdown-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.auth-dropdown-email {
+  font-size: 0.8rem;
+  color: var(--muted);
 }
 
 .group-actions {
@@ -875,6 +1019,16 @@ select:focus {
   .dataset-picker {
     width: 100%;
   }
+
+  .auth-section {
+    position: absolute;
+    top: 1.8rem;
+    right: 2rem;
+  }
+
+  .auth-dropdown {
+    right: 0;
+  }
 }
 
 @media (max-width: 600px) {
@@ -903,6 +1057,7 @@ select:focus {
   display: flex;
   align-items: center;
   gap: 1rem;
+  min-height: 36px;
 }
 
 .github-link {
