@@ -5,7 +5,7 @@ import path from 'node:path'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/memris/',
+  base: '/',
   plugins: [
     svelte(),
     VitePWA({
@@ -15,14 +15,14 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'],
       manifest: {
-        name: 'Memris',
-        short_name: 'Memris',
-        description: 'Chinese characters with stroke writing practice, focused word groups, stats-driven spaced repetition, and progress tracking',
+        name: 'Anukauchika',
+        short_name: 'Anukauchika',
+        description: 'Vocabulary learning with stroke writing practice, focused word groups, stats-driven spaced repetition, and progress tracking',
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
-        scope: '/memris/',
-        start_url: '/memris/',
+        scope: '/',
+        start_url: '/',
         icons: [
           {
             src: 'icon-192.png',
