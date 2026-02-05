@@ -1,0 +1,226 @@
+const DB_NAME = 'memris-stats-v2'
+const DB_VERSION = 1
+const SESSIONS = 'group_sessions'
+const WORDS = 'word_attempts'
+const CHARS = 'char_logs'
+
+function openDb() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION)
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result
+
+      const sessions = db.createObjectStore(SESSIONS, { keyPath: 'id' })
+      sessions.createIndex('dataset_practice', ['dataset_id', 'practice_type'], { unique: false })
+      sessions.createIndex('synced', 'synced', { unique: false })
+
+      const words = db.createObjectStore(WORDS, { keyPath: 'id' })
+      words.createIndex('group_session_id', 'group_session_id', { unique: false })
+      words.createIndex('synced', 'synced', { unique: false })
+
+      const chars = db.createObjectStore(CHARS, { keyPath: ['word_attempt_id', 'char_index'] })
+      chars.createIndex('synced', 'synced', { unique: false })
+    }
+    req.onsuccess = () => resolve(req.result)
+    req.onerror = () => reject(req.error)
+  })
+}
+
+function req(request) {
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result)
+    request.onerror = () => reject(request.error)
+  })
+}
+
+function tx(transaction) {
+  return new Promise((resolve, reject) => {
+    transaction.oncomplete = resolve
+    transaction.onerror = () => reject(transaction.error)
+  })
+}
+
+const dbPromise = openDb()
+
+// --- Write ---
+
+export async function saveGroupSession(session) {
+  const db = await dbPromise
+  const t = db.transaction(SESSIONS, 'readwrite')
+  t.objectStore(SESSIONS).put(session)
+  await tx(t)
+}
+
+export async function saveWordAttempt(attempt) {
+  const db = await dbPromise
+  const t = db.transaction(WORDS, 'readwrite')
+  t.objectStore(WORDS).put(attempt)
+  await tx(t)
+}
+
+export async function saveCharLogs(chars) {
+  const db = await dbPromise
+  const t = db.transaction(CHARS, 'readwrite')
+  const store = t.objectStore(CHARS)
+  for (const c of chars) store.put(c)
+  await tx(t)
+}
+
+// --- Read ---
+
+export async function getGroupSessions(datasetId, practiceType) {
+  const db = await dbPromise
+  const store = db.transaction(SESSIONS, 'readonly').objectStore(SESSIONS)
+  return req(store.index('dataset_practice').getAll([datasetId, practiceType]))
+}
+
+export async function getWordAttempts(groupSessionId) {
+  const db = await dbPromise
+  const store = db.transaction(WORDS, 'readonly').objectStore(WORDS)
+  return req(store.index('group_session_id').getAll(groupSessionId))
+}
+
+export async function getCharLogs(wordAttemptId) {
+  const db = await dbPromise
+  const store = db.transaction(CHARS, 'readonly').objectStore(CHARS)
+  const range = IDBKeyRange.bound([wordAttemptId], [wordAttemptId, Infinity])
+  return req(store.getAll(range))
+}
+
+export async function getWordStats(datasetId, practiceType) {
+  const sessions = await getGroupSessions(datasetId, practiceType)
+  const sessionIds = new Set(sessions.map((s) => s.id))
+
+  const db = await dbPromise
+  const allWords = await req(db.transaction(WORDS, 'readonly').objectStore(WORDS).getAll())
+  const words = allWords.filter((w) => sessionIds.has(w.group_session_id))
+
+  // Aggregate: per (group_id, word_id) → { successCount, lastPracticedAt }
+  const stats = new Map()
+  for (const s of sessions) {
+    const sessionWords = words.filter((w) => w.group_session_id === s.id)
+    for (const w of sessionWords) {
+      const key = `${s.group_id}::${w.word_id}`
+      const existing = stats.get(key) || {
+        datasetId,
+        practiceType,
+        groupId: s.group_id,
+        wordId: w.word_id,
+        successCount: 0,
+        lastPracticedAt: null,
+      }
+      existing.successCount += 1
+      if (!existing.lastPracticedAt || w.done_at > existing.lastPracticedAt) {
+        existing.lastPracticedAt = w.done_at
+      }
+      stats.set(key, existing)
+    }
+  }
+  return [...stats.values()]
+}
+
+// --- Sync: get pending ---
+
+export async function getPendingSessions() {
+  const db = await dbPromise
+  const store = db.transaction(SESSIONS, 'readonly').objectStore(SESSIONS)
+  return req(store.index('synced').getAll(false))
+}
+
+export async function getPendingWordAttempts() {
+  const db = await dbPromise
+  const store = db.transaction(WORDS, 'readonly').objectStore(WORDS)
+  return req(store.index('synced').getAll(false))
+}
+
+export async function getPendingCharLogs() {
+  const db = await dbPromise
+  const store = db.transaction(CHARS, 'readonly').objectStore(CHARS)
+  return req(store.index('synced').getAll(false))
+}
+
+// --- Sync: mark synced ---
+
+export async function markSessionSynced(tempId, realId) {
+  const db = await dbPromise
+
+  // Read session, delete old key, write with real id
+  const readTx = db.transaction(SESSIONS, 'readonly')
+  const session = await req(readTx.objectStore(SESSIONS).get(tempId))
+  if (!session) return
+
+  const t = db.transaction([SESSIONS, WORDS], 'readwrite')
+  const sessionStore = t.objectStore(SESSIONS)
+  const wordStore = t.objectStore(WORDS)
+
+  sessionStore.delete(tempId)
+  sessionStore.put({ ...session, id: realId, synced: true })
+
+  // Update word_attempts that reference the temp session id
+  const wordIndex = wordStore.index('group_session_id')
+  const words = await req(wordIndex.getAll(tempId))
+  for (const w of words) {
+    wordStore.put({ ...w, group_session_id: realId })
+  }
+
+  await tx(t)
+}
+
+export async function markWordAttemptSynced(tempId, realId) {
+  const db = await dbPromise
+
+  // Read attempt, delete old key, write with real id
+  const readTx = db.transaction(WORDS, 'readonly')
+  const attempt = await req(readTx.objectStore(WORDS).get(tempId))
+  if (!attempt) return
+
+  const t = db.transaction([WORDS, CHARS], 'readwrite')
+  const wordStore = t.objectStore(WORDS)
+  const charStore = t.objectStore(CHARS)
+
+  wordStore.delete(tempId)
+  wordStore.put({ ...attempt, id: realId, synced: true })
+
+  // Update char_logs that reference the temp word attempt id
+  const range = IDBKeyRange.bound([tempId], [tempId, Infinity])
+  const matching = await req(charStore.getAll(range))
+  for (const c of matching) {
+    charStore.delete([c.word_attempt_id, c.char_index])
+    charStore.put({ ...c, word_attempt_id: realId })
+  }
+
+  await tx(t)
+}
+
+// --- Restore from server ---
+
+export async function bulkInsertSessions(sessions) {
+  const db = await dbPromise
+  const t = db.transaction(SESSIONS, 'readwrite')
+  const store = t.objectStore(SESSIONS)
+  for (const s of sessions) store.put(s)
+  await tx(t)
+}
+
+export async function bulkInsertWordAttempts(attempts) {
+  const db = await dbPromise
+  const t = db.transaction(WORDS, 'readwrite')
+  const store = t.objectStore(WORDS)
+  for (const a of attempts) store.put(a)
+  await tx(t)
+}
+
+export async function bulkInsertCharLogs(chars) {
+  const db = await dbPromise
+  const t = db.transaction(CHARS, 'readwrite')
+  const store = t.objectStore(CHARS)
+  for (const c of chars) store.put(c)
+  await tx(t)
+}
+
+export async function isEmpty() {
+  const db = await dbPromise
+  const store = db.transaction(SESSIONS, 'readonly').objectStore(SESSIONS)
+  const count = await req(store.count())
+  return count === 0
+}
