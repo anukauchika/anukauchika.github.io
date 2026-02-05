@@ -1,18 +1,20 @@
-import { writable } from 'svelte/store'
-import { createIdbStatsRepo } from '../data/idb-stats-repo.js'
+import { writable, get } from 'svelte/store'
+import * as idb from '../data/idb-stats.js'
+import { api } from '../api.js'
+import { syncPending, setActiveSessionId } from './sync.js'
+import { user } from './auth.js'
 
-// Singleton repo — swap this line to change backend
-const repo = createIdbStatsRepo()
+// --- Stores (shapes unchanged for UI compatibility) ---
 
-/** @type {import('svelte/store').Writable<Map<number, import('../data/stats-repo.js').WordStat>>} */
+/** @type {import('svelte/store').Writable<Map<number, {datasetId,practiceType,groupId,wordId,successCount,lastPracticedAt}>>} */
 export const groupStats = writable(new Map())
 
-/** @type {import('svelte/store').Writable<Map<string, import('../data/stats-repo.js').WordStat>>} */
+/** @type {import('svelte/store').Writable<Map<string, {datasetId,practiceType,groupId,wordId,successCount,lastPracticedAt}>>} */
 export const datasetStats = writable(new Map())
 
 /**
  * Per-group session summaries: Map<groupId, { total, full, lastPracticedAt, lastFullSessionAt }>
- * "full" = sessions with zero skips
+ * "full" = sessions where done_at is set (completed without skip)
  */
 export const datasetGroupSessions = writable(new Map())
 
@@ -22,10 +24,8 @@ export const datasetGroupSessions = writable(new Map())
  */
 export const dailyActivity = writable(new Map())
 
-/**
- * Load daily word practice counts for a dataset.
- */
-// Convert Date to YYYY-MM-DD in local timezone
+// --- Helpers ---
+
 function toLocalDateKey(date) {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -33,15 +33,70 @@ function toLocalDateKey(date) {
   return `${year}-${month}-${day}`
 }
 
+let nextTempId = -1
+const tempIdReady = idb.getMinId().then((min) => { nextTempId = min - 1 })
+
+// --- Load functions ---
+
+export async function loadGroupStats(datasetId, practiceType, groupId) {
+  const stats = await idb.getWordStats(datasetId, practiceType)
+  const map = new Map()
+  for (const s of stats) {
+    if (s.groupId === groupId) map.set(s.wordId, s)
+  }
+  groupStats.set(map)
+}
+
+export async function loadDatasetStats(datasetId, practiceType) {
+  const stats = await idb.getWordStats(datasetId, practiceType)
+  const map = new Map()
+  for (const s of stats) {
+    map.set(`${s.groupId}::${s.wordId}`, s)
+  }
+  datasetStats.set(map)
+}
+
+export async function loadDatasetGroupSessions(datasetId, practiceType) {
+  const sessions = await idb.getGroupSessions(datasetId, practiceType)
+  const map = new Map()
+  for (const s of sessions) {
+    const existing = map.get(s.group_id)
+    const isFull = s.done_at != null
+    const ts = s.done_at || s.started_at
+    if (existing) {
+      existing.total += 1
+      if (isFull) {
+        existing.full += 1
+        if (!existing.lastFullSessionAt || s.done_at > existing.lastFullSessionAt) {
+          existing.lastFullSessionAt = s.done_at
+        }
+      }
+      if (ts > existing.lastPracticedAt) {
+        existing.lastPracticedAt = ts
+      }
+    } else {
+      map.set(s.group_id, {
+        total: 1,
+        full: isFull ? 1 : 0,
+        lastPracticedAt: ts,
+        lastFullSessionAt: isFull ? s.done_at : null,
+      })
+    }
+  }
+  datasetGroupSessions.set(map)
+}
+
 export async function loadDailyActivity(datasetId, practiceType) {
   try {
-    const logs = await repo.getDatasetPracticeLog(datasetId, practiceType)
+    const sessions = await idb.getGroupSessions(datasetId, practiceType)
     const dayMap = new Map()
-    for (const log of logs) {
-      if (log.practicedAt) {
-        // Convert UTC timestamp to local date
-        const dateKey = toLocalDateKey(new Date(log.practicedAt))
-        dayMap.set(dateKey, (dayMap.get(dateKey) || 0) + 1)
+    for (const s of sessions) {
+      const words = await idb.getWordAttempts(s.id)
+      for (const w of words) {
+        if (w.done_at) {
+          const dateKey = toLocalDateKey(new Date(w.done_at))
+          dayMap.set(dateKey, (dayMap.get(dateKey) || 0) + 1)
+        }
       }
     }
     dailyActivity.set(dayMap)
@@ -50,67 +105,194 @@ export async function loadDailyActivity(datasetId, practiceType) {
   }
 }
 
-/**
- * Load aggregate stats for a group into the reactive store.
- */
-export async function loadGroupStats(datasetId, practiceType, groupId) {
-  const stats = await repo.getGroupStats(datasetId, practiceType, groupId)
-  const map = new Map()
-  for (const s of stats) {
-    map.set(s.wordId, s)
+// --- Session lifecycle (new) ---
+
+export async function startGroupSession(datasetId, practiceType, groupId) {
+  await tempIdReady
+
+  // Release any previous active session (restart case).
+  // It stays in IDB with done_at=null (incomplete) and becomes eligible for sync.
+  setActiveSessionId(null)
+
+  const now = new Date().toISOString()
+  const u = get(user)
+  const userId = u?.id ?? null
+
+  // Online-first: try Supabase to get a real ID for immediate word syncing
+  let id
+  let synced
+  try {
+    const result = await api.stats.createGroupSession({
+      user_id: userId,
+      dataset_id: datasetId,
+      practice_type: practiceType,
+      group_id: groupId,
+      started_at: now,
+    })
+    id = result.id
+    synced = true
+  } catch {
+    // Offline fallback: use temp ID, sync when reconnected
+    id = nextTempId--
+    synced = false
   }
-  groupStats.set(map)
+
+  await idb.saveGroupSession({
+    id,
+    user_id: userId,
+    dataset_id: datasetId,
+    practice_type: practiceType,
+    group_id: groupId,
+    started_at: now,
+    done_at: null,
+    synced,
+  })
+
+  // Protect this session from sync ID remapping while active (offline only)
+  setActiveSessionId(id < 0 ? id : null)
+
+  return id
 }
 
-/**
- * Load aggregate stats for an entire dataset into the reactive store.
- */
-export async function loadDatasetStats(datasetId, practiceType) {
-  const stats = await repo.getDatasetStats(datasetId, practiceType)
-  const map = new Map()
-  for (const s of stats) {
-    map.set(`${s.groupId}::${s.wordId}`, s)
-  }
-  datasetStats.set(map)
-}
+export async function endGroupSession(sessionId) {
+  const session = await idb.getSessionById(sessionId)
+  if (!session) return
 
-/**
- * Load all group session summaries for a dataset.
- */
-export async function loadDatasetGroupSessions(datasetId, practiceType) {
-  const sessions = await repo.getDatasetSessions(datasetId, practiceType)
-  const map = new Map()
-  for (const s of sessions) {
-    const existing = map.get(s.groupId)
-    const isFull = s.skippedCount === 0
+  setActiveSessionId(null)
+
+  const now = new Date().toISOString()
+  await idb.saveGroupSession({ ...session, done_at: now, synced: false })
+
+  syncPending().catch((e) => console.error('sync failed', e))
+
+  // Update datasetGroupSessions store
+  datasetGroupSessions.update((map) => {
+    const next = new Map(map)
+    const existing = next.get(session.group_id)
     if (existing) {
-      existing.total += 1
-      if (isFull) {
-        existing.full += 1
-        if (!existing.lastFullSessionAt || s.completedAt > existing.lastFullSessionAt) {
-          existing.lastFullSessionAt = s.completedAt
-        }
-      }
-      if (s.completedAt > existing.lastPracticedAt) {
-        existing.lastPracticedAt = s.completedAt
-      }
-    } else {
-      map.set(s.groupId, {
-        total: 1,
-        full: isFull ? 1 : 0,
-        lastPracticedAt: s.completedAt,
-        lastFullSessionAt: isFull ? s.completedAt : null,
+      next.set(session.group_id, {
+        ...existing,
+        full: existing.full + 1,
+        lastFullSessionAt: now > (existing.lastFullSessionAt ?? '') ? now : existing.lastFullSessionAt,
       })
     }
-  }
-  datasetGroupSessions.set(map)
+    return next
+  })
 }
 
-/**
- * Record a completed group session and update the reactive store.
- */
+export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, chars) {
+  await tempIdReady
+  const session = await idb.getSessionById(sessionId)
+  if (!session) {
+    console.error('recordWordAttempt: session not found', sessionId)
+    return
+  }
+  const groupId = session.group_id
+  const wordTempId = nextTempId--
+
+  await idb.saveWordAttempt({
+    id: wordTempId,
+    group_session_id: sessionId,
+    word_id: wordId,
+    started_at: startedAt,
+    done_at: doneAt,
+    synced: false,
+  })
+
+  if (chars.length > 0) {
+    await idb.saveCharLogs(
+      chars.map((c) => ({
+        word_attempt_id: wordTempId,
+        char_index: c.charIndex,
+        started_at: c.startedAt,
+        done_at: c.doneAt,
+        error_count: c.errorCount,
+        synced: false,
+      }))
+    )
+  }
+
+  syncPending().catch((e) => console.error('sync failed', e))
+
+  // Update groupStats store
+  groupStats.update((map) => {
+    const next = new Map(map)
+    const existing = next.get(wordId)
+    const stat = {
+      datasetId: null,
+      practiceType: null,
+      groupId,
+      wordId,
+      successCount: (existing?.successCount ?? 0) + 1,
+      lastPracticedAt: doneAt,
+    }
+    next.set(wordId, stat)
+    return next
+  })
+
+  // Update datasetStats store
+  datasetStats.update((map) => {
+    const next = new Map(map)
+    const key = `${groupId}::${wordId}`
+    const existing = next.get(key)
+    next.set(key, {
+      datasetId: null,
+      practiceType: null,
+      groupId,
+      wordId,
+      successCount: (existing?.successCount ?? 0) + 1,
+      lastPracticedAt: doneAt,
+    })
+    return next
+  })
+
+  // Update dailyActivity store
+  const dateKey = toLocalDateKey(new Date(doneAt))
+  dailyActivity.update((map) => {
+    const next = new Map(map)
+    next.set(dateKey, (next.get(dateKey) || 0) + 1)
+    return next
+  })
+}
+
+// --- Legacy (used by Practice.svelte until Phase 7 rewires it) ---
+
+export async function recordSuccess(datasetId, practiceType, groupId, wordId) {
+  // In-memory store update only — no IDB persistence
+  // Phase 7 replaces this with recordWordAttempt
+  const now = new Date().toISOString()
+  groupStats.update((map) => {
+    const next = new Map(map)
+    const existing = next.get(wordId)
+    next.set(wordId, {
+      datasetId, practiceType, groupId, wordId,
+      successCount: (existing?.successCount ?? 0) + 1,
+      lastPracticedAt: now,
+    })
+    return next
+  })
+  datasetStats.update((map) => {
+    const next = new Map(map)
+    const key = `${groupId}::${wordId}`
+    const existing = next.get(key)
+    next.set(key, {
+      datasetId, practiceType, groupId, wordId,
+      successCount: (existing?.successCount ?? 0) + 1,
+      lastPracticedAt: now,
+    })
+    return next
+  })
+  const today = toLocalDateKey(new Date())
+  dailyActivity.update((map) => {
+    const next = new Map(map)
+    next.set(today, (next.get(today) || 0) + 1)
+    return next
+  })
+}
+
 export async function recordGroupSession(session) {
-  await repo.recordGroupSession(session)
+  // In-memory store update only — no IDB persistence
+  // Phase 7 replaces this with startGroupSession/endGroupSession
   datasetGroupSessions.update((map) => {
     const next = new Map(map)
     const existing = next.get(session.groupId)
@@ -133,31 +315,6 @@ export async function recordGroupSession(session) {
         lastFullSessionAt: isFull ? session.completedAt : null,
       })
     }
-    return next
-  })
-}
-
-/**
- * Record a successful practice, persist it, and update the reactive store.
- */
-export async function recordSuccess(datasetId, practiceType, groupId, wordId) {
-  await repo.recordSuccess(datasetId, practiceType, groupId, wordId)
-  const updated = await repo.getStat(datasetId, practiceType, groupId, wordId)
-  groupStats.update((map) => {
-    const next = new Map(map)
-    next.set(wordId, updated)
-    return next
-  })
-  datasetStats.update((map) => {
-    const next = new Map(map)
-    next.set(`${groupId}::${wordId}`, updated)
-    return next
-  })
-  // Update daily activity
-  const today = toLocalDateKey(new Date())
-  dailyActivity.update((map) => {
-    const next = new Map(map)
-    next.set(today, (next.get(today) || 0) + 1)
     return next
   })
 }

@@ -42,6 +42,17 @@ function tx(transaction) {
 
 const dbPromise = openDb()
 
+export async function getMinId() {
+  const db = await dbPromise
+  const t = db.transaction([SESSIONS, WORDS], 'readonly')
+  const allSessions = await req(t.objectStore(SESSIONS).getAll())
+  const allWords = await req(t.objectStore(WORDS).getAll())
+  let min = 0
+  for (const s of allSessions) if (s.id < min) min = s.id
+  for (const w of allWords) if (w.id < min) min = w.id
+  return min
+}
+
 // --- Write ---
 
 export async function saveGroupSession(session) {
@@ -49,6 +60,12 @@ export async function saveGroupSession(session) {
   const t = db.transaction(SESSIONS, 'readwrite')
   t.objectStore(SESSIONS).put(session)
   await tx(t)
+}
+
+export async function getSessionById(id) {
+  const db = await dbPromise
+  const store = db.transaction(SESSIONS, 'readonly').objectStore(SESSIONS)
+  return (await req(store.get(id))) || null
 }
 
 export async function saveWordAttempt(attempt) {

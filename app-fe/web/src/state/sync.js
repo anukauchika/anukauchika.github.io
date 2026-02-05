@@ -2,14 +2,18 @@ import { api } from '../api.js'
 import * as idb from '../data/idb-stats.js'
 
 let syncing = false
+let activeSessionId = null
+
+export function setActiveSessionId(id) { activeSessionId = id }
 
 export async function syncPending() {
   if (syncing) return
   syncing = true
   try {
-    // 1. Sessions
-    const sessions = await idb.getPendingSessions()
-    for (const s of sessions) {
+    // 1a. New sessions (temp ID) — skip only the current active session
+    const allPendingSessions = await idb.getPendingSessions()
+    const newSessions = allPendingSessions.filter((s) => s.id < 0 && s.id !== activeSessionId)
+    for (const s of newSessions) {
       const { id: realId } = await api.stats.createGroupSession({
         user_id: s.user_id,
         dataset_id: s.dataset_id,
@@ -21,8 +25,16 @@ export async function syncPending() {
       await idb.markSessionSynced(s.id, realId)
     }
 
-    // 2. Word attempts (now have real session ids)
-    const words = await idb.getPendingWordAttempts()
+    // 1b. Updated sessions (real ID, need done_at push)
+    const updatedSessions = allPendingSessions.filter((s) => s.id > 0)
+    for (const s of updatedSessions) {
+      await api.stats.updateGroupSessionDone(s.id, s.done_at)
+      await idb.saveGroupSession({ ...s, synced: true })
+    }
+
+    // 2. Word attempts (positive session ID = session already synced; active session stays negative)
+    const allPendingWords = await idb.getPendingWordAttempts()
+    const words = allPendingWords.filter((w) => w.group_session_id > 0)
     for (const w of words) {
       const { id: realId } = await api.stats.insertWordAttempt({
         group_session_id: w.group_session_id,
@@ -33,8 +45,9 @@ export async function syncPending() {
       await idb.markWordAttemptSynced(w.id, realId)
     }
 
-    // 3. Char logs (now have real word attempt ids)
-    const chars = await idb.getPendingCharLogs()
+    // 3. Char logs (only those whose word attempt is already synced — positive id)
+    const allPendingChars = await idb.getPendingCharLogs()
+    const chars = allPendingChars.filter((c) => c.word_attempt_id > 0)
     if (chars.length > 0) {
       await api.stats.insertCharLogs(
         chars.map((c) => ({
