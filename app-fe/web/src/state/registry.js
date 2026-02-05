@@ -47,3 +47,9 @@ export const setDatasetByKind = (kind) => {
   const match = datasets.find((d) => d.kind === kind) ?? datasets[0]
   if (match?.id) datasetId.set(match.id)
 }
+
+const codeById = Object.fromEntries(datasets.map((d) => [d.id, d.code]))
+
+export const getDatasetCode = (id) => codeById[id] ?? null
+
+export const PRACTICE_TYPE_STROKE = 's'
