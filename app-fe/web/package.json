@@ -16,6 +16,7 @@
     "vite-plugin-pwa": "^1.2.0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.94.1",
     "hanzi-writer": "^3.7.3"
   }
 }
