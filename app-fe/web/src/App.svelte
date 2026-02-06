@@ -61,6 +61,8 @@
   let groupHighlightedIndex = $state(0)
   let showAllGroups = $state(false)
   let showAuthDropdown = $state(false)
+  let showPracticedList = $state(false)
+  let activeStat = $state(null)
   let avatarError = $state(false)
 
   const avatarUrl = $derived($user?.user_metadata?.avatar_url)
@@ -84,6 +86,22 @@
     avatarError = false
   })
   
+  const timeAgo = (ts) => {
+    if (!ts) return ''
+    const diff = Date.now() - (typeof ts === 'number' ? ts : new Date(ts).getTime())
+    const mins = Math.floor(diff / 60000)
+    if (mins < 1) return 'just now'
+    if (mins < 60) return `${mins}m ago`
+    const hrs = Math.floor(mins / 60)
+    if (hrs < 24) return `${hrs}h ago`
+    const days = Math.floor(hrs / 24)
+    if (days < 7) return `${days}d ago`
+    const weeks = Math.floor(days / 7)
+    if (weeks < 5) return `${weeks}w ago`
+    const months = Math.floor(days / 30)
+    return `${months}mo ago`
+  }
+
   const formatDate = (isoString) => {
     if (!isoString) return ''
     const date = new Date(isoString)
@@ -283,6 +301,18 @@
     })
     return count
   })
+  const practicedItems = $derived.by(() => {
+    const items = []
+    filteredGroups.forEach((g) => {
+      g.items.forEach((item) => {
+        const key = `${g.group}::${item.id}`
+        const stat = $datasetStats.get(key)
+        if (stat) items.push({ item, group: g, stat })
+      })
+    })
+    items.sort((a, b) => (b.stat.lastPracticedAt ?? '').localeCompare(a.stat.lastPracticedAt ?? ''))
+    return items
+  })
   const datasetProgress = $derived.by(() =>
     totalCount > 0 ? Math.round((practicedCount / totalCount) * 100) : 0
   )
@@ -443,23 +473,23 @@
         {/if}
       </div>
       <div class="stats">
-        <div>
+        <button type="button" class="stat-btn" onclick={() => activeStat = 'groups'}>
           <span class="stat-label">Groups</span>
           <span class="stat-value">{groupCount}</span>
-        </div>
-        <div>
+        </button>
+        <button type="button" class="stat-btn" onclick={() => activeStat = 'words'}>
           <span class="stat-label">Words</span>
           <span class="stat-value">{totalCount}</span>
-        </div>
-        <div>
+        </button>
+        <button type="button" class="stat-btn" onclick={() => activeStat = 'chars'}>
           <span class="stat-label">Chars</span>
           <span class="stat-value">{uniqueChars}</span>
-        </div>
+        </button>
         {#if $isAuthenticated}
-          <div>
+          <button type="button" class="stat-btn" onclick={() => showPracticedList = true}>
             <span class="stat-label">Practiced</span>
             <span class="stat-value">{practicedCount}</span>
-          </div>
+          </button>
         {/if}
       </div>
     </div>
@@ -688,6 +718,26 @@
     {/if}
   </section>
 
+  {#if activeStat}
+    <div class="modal-backdrop">
+      <button
+        class="modal-overlay"
+        type="button"
+        aria-label="Close dialog"
+        onclick={() => activeStat = null}
+      ></button>
+      <div class="stat-info-modal" role="dialog" aria-modal="true">
+        {#if activeStat === 'groups'}
+          <p>Number of vocabulary groups matching current filters.</p>
+        {:else if activeStat === 'words'}
+          <p>Total number of words in the filtered dataset.</p>
+        {:else if activeStat === 'chars'}
+          <p>Number of unique Chinese characters in the filtered dataset.</p>
+        {/if}
+      </div>
+    </div>
+  {/if}
+
   {#if modalOpen && activeWord}
     <div class="modal-backdrop">
       <button
@@ -701,6 +751,37 @@
       {:else if $currentDataset?.kind === 'english'}
         <WordCardEnglish item={activeWord} onClose={closeModal} />
       {/if}
+    </div>
+  {/if}
+
+  {#if showPracticedList}
+    <div class="modal-backdrop">
+      <button
+        class="modal-overlay"
+        type="button"
+        aria-label="Close dialog"
+        onclick={() => showPracticedList = false}
+      ></button>
+      <div class="practiced-modal" role="dialog" aria-modal="true">
+        <div class="practiced-modal-header">
+          <h3>Unique Words Practiced <span class="practiced-count">| {practicedItems.length}</span></h3>
+          <button type="button" class="close" onclick={() => showPracticedList = false}>Close</button>
+        </div>
+        <div class="practiced-modal-body">
+          <div class="word-grid">
+            {#each practicedItems as { item, group, stat } (`${group.group}-${item.id}`)}
+              <div class="practiced-item">
+                <span class="practiced-time">{timeAgo(stat.lastPracticedAt)}</span>
+                {#if $currentDataset?.kind === 'chinese'}
+                  <GroupItemChinese {item} {stat} onclick={() => openWord(item)} />
+                {:else if $currentDataset?.kind === 'english'}
+                  <GroupItemEnglish {item} onclick={() => openWord(item)} />
+                {/if}
+              </div>
+            {/each}
+          </div>
+        </div>
+      </div>
     </div>
   {/if}
 

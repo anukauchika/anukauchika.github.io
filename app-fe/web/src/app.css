@@ -1086,6 +1086,95 @@ select:focus {
   border: 1px dashed rgba(31, 111, 92, 0.2);
 }
 
+.stat-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+
+.stat-info-modal {
+  position: relative;
+  z-index: 1;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(31, 111, 92, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 240px;
+  max-width: 320px;
+}
+
+.stat-info-modal p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--ink);
+  text-align: center;
+  line-height: 1.5;
+}
+
+
+.practiced-modal {
+  position: relative;
+  z-index: 1;
+  width: min(900px, 96vw);
+  max-height: 80vh;
+  background: #fffaf2;
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(31, 111, 92, 0.12);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.practiced-modal-body {
+  padding: 0 2rem 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.practiced-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 2rem 1rem;
+  flex-shrink: 0;
+}
+
+.practiced-modal-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.practiced-count {
+  color: var(--muted);
+}
+
+.practiced-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.practiced-item .word-card {
+  flex: 1;
+}
+
+.practiced-time {
+  font-size: 0.7rem;
+  color: var(--muted);
+  padding: 0 0.4rem 0.2rem;
+}
+
 .show-all-btn {
   display: block;
   margin: 0 auto;
