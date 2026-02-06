@@ -1,3 +1,6 @@
+// Delete legacy database from previous implementation
+indexedDB.deleteDatabase('memris-stats')
+
 const DB_NAME = 'memris-stats-v2'
 const DB_VERSION = 1
 const SESSIONS = 'group_sessions'
@@ -241,3 +244,53 @@ export async function isEmpty() {
   const count = await req(store.count())
   return count === 0
 }
+
+// --- Cleanup: delete synced records older than 90 days ---
+
+const CLEANUP_KEY = 'memris-stats-last-cleanup'
+const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000
+const RETENTION_MS = 90 * 24 * 60 * 60 * 1000
+
+export async function cleanupOldRecords() {
+  const last = localStorage.getItem(CLEANUP_KEY)
+  if (last && Date.now() - Number(last) < CLEANUP_INTERVAL_MS) return
+
+  const cutoff = new Date(Date.now() - RETENTION_MS).toISOString()
+  const db = await dbPromise
+
+  // Find old synced sessions
+  const allSessions = await req(db.transaction(SESSIONS, 'readonly').objectStore(SESSIONS).index('synced').getAll(true))
+  const old = allSessions.filter((s) => (s.done_at || s.started_at) < cutoff)
+  if (old.length === 0) {
+    localStorage.setItem(CLEANUP_KEY, String(Date.now()))
+    return
+  }
+
+  const oldSessionIds = new Set(old.map((s) => s.id))
+
+  // Find word attempts belonging to old sessions
+  const allWords = await req(db.transaction(WORDS, 'readonly').objectStore(WORDS).getAll())
+  const oldWords = allWords.filter((w) => w.synced && oldSessionIds.has(w.group_session_id))
+  const oldWordIds = new Set(oldWords.map((w) => w.id))
+
+  // Delete in one transaction
+  const t = db.transaction([SESSIONS, WORDS, CHARS], 'readwrite')
+  const ss = t.objectStore(SESSIONS)
+  const ws = t.objectStore(WORDS)
+  const cs = t.objectStore(CHARS)
+
+  for (const s of old) ss.delete(s.id)
+  for (const w of oldWords) {
+    ws.delete(w.id)
+    // Delete char logs for this word attempt
+    const range = IDBKeyRange.bound([w.id], [w.id, Infinity])
+    const chars = await req(cs.getAll(range))
+    for (const c of chars) cs.delete([c.word_attempt_id, c.char_index])
+  }
+
+  await tx(t)
+  localStorage.setItem(CLEANUP_KEY, String(Date.now()))
+}
+
+// Run cleanup on module load (non-blocking)
+cleanupOldRecords().catch((e) => console.error('stats cleanup failed', e))
