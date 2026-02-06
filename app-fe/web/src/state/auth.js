@@ -1,7 +1,6 @@
 import { writable, derived } from 'svelte/store'
 import { api } from '../api.js'
 import { syncPending, restoreFromServer } from './sync.js'
-import * as idb from '../data/idb-stats.js'
 
 export const session = writable(null)
 
@@ -10,11 +9,8 @@ export const user = derived(session, ($session) => $session?.user ?? null)
 export const isAuthenticated = derived(user, ($user) => $user !== null)
 
 async function syncOrRestore() {
-  const empty = await idb.isEmpty()
-  if (empty) {
-    await restoreFromServer()
-  }
   await syncPending()
+  await restoreFromServer()
 }
 
 export async function initAuth() {
