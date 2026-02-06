@@ -137,11 +137,11 @@ export async function startGroupSession(datasetId, practiceType, groupId) {
       started_at: now,
     })
     id = result.id
-    synced = true
+    synced = 1
   } catch {
     // Offline fallback: use temp ID, sync when reconnected
     id = nextTempId--
-    synced = false
+    synced = 0
   }
 
   await idb.saveGroupSession({
@@ -168,7 +168,7 @@ export async function endGroupSession(sessionId) {
   setActiveSessionId(null)
 
   const now = new Date().toISOString()
-  await idb.saveGroupSession({ ...session, done_at: now, synced: false })
+  await idb.saveGroupSession({ ...session, done_at: now, synced: 0 })
 
   syncPending().catch((e) => console.error('sync failed', e))
 
@@ -203,7 +203,7 @@ export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, ch
     word_id: wordId,
     started_at: startedAt,
     done_at: doneAt,
-    synced: false,
+    synced: 0,
   })
 
   if (chars.length > 0) {
@@ -214,7 +214,7 @@ export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, ch
         started_at: c.startedAt,
         done_at: c.doneAt,
         error_count: c.errorCount,
-        synced: false,
+        synced: 0,
       }))
     )
   }

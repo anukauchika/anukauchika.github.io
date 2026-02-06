@@ -1,4 +1,4 @@
-// Delete legacy database
+// TODO: Remove after 2026-03-06 — legacy database cleanup
 indexedDB.deleteDatabase('memris-prefs')
 
 const DB_NAME = 'uch-prefs'

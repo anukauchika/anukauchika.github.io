@@ -29,7 +29,7 @@ export async function syncPending() {
     const updatedSessions = allPendingSessions.filter((s) => s.id > 0)
     for (const s of updatedSessions) {
       await api.stats.updateGroupSessionDone(s.id, s.done_at)
-      await idb.saveGroupSession({ ...s, synced: true })
+      await idb.saveGroupSession({ ...s, synced: 1 })
     }
 
     // 2. Word attempts (positive session ID = session already synced; active session stays negative)
@@ -58,7 +58,7 @@ export async function syncPending() {
           error_count: c.error_count,
         }))
       )
-      await idb.saveCharLogs(chars.map((c) => ({ ...c, synced: true })))
+      await idb.saveCharLogs(chars.map((c) => ({ ...c, synced: 1 })))
     }
   } finally {
     syncing = false
@@ -70,18 +70,18 @@ export async function restoreFromServer() {
   if (sessions.length === 0) return
 
   await idb.bulkInsertSessions(
-    sessions.map((s) => ({ ...s, synced: true }))
+    sessions.map((s) => ({ ...s, synced: 1 }))
   )
 
   const sessionIds = sessions.map((s) => s.id)
   const words = await api.stats.fetchWordAttempts(sessionIds)
   await idb.bulkInsertWordAttempts(
-    words.map((w) => ({ ...w, synced: true }))
+    words.map((w) => ({ ...w, synced: 1 }))
   )
 
   const wordIds = words.map((w) => w.id)
   const chars = await api.stats.fetchCharLogs(wordIds)
   await idb.bulkInsertCharLogs(
-    chars.map((c) => ({ ...c, synced: true }))
+    chars.map((c) => ({ ...c, synced: 1 }))
   )
 }

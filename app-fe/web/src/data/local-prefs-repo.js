@@ -1,4 +1,4 @@
-// Clean up legacy localStorage keys
+// TODO: Remove after 2026-03-06 — legacy localStorage cleanup
 try {
   for (let i = localStorage.length - 1; i >= 0; i--) {
     const k = localStorage.key(i)

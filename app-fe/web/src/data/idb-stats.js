@@ -1,4 +1,4 @@
-// Delete legacy databases
+// TODO: Remove after 2026-03-06 — legacy database cleanup
 indexedDB.deleteDatabase('memris-stats')
 indexedDB.deleteDatabase('memris-stats-v2')
 
@@ -145,19 +145,19 @@ export async function getWordStats(datasetId, practiceType) {
 export async function getPendingSessions() {
   const db = await dbPromise
   const store = db.transaction(SESSIONS, 'readonly').objectStore(SESSIONS)
-  return req(store.index('synced').getAll(false))
+  return req(store.index('synced').getAll(0))
 }
 
 export async function getPendingWordAttempts() {
   const db = await dbPromise
   const store = db.transaction(WORDS, 'readonly').objectStore(WORDS)
-  return req(store.index('synced').getAll(false))
+  return req(store.index('synced').getAll(0))
 }
 
 export async function getPendingCharLogs() {
   const db = await dbPromise
   const store = db.transaction(CHARS, 'readonly').objectStore(CHARS)
-  return req(store.index('synced').getAll(false))
+  return req(store.index('synced').getAll(0))
 }
 
 // --- Sync: mark synced ---
@@ -175,7 +175,7 @@ export async function markSessionSynced(tempId, realId) {
   const wordStore = t.objectStore(WORDS)
 
   sessionStore.delete(tempId)
-  sessionStore.put({ ...session, id: realId, synced: true })
+  sessionStore.put({ ...session, id: realId, synced: 1 })
 
   // Update word_attempts that reference the temp session id
   const wordIndex = wordStore.index('group_session_id')
@@ -200,7 +200,7 @@ export async function markWordAttemptSynced(tempId, realId) {
   const charStore = t.objectStore(CHARS)
 
   wordStore.delete(tempId)
-  wordStore.put({ ...attempt, id: realId, synced: true })
+  wordStore.put({ ...attempt, id: realId, synced: 1 })
 
   // Update char_logs that reference the temp word attempt id
   const range = IDBKeyRange.bound([tempId], [tempId, Infinity])
@@ -260,7 +260,7 @@ export async function cleanupOldRecords() {
   const db = await dbPromise
 
   // Find old synced sessions
-  const allSessions = await req(db.transaction(SESSIONS, 'readonly').objectStore(SESSIONS).index('synced').getAll(true))
+  const allSessions = await req(db.transaction(SESSIONS, 'readonly').objectStore(SESSIONS).index('synced').getAll(1))
   const old = allSessions.filter((s) => (s.done_at || s.started_at) < cutoff)
   if (old.length === 0) {
     localStorage.setItem(CLEANUP_KEY, String(Date.now()))
