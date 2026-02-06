@@ -105,6 +105,13 @@ h1 {
   display: block;
 }
 
+.login-hint {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 1rem 0 -0.5rem;
+}
+
 .progress-bar {
   height: 4px;
   background: rgba(31, 111, 92, 0.12);

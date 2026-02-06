@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { datasetId, currentDataset, setDatasetById } from './state/registry.js'
   import { loadDatasetGroupSessions, datasetGroupSessions } from './state/practice-stats.js'
+  import { isAuthenticated } from './state/auth.js'
   import PracticeChinese from './kind/chinese/Practice.svelte'
 
   const getSearchParams = () => {
@@ -55,7 +56,7 @@
           {/each}
         </span>
         <span class="item-count">{activeGroup.items.length} words</span>
-        {#if groupStats}
+        {#if $isAuthenticated && groupStats}
           <span class="group-stats">{groupStats.total} passes ({groupStats.full} full)</span>
         {/if}
       </div>

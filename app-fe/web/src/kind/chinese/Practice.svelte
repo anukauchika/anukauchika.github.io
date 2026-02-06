@@ -309,7 +309,7 @@
       <a class="close-btn" href={backUrl} title="Back">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </a>
-      {#if currentStat}
+      {#if $isAuthenticated && currentStat}
         <span class="quiz-count" title="Times practiced">{currentStat.successCount}x</span>
       {/if}
       <div class="word-info">
@@ -387,10 +387,10 @@
         class="word-dot"
         class:active={idx === currentIndex}
         class:done={completedWords.has(idx)}
-        title="{item.word}{stat ? ` (${stat.successCount}x)` : ''}"
+        title="{item.word}{$isAuthenticated && stat ? ` (${stat.successCount}x)` : ''}"
       >
         {item[translationField]}
-        {#if stat}
+        {#if $isAuthenticated && stat}
           <span class="dot-count">{stat.successCount}</span>
         {/if}
       </span>

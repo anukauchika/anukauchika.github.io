@@ -2,7 +2,7 @@
   import { datasets, datasetId, currentDataset } from './state/registry.js'
   import { loadDatasetStats, datasetStats, loadDatasetGroupSessions, datasetGroupSessions, dailyActivity, loadDailyActivity } from './state/practice-stats.js'
   import { mainSearch, mainTags, mainGroup, mainCompact, loadMainFilters } from './state/filters.js'
-  import { user, signInWithGoogle, signInWithApple, signOut } from './state/auth.js'
+  import { user, isAuthenticated, signInWithGoogle, signInWithApple, signOut } from './state/auth.js'
   import { formatGroup } from './utils/format.js'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
   import GroupItemEnglish from './kind/english/GroupItem.svelte'
@@ -420,36 +420,42 @@
           <span class="stat-label">Chars</span>
           <span class="stat-value">{uniqueChars}</span>
         </div>
-        <div>
-          <span class="stat-label">Practiced</span>
-          <span class="stat-value">{practicedCount}</span>
-        </div>
-      </div>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-fill" style="width: {datasetProgress}%"></div>
-    </div>
-
-    <div class="activity-line" bind:this={activityContainer}>
-      {#each activityData as day}
-        <button
-          type="button"
-          class="activity-cell"
-          class:future={day.isFuture}
-          class:selected={selectedDay?.date === day.date}
-          data-level={day.level}
-          title="{day.label}{day.isFuture ? '' : `: ${day.count} word${day.count !== 1 ? 's' : ''}`}"
-          onclick={() => selectedDay = selectedDay?.date === day.date ? null : day}
-        ></button>
-      {/each}
-    </div>
-    {#if selectedDay}
-      <div class="activity-info">
-        <span class="activity-info-date">{selectedDay.label}</span>
-        {#if !selectedDay.isFuture}
-          <span class="activity-info-count">{selectedDay.count} word{selectedDay.count !== 1 ? 's' : ''}</span>
+        {#if $isAuthenticated}
+          <div>
+            <span class="stat-label">Practiced</span>
+            <span class="stat-value">{practicedCount}</span>
+          </div>
         {/if}
       </div>
+    </div>
+    {#if $isAuthenticated}
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: {datasetProgress}%"></div>
+      </div>
+
+      <div class="activity-line" bind:this={activityContainer}>
+        {#each activityData as day}
+          <button
+            type="button"
+            class="activity-cell"
+            class:future={day.isFuture}
+            class:selected={selectedDay?.date === day.date}
+            data-level={day.level}
+            title="{day.label}{day.isFuture ? '' : `: ${day.count} word${day.count !== 1 ? 's' : ''}`}"
+            onclick={() => selectedDay = selectedDay?.date === day.date ? null : day}
+          ></button>
+        {/each}
+      </div>
+      {#if selectedDay}
+        <div class="activity-info">
+          <span class="activity-info-date">{selectedDay.label}</span>
+          {#if !selectedDay.isFuture}
+            <span class="activity-info-count">{selectedDay.count} word{selectedDay.count !== 1 ? 's' : ''}</span>
+          {/if}
+        </div>
+      {/if}
+    {:else}
+      <p class="login-hint">Log in to track your learning progress</p>
     {/if}
 
     <div class="controls">
@@ -523,7 +529,7 @@
     {:else if $mainCompact}
       <div class="compact-list">
         {#each filteredGroups as group (group.group)}
-          {@const gs = $datasetGroupSessions.get(group.group)}
+          {@const gs = $isAuthenticated ? $datasetGroupSessions.get(group.group) : null}
           <article class="compact-row">
             <div class="compact-main">
               <span class="compact-gid">{formatGroup(group.group)}</span>
@@ -548,16 +554,18 @@
                 {#each group.tags as tag}<span class="compact-tag">#{tag}</span>{/each}
               </div>
             {/if}
-            <div class="compact-progress">
-              <div class="compact-progress-words" style="width: {getGroupProgress(group)}%"></div>
-              <div class="compact-progress-mastery" style="width: {getGroupMastery(group)}%"></div>
-            </div>
+            {#if $isAuthenticated}
+              <div class="compact-progress">
+                <div class="compact-progress-words" style="width: {getGroupProgress(group)}%"></div>
+                <div class="compact-progress-mastery" style="width: {getGroupMastery(group)}%"></div>
+              </div>
+            {/if}
           </article>
         {/each}
       </div>
     {:else}
       {#each fullViewGroups as group, i (group.group)}
-        {@const gs = $datasetGroupSessions.get(group.group)}
+        {@const gs = $isAuthenticated ? $datasetGroupSessions.get(group.group) : null}
         <article class="group-card" style={`--delay:${i * 70}ms`}>
           <div class="group-header">
             <div class="group-tags">
@@ -595,16 +603,18 @@
                 Print workbook
               </a>
             </div>
-            <div class="group-progress">
-              <div class="group-progress-words" style="width: {getGroupProgress(group)}%"></div>
-              <div class="group-progress-mastery" style="width: {getGroupMastery(group)}%"></div>
-            </div>
+            {#if $isAuthenticated}
+              <div class="group-progress">
+                <div class="group-progress-words" style="width: {getGroupProgress(group)}%"></div>
+                <div class="group-progress-mastery" style="width: {getGroupMastery(group)}%"></div>
+              </div>
+            {/if}
           </div>
 
           <div class="word-grid">
             {#each group.items as item (`${group.group}-${item.id}`)}
               {#if $currentDataset?.kind === 'chinese'}
-                <GroupItemChinese {item} stat={$datasetStats.get(`${group.group}::${item.id}`)} onclick={() => openWord(item)} />
+                <GroupItemChinese {item} stat={$isAuthenticated ? $datasetStats.get(`${group.group}::${item.id}`) : null} onclick={() => openWord(item)} />
               {:else if $currentDataset?.kind === 'english'}
                 <GroupItemEnglish {item} onclick={() => openWord(item)} />
               {/if}
