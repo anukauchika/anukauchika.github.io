@@ -184,7 +184,10 @@
           const item = items[currentIndex]
           const wStartedAt = wordStartedAt
           charData = []
-          if ($isAuthenticated && item && sessionIdPromise) {
+          if ($isAuthenticated && item) {
+            if (!sessionIdPromise) {
+              sessionIdPromise = startGroupSession(datasetId, practiceType, group.group)
+            }
             sessionIdPromise.then((sid) => {
               if (sid != null) recordWordAttempt(sid, item.id, wStartedAt, charDoneAt, updatedCharData)
             }).catch((e) => console.error('recordWordAttempt failed', e))
@@ -261,9 +264,7 @@
     wordStartedAt = null
     charStartedAt = null
     charErrorCount = 0
-    sessionIdPromise = $isAuthenticated
-      ? startGroupSession(datasetId, practiceType, group.group)
-      : null
+    sessionIdPromise = null
   }
 
   // Reset when group changes — sort once at session start
@@ -283,10 +284,7 @@
       charStartedAt = null
       charErrorCount = 0
       if (datasetId) {
-        // Start session and load stats in parallel
-        sessionIdPromise = $isAuthenticated
-          ? startGroupSession(datasetId, practiceType, group.group)
-          : null
+        sessionIdPromise = null
         loadGroupStats(datasetId, practiceType, group.group).then(() => {
           const stats = $groupStats
           items = [...rawItems].sort((a, b) => {
