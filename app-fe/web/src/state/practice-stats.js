@@ -7,7 +7,7 @@ import { getDatasetCode } from './registry.js'
 
 // Code conversion: callers use full IDs ('chinese-hskv3-elementary', 'stroke'),
 // IDB/Supabase use compact codes ('aa', 's')
-const PT_CODES = { stroke: 's' }
+const PT_CODES = { stroke: 's', pinyin: 'p' }
 function dsCode(id) { return getDatasetCode(id) || id }
 function ptCode(type) { return PT_CODES[type] || type }
 
@@ -103,6 +103,84 @@ export async function loadDailyActivity(datasetId, practiceType) {
         if (w.done_at) {
           const dateKey = toLocalDateKey(new Date(w.done_at))
           dayMap.set(dateKey, (dayMap.get(dateKey) || 0) + 1)
+        }
+      }
+    }
+    dailyActivity.set(dayMap)
+  } catch (err) {
+    console.error('Failed to load daily activity:', err)
+  }
+}
+
+// --- Aggregated loaders (all practice types) ---
+
+const ALL_PT = Object.keys(PT_CODES)
+
+export async function loadDatasetStatsAll(datasetId) {
+  const map = new Map()
+  for (const pt of ALL_PT) {
+    const stats = await idb.getWordStats(dsCode(datasetId), ptCode(pt))
+    for (const s of stats) {
+      const key = `${s.groupId}::${s.wordId}`
+      const existing = map.get(key)
+      if (existing) {
+        existing.successCount += s.successCount ?? 0
+        existing.errorCount += s.errorCount ?? 0
+        if (s.lastPracticedAt && (!existing.lastPracticedAt || s.lastPracticedAt > existing.lastPracticedAt)) {
+          existing.lastPracticedAt = s.lastPracticedAt
+        }
+      } else {
+        map.set(key, { ...s })
+      }
+    }
+  }
+  datasetStats.set(map)
+}
+
+export async function loadDatasetGroupSessionsAll(datasetId) {
+  const map = new Map()
+  for (const pt of ALL_PT) {
+    const sessions = await idb.getGroupSessions(dsCode(datasetId), ptCode(pt))
+    for (const s of sessions) {
+      const existing = map.get(s.group_id)
+      const isFull = s.done_at != null
+      const ts = s.done_at || s.started_at
+      if (existing) {
+        existing.total += 1
+        if (isFull) {
+          existing.full += 1
+          if (!existing.lastFullSessionAt || s.done_at > existing.lastFullSessionAt) {
+            existing.lastFullSessionAt = s.done_at
+          }
+        }
+        if (ts > existing.lastPracticedAt) {
+          existing.lastPracticedAt = ts
+        }
+      } else {
+        map.set(s.group_id, {
+          total: 1,
+          full: isFull ? 1 : 0,
+          lastPracticedAt: ts,
+          lastFullSessionAt: isFull ? s.done_at : null,
+        })
+      }
+    }
+  }
+  datasetGroupSessions.set(map)
+}
+
+export async function loadDailyActivityAll(datasetId) {
+  try {
+    const dayMap = new Map()
+    for (const pt of ALL_PT) {
+      const sessions = await idb.getGroupSessions(dsCode(datasetId), ptCode(pt))
+      for (const s of sessions) {
+        const words = await idb.getWordAttempts(s.id)
+        for (const w of words) {
+          if (w.done_at) {
+            const dateKey = toLocalDateKey(new Date(w.done_at))
+            dayMap.set(dateKey, (dayMap.get(dateKey) || 0) + 1)
+          }
         }
       }
     }

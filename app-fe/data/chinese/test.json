@@ -35,18 +35,45 @@
       "group": 4,
       "tags": ["family", "test-repeat-in-word"],
       "items": [
-        {"word":"妈妈","pinyin":"māma","english":"mom","id":1,"tags":["family"]},
-        {"word":"爸爸","pinyin":"bàba","english":"dad","id":2,"tags":["family"]},
-        {"word":"妹妹","pinyin":"mèimei","english":"younger sister","id":6,"tags":["family"]}
+        {"word":"妈妈","pinyin":"mā ma","english":"mom","id":1,"tags":["family"]},
+        {"word":"爸爸","pinyin":"bà ba","english":"dad","id":2,"tags":["family"]},
+        {"word":"妹妹","pinyin":"mèi mei","english":"younger sister","id":6,"tags":["family"]}
       ]
     },
     {
       "group": 5,
       "tags": ["test-repeat-between-words"],
       "items": [
-        {"word":"大人","pinyin":"dàrén","english":"adult","id":1,"tags":[]},
-        {"word":"人口","pinyin":"rénkǒu","english":"population","id":2,"tags":[]},
-        {"word":"口水","pinyin":"kǒushuǐ","english":"saliva","id":3,"tags":[]}
+        {"word":"大人","pinyin":"dà rén","english":"adult","id":1,"tags":[]},
+        {"word":"人口","pinyin":"rén kǒu","english":"population","id":2,"tags":[]},
+        {"word":"口水","pinyin":"kǒu shuǐ","english":"saliva","id":3,"tags":[]}
+      ]
+    },
+    {
+      "group": 6,
+      "tags": ["test-3char"],
+      "items": [
+        {"word":"图书馆","pinyin":"tú shū guǎn","english":"library","id":1,"tags":[]},
+        {"word":"自行车","pinyin":"zì xíng chē","english":"bicycle","id":2,"tags":[]},
+        {"word":"电视机","pinyin":"diàn shì jī","english":"television","id":3,"tags":[]}
+      ]
+    },
+    {
+      "group": 7,
+      "tags": ["test-4char"],
+      "items": [
+        {"word":"不客气了","pinyin":"bú kè qi le","english":"you're welcome","id":1,"tags":[]},
+        {"word":"中华人民","pinyin":"zhōng huá rén mín","english":"Chinese people","id":2,"tags":[]},
+        {"word":"自言自语","pinyin":"zì yán zì yǔ","english":"talk to oneself","id":3,"tags":[]}
+      ]
+    },
+    {
+      "group": 8,
+      "tags": ["test-5char"],
+      "items": [
+        {"word":"不好意思了","pinyin":"bù hǎo yì si le","english":"sorry about that","id":1,"tags":[]},
+        {"word":"中华人民共","pinyin":"zhōng huá rén mín gòng","english":"Chinese people's republic","id":2,"tags":[]},
+        {"word":"对不起大家","pinyin":"duì bu qǐ dà jiā","english":"sorry everyone","id":3,"tags":[]}
       ]
     }
   ]

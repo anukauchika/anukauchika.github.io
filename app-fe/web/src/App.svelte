@@ -1,6 +1,6 @@
 <script>
   import { datasets, datasetId, currentDataset } from './state/registry.js'
-  import { loadDatasetStats, datasetStats, loadDatasetGroupSessions, datasetGroupSessions, dailyActivity, loadDailyActivity } from './state/practice-stats.js'
+  import { datasetStats, datasetGroupSessions, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from './state/practice-stats.js'
   import { mainSearch, mainTags, mainGroup, mainCompact, loadMainFilters } from './state/filters.js'
   import { user, isAuthenticated, signInWithGoogle, signInWithApple, signOut } from './state/auth.js'
   import { formatGroup } from './utils/format.js'
@@ -13,14 +13,11 @@
   const basePath = $derived.by(() => `${baseUrl}/${$currentDataset.kind}`)
   const groups = $derived.by(() => $currentDataset?.data?.groups ?? [])
 
-  // TODO: when multiple practice types exist, aggregate or let user pick
-  const practiceType = 'stroke'
-
   const reloadStats = () => {
     if ($datasetId) {
-      loadDatasetStats($datasetId, practiceType)
-      loadDatasetGroupSessions($datasetId, practiceType)
-      loadDailyActivity($datasetId, practiceType)
+      loadDatasetStatsAll($datasetId)
+      loadDatasetGroupSessionsAll($datasetId)
+      loadDailyActivityAll($datasetId)
     }
   }
 
@@ -548,7 +545,7 @@
   {#if showPracticedList}
     <div class="page-header">
       <h3>Unique Words Practiced <span class="practiced-count-accent">{practicedItems.length}</span> <span class="practiced-count">| {totalCount}</span></h3>
-      <button type="button" class="page-close-btn" onclick={() => showPracticedList = false}>
+      <button type="button" class="page-close-btn" onclick={() => showPracticedList = false} title="Close">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
       </button>
     </div>
@@ -564,6 +561,7 @@
         {@const gap = 4}
         {@const step = barW + gap}
         {@const toY = (v) => yMax > 0 ? chartH - (v / yMax) * chartH : chartH}
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div class="chart-container" onmouseleave={() => hoveredBar = null}>
           <svg class="progress-chart" viewBox="0 0 {W} {H}">
             {#each chartData.ticks as tick}
@@ -582,12 +580,15 @@
                 fill="var(--accent)"
                 opacity={hoveredBar?.index === i ? 0.5 : 0.25}
               />
+              <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
               <rect
                 x={ML + i * step}
                 y="0"
                 width={step}
                 height={chartH}
                 fill="transparent"
+                role="button"
+                tabindex="-1"
                 onmouseenter={() => hoveredBar = { index: i, bar, cumulative: chartData.cumulativeData[i] }}
                 onclick={() => hoveredBar = hoveredBar?.index === i ? null : { index: i, bar, cumulative: chartData.cumulativeData[i] }}
               />
@@ -634,7 +635,7 @@
   {:else if showPracticedGroups}
     <div class="page-header">
       <h3>Groups Practiced <span class="practiced-count-accent">{practicedGroupsSorted.filter(g => $datasetGroupSessions.has(g.group)).length}</span> <span class="practiced-count">| {practicedGroupsSorted.length}</span></h3>
-      <button type="button" class="page-close-btn" onclick={() => showPracticedGroups = false}>
+      <button type="button" class="page-close-btn" onclick={() => showPracticedGroups = false} title="Close">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
       </button>
     </div>
@@ -649,8 +650,11 @@
               <span class="compact-date">{#if gs}{timeAgo(gs.lastPracticedAt)}{/if}</span>
               <span class="compact-actions">
                 {#if $currentDataset?.kind === 'chinese'}
-                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&from=groups`} title="Practice">
+                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke&from=groups`} title="Stroke practice">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                  </a>
+                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin&from=groups`} title="Pinyin practice">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h1M10 8h1M14 8h1M18 8h1M7 12h1M11 12h1M15 12h1M8 16h8"/></svg>
                   </a>
                 {/if}
                 <a class="compact-icon compact-icon-workbook" href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}`} target="_blank" rel="noreferrer" title="Workbook">
@@ -679,7 +683,7 @@
   {:else if showPracticedChars}
     <div class="page-header">
       <h3>Chars Practiced <span class="practiced-count-accent">{practicedCharsCount}</span> <span class="practiced-count">| {uniqueChars}</span></h3>
-      <button type="button" class="page-close-btn" onclick={() => showPracticedChars = false}>
+      <button type="button" class="page-close-btn" onclick={() => showPracticedChars = false} title="Close">
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
       </button>
     </div>
@@ -899,8 +903,11 @@
               <span class="compact-date">{#if gs}{formatDate(gs.lastFullSessionAt)}{/if}</span>
               <span class="compact-actions">
                 {#if $currentDataset?.kind === 'chinese'}
-                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}`} title="Practice">
+                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke`} title="Stroke practice">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                  </a>
+                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin`} title="Pinyin practice">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h1M10 8h1M14 8h1M18 8h1M7 12h1M11 12h1M15 12h1M8 16h8"/></svg>
                   </a>
                 {/if}
                 <a class="compact-icon compact-icon-workbook" href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}`} target="_blank" rel="noreferrer" title="Workbook">
@@ -943,9 +950,15 @@
               {#if $currentDataset?.kind === 'chinese'}
                 <a
                   class="print-link"
-                  href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}`}
+                  href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke`}
                 >
-                  Practice
+                  Stroke
+                </a>
+                <a
+                  class="print-link"
+                  href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin`}
+                >
+                  Pinyin
                 </a>
               {/if}
               <a

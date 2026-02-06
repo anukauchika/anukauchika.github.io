@@ -4,11 +4,14 @@
   import { loadDatasetGroupSessions, datasetGroupSessions } from './state/practice-stats.js'
   import { isAuthenticated } from './state/auth.js'
   import PracticeChinese from './kind/chinese/Practice.svelte'
+  import PracticePinyin from './kind/chinese/PracticePinyin.svelte'
 
   const getSearchParams = () => {
     if (typeof window === 'undefined') return new URLSearchParams()
     return new URLSearchParams(window.location.search)
   }
+
+  const practiceType = getSearchParams().get('type') || 'stroke'
 
   onMount(() => {
     const params = getSearchParams()
@@ -18,7 +21,7 @@
 
   $effect(() => {
     if ($datasetId) {
-      loadDatasetGroupSessions($datasetId, 'stroke')
+      loadDatasetGroupSessions($datasetId, practiceType)
     }
   })
 
@@ -39,16 +42,23 @@
 
   const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || ''
   const basePath = $derived.by(() => $currentDataset?.kind ? `${baseUrl}/${$currentDataset.kind}` : null)
+
+  const headerTitle = practiceType === 'pinyin' ? 'Pinyin Practice' : 'Stroke Practice'
 </script>
 
 <main>
   {#if activeGroup}
     {@const from = getSearchParams().get('from')}
-    <PracticeChinese group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} backUrl="{basePath ?? baseUrl}/?dataset={$datasetId}{from ? `&from=${from}` : ''}" />
+    {@const backUrl = `${basePath ?? baseUrl}/?dataset=${$datasetId}${from ? `&from=${from}` : ''}`}
+    {#if practiceType === 'pinyin'}
+      <PracticePinyin group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} {backUrl} />
+    {:else}
+      <PracticeChinese group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} {backUrl} />
+    {/if}
   {/if}
 
   <header class="practice-header">
-    <h1>Stroke Practice</h1>
+    <h1>{headerTitle}</h1>
     {#if activeGroup}
       <div class="group-meta">
         <span class="group-tags">

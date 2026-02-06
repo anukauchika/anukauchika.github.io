@@ -8,7 +8,7 @@
       <h3>{item.word}</h3>
       <p>{item.phonetics} · {item.russian}</p>
     </div>
-    <button class="page-close-btn" type="button" onclick={onClose}>
+    <button class="page-close-btn" type="button" onclick={onClose} title="Close">
       <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
     </button>
   </header>
