@@ -63,6 +63,7 @@
   let showAuthDropdown = $state(false)
   let showPracticedList = $state(false)
   let showPracticedGroups = $state(false)
+  let showPracticedChars = $state(false)
   let activeStat = $state(null)
   let avatarError = $state(false)
   let hoveredBar = $state(null)
@@ -71,8 +72,11 @@
   {
     const params = new URLSearchParams(window.location.search)
     const from = params.get('from')
-    if (from === 'groups') showPracticedGroups = true
-    if (from === 'words') showPracticedList = true
+    if ($isAuthenticated) {
+      if (from === 'groups') showPracticedGroups = true
+      if (from === 'words') showPracticedList = true
+      if (from === 'chars') showPracticedChars = true
+    }
     if (from) {
       params.delete('from')
       const qs = params.toString()
@@ -307,6 +311,44 @@
     })
     return chars.size
   })
+  const practicedCharsData = $derived.by(() => {
+    const isCJK = (c) => c >= '\u4E00' && c <= '\u9FFF'
+    const charMap = new Map()
+    filteredGroups.forEach((g) => {
+      g.items.forEach((item) => {
+        const word = item.word || ''
+        const stat = $datasetStats.get(`${g.group}::${item.id}`)
+        for (const char of word) {
+          if (!isCJK(char)) continue
+          const existing = charMap.get(char)
+          if (existing) {
+            existing.wordCount++
+            if (stat) {
+              existing.practiced = true
+              existing.successCount += stat.successCount ?? 0
+              existing.errorCount += stat.errorCount ?? 0
+              if (stat.lastPracticedAt && (!existing.lastPracticedAt || stat.lastPracticedAt > existing.lastPracticedAt)) {
+                existing.lastPracticedAt = stat.lastPracticedAt
+              }
+            }
+          } else {
+            charMap.set(char, {
+              char,
+              wordCount: 1,
+              successCount: stat?.successCount ?? 0,
+              errorCount: stat?.errorCount ?? 0,
+              lastPracticedAt: stat?.lastPracticedAt ?? null,
+              practiced: !!stat,
+            })
+          }
+        }
+      })
+    })
+    const chars = Array.from(charMap.values())
+    chars.sort((a, b) => (b.lastPracticedAt ?? '').localeCompare(a.lastPracticedAt ?? ''))
+    return chars
+  })
+  const practicedCharsCount = $derived(practicedCharsData.filter(c => c.practiced).length)
   const practicedCount = $derived.by(() => {
     let count = 0
     filteredGroups.forEach((g) => {
@@ -634,6 +676,26 @@
         {/each}
       </div>
     </section>
+  {:else if showPracticedChars}
+    <div class="page-header">
+      <h3>Chars Practiced <span class="practiced-count-accent">{practicedCharsCount}</span> <span class="practiced-count">| {uniqueChars}</span></h3>
+      <button type="button" class="page-close-btn" onclick={() => showPracticedChars = false}>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <section class="practiced-page">
+      <div class="char-grid">
+        {#each practicedCharsData as c (c.char)}
+          <div class="char-tile" class:practiced={c.practiced}>
+            <span class="char-glyph" lang="zh" translate="no">{c.char}</span>
+            {#if c.practiced}
+              <span class="char-stat">{c.successCount}{#if c.errorCount > 0}<span class="char-errors">| {c.errorCount}</span>{/if}</span>
+              <span class="char-time">{timeAgo(c.lastPracticedAt)}</span>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    </section>
   {:else}
   <header class="hero">
     <div class="hero-top">
@@ -685,7 +747,7 @@
         {/if}
       </div>
       <div class="stats">
-        <button type="button" class="stat-btn" onclick={() => showPracticedGroups = true}>
+        <button type="button" class="stat-btn" onclick={() => { if ($isAuthenticated) showPracticedGroups = true }}>
           <span class="stat-label">Groups</span>
           <span class="stat-value">{groupCount}</span>
         </button>
@@ -693,7 +755,7 @@
           <span class="stat-label">Words</span>
           <span class="stat-value">{totalCount}</span>
         </button>
-        <button type="button" class="stat-btn" onclick={() => activeStat = 'chars'}>
+        <button type="button" class="stat-btn" onclick={() => { if ($isAuthenticated) showPracticedChars = true }}>
           <span class="stat-label">Chars</span>
           <span class="stat-value">{uniqueChars}</span>
         </button>
@@ -942,8 +1004,6 @@
       <div class="stat-info-modal" role="dialog" aria-modal="true">
         {#if activeStat === 'words'}
           <p>Total number of words in the filtered dataset.</p>
-        {:else if activeStat === 'chars'}
-          <p>Number of unique Chinese characters in the filtered dataset.</p>
         {/if}
       </div>
     </div>

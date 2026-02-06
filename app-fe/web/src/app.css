@@ -1198,6 +1198,51 @@ select:focus {
   gap: 1rem;
 }
 
+.char-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 0.5rem;
+}
+
+.char-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.4rem;
+  background: var(--card);
+  border-radius: 12px;
+  border: 1px solid rgba(31, 111, 92, 0.06);
+  opacity: 0.4;
+}
+
+.char-tile.practiced {
+  opacity: 1;
+  border-color: rgba(31, 111, 92, 0.12);
+}
+
+.char-glyph {
+  font-family: var(--font-chinese);
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.char-stat {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.char-errors {
+  color: #b85450;
+  margin-left: 0.25em;
+}
+
+.char-time {
+  font-size: 0.6rem;
+  color: var(--muted);
+}
+
 .practiced-count-accent {
   color: var(--accent);
 }
