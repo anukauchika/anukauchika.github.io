@@ -15,8 +15,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'],
       manifest: {
-        name: 'Anukauchika',
-        short_name: 'Anukauchika',
+        name: 'Anuka Uchika',
+        short_name: 'Anuka Uchika',
         description: 'Vocabulary learning with stroke writing practice, focused word groups, stats-driven spaced repetition, and progress tracking',
         theme_color: '#ffffff',
         background_color: '#ffffff',

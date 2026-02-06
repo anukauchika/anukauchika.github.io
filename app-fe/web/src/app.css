@@ -46,9 +46,20 @@ main {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1rem;
   margin-bottom: 1rem;
   flex-wrap: wrap;
+}
+
+.app-title {
+  flex: 1;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin: 0;
+  text-transform: uppercase;
 }
 
 .hero-content {
@@ -110,6 +121,21 @@ h1 {
   font-size: 0.8rem;
   color: var(--muted);
   margin: 1rem 0 -0.5rem;
+}
+
+.login-hint-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.login-hint-link:hover {
+  opacity: 0.8;
 }
 
 .progress-bar {
@@ -602,6 +628,68 @@ select:focus {
   color: var(--muted);
 }
 
+.auth-modal {
+  position: relative;
+  z-index: 1;
+  background: var(--card);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(31, 111, 92, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  min-width: 240px;
+}
+
+.auth-modal-title {
+  font-size: 0.95rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.auth-modal-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid rgba(31, 111, 92, 0.2);
+  background: #fffdf7;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.auth-modal-btn:hover {
+  border-color: var(--accent);
+  background: rgba(31, 111, 92, 0.04);
+}
+
+.auth-modal-btn svg {
+  flex-shrink: 0;
+}
+
+.auth-modal-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.auth-modal-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--ink);
+}
+
+.auth-modal-email {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
 .group-actions {
   display: flex;
   gap: 0.5rem;
@@ -1020,7 +1108,7 @@ select:focus {
   }
 
   .hero-brand {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0;
   }
 
   .dataset-picker {
