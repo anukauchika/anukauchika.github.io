@@ -3,6 +3,13 @@ import * as idb from '../data/idb-stats.js'
 import { api } from '../api.js'
 import { syncPending, setActiveSessionId } from './sync.js'
 import { user } from './auth.js'
+import { getDatasetCode } from './registry.js'
+
+// Code conversion: callers use full IDs ('chinese-hskv3-elementary', 'stroke'),
+// IDB/Supabase use compact codes ('aa', 's')
+const PT_CODES = { stroke: 's' }
+function dsCode(id) { return getDatasetCode(id) || id }
+function ptCode(type) { return PT_CODES[type] || type }
 
 // --- Stores (shapes unchanged for UI compatibility) ---
 
@@ -39,7 +46,7 @@ const tempIdReady = idb.getMinId().then((min) => { nextTempId = min - 1 })
 // --- Load functions ---
 
 export async function loadGroupStats(datasetId, practiceType, groupId) {
-  const stats = await idb.getWordStats(datasetId, practiceType)
+  const stats = await idb.getWordStats(dsCode(datasetId), ptCode(practiceType))
   const map = new Map()
   for (const s of stats) {
     if (s.groupId === groupId) map.set(s.wordId, s)
@@ -48,7 +55,7 @@ export async function loadGroupStats(datasetId, practiceType, groupId) {
 }
 
 export async function loadDatasetStats(datasetId, practiceType) {
-  const stats = await idb.getWordStats(datasetId, practiceType)
+  const stats = await idb.getWordStats(dsCode(datasetId), ptCode(practiceType))
   const map = new Map()
   for (const s of stats) {
     map.set(`${s.groupId}::${s.wordId}`, s)
@@ -57,7 +64,7 @@ export async function loadDatasetStats(datasetId, practiceType) {
 }
 
 export async function loadDatasetGroupSessions(datasetId, practiceType) {
-  const sessions = await idb.getGroupSessions(datasetId, practiceType)
+  const sessions = await idb.getGroupSessions(dsCode(datasetId), ptCode(practiceType))
   const map = new Map()
   for (const s of sessions) {
     const existing = map.get(s.group_id)
@@ -88,7 +95,7 @@ export async function loadDatasetGroupSessions(datasetId, practiceType) {
 
 export async function loadDailyActivity(datasetId, practiceType) {
   try {
-    const sessions = await idb.getGroupSessions(datasetId, practiceType)
+    const sessions = await idb.getGroupSessions(dsCode(datasetId), ptCode(practiceType))
     const dayMap = new Map()
     for (const s of sessions) {
       const words = await idb.getWordAttempts(s.id)
@@ -124,8 +131,8 @@ export async function startGroupSession(datasetId, practiceType, groupId) {
   try {
     const result = await api.stats.createGroupSession({
       user_id: userId,
-      dataset_id: datasetId,
-      practice_type: practiceType,
+      dataset_id: dsCode(datasetId),
+      practice_type: ptCode(practiceType),
       group_id: groupId,
       started_at: now,
     })
@@ -140,8 +147,8 @@ export async function startGroupSession(datasetId, practiceType, groupId) {
   await idb.saveGroupSession({
     id,
     user_id: userId,
-    dataset_id: datasetId,
-    practice_type: practiceType,
+    dataset_id: dsCode(datasetId),
+    practice_type: ptCode(practiceType),
     group_id: groupId,
     started_at: now,
     done_at: null,

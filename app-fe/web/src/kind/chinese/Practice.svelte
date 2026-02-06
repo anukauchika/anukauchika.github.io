@@ -1,7 +1,8 @@
 <script>
   import { tick } from 'svelte'
   import HanziWriter from 'hanzi-writer'
-  import { recordSuccess, recordGroupSession, loadGroupStats, groupStats } from '../../state/practice-stats.js'
+  import { startGroupSession, endGroupSession, recordWordAttempt, loadGroupStats, groupStats } from '../../state/practice-stats.js'
+  import { isAuthenticated } from '../../state/auth.js'
 
   let { group, datasetId, translationField, backUrl } = $props()
   const practiceType = 'stroke'
@@ -21,6 +22,13 @@
   let showPinyin = $state(true)
   let wordDelay = $state(null) // { startTime, duration }
   let wordDelayProgress = $state(100)
+
+  // Char-level tracking
+  let sessionIdPromise = null
+  let wordStartedAt = $state(null)
+  let charStartedAt = $state(null)
+  let charErrorCount = $state(0)
+  let charData = $state([])
 
   const currentItem = $derived.by(() => items[currentIndex] ?? null)
   const currentStat = $derived.by(() => currentItem ? $groupStats.get(currentItem.id) : null)
@@ -94,6 +102,8 @@
 
   const repeatWord = () => {
     clearDelay()
+    charData = []
+    wordStartedAt = null
     const wasZero = charIndex === 0
     charIndex = 0
     quizResult = null
@@ -127,6 +137,11 @@
 
     if (charIndex === 0 && !skipSpeak) speak(currentItem.word)
 
+    // Track char start; first char of word sets wordStartedAt
+    charStartedAt = new Date().toISOString()
+    charErrorCount = 0
+    if (charIndex === 0) wordStartedAt = new Date().toISOString()
+
     writer = HanziWriter.create(target, currentChar, {
       width: 280,
       height: 280,
@@ -143,8 +158,20 @@
     })
 
     writer.quiz({
+      onMistake: () => {
+        charErrorCount += 1
+      },
       onComplete: () => {
+        const charDoneAt = new Date().toISOString()
+        const updatedCharData = [...charData, {
+          charIndex: charIndex,
+          startedAt: charStartedAt,
+          doneAt: charDoneAt,
+          errorCount: charErrorCount,
+        }]
+
         if (charIndex < hanChars.length - 1) {
+          charData = updatedCharData
           // Move to next character in the word
           startDelay(1500, () => {
             charIndex += 1
@@ -155,7 +182,13 @@
           practicedCount += 1
           quizResult = 'correct'
           const item = items[currentIndex]
-          if (item) recordSuccess(datasetId, practiceType, group.group, item.id)
+          const wStartedAt = wordStartedAt
+          charData = []
+          if ($isAuthenticated && item && sessionIdPromise) {
+            sessionIdPromise.then((sid) => {
+              if (sid != null) recordWordAttempt(sid, item.id, wStartedAt, charDoneAt, updatedCharData)
+            }).catch((e) => console.error('recordWordAttempt failed', e))
+          }
           if (currentIndex < items.length - 1) {
             startDelay(5000, () => {
               currentIndex += 1
@@ -173,15 +206,11 @@
   const maybeFinishSession = () => {
     if (completedWords.size >= items.length) {
       sessionDone = true
-      recordGroupSession({
-        datasetId,
-        practiceType,
-        groupId: group.group,
-        practicedCount,
-        skippedCount,
-        startedAt: sessionStartedAt,
-        completedAt: new Date().toISOString(),
-      })
+      if ($isAuthenticated && sessionIdPromise) {
+        sessionIdPromise.then((sid) => {
+          if (sid != null) endGroupSession(sid)
+        }).catch((e) => console.error('endGroupSession failed', e))
+      }
     }
   }
 
@@ -204,6 +233,8 @@
 
   const skipWord = () => {
     clearDelay()
+    charData = []
+    wordStartedAt = null
     completedWords = new Set([...completedWords, currentIndex])
     skippedCount += 1
     if (currentIndex < items.length - 1) {
@@ -226,6 +257,13 @@
     skippedCount = 0
     sessionDone = false
     hintManuallySet = false
+    charData = []
+    wordStartedAt = null
+    charStartedAt = null
+    charErrorCount = 0
+    sessionIdPromise = $isAuthenticated
+      ? startGroupSession(datasetId, practiceType, group.group)
+      : null
   }
 
   // Reset when group changes — sort once at session start
@@ -240,7 +278,15 @@
       skippedCount = 0
       sessionDone = false
       hintManuallySet = false
+      charData = []
+      wordStartedAt = null
+      charStartedAt = null
+      charErrorCount = 0
       if (datasetId) {
+        // Start session and load stats in parallel
+        sessionIdPromise = $isAuthenticated
+          ? startGroupSession(datasetId, practiceType, group.group)
+          : null
         loadGroupStats(datasetId, practiceType, group.group).then(() => {
           const stats = $groupStats
           items = [...rawItems].sort((a, b) => {
@@ -250,6 +296,7 @@
           })
         })
       } else {
+        sessionIdPromise = null
         items = [...rawItems]
       }
     }
