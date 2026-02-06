@@ -1,7 +1,8 @@
-// Delete legacy database from previous implementation
+// Delete legacy databases
 indexedDB.deleteDatabase('memris-stats')
+indexedDB.deleteDatabase('memris-stats-v2')
 
-const DB_NAME = 'memris-stats-v2'
+const DB_NAME = 'uch-stats'
 const DB_VERSION = 1
 const SESSIONS = 'group_sessions'
 const WORDS = 'word_attempts'
@@ -247,7 +248,7 @@ export async function isEmpty() {
 
 // --- Cleanup: delete synced records older than 90 days ---
 
-const CLEANUP_KEY = 'memris-stats-last-cleanup'
+const CLEANUP_KEY = 'uch-stats-last-cleanup'
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000
 const RETENTION_MS = 90 * 24 * 60 * 60 * 1000
 

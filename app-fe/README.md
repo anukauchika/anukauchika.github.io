@@ -1,4 +1,4 @@
-# Memris
+# Anuka Uchika
 
 A vocabulary learning application with two modes:
 1. **Browser** - Interactive vocabulary explorer with search, filtering, and learning aids

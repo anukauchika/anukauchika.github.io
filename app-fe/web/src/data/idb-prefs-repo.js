@@ -1,4 +1,7 @@
-const DB_NAME = 'memris-prefs'
+// Delete legacy database
+indexedDB.deleteDatabase('memris-prefs')
+
+const DB_NAME = 'uch-prefs'
 const DB_VERSION = 1
 const PREFS_STORE = 'prefs'
 

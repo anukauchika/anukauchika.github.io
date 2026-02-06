@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://sherzodv.github.io/memris/</loc>
+    <loc>https://anukauchika.github.io/</loc>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://sherzodv.github.io/memris/chinese/</loc>
+    <loc>https://anukauchika.github.io/chinese/</loc>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://sherzodv.github.io/memris/chinese/practice.html</loc>
+    <loc>https://anukauchika.github.io/chinese/practice.html</loc>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sherzodv.github.io/memris/chinese/workbook.html</loc>
+    <loc>https://anukauchika.github.io/chinese/workbook.html</loc>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://sherzodv.github.io/memris/english/</loc>
+    <loc>https://anukauchika.github.io/english/</loc>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://sherzodv.github.io/memris/english/workbook.html</loc>
+    <loc>https://anukauchika.github.io/english/workbook.html</loc>
     <priority>0.7</priority>
   </url>
 </urlset>
