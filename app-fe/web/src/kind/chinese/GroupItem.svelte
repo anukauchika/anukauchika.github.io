@@ -13,8 +13,8 @@
     {#each item.tags ?? [] as tag}
       <span>#{tag}</span>
     {/each}
+    {#if stat}
+      <span class="success-count">{stat.successCount}{#if stat.errorCount > 0}<span class="error-count">| {stat.errorCount}</span>{/if}</span>
+    {/if}
   </div>
-  {#if stat}
-    <div class="success-count">{stat.successCount}{#if stat.errorCount > 0}<span class="error-count">| {stat.errorCount}</span>{/if}</div>
-  {/if}
 </button>

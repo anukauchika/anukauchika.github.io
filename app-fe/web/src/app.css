@@ -942,9 +942,10 @@ select:focus {
   display: flex;
   gap: 0.4rem;
   flex-wrap: wrap;
+  align-items: center;
 }
 
-.word-tags span {
+.word-tags span:not(.success-count):not(.error-count) {
   background: rgba(31, 111, 92, 0.08);
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
@@ -956,7 +957,7 @@ select:focus {
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--accent);
-  margin-top: 0.3rem;
+  margin-left: auto;
 }
 
 .error-count {
