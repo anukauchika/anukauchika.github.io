@@ -43,7 +43,8 @@
 
 <main>
   {#if activeGroup}
-    <PracticeChinese group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} backUrl="{basePath ?? baseUrl}/?dataset={$datasetId}" />
+    {@const from = getSearchParams().get('from')}
+    <PracticeChinese group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} backUrl="{basePath ?? baseUrl}/?dataset={$datasetId}{from ? `&from=${from}` : ''}" />
   {/if}
 
   <header class="practice-header">

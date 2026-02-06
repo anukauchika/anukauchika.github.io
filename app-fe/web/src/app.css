@@ -1198,8 +1198,12 @@ select:focus {
   gap: 1rem;
 }
 
+.practiced-count-accent {
+  color: var(--accent);
+}
+
 .practiced-count {
-  color: var(--muted);
+  color: inherit;
 }
 
 .practiced-item {

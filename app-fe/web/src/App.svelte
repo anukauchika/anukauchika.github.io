@@ -62,9 +62,23 @@
   let showAllGroups = $state(false)
   let showAuthDropdown = $state(false)
   let showPracticedList = $state(false)
+  let showPracticedGroups = $state(false)
   let activeStat = $state(null)
   let avatarError = $state(false)
   let hoveredBar = $state(null)
+
+  // Restore page view from URL param (e.g., returning from practice)
+  {
+    const params = new URLSearchParams(window.location.search)
+    const from = params.get('from')
+    if (from === 'groups') showPracticedGroups = true
+    if (from === 'words') showPracticedList = true
+    if (from) {
+      params.delete('from')
+      const qs = params.toString()
+      history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`)
+    }
+  }
 
   const avatarUrl = $derived($user?.user_metadata?.avatar_url)
   const userInitials = $derived.by(() => {
@@ -395,6 +409,16 @@
     return Math.min(Math.round((fullSessions / 10) * 100), 100)
   }
 
+  const practicedGroupsSorted = $derived.by(() => {
+    return [...filteredGroups].sort((a, b) => {
+      const gsA = $datasetGroupSessions.get(a.group)
+      const gsB = $datasetGroupSessions.get(b.group)
+      const tA = gsA?.lastPracticedAt ?? ''
+      const tB = gsB?.lastPracticedAt ?? ''
+      return tB.localeCompare(tA)
+    })
+  })
+
   // Activity line: practice activity with fixed 0-50 gradation
   const ACTIVITY_MAX = 50
   const CELL_SIZE = 10
@@ -481,7 +505,7 @@
 <main>
   {#if showPracticedList}
     <div class="page-header">
-      <h3>Unique Words Practiced <span class="practiced-count">| {practicedItems.length}</span></h3>
+      <h3>Unique Words Practiced <span class="practiced-count-accent">{practicedItems.length}</span> <span class="practiced-count">| {totalCount}</span></h3>
       <button type="button" class="page-close-btn" onclick={() => showPracticedList = false}>
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
       </button>
@@ -565,6 +589,51 @@
         {/each}
       </div>
     </section>
+  {:else if showPracticedGroups}
+    <div class="page-header">
+      <h3>Groups Practiced <span class="practiced-count-accent">{practicedGroupsSorted.filter(g => $datasetGroupSessions.has(g.group)).length}</span> <span class="practiced-count">| {practicedGroupsSorted.length}</span></h3>
+      <button type="button" class="page-close-btn" onclick={() => showPracticedGroups = false}>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <section class="practiced-page">
+      <div class="compact-list">
+        {#each practicedGroupsSorted as group (group.group)}
+          {@const gs = $isAuthenticated ? $datasetGroupSessions.get(group.group) : null}
+          <article class="compact-row">
+            <div class="compact-main">
+              <span class="compact-gid">{formatGroup(group.group)}</span>
+              <span class="compact-passes">{#if gs}{gs.full}/{gs.total}{/if}</span>
+              <span class="compact-date">{#if gs}{timeAgo(gs.lastPracticedAt)}{/if}</span>
+              <span class="compact-actions">
+                {#if $currentDataset?.kind === 'chinese'}
+                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&from=groups`} title="Practice">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
+                  </a>
+                {/if}
+                <a class="compact-icon compact-icon-workbook" href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}`} target="_blank" rel="noreferrer" title="Workbook">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                </a>
+                <a class="compact-icon compact-icon-workbook" href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}&autoprint=1`} target="_blank" rel="noreferrer" title="Print workbook">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                </a>
+              </span>
+            </div>
+            {#if group.tags?.length}
+              <div class="compact-tags">
+                {#each group.tags as tag}<span class="compact-tag">#{tag}</span>{/each}
+              </div>
+            {/if}
+            {#if $isAuthenticated}
+              <div class="compact-progress">
+                <div class="compact-progress-words" style="width: {getGroupProgress(group)}%"></div>
+                <div class="compact-progress-mastery" style="width: {getGroupMastery(group)}%"></div>
+              </div>
+            {/if}
+          </article>
+        {/each}
+      </div>
+    </section>
   {:else}
   <header class="hero">
     <div class="hero-top">
@@ -616,7 +685,7 @@
         {/if}
       </div>
       <div class="stats">
-        <button type="button" class="stat-btn" onclick={() => activeStat = 'groups'}>
+        <button type="button" class="stat-btn" onclick={() => showPracticedGroups = true}>
           <span class="stat-label">Groups</span>
           <span class="stat-value">{groupCount}</span>
         </button>
@@ -871,9 +940,7 @@
         onclick={() => activeStat = null}
       ></button>
       <div class="stat-info-modal" role="dialog" aria-modal="true">
-        {#if activeStat === 'groups'}
-          <p>Number of vocabulary groups matching current filters.</p>
-        {:else if activeStat === 'words'}
+        {#if activeStat === 'words'}
           <p>Total number of words in the filtered dataset.</p>
         {:else if activeStat === 'chars'}
           <p>Number of unique Chinese characters in the filtered dataset.</p>
