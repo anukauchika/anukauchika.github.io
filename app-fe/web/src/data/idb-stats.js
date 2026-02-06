@@ -113,10 +113,22 @@ export async function getWordStats(datasetId, practiceType) {
   const sessionIds = new Set(sessions.map((s) => s.id))
 
   const db = await dbPromise
-  const allWords = await req(db.transaction(WORDS, 'readonly').objectStore(WORDS).getAll())
+  const t = db.transaction([WORDS, CHARS], 'readonly')
+  const allWords = await req(t.objectStore(WORDS).getAll())
   const words = allWords.filter((w) => sessionIds.has(w.group_session_id))
 
-  // Aggregate: per (group_id, word_id) → { successCount, lastPracticedAt }
+  // Load char logs for all relevant word attempts to sum error counts
+  const charStore = t.objectStore(CHARS)
+  const errorsByAttempt = new Map()
+  for (const w of words) {
+    const range = IDBKeyRange.bound([w.id], [w.id, Infinity])
+    const chars = await req(charStore.getAll(range))
+    let total = 0
+    for (const c of chars) total += c.error_count || 0
+    errorsByAttempt.set(w.id, total)
+  }
+
+  // Aggregate: per (group_id, word_id) → { successCount, errorCount, lastPracticedAt }
   const stats = new Map()
   for (const s of sessions) {
     const sessionWords = words.filter((w) => w.group_session_id === s.id)
@@ -128,9 +140,11 @@ export async function getWordStats(datasetId, practiceType) {
         groupId: s.group_id,
         wordId: w.word_id,
         successCount: 0,
+        errorCount: 0,
         lastPracticedAt: null,
       }
       existing.successCount += 1
+      existing.errorCount += errorsByAttempt.get(w.id) || 0
       if (!existing.lastPracticedAt || w.done_at > existing.lastPracticedAt) {
         existing.lastPracticedAt = w.done_at
       }

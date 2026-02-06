@@ -15,6 +15,6 @@
     {/each}
   </div>
   {#if stat}
-    <div class="success-count">{stat.successCount}x</div>
+    <div class="success-count">{stat.successCount}{#if stat.errorCount > 0}<span class="error-count">| {stat.errorCount}</span>{/if}</div>
   {/if}
 </button>

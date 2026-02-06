@@ -139,6 +139,7 @@ h1 {
 }
 
 .progress-bar {
+  position: relative;
   height: 4px;
   background: rgba(31, 111, 92, 0.12);
   border-radius: 2px;
@@ -147,7 +148,20 @@ h1 {
   overflow: hidden;
 }
 
-.progress-fill {
+.progress-fill-words {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: rgba(31, 111, 92, 0.5);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.progress-fill-mastery {
+  position: absolute;
+  top: 0;
+  left: 0;
   height: 100%;
   background: var(--accent);
   border-radius: 2px;
@@ -910,6 +924,11 @@ select:focus {
   font-weight: 600;
   color: var(--accent);
   margin-top: 0.3rem;
+}
+
+.error-count {
+  color: #b85450;
+  margin-left: 0.25em;
 }
 
 .modal-backdrop {

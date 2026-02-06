@@ -2,7 +2,11 @@ import { supabase } from './supabase-client.js'
 
 export async function getSession() {
   const { data, error } = await supabase.auth.getSession()
-  if (error) throw error
+  if (error) {
+    // Stale/invalid refresh token — treat as logged out
+    await supabase.auth.signOut({ scope: 'local' })
+    return null
+  }
   return data.session
 }
 
@@ -32,5 +36,6 @@ export async function signInWithApple() {
 
 export async function signOut() {
   const { error } = await supabase.auth.signOut()
-  if (error) throw error
+  // Ignore errors (e.g. token already expired) — local state is cleared regardless
+  if (error) console.warn('signOut error (ignored):', error.message)
 }

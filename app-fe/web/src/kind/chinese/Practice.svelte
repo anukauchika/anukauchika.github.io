@@ -308,7 +308,7 @@
         <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
       </a>
       {#if $isAuthenticated && currentStat}
-        <span class="quiz-count" title="Times practiced">{currentStat.successCount}x</span>
+        <span class="quiz-count" title="Times practiced">{currentStat.successCount}{#if currentStat.errorCount > 0}<span class="quiz-error-count">| {currentStat.errorCount}</span>{/if}</span>
       {/if}
       <div class="word-info">
         <span class="word-translation">{currentItem[translationField]}</span>
@@ -385,11 +385,11 @@
         class="word-dot"
         class:active={idx === currentIndex}
         class:done={completedWords.has(idx)}
-        title="{item.word}{$isAuthenticated && stat ? ` (${stat.successCount}x)` : ''}"
+        title="{item.word}"
       >
         {item[translationField]}
         {#if $isAuthenticated && stat}
-          <span class="dot-count">{stat.successCount}</span>
+          <span class="dot-count">{stat.successCount}{#if stat.errorCount > 0}<span class="dot-error-count">| {stat.errorCount}</span>{/if}</span>
         {/if}
       </span>
     {/each}
@@ -464,6 +464,16 @@
     font-weight: 700;
     opacity: 0.7;
     margin-left: 0.15rem;
+  }
+
+  .dot-error-count {
+    color: var(--sun);
+    margin-left: 0.25em;
+  }
+
+  .quiz-error-count {
+    color: #b85450;
+    margin-left: 0.25em;
   }
 
   .quiz-area {

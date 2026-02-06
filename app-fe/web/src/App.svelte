@@ -29,6 +29,7 @@
       reloadStats()
       loadMainFilters($datasetId)
       showAllGroups = false
+      selectedDay = null
     }
   })
 
@@ -245,6 +246,17 @@
   const datasetProgress = $derived.by(() =>
     totalCount > 0 ? Math.round((practicedCount / totalCount) * 100) : 0
   )
+  const datasetMastery = $derived.by(() => {
+    if (totalCount === 0) return 0
+    let sum = 0
+    filteredGroups.forEach((g) => {
+      g.items.forEach((item) => {
+        const stat = $datasetStats.get(`${g.group}::${item.id}`)
+        sum += Math.min((stat?.successCount ?? 0) / 10, 1)
+      })
+    })
+    return Math.round((sum / totalCount) * 100)
+  })
   const getGroupProgress = (group) => {
     const practiced = group.items.filter(item =>
       $datasetStats.has(`${group.group}::${item.id}`)
@@ -254,7 +266,7 @@
   const getGroupMastery = (group) => {
     const gs = $datasetGroupSessions.get(group.group)
     const fullSessions = gs?.full ?? 0
-    return Math.min(Math.round((fullSessions / 5) * 100), 100)
+    return Math.min(Math.round((fullSessions / 10) * 100), 100)
   }
 
   // Activity line: practice activity with fixed 0-50 gradation
@@ -413,7 +425,8 @@
     </div>
     {#if $isAuthenticated}
       <div class="progress-bar">
-        <div class="progress-fill" style="width: {datasetProgress}%"></div>
+        <div class="progress-fill-words" style="width: {datasetProgress}%"></div>
+        <div class="progress-fill-mastery" style="width: {datasetMastery}%"></div>
       </div>
 
       <div class="activity-line" bind:this={activityContainer}>

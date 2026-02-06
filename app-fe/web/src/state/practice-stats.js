@@ -221,6 +221,9 @@ export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, ch
 
   syncPending().catch((e) => console.error('sync failed', e))
 
+  // Sum error counts from char data
+  const attemptErrors = chars.reduce((sum, c) => sum + (c.errorCount || 0), 0)
+
   // Update groupStats store
   groupStats.update((map) => {
     const next = new Map(map)
@@ -231,6 +234,7 @@ export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, ch
       groupId,
       wordId,
       successCount: (existing?.successCount ?? 0) + 1,
+      errorCount: (existing?.errorCount ?? 0) + attemptErrors,
       lastPracticedAt: doneAt,
     }
     next.set(wordId, stat)
@@ -248,6 +252,7 @@ export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, ch
       groupId,
       wordId,
       successCount: (existing?.successCount ?? 0) + 1,
+      errorCount: (existing?.errorCount ?? 0) + attemptErrors,
       lastPracticedAt: doneAt,
     })
     return next
