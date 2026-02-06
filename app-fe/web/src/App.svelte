@@ -56,6 +56,9 @@
   let tagQuery = $state('')
   let showSuggestions = $state(false)
   let highlightedIndex = $state(0)
+  let groupQuery = $state('')
+  let showGroupSuggestions = $state(false)
+  let groupHighlightedIndex = $state(0)
   let showAllGroups = $state(false)
   let showAuthDropdown = $state(false)
   let avatarError = $state(false)
@@ -129,6 +132,48 @@
     }
   }
 
+  const groupSuggestions = $derived.by(() => {
+    const q = groupQuery.trim().toLowerCase()
+    return groups.filter((g) =>
+      (!q || formatGroup(g.group).toLowerCase().includes(q)) && !$mainGroup.includes(g.group)
+    )
+  })
+
+  $effect(() => {
+    groupSuggestions
+    groupHighlightedIndex = 0
+  })
+
+  const addGroup = (groupId) => {
+    if (!$mainGroup.includes(groupId)) {
+      $mainGroup = [...$mainGroup, groupId]
+    }
+    groupQuery = ''
+    showGroupSuggestions = false
+    groupHighlightedIndex = 0
+  }
+
+  const removeGroup = (groupId) => {
+    $mainGroup = $mainGroup.filter((id) => id !== groupId)
+  }
+
+  const handleGroupKeydown = (e) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      groupHighlightedIndex = Math.min(groupHighlightedIndex + 1, groupSuggestions.length - 1)
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      groupHighlightedIndex = Math.max(groupHighlightedIndex - 1, 0)
+    } else if (e.key === 'Enter' && groupSuggestions.length > 0) {
+      e.preventDefault()
+      addGroup(groupSuggestions[groupHighlightedIndex].group)
+    } else if (e.key === 'Backspace' && groupQuery === '' && $mainGroup.length > 0) {
+      removeGroup($mainGroup[$mainGroup.length - 1])
+    } else if (e.key === 'Escape') {
+      showGroupSuggestions = false
+    }
+  }
+
   const normalize = (value) =>
     value
       .toLowerCase()
@@ -163,8 +208,8 @@
   }
 
   const matchesGroup = (groupId) => {
-    if ($mainGroup === 'all') return true
-    return Number($mainGroup) === groupId
+    if ($mainGroup.length === 0) return true
+    return $mainGroup.includes(groupId)
   }
 
   const openWord = (item) => {
@@ -178,14 +223,17 @@
   }
 
   $effect(() => {
-    if ($mainGroup !== 'all' && !groups.some((g) => g.group === Number($mainGroup))) {
-      $mainGroup = 'all'
+    if ($mainGroup.length > 0) {
+      const validIds = new Set(groups.map((g) => g.group))
+      const filtered = $mainGroup.filter((id) => validIds.has(id))
+      if (filtered.length !== $mainGroup.length) {
+        $mainGroup = filtered
+      }
     }
   })
 
 
   const filteredGroups = $derived.by(() => {
-    const sessions = $datasetGroupSessions
     return groups
       .filter((g) => matchesGroup(g.group))
       .map((g) => {
@@ -200,14 +248,6 @@
         // When searching, only show groups with matching items
         if (hasSearch) return g.items.length > 0
         return g._groupMatches || g.items.length > 0
-      })
-      .sort((a, b) => {
-        const sa = sessions.get(a.group)?.lastFullSessionAt ?? ''
-        const sb = sessions.get(b.group)?.lastFullSessionAt ?? ''
-        if (!sa && !sb) return 0
-        if (!sa) return -1
-        if (!sb) return 1
-        return sa < sb ? -1 : sa > sb ? 1 : 0
       })
   })
 
@@ -457,11 +497,21 @@
     <div class="controls">
       <label class="search">
         <span>Search</span>
-        <input
-          type="search"
-          placeholder="word, pinyin, English, tags"
-          bind:value={$mainSearch}
-        />
+        <div class="search-row">
+          <input
+            type="search"
+            placeholder="word, pinyin, English, tags"
+            bind:value={$mainSearch}
+          />
+          <div class="view-buttons">
+            <button type="button" class:active={!$mainCompact} onclick={() => $mainCompact = false} title="Grid view">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </button>
+            <button type="button" class:active={$mainCompact} onclick={() => $mainCompact = true} title="List view">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
       </label>
 
       {#if allTags.length > 0}
@@ -489,31 +539,43 @@
                 </ul>
               {/if}
             </div>
+            {#if $mainTags.length > 0}
+              <button type="button" class="input-clear" onmousedown={(e) => { e.preventDefault(); e.stopPropagation(); $mainTags = [] }}>&times;</button>
+            {/if}
           </div>
         </label>
       {/if}
 
-      <label class="group">
-        <span>Group</span>
-        <select bind:value={$mainGroup}>
-          <option value="all">All groups</option>
-          {#each groups as g}
-            <option value={g.group}>{formatGroup(g.group)}</option>
+      <label class="group-filter">
+        <span>Groups</span>
+        <div class="tag-input-wrap">
+          {#each $mainGroup as groupId (groupId)}
+            <span class="selected-tag">{formatGroup(groupId)}<button type="button" onmousedown={(e) => { e.preventDefault(); e.stopPropagation(); removeGroup(groupId) }}>&times;</button></span>
           {/each}
-        </select>
-      </label>
-
-      <label class="view-toggle">
-        <span>View</span>
-        <div class="view-buttons">
-          <button type="button" class:active={!$mainCompact} onclick={() => $mainCompact = false} title="Grid view">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-          </button>
-          <button type="button" class:active={$mainCompact} onclick={() => $mainCompact = true} title="List view">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          </button>
+          <div class="autocomplete">
+            <input
+              type="text"
+              placeholder="Filter..."
+              bind:value={groupQuery}
+              onfocus={() => showGroupSuggestions = true}
+              onblur={() => setTimeout(() => showGroupSuggestions = false, 150)}
+              oninput={() => showGroupSuggestions = true}
+              onkeydown={handleGroupKeydown}
+            />
+            {#if showGroupSuggestions && groupSuggestions.length > 0}
+              <ul class="suggestions">
+                {#each groupSuggestions as g, i}
+                  <li><button type="button" class:highlighted={i === groupHighlightedIndex} onmousedown={() => addGroup(g.group)}>{formatGroup(g.group)}</button></li>
+                {/each}
+              </ul>
+            {/if}
+          </div>
+          {#if $mainGroup.length > 0}
+            <button type="button" class="input-clear" onmousedown={(e) => { e.preventDefault(); e.stopPropagation(); $mainGroup = [] }}>&times;</button>
+          {/if}
         </div>
       </label>
+
     </div>
   </header>
 

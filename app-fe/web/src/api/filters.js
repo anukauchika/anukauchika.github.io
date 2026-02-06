@@ -20,7 +20,7 @@ export const filtersApi = {
     return {
       search: search ?? '',
       tags: tags ?? [],
-      group: group ?? 'all',
+      group: Array.isArray(group) ? group : [],
       compact: compact ?? false,
     }
   },

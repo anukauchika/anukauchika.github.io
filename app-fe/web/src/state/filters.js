@@ -3,7 +3,7 @@ import { filtersApi } from '../api/filters.js'
 
 export const mainSearch = writable('')
 export const mainTags = writable([])
-export const mainGroup = writable('all')
+export const mainGroup = writable([])
 export const mainCompact = writable(false)
 
 let mainDatasetId = null
