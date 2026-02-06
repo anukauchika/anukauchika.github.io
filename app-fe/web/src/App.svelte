@@ -479,6 +479,93 @@
 </script>
 
 <main>
+  {#if showPracticedList}
+    <div class="page-header">
+      <h3>Unique Words Practiced <span class="practiced-count">| {practicedItems.length}</span></h3>
+      <button type="button" class="page-close-btn" onclick={() => showPracticedList = false}>
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <section class="practiced-page">
+      {#if chartData}
+        {@const yMax = chartData.yMax}
+        {@const ML = 44}
+        {@const chartW = 600}
+        {@const W = ML + chartW}
+        {@const H = 140}
+        {@const chartH = 100}
+        {@const barW = 16}
+        {@const gap = 4}
+        {@const step = barW + gap}
+        {@const toY = (v) => yMax > 0 ? chartH - (v / yMax) * chartH : chartH}
+        <div class="chart-container" onmouseleave={() => hoveredBar = null}>
+          <svg class="progress-chart" viewBox="0 0 {W} {H}">
+            {#each chartData.ticks as tick}
+              {@const y = toY(tick)}
+              <line x1={ML} y1={y} x2={ML + chartW} y2={y} stroke="var(--muted)" stroke-opacity="0.12" stroke-width="1" />
+              <text x={ML - 4} y={y + 6} text-anchor="end" font-size="21" fill="var(--muted)" opacity="0.5">{tick}</text>
+            {/each}
+            {#each chartData.bars as bar, i}
+              {@const barH = yMax > 0 ? (bar.count / yMax) * chartH : 0}
+              <rect
+                x={ML + i * step}
+                y={chartH - barH}
+                width={barW}
+                height={barH}
+                rx="2"
+                fill="var(--accent)"
+                opacity={hoveredBar?.index === i ? 0.5 : 0.25}
+              />
+              <rect
+                x={ML + i * step}
+                y="0"
+                width={step}
+                height={chartH}
+                fill="transparent"
+                onmouseenter={() => hoveredBar = { index: i, bar, cumulative: chartData.cumulativeData[i] }}
+                onclick={() => hoveredBar = hoveredBar?.index === i ? null : { index: i, bar, cumulative: chartData.cumulativeData[i] }}
+              />
+              {#if bar.monthLabel}
+                <text
+                  x={ML + i * step}
+                  y={H - 4}
+                  font-size="21"
+                  fill="var(--muted)"
+                  opacity="0.5"
+                >{bar.monthLabel}</text>
+              {/if}
+            {/each}
+            {#if chartData.maxCumulative > 0}
+              <polyline
+                fill="none"
+                stroke="var(--accent)"
+                stroke-width="2"
+                points={chartData.cumulativeData.map((v, i) => `${ML + i * step + barW / 2},${toY(v)}`).join(' ')}
+              />
+            {/if}
+          </svg>
+          {#if hoveredBar}
+            <div class="chart-tooltip" style="left: {((ML + hoveredBar.index * step + barW / 2) / W) * 100}%">
+              <strong>{hoveredBar.bar.label}</strong><br>
+              {hoveredBar.bar.count} attempt{hoveredBar.bar.count !== 1 ? 's' : ''} &middot; {hoveredBar.cumulative} word{hoveredBar.cumulative !== 1 ? 's' : ''}
+            </div>
+          {/if}
+        </div>
+      {/if}
+      <div class="word-grid">
+        {#each practicedItems as { item, group, stat } (`${group.group}-${item.id}`)}
+          <div class="practiced-item">
+            <span class="practiced-time">{timeAgo(stat.lastPracticedAt)}</span>
+            {#if $currentDataset?.kind === 'chinese'}
+              <GroupItemChinese {item} {stat} onclick={() => openWord(item)} />
+            {:else if $currentDataset?.kind === 'english'}
+              <GroupItemEnglish {item} onclick={() => openWord(item)} />
+            {/if}
+          </div>
+        {/each}
+      </div>
+    </section>
+  {:else}
   <header class="hero">
     <div class="hero-top">
       <div class="hero-brand">
@@ -773,6 +860,7 @@
       {/if}
     {/if}
   </section>
+  {/if}
 
   {#if activeStat}
     <div class="modal-backdrop">
@@ -807,105 +895,6 @@
       {:else if $currentDataset?.kind === 'english'}
         <WordCardEnglish item={activeWord} onClose={closeModal} />
       {/if}
-    </div>
-  {/if}
-
-  {#if showPracticedList}
-    <div class="modal-backdrop">
-      <button
-        class="modal-overlay"
-        type="button"
-        aria-label="Close dialog"
-        onclick={() => showPracticedList = false}
-      ></button>
-      <div class="practiced-modal" role="dialog" aria-modal="true">
-        <div class="practiced-modal-header">
-          <h3>Unique Words Practiced <span class="practiced-count">| {practicedItems.length}</span></h3>
-          <button type="button" class="close" onclick={() => showPracticedList = false}>Close</button>
-        </div>
-        <div class="practiced-modal-body">
-          {#if chartData}
-            {@const yMax = chartData.yMax}
-            {@const ML = 44}
-            {@const chartW = 600}
-            {@const W = ML + chartW}
-            {@const H = 140}
-            {@const chartH = 100}
-            {@const barW = 16}
-            {@const gap = 4}
-            {@const step = barW + gap}
-            {@const toY = (v) => yMax > 0 ? chartH - (v / yMax) * chartH : chartH}
-            <div class="chart-container" onmouseleave={() => hoveredBar = null}>
-              <svg class="progress-chart" viewBox="0 0 {W} {H}">
-                <!-- Grid lines -->
-                {#each chartData.ticks as tick}
-                  {@const y = toY(tick)}
-                  <line x1={ML} y1={y} x2={ML + chartW} y2={y} stroke="var(--muted)" stroke-opacity="0.12" stroke-width="1" />
-                  <text x={ML - 4} y={y + 6} text-anchor="end" font-size="21" fill="var(--muted)" opacity="0.5">{tick}</text>
-                {/each}
-                <!-- Bars and hit areas -->
-                {#each chartData.bars as bar, i}
-                  {@const barH = yMax > 0 ? (bar.count / yMax) * chartH : 0}
-                  <rect
-                    x={ML + i * step}
-                    y={chartH - barH}
-                    width={barW}
-                    height={barH}
-                    rx="2"
-                    fill="var(--accent)"
-                    opacity={hoveredBar?.index === i ? 0.5 : 0.25}
-                  />
-                  <rect
-                    x={ML + i * step}
-                    y="0"
-                    width={step}
-                    height={chartH}
-                    fill="transparent"
-                    onmouseenter={() => hoveredBar = { index: i, bar, cumulative: chartData.cumulativeData[i] }}
-                    onclick={() => hoveredBar = hoveredBar?.index === i ? null : { index: i, bar, cumulative: chartData.cumulativeData[i] }}
-                  />
-                  {#if bar.monthLabel}
-                    <text
-                      x={ML + i * step}
-                      y={H - 4}
-                      font-size="21"
-                      fill="var(--muted)"
-                      opacity="0.5"
-                    >{bar.monthLabel}</text>
-                  {/if}
-                {/each}
-                <!-- Cumulative line (same y-axis as bars) -->
-                {#if chartData.maxCumulative > 0}
-                  <polyline
-                    fill="none"
-                    stroke="var(--accent)"
-                    stroke-width="2"
-                    points={chartData.cumulativeData.map((v, i) => `${ML + i * step + barW / 2},${toY(v)}`).join(' ')}
-                  />
-                {/if}
-              </svg>
-              {#if hoveredBar}
-                <div class="chart-tooltip" style="left: {((ML + hoveredBar.index * step + barW / 2) / W) * 100}%">
-                  <strong>{hoveredBar.bar.label}</strong><br>
-                  {hoveredBar.bar.count} attempt{hoveredBar.bar.count !== 1 ? 's' : ''} &middot; {hoveredBar.cumulative} word{hoveredBar.cumulative !== 1 ? 's' : ''}
-                </div>
-              {/if}
-            </div>
-          {/if}
-          <div class="word-grid">
-            {#each practicedItems as { item, group, stat } (`${group.group}-${item.id}`)}
-              <div class="practiced-item">
-                <span class="practiced-time">{timeAgo(stat.lastPracticedAt)}</span>
-                {#if $currentDataset?.kind === 'chinese'}
-                  <GroupItemChinese {item} {stat} onclick={() => openWord(item)} />
-                {:else if $currentDataset?.kind === 'english'}
-                  <GroupItemEnglish {item} onclick={() => openWord(item)} />
-                {/if}
-              </div>
-            {/each}
-          </div>
-        </div>
-      </div>
     </div>
   {/if}
 
