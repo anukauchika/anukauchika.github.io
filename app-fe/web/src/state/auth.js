@@ -1,6 +1,7 @@
 import { writable, derived } from 'svelte/store'
 import { api } from '../api.js'
-import { syncPending } from './sync.js'
+import { syncPending, restoreFromServer } from './sync.js'
+import * as idb from '../data/idb-stats.js'
 
 export const session = writable(null)
 
@@ -8,18 +9,26 @@ export const user = derived(session, ($session) => $session?.user ?? null)
 
 export const isAuthenticated = derived(user, ($user) => $user !== null)
 
+async function syncOrRestore() {
+  const empty = await idb.isEmpty()
+  if (empty) {
+    await restoreFromServer()
+  }
+  await syncPending()
+}
+
 export async function initAuth() {
   const initialSession = await api.auth.getSession()
   session.set(initialSession)
 
   if (initialSession) {
-    syncPending().catch((e) => console.error('sync failed', e))
+    syncOrRestore().catch((e) => console.error('sync failed', e))
   }
 
   api.auth.onAuthStateChange((newSession) => {
     session.set(newSession)
     if (newSession) {
-      syncPending().catch((e) => console.error('sync failed', e))
+      syncOrRestore().catch((e) => console.error('sync failed', e))
     }
   })
 }
