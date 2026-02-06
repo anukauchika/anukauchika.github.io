@@ -3,10 +3,20 @@ import { supabase } from './supabase-client.js'
 export async function getSession() {
   const { data, error } = await supabase.auth.getSession()
   if (error) {
-    // Stale/invalid refresh token — treat as logged out
-    await supabase.auth.signOut({ scope: 'local' })
-    return null
+    // Token may be stale — try refreshing before giving up
+    const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession()
+    if (refreshError) {
+      await supabase.auth.signOut({ scope: 'local' })
+      return null
+    }
+    return refreshData.session
   }
+  return data.session
+}
+
+export async function refreshSession() {
+  const { data, error } = await supabase.auth.refreshSession()
+  if (error) return null
   return data.session
 }
 

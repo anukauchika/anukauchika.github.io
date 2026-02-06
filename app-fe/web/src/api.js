@@ -8,6 +8,7 @@ export const api = {
     signInWithGoogle: supabaseAuth.signInWithGoogle,
     signInWithApple: supabaseAuth.signInWithApple,
     signOut: supabaseAuth.signOut,
+    refreshSession: supabaseAuth.refreshSession,
   },
   stats: {
     createGroupSession: supabaseStats.createGroupSession,

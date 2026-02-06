@@ -27,6 +27,13 @@ export async function initAuth() {
       syncOrRestore().catch((e) => console.error('sync failed', e))
     }
   })
+
+  // Refresh token when tab becomes visible (timers are throttled in background)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      api.auth.refreshSession().catch(() => {})
+    }
+  })
 }
 
 export const signInWithGoogle = api.auth.signInWithGoogle
