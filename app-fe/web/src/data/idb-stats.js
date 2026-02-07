@@ -2,15 +2,15 @@
 indexedDB.deleteDatabase('memris-stats')
 indexedDB.deleteDatabase('memris-stats-v2')
 
-const DB_NAME = 'uch-stats'
+const DB_PREFIX = 'uch-stats'
 const DB_VERSION = 1
 const SESSIONS = 'group_sessions'
 const WORDS = 'word_attempts'
 const CHARS = 'char_logs'
 
-function openDb() {
+function openDb(name) {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION)
+    const req = indexedDB.open(name, DB_VERSION)
     req.onupgradeneeded = (e) => {
       const db = e.target.result
 
@@ -30,6 +30,10 @@ function openDb() {
   })
 }
 
+function dbName(userId) {
+  return userId ? `${DB_PREFIX}-${userId}` : DB_PREFIX
+}
+
 function req(request) {
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result)
@@ -44,7 +48,21 @@ function tx(transaction) {
   })
 }
 
-const dbPromise = openDb()
+let currentDb = null
+let dbPromise = openDb(DB_PREFIX)
+
+export async function switchDatabase(userId) {
+  // Close current DB
+  if (currentDb) {
+    currentDb.close()
+    currentDb = null
+  }
+  dbPromise = openDb(dbName(userId))
+  currentDb = await dbPromise
+}
+
+// Resolve initial DB reference
+dbPromise.then((db) => { currentDb = db })
 
 export async function getMinId() {
   const db = await dbPromise

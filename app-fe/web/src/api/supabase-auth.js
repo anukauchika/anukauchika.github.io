@@ -44,6 +44,16 @@ export async function signInWithApple() {
   if (error) throw error
 }
 
+export async function signInWithEmail(email) {
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      emailRedirectTo: window.location.origin,
+    },
+  })
+  if (error) throw error
+}
+
 export async function signOut() {
   const { error } = await supabase.auth.signOut()
   // Ignore errors (e.g. token already expired) — local state is cleared regardless

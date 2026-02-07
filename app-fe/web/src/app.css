@@ -650,6 +650,7 @@ select:focus {
 
 .auth-modal-title {
   font-size: 0.95rem;
+  font-weight: 700;
   color: var(--muted);
   margin: 0;
 }
@@ -657,6 +658,7 @@ select:focus {
 .auth-modal-btn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.6rem;
   padding: 0.6rem 1.2rem;
   border: 1px solid rgba(31, 111, 92, 0.2);
@@ -693,6 +695,56 @@ select:focus {
 .auth-modal-email {
   font-size: 0.8rem;
   color: var(--muted);
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.auth-email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.auth-email-input {
+  padding: 0.55rem 0.7rem;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--ink);
+  outline: none;
+}
+
+.auth-email-input:focus {
+  border-color: var(--accent);
+}
+
+.auth-email-sent {
+  text-align: center;
+  color: var(--accent);
+  font-size: 0.9rem;
+  margin: 0;
+  padding: 0.5rem 0;
+}
+
+.auth-email-error {
+  color: #c0392b;
+  font-size: 0.8rem;
+  margin: 0;
 }
 
 .group-actions {

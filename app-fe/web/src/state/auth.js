@@ -1,6 +1,7 @@
 import { writable, derived } from 'svelte/store'
 import { api } from '../api.js'
 import { syncPending, restoreFromServer } from './sync.js'
+import { switchDatabase } from '../data/idb-stats.js'
 
 export const session = writable(null)
 
@@ -8,9 +9,16 @@ export const user = derived(session, ($session) => $session?.user ?? null)
 
 export const isAuthenticated = derived(user, ($user) => $user !== null)
 
-async function syncOrRestore() {
-  await syncPending()
-  await restoreFromServer()
+/** Incremented after DB switch + restore completes — triggers stats reload */
+export const dbVersion = writable(0)
+
+async function onUserChanged(userId) {
+  await switchDatabase(userId)
+  if (userId) {
+    await syncPending()
+    await restoreFromServer()
+  }
+  dbVersion.update((n) => n + 1)
 }
 
 export async function initAuth() {
@@ -18,14 +26,12 @@ export async function initAuth() {
   session.set(initialSession)
 
   if (initialSession) {
-    syncOrRestore().catch((e) => console.error('sync failed', e))
+    onUserChanged(initialSession.user.id).catch((e) => console.error('sync failed', e))
   }
 
   api.auth.onAuthStateChange((newSession) => {
     session.set(newSession)
-    if (newSession) {
-      syncOrRestore().catch((e) => console.error('sync failed', e))
-    }
+    onUserChanged(newSession?.user?.id ?? null).catch((e) => console.error('sync failed', e))
   })
 
   // Refresh token when tab becomes visible (timers are throttled in background)
@@ -38,4 +44,5 @@ export async function initAuth() {
 
 export const signInWithGoogle = api.auth.signInWithGoogle
 export const signInWithApple = api.auth.signInWithApple
+export const signInWithEmail = api.auth.signInWithEmail
 export const signOut = api.auth.signOut

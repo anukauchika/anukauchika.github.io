@@ -7,6 +7,7 @@ export const api = {
     onAuthStateChange: supabaseAuth.onAuthStateChange,
     signInWithGoogle: supabaseAuth.signInWithGoogle,
     signInWithApple: supabaseAuth.signInWithApple,
+    signInWithEmail: supabaseAuth.signInWithEmail,
     signOut: supabaseAuth.signOut,
     refreshSession: supabaseAuth.refreshSession,
   },
