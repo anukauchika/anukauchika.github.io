@@ -2,6 +2,9 @@ import { writable, derived } from 'svelte/store'
 import { api } from '../api.js'
 import { syncPending, restoreFromServer } from './sync.js'
 import { switchDatabase } from '../data/idb-stats.js'
+import { switchPrefsDatabase } from '../data/idb-prefs-repo.js'
+import { switchLocalPrefs } from '../data/local-prefs-repo.js'
+import { reloadDatasetPref } from './registry.js'
 
 export const session = writable(null)
 
@@ -14,6 +17,9 @@ export const dbVersion = writable(0)
 
 async function onUserChanged(userId) {
   await switchDatabase(userId)
+  await switchPrefsDatabase(userId)
+  switchLocalPrefs(userId)
+  reloadDatasetPref()
   if (userId) {
     await syncPending()
     await restoreFromServer()

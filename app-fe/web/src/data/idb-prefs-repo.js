@@ -1,13 +1,14 @@
 // TODO: Remove after 2026-03-06 — legacy database cleanup
 indexedDB.deleteDatabase('memris-prefs')
 
-const DB_NAME = 'uch-prefs'
+const DB_PREFIX = 'uch-prefs'
 const DB_VERSION = 1
 const PREFS_STORE = 'prefs'
+const ANON_ID = '00000000-0000-0000-0000-000000000000'
 
-function openDb() {
+function openDb(name) {
   return new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION)
+    const req = indexedDB.open(name, DB_VERSION)
     req.onupgradeneeded = (e) => {
       const db = e.target.result
       if (!db.objectStoreNames.contains(PREFS_STORE)) {
@@ -19,6 +20,10 @@ function openDb() {
   })
 }
 
+function dbName(userId) {
+  return `${DB_PREFIX}-${userId || ANON_ID}`
+}
+
 function reqToPromise(request) {
   return new Promise((resolve, reject) => {
     request.onsuccess = () => resolve(request.result)
@@ -26,21 +31,30 @@ function reqToPromise(request) {
   })
 }
 
-export function createIdbPrefsRepo() {
-  const dbPromise = openDb()
+let currentDb = null
+let dbPromise = openDb(dbName(null))
+dbPromise.then((db) => { currentDb = db })
 
-  return {
-    async get(key) {
-      const db = await dbPromise
-      const store = db.transaction(PREFS_STORE, 'readonly').objectStore(PREFS_STORE)
-      const result = await reqToPromise(store.get(key))
-      return result?.value ?? null
-    },
-
-    async set(key, value) {
-      const db = await dbPromise
-      const store = db.transaction(PREFS_STORE, 'readwrite').objectStore(PREFS_STORE)
-      await reqToPromise(store.put({ key, value }))
-    },
+export async function switchPrefsDatabase(userId) {
+  if (currentDb) {
+    currentDb.close()
+    currentDb = null
   }
+  dbPromise = openDb(dbName(userId))
+  currentDb = await dbPromise
+}
+
+export const prefsRepo = {
+  async get(key) {
+    const db = await dbPromise
+    const store = db.transaction(PREFS_STORE, 'readonly').objectStore(PREFS_STORE)
+    const result = await reqToPromise(store.get(key))
+    return result?.value ?? null
+  },
+
+  async set(key, value) {
+    const db = await dbPromise
+    const store = db.transaction(PREFS_STORE, 'readwrite').objectStore(PREFS_STORE)
+    await reqToPromise(store.put({ key, value }))
+  },
 }

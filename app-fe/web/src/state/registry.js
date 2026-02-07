@@ -1,8 +1,6 @@
 import { writable, derived } from 'svelte/store'
 import registry from '../../../data/registry.json'
-import { createLocalPrefsRepo } from '../data/local-prefs-repo.js'
-
-const prefs = createLocalPrefsRepo()
+import { localPrefs as prefs } from '../data/local-prefs-repo.js'
 const PREF_DATASET = 'datasetId'
 
 // Dynamically import all JSON files from data directory
@@ -29,6 +27,16 @@ function resolveInitialDataset() {
 }
 
 export const datasetId = writable(resolveInitialDataset())
+
+/** Re-read saved dataset from (switched) localStorage */
+export function reloadDatasetPref() {
+  const saved = prefs.get(PREF_DATASET)
+  if (saved && datasets.some((d) => d.id === saved)) {
+    datasetId.set(saved)
+  } else {
+    datasetId.set(datasets[0]?.id ?? '')
+  }
+}
 
 // Persist whenever datasetId changes
 datasetId.subscribe((id) => {

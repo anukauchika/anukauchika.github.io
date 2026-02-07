@@ -30,8 +30,10 @@ function openDb(name) {
   })
 }
 
+const ANON_ID = '00000000-0000-0000-0000-000000000000'
+
 function dbName(userId) {
-  return userId ? `${DB_PREFIX}-${userId}` : DB_PREFIX
+  return `${DB_PREFIX}-${userId || ANON_ID}`
 }
 
 function req(request) {
@@ -49,7 +51,7 @@ function tx(transaction) {
 }
 
 let currentDb = null
-let dbPromise = openDb(DB_PREFIX)
+let dbPromise = openDb(dbName(null))
 
 export async function switchDatabase(userId) {
   // Close current DB
