@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import { datasetId, currentDataset, setDatasetById } from './state/registry.js'
+  import { formatGroup } from './utils/format.js'
   import { loadDatasetGroupSessions, datasetGroupSessions } from './state/practice-stats.js'
   import { isAuthenticated } from './state/auth.js'
   import PracticeChinese from './kind/chinese/Practice.svelte'
@@ -61,6 +62,7 @@
     <h1>{headerTitle}</h1>
     {#if activeGroup}
       <div class="group-meta">
+        <span class="group-id">{formatGroup(activeGroup.group)}</span>
         <span class="group-tags">
           {#each activeGroup.tags as tag}
             <span>#{tag}</span>
@@ -95,6 +97,12 @@
     font-family: var(--font-serif);
     font-size: 1.8rem;
     margin: 0 0 0.5rem;
+  }
+
+  .group-id {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
   }
 
   .group-meta {
