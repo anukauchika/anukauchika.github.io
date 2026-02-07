@@ -116,6 +116,20 @@ h1 {
   display: block;
 }
 
+.stat-stroke {
+  color: var(--accent);
+}
+
+.stat-pinyin {
+  color: var(--accent);
+}
+
+.stat-sep {
+  color: var(--muted);
+  opacity: 0.3;
+  font-size: 1.2rem;
+}
+
 .login-hint {
   text-align: center;
   font-size: 0.8rem;
@@ -138,35 +152,7 @@ h1 {
   opacity: 0.8;
 }
 
-.progress-bar {
-  position: relative;
-  height: 4px;
-  background: rgba(31, 111, 92, 0.12);
-  border-radius: 2px;
-  margin-top: 1.5rem;
-  margin-bottom: -0.5rem;
-  overflow: hidden;
-}
 
-.progress-fill-words {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: rgba(31, 111, 92, 0.5);
-  border-radius: 2px;
-  transition: width 0.4s ease;
-}
-
-.progress-fill-mastery {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-  transition: width 0.4s ease;
-}
 
 .activity-line {
   display: flex;
@@ -469,35 +455,7 @@ select:focus {
   flex-wrap: wrap;
 }
 
-.group-progress {
-  position: relative;
-  width: 100%;
-  height: 3px;
-  background: rgba(31, 111, 92, 0.1);
-  border-radius: 2px;
-  margin-top: -1rem;
-  overflow: hidden;
-}
 
-.group-progress-words {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: rgba(31, 111, 92, 0.5);
-  border-radius: 2px;
-  transition: width 0.4s ease;
-}
-
-.group-progress-mastery {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-  transition: width 0.4s ease;
-}
 
 .dataset-tags {
   display: flex;
@@ -856,35 +814,6 @@ select:focus {
   color: var(--muted);
 }
 
-.compact-progress {
-  position: relative;
-  width: 100%;
-  height: 3px;
-  background: rgba(31, 111, 92, 0.1);
-  border-radius: 2px;
-  margin-top: 0.25rem;
-  overflow: hidden;
-}
-
-.compact-progress-words {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: rgba(31, 111, 92, 0.5);
-  border-radius: 2px;
-  transition: width 0.4s ease;
-}
-
-.compact-progress-mastery {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-  transition: width 0.4s ease;
-}
 
 .word-card {
   background: #fff;
@@ -958,6 +887,17 @@ select:focus {
   font-weight: 600;
   color: var(--accent);
   margin-left: auto;
+}
+
+.success-count-pinyin {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-left: auto;
+}
+
+.success-count + .success-count-pinyin {
+  margin-left: 0.5em;
 }
 
 .error-count {
@@ -1230,6 +1170,10 @@ select:focus {
 .char-stat {
   font-size: 0.7rem;
   font-weight: 600;
+  color: var(--accent);
+}
+
+.char-stat-pinyin {
   color: var(--accent);
 }
 

@@ -1,9 +1,11 @@
 <script>
   import { datasets, datasetId, currentDataset } from './state/registry.js'
-  import { datasetStats, datasetGroupSessions, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from './state/practice-stats.js'
+  import { datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from './state/practice-stats.js'
   import { mainSearch, mainTags, mainGroup, mainCompact, loadMainFilters } from './state/filters.js'
   import { user, isAuthenticated, signInWithGoogle, signInWithApple, signOut } from './state/auth.js'
   import { formatGroup } from './utils/format.js'
+  import ProgressBars from './ProgressBars.svelte'
+  import GroupProgressBars from './GroupProgressBars.svelte'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
   import GroupItemEnglish from './kind/english/GroupItem.svelte'
   import WordCardChinese from './kind/chinese/WordCard.svelte'
@@ -310,32 +312,47 @@
   })
   const practicedCharsData = $derived.by(() => {
     const isCJK = (c) => c >= '\u4E00' && c <= '\u9FFF'
+    const addStat = (obj, stat) => {
+      if (!stat) return
+      obj.successCount += stat.successCount ?? 0
+      obj.errorCount += stat.errorCount ?? 0
+    }
+    const emptyStat = () => ({ successCount: 0, errorCount: 0 })
     const charMap = new Map()
     filteredGroups.forEach((g) => {
       g.items.forEach((item) => {
         const word = item.word || ''
-        const stat = $datasetStats.get(`${g.group}::${item.id}`)
+        const key = `${g.group}::${item.id}`
+        const sStat = $datasetStatsStroke.get(key)
+        const pStat = $datasetStatsPinyin.get(key)
+        const hasStat = sStat || pStat
         for (const char of word) {
           if (!isCJK(char)) continue
           const existing = charMap.get(char)
           if (existing) {
             existing.wordCount++
-            if (stat) {
+            if (hasStat) {
               existing.practiced = true
-              existing.successCount += stat.successCount ?? 0
-              existing.errorCount += stat.errorCount ?? 0
-              if (stat.lastPracticedAt && (!existing.lastPracticedAt || stat.lastPracticedAt > existing.lastPracticedAt)) {
-                existing.lastPracticedAt = stat.lastPracticedAt
+              addStat(existing.stroke, sStat)
+              addStat(existing.pinyin, pStat)
+              const lp = sStat?.lastPracticedAt > (pStat?.lastPracticedAt ?? '') ? sStat.lastPracticedAt : pStat?.lastPracticedAt
+              if (lp && (!existing.lastPracticedAt || lp > existing.lastPracticedAt)) {
+                existing.lastPracticedAt = lp
               }
             }
           } else {
+            const stroke = emptyStat()
+            const pinyin = emptyStat()
+            addStat(stroke, sStat)
+            addStat(pinyin, pStat)
+            const lp = (sStat?.lastPracticedAt ?? '') > (pStat?.lastPracticedAt ?? '') ? sStat?.lastPracticedAt : pStat?.lastPracticedAt
             charMap.set(char, {
               char,
               wordCount: 1,
-              successCount: stat?.successCount ?? 0,
-              errorCount: stat?.errorCount ?? 0,
-              lastPracticedAt: stat?.lastPracticedAt ?? null,
-              practiced: !!stat,
+              stroke,
+              pinyin,
+              lastPracticedAt: lp ?? null,
+              practiced: !!hasStat,
             })
           }
         }
@@ -355,6 +372,17 @@
     })
     return count
   })
+  const countPracticed = (statsMap) => {
+    let count = 0
+    filteredGroups.forEach((g) => {
+      g.items.forEach((item) => {
+        if (statsMap.has(`${g.group}::${item.id}`)) count++
+      })
+    })
+    return count
+  }
+  const strokePracticedCount = $derived(countPracticed($datasetStatsStroke))
+  const pinyinPracticedCount = $derived(countPracticed($datasetStatsPinyin))
   const practicedItems = $derived.by(() => {
     const items = []
     filteredGroups.forEach((g) => {
@@ -436,6 +464,34 @@
     })
     return Math.round((sum / totalCount) * 100)
   })
+
+  // Per-type progress/mastery helpers
+  const calcProgress = (statsMap) => {
+    if (totalCount === 0) return 0
+    let count = 0
+    filteredGroups.forEach((g) => {
+      g.items.forEach((item) => {
+        if (statsMap.has(`${g.group}::${item.id}`)) count++
+      })
+    })
+    return Math.round((count / totalCount) * 100)
+  }
+  const calcMastery = (statsMap) => {
+    if (totalCount === 0) return 0
+    let sum = 0
+    filteredGroups.forEach((g) => {
+      g.items.forEach((item) => {
+        const stat = statsMap.get(`${g.group}::${item.id}`)
+        sum += Math.min((stat?.successCount ?? 0) / 10, 1)
+      })
+    })
+    return Math.round((sum / totalCount) * 100)
+  }
+  const strokeProgress = $derived(calcProgress($datasetStatsStroke))
+  const strokeMastery = $derived(calcMastery($datasetStatsStroke))
+  const pinyinProgress = $derived(calcProgress($datasetStatsPinyin))
+  const pinyinMastery = $derived(calcMastery($datasetStatsPinyin))
+
   const getGroupProgress = (group) => {
     const practiced = group.items.filter(item =>
       $datasetStats.has(`${group.group}::${item.id}`)
@@ -624,7 +680,7 @@
           <div class="practiced-item">
             <span class="practiced-time">{timeAgo(stat.lastPracticedAt)}</span>
             {#if $currentDataset?.kind === 'chinese'}
-              <GroupItemChinese {item} {stat} onclick={() => openWord(item)} />
+              <GroupItemChinese {item} strokeStat={$datasetStatsStroke.get(`${group.group}::${item.id}`)} pinyinStat={$datasetStatsPinyin.get(`${group.group}::${item.id}`)} onclick={() => openWord(item)} />
             {:else if $currentDataset?.kind === 'english'}
               <GroupItemEnglish {item} onclick={() => openWord(item)} />
             {/if}
@@ -671,10 +727,7 @@
               </div>
             {/if}
             {#if $isAuthenticated}
-              <div class="compact-progress">
-                <div class="compact-progress-words" style="width: {getGroupProgress(group)}%"></div>
-                <div class="compact-progress-mastery" style="width: {getGroupMastery(group)}%"></div>
-              </div>
+              <GroupProgressBars {group} variant="compact" />
             {/if}
           </article>
         {/each}
@@ -693,7 +746,12 @@
           <div class="char-tile" class:practiced={c.practiced}>
             <span class="char-glyph" lang="zh" translate="no">{c.char}</span>
             {#if c.practiced}
-              <span class="char-stat">{c.successCount}{#if c.errorCount > 0}<span class="char-errors">| {c.errorCount}</span>{/if}</span>
+              {#if c.stroke.successCount > 0}
+                <span class="char-stat">{c.stroke.successCount}{#if c.stroke.errorCount > 0}<span class="char-errors">| {c.stroke.errorCount}</span>{/if}</span>
+              {/if}
+              {#if c.pinyin.successCount > 0}
+                <span class="char-stat char-stat-pinyin">{c.pinyin.successCount}{#if c.pinyin.errorCount > 0}<span class="char-errors">| {c.pinyin.errorCount}</span>{/if}</span>
+              {/if}
               <span class="char-time">{timeAgo(c.lastPracticedAt)}</span>
             {/if}
           </div>
@@ -766,16 +824,13 @@
         {#if $isAuthenticated}
           <button type="button" class="stat-btn" onclick={() => showPracticedList = true}>
             <span class="stat-label">Practiced</span>
-            <span class="stat-value">{practicedCount}</span>
+            <span class="stat-value"><span class="stat-stroke">{strokePracticedCount}</span><span class="stat-sep"> </span><span class="stat-pinyin">{pinyinPracticedCount}</span></span>
           </button>
         {/if}
       </div>
     </div>
     {#if $isAuthenticated}
-      <div class="progress-bar">
-        <div class="progress-fill-words" style="width: {datasetProgress}%"></div>
-        <div class="progress-fill-mastery" style="width: {datasetMastery}%"></div>
-      </div>
+      <ProgressBars {strokeProgress} {strokeMastery} {pinyinProgress} {pinyinMastery} />
 
       <div class="activity-line" bind:this={activityContainer}>
         {#each activityData as day}
@@ -924,10 +979,7 @@
               </div>
             {/if}
             {#if $isAuthenticated}
-              <div class="compact-progress">
-                <div class="compact-progress-words" style="width: {getGroupProgress(group)}%"></div>
-                <div class="compact-progress-mastery" style="width: {getGroupMastery(group)}%"></div>
-              </div>
+              <GroupProgressBars {group} variant="compact" />
             {/if}
           </article>
         {/each}
@@ -979,17 +1031,14 @@
               </a>
             </div>
             {#if $isAuthenticated}
-              <div class="group-progress">
-                <div class="group-progress-words" style="width: {getGroupProgress(group)}%"></div>
-                <div class="group-progress-mastery" style="width: {getGroupMastery(group)}%"></div>
-              </div>
+              <GroupProgressBars {group} />
             {/if}
           </div>
 
           <div class="word-grid">
             {#each group.items as item (`${group.group}-${item.id}`)}
               {#if $currentDataset?.kind === 'chinese'}
-                <GroupItemChinese {item} stat={$isAuthenticated ? $datasetStats.get(`${group.group}::${item.id}`) : null} onclick={() => openWord(item)} />
+                <GroupItemChinese {item} strokeStat={$isAuthenticated ? $datasetStatsStroke.get(`${group.group}::${item.id}`) : null} pinyinStat={$isAuthenticated ? $datasetStatsPinyin.get(`${group.group}::${item.id}`) : null} onclick={() => openWord(item)} />
               {:else if $currentDataset?.kind === 'english'}
                 <GroupItemEnglish {item} onclick={() => openWord(item)} />
               {/if}

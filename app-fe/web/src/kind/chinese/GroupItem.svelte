@@ -1,5 +1,5 @@
 <script>
-  let { item, stat, onclick } = $props()
+  let { item, strokeStat, pinyinStat, onclick } = $props()
 </script>
 
 <button class="word-card" type="button" {onclick}>
@@ -13,8 +13,11 @@
     {#each item.tags ?? [] as tag}
       <span>#{tag}</span>
     {/each}
-    {#if stat}
-      <span class="success-count">{stat.successCount}{#if stat.errorCount > 0}<span class="error-count">| {stat.errorCount}</span>{/if}</span>
+    {#if strokeStat}
+      <span class="success-count">{strokeStat.successCount}{#if strokeStat.errorCount > 0}<span class="error-count">| {strokeStat.errorCount}</span>{/if}</span>
+    {/if}
+    {#if pinyinStat}
+      <span class="success-count-pinyin">{pinyinStat.successCount}{#if pinyinStat.errorCount > 0}<span class="error-count">| {pinyinStat.errorCount}</span>{/if}</span>
     {/if}
   </div>
 </button>
