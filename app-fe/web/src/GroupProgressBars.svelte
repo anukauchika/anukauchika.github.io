@@ -22,9 +22,8 @@
   const strokeMastery = $derived(getMastery($datasetGroupSessionsStroke))
   const pinyinProgress = $derived(getProgress($datasetStatsPinyin))
   const pinyinMastery = $derived(getMastery($datasetGroupSessionsPinyin))
-  const strokeCount = $derived(countPracticed($datasetStatsStroke))
-  const pinyinCount = $derived(countPracticed($datasetStatsPinyin))
-  const total = $derived(group.items.length)
+  const strokeSessions = $derived($datasetGroupSessionsStroke.get(group.group)?.full ?? 0)
+  const pinyinSessions = $derived($datasetGroupSessionsPinyin.get(group.group)?.full ?? 0)
 
   let tooltip = $state(null)
 
@@ -47,7 +46,7 @@
       <div class="fill-mastery" style="width: {strokeMastery}%"></div>
     </div>
     {#if tooltip === 'stroke'}
-      <div class="tooltip below">Stroke practice · {strokeCount}/{total} words<div class="arrow"></div></div>
+      <div class="tooltip below">Stroke practice · {strokeSessions} sessions<div class="arrow"></div></div>
     {/if}
   </div>
   <div class="bar-wrap">
@@ -58,7 +57,7 @@
       <div class="fill-mastery" style="width: {pinyinMastery}%"></div>
     </div>
     {#if tooltip === 'pinyin'}
-      <div class="tooltip above">Pinyin practice · {pinyinCount}/{total} words<div class="arrow"></div></div>
+      <div class="tooltip above">Pinyin practice · {pinyinSessions} sessions<div class="arrow"></div></div>
     {/if}
   </div>
 </div>
@@ -84,7 +83,7 @@
     position: relative;
     width: 100%;
     height: 5px;
-    background: rgba(31, 111, 92, 0.1);
+    background: rgba(31, 111, 92, 0.08);
     overflow: hidden;
     border-radius: 2px;
     cursor: pointer;
@@ -95,7 +94,7 @@
     top: 0;
     left: 0;
     height: 100%;
-    background: rgba(31, 111, 92, 0.5);
+    background: rgba(31, 111, 92, 0.25);
     border-radius: 2px;
     transition: width 0.4s ease;
   }
@@ -105,7 +104,7 @@
     top: 0;
     left: 0;
     height: 100%;
-    background: var(--accent);
+    background: rgba(31, 111, 92, 0.5);
     border-radius: 2px;
     transition: width 0.4s ease;
   }

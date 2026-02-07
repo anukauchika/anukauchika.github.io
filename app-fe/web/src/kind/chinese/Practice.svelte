@@ -301,6 +301,8 @@
   })
 </script>
 
+<svelte:window onkeydown={(e) => { if (e.key === 'F1') { e.preventDefault(); hintManuallySet = true; showHint = !showHint; if (writer) showHint ? writer.showOutline() : writer.hideOutline() }}} />
+
 <div class="practice-container">
   {#if currentItem && !sessionDone}
     <div class="quiz-area">

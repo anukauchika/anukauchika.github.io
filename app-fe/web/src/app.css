@@ -745,11 +745,6 @@ select:focus {
   flex-direction: column;
   gap: 0.25rem;
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid rgba(31, 111, 92, 0.06);
-}
-
-.compact-row:last-child {
-  border-bottom: none;
 }
 
 .compact-row:hover {

@@ -1,5 +1,5 @@
 <script>
-  let { strokeProgress = 0, strokeMastery = 0, pinyinProgress = 0, pinyinMastery = 0, strokePracticedCount = 0, pinyinPracticedCount = 0, totalCount = 0 } = $props()
+  let { strokeProgress = 0, strokeMastery = 0, pinyinProgress = 0, pinyinMastery = 0, strokeFullSessions = 0, pinyinFullSessions = 0 } = $props()
 
   let tooltip = $state(null)
 
@@ -22,7 +22,7 @@
       <div class="fill-mastery" style="width: {strokeMastery}%"></div>
     </div>
     {#if tooltip === 'stroke'}
-      <div class="tooltip below">Stroke practice · {strokePracticedCount}/{totalCount} words<div class="arrow"></div></div>
+      <div class="tooltip below">Stroke practice · {strokeFullSessions} sessions<div class="arrow"></div></div>
     {/if}
   </div>
   <div class="bar-wrap">
@@ -33,7 +33,7 @@
       <div class="fill-mastery" style="width: {pinyinMastery}%"></div>
     </div>
     {#if tooltip === 'pinyin'}
-      <div class="tooltip above">Pinyin practice · {pinyinPracticedCount}/{totalCount} words<div class="arrow"></div></div>
+      <div class="tooltip above">Pinyin practice · {pinyinFullSessions} sessions<div class="arrow"></div></div>
     {/if}
   </div>
 </div>
@@ -54,7 +54,7 @@
   .bar {
     position: relative;
     height: 6px;
-    background: rgba(31, 111, 92, 0.12);
+    background: rgba(31, 111, 92, 0.08);
     overflow: hidden;
     border-radius: 2px;
     cursor: pointer;
@@ -65,7 +65,7 @@
     top: 0;
     left: 0;
     height: 100%;
-    background: rgba(31, 111, 92, 0.5);
+    background: rgba(31, 111, 92, 0.25);
     border-radius: 2px;
     transition: width 0.4s ease;
   }
@@ -75,7 +75,7 @@
     top: 0;
     left: 0;
     height: 100%;
-    background: var(--accent);
+    background: rgba(31, 111, 92, 0.5);
     border-radius: 2px;
     transition: width 0.4s ease;
   }

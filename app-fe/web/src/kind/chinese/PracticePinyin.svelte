@@ -292,6 +292,8 @@
   })
 </script>
 
+<svelte:window onkeydown={(e) => { if (e.key === 'F1') { e.preventDefault(); hintManuallySet = true; showHint = !showHint }}} />
+
 <div class="practice-container">
   {#if currentItem && !sessionDone}
     <div class="quiz-area">
@@ -350,7 +352,7 @@
             autocomplete="off"
             autocapitalize="off"
             spellcheck="false"
-            placeholder="type pinyin..."
+            placeholder="pinyin (ex: lao3, shi1)"
           />
         {/if}
       </div>

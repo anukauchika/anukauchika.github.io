@@ -6,6 +6,7 @@
   import { formatGroup } from './utils/format.js'
   import ProgressBars from './ProgressBars.svelte'
   import GroupProgressBars from './GroupProgressBars.svelte'
+  import CompactGroupRow from './CompactGroupRow.svelte'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
   import GroupItemEnglish from './kind/english/GroupItem.svelte'
   import WordCardChinese from './kind/chinese/WordCard.svelte'
@@ -713,41 +714,7 @@
     <section class="practiced-page">
       <div class="compact-list">
         {#each practicedGroupsSorted as group (group.group)}
-          {@const gs = $isAuthenticated ? $datasetGroupSessions.get(group.group) : null}
-          {@const gsStroke = $datasetGroupSessionsStroke.get(group.group)}
-          {@const gsPinyin = $datasetGroupSessionsPinyin.get(group.group)}
-          <article class="compact-row">
-            <div class="compact-main">
-              <span class="compact-gid">{formatGroup(group.group)}</span>
-              <span class="compact-date">{#if gs}{timeAgo(gs.lastPracticedAt)}{/if}</span>
-              <span class="compact-actions">
-                {#if $currentDataset?.kind === 'chinese'}
-                  {#if gsStroke?.full}<span class="compact-stat">{gsStroke.full}</span>{/if}
-                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke&from=groups`} title="Stroke practice">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-                  </a>
-                  {#if gsPinyin?.full}<span class="compact-stat">{gsPinyin.full}</span>{/if}
-                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin&from=groups`} title="Pinyin practice">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h1M10 8h1M14 8h1M18 8h1M7 12h1M11 12h1M15 12h1M8 16h8"/></svg>
-                  </a>
-                {/if}
-                <a class="compact-icon compact-icon-workbook" href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}`} target="_blank" rel="noreferrer" title="Workbook">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
-                </a>
-                <a class="compact-icon compact-icon-workbook" href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}&autoprint=1`} target="_blank" rel="noreferrer" title="Print workbook">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                </a>
-              </span>
-            </div>
-            {#if group.tags?.length}
-              <div class="compact-tags">
-                {#each group.tags as tag}<span class="compact-tag">#{tag}</span>{/each}
-              </div>
-            {/if}
-            {#if $isAuthenticated}
-              <GroupProgressBars {group} variant="compact" />
-            {/if}
-          </article>
+          <CompactGroupRow {group} from="groups" formatTime={(gs) => timeAgo(gs.lastPracticedAt)} />
         {/each}
       </div>
     </section>
@@ -842,13 +809,13 @@
         {#if $isAuthenticated}
           <button type="button" class="stat-btn" onclick={() => showPracticedList = true}>
             <span class="stat-label">Practiced</span>
-            <span class="stat-value"><span class="stat-pinyin">{pinyinFullSessions}</span><span class="stat-sep"> | </span><span class="stat-stroke">{strokeFullSessions}</span></span>
+            <span class="stat-value">{strokePracticedCount}</span>
           </button>
         {/if}
       </div>
     </div>
     {#if $isAuthenticated}
-      <ProgressBars {strokeProgress} {strokeMastery} {pinyinProgress} {pinyinMastery} {strokePracticedCount} {pinyinPracticedCount} {totalCount} />
+      <ProgressBars {strokeProgress} {strokeMastery} {pinyinProgress} {pinyinMastery} {strokeFullSessions} {pinyinFullSessions} />
 
       <div class="activity-line" bind:this={activityContainer}>
         {#each activityData as day}
@@ -968,41 +935,7 @@
     {:else if $mainCompact}
       <div class="compact-list">
         {#each filteredGroups as group (group.group)}
-          {@const gs = $isAuthenticated ? $datasetGroupSessions.get(group.group) : null}
-          {@const csStroke = $datasetGroupSessionsStroke.get(group.group)}
-          {@const csPinyin = $datasetGroupSessionsPinyin.get(group.group)}
-          <article class="compact-row">
-            <div class="compact-main">
-              <span class="compact-gid">{formatGroup(group.group)}</span>
-              <span class="compact-date">{#if gs}{formatDate(gs.lastFullSessionAt)}{/if}</span>
-              <span class="compact-actions">
-                {#if $currentDataset?.kind === 'chinese'}
-                  {#if csStroke?.full}<span class="compact-stat">{csStroke.full}</span>{/if}
-                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke`} title="Stroke practice">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
-                  </a>
-                  {#if csPinyin?.full}<span class="compact-stat">{csPinyin.full}</span>{/if}
-                  <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin`} title="Pinyin practice">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h1M10 8h1M14 8h1M18 8h1M7 12h1M11 12h1M15 12h1M8 16h8"/></svg>
-                  </a>
-                {/if}
-                <a class="compact-icon compact-icon-workbook" href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}`} target="_blank" rel="noreferrer" title="Workbook">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
-                </a>
-                <a class="compact-icon compact-icon-workbook" href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}&autoprint=1`} target="_blank" rel="noreferrer" title="Print workbook">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-                </a>
-              </span>
-            </div>
-            {#if group.tags?.length}
-              <div class="compact-tags">
-                {#each group.tags as tag}<span class="compact-tag">#{tag}</span>{/each}
-              </div>
-            {/if}
-            {#if $isAuthenticated}
-              <GroupProgressBars {group} variant="compact" />
-            {/if}
-          </article>
+          <CompactGroupRow {group} formatTime={(gs) => timeAgo(gs.lastPracticedAt)} />
         {/each}
       </div>
     {:else}
