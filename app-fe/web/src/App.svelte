@@ -1,6 +1,6 @@
 <script>
   import { datasets, datasetId, currentDataset } from './state/registry.js'
-  import { datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from './state/practice-stats.js'
+  import { datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from './state/practice-stats.js'
   import { mainSearch, mainTags, mainGroup, mainCompact, loadMainFilters } from './state/filters.js'
   import { user, isAuthenticated, signInWithGoogle, signInWithApple, signOut } from './state/auth.js'
   import { formatGroup } from './utils/format.js'
@@ -109,9 +109,9 @@
     const diff = Date.now() - (typeof ts === 'number' ? ts : new Date(ts).getTime())
     const mins = Math.floor(diff / 60000)
     if (mins < 1) return 'just now'
-    if (mins < 60) return `${mins}m ago`
+    if (mins < 60) return `${mins}mins ago`
     const hrs = Math.floor(mins / 60)
-    if (hrs < 24) return `${hrs}h ago`
+    if (hrs < 24) return `${hrs}hrs ago`
     const days = Math.floor(hrs / 24)
     if (days < 7) return `${days}d ago`
     const weeks = Math.floor(days / 7)
@@ -383,6 +383,21 @@
   }
   const strokePracticedCount = $derived(countPracticed($datasetStatsStroke))
   const pinyinPracticedCount = $derived(countPracticed($datasetStatsPinyin))
+  const strokeFullSessions = $derived.by(() => {
+    let total = 0
+    for (const gs of $datasetGroupSessionsStroke.values()) total += gs.full
+    return total
+  })
+  const pinyinFullSessions = $derived.by(() => {
+    let total = 0
+    for (const gs of $datasetGroupSessionsPinyin.values()) total += gs.full
+    return total
+  })
+  const totalSessionsCount = $derived.by(() => {
+    let total = 0
+    for (const gs of $datasetGroupSessions.values()) total += gs.total
+    return total
+  })
   const practicedItems = $derived.by(() => {
     const items = []
     filteredGroups.forEach((g) => {
@@ -699,16 +714,19 @@
       <div class="compact-list">
         {#each practicedGroupsSorted as group (group.group)}
           {@const gs = $isAuthenticated ? $datasetGroupSessions.get(group.group) : null}
+          {@const gsStroke = $datasetGroupSessionsStroke.get(group.group)}
+          {@const gsPinyin = $datasetGroupSessionsPinyin.get(group.group)}
           <article class="compact-row">
             <div class="compact-main">
               <span class="compact-gid">{formatGroup(group.group)}</span>
-              <span class="compact-passes">{#if gs}{gs.full}/{gs.total}{/if}</span>
               <span class="compact-date">{#if gs}{timeAgo(gs.lastPracticedAt)}{/if}</span>
               <span class="compact-actions">
                 {#if $currentDataset?.kind === 'chinese'}
+                  {#if gsStroke?.full}<span class="compact-stat">{gsStroke.full}</span>{/if}
                   <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke&from=groups`} title="Stroke practice">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                   </a>
+                  {#if gsPinyin?.full}<span class="compact-stat">{gsPinyin.full}</span>{/if}
                   <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin&from=groups`} title="Pinyin practice">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h1M10 8h1M14 8h1M18 8h1M7 12h1M11 12h1M15 12h1M8 16h8"/></svg>
                   </a>
@@ -824,13 +842,13 @@
         {#if $isAuthenticated}
           <button type="button" class="stat-btn" onclick={() => showPracticedList = true}>
             <span class="stat-label">Practiced</span>
-            <span class="stat-value"><span class="stat-stroke">{strokePracticedCount}</span><span class="stat-sep"> </span><span class="stat-pinyin">{pinyinPracticedCount}</span></span>
+            <span class="stat-value"><span class="stat-pinyin">{pinyinFullSessions}</span><span class="stat-sep"> | </span><span class="stat-stroke">{strokeFullSessions}</span></span>
           </button>
         {/if}
       </div>
     </div>
     {#if $isAuthenticated}
-      <ProgressBars {strokeProgress} {strokeMastery} {pinyinProgress} {pinyinMastery} />
+      <ProgressBars {strokeProgress} {strokeMastery} {pinyinProgress} {pinyinMastery} {strokePracticedCount} {pinyinPracticedCount} {totalCount} />
 
       <div class="activity-line" bind:this={activityContainer}>
         {#each activityData as day}
@@ -951,16 +969,19 @@
       <div class="compact-list">
         {#each filteredGroups as group (group.group)}
           {@const gs = $isAuthenticated ? $datasetGroupSessions.get(group.group) : null}
+          {@const csStroke = $datasetGroupSessionsStroke.get(group.group)}
+          {@const csPinyin = $datasetGroupSessionsPinyin.get(group.group)}
           <article class="compact-row">
             <div class="compact-main">
               <span class="compact-gid">{formatGroup(group.group)}</span>
-              <span class="compact-passes">{#if gs}{gs.full}/{gs.total}{/if}</span>
               <span class="compact-date">{#if gs}{formatDate(gs.lastFullSessionAt)}{/if}</span>
               <span class="compact-actions">
                 {#if $currentDataset?.kind === 'chinese'}
+                  {#if csStroke?.full}<span class="compact-stat">{csStroke.full}</span>{/if}
                   <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke`} title="Stroke practice">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
                   </a>
+                  {#if csPinyin?.full}<span class="compact-stat">{csPinyin.full}</span>{/if}
                   <a class="compact-icon" href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin`} title="Pinyin practice">
                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h1M10 8h1M14 8h1M18 8h1M7 12h1M11 12h1M15 12h1M8 16h8"/></svg>
                   </a>
@@ -987,6 +1008,8 @@
     {:else}
       {#each fullViewGroups as group, i (group.group)}
         {@const gs = $isAuthenticated ? $datasetGroupSessions.get(group.group) : null}
+        {@const gsStroke = $datasetGroupSessionsStroke.get(group.group)}
+        {@const gsPinyin = $datasetGroupSessionsPinyin.get(group.group)}
         <article class="group-card" style={`--delay:${i * 70}ms`}>
           <div class="group-header">
             <div class="group-tags">
@@ -994,18 +1017,17 @@
                 <span>#{tag}</span>
               {/each}
             </div>
-            {#if gs}
-              <div class="group-passes">{gs.total} passes ({gs.full} full)</div>
-            {/if}
             <div class="group-title">{formatGroup(group.group)}</div>
             <div class="group-actions">
               {#if $currentDataset?.kind === 'chinese'}
+                {#if gsStroke?.full}<span class="action-stat">{gsStroke.full}</span>{/if}
                 <a
                   class="print-link"
                   href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke`}
                 >
                   Stroke
                 </a>
+                {#if gsPinyin?.full}<span class="action-stat">{gsPinyin.full}</span>{/if}
                 <a
                   class="print-link"
                   href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin`}

@@ -700,6 +700,7 @@ select:focus {
   gap: 0.5rem;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .print-link {
@@ -781,6 +782,7 @@ select:focus {
 .compact-actions {
   display: flex;
   gap: 0.35rem;
+  align-items: center;
 }
 
 .compact-icon {
@@ -793,6 +795,18 @@ select:focus {
   background: rgba(31, 111, 92, 0.1);
   color: var(--ink);
   transition: background 0.15s ease, color 0.15s ease;
+}
+
+.compact-stat {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.action-stat {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
 }
 
 .compact-icon:hover {
