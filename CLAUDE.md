@@ -12,3 +12,5 @@
 - never do big chunk of changes at once, if the patch is too big, first present a plan, then implement phase by phase, confirm each phase by user
 - never git commit, create branches, push. Only use git to read history or if needed to do changes in the uncommitted patch
 - never run terraform/terragrant/aws/db update commands, ask user to perform that action instead
+- if user makes some obvious mistakes, clarify the intent with the user
+  e.g. the user asks to create @docs/0006-new-architecture.md, ask if they want to create req, rfc or plan (dependent on context)
