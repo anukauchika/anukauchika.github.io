@@ -4,6 +4,7 @@
   import { mainSearch, mainTags, mainGroup, mainCompact, loadMainFilters } from './state/filters.js'
   import { user, isAuthenticated, dbVersion, signInWithGoogle, signInWithApple, signInWithEmail, signOut } from './state/auth.js'
   import { formatGroup } from './utils/format.js'
+  import { pickNextPractice } from './utils/pick-next-practice.js'
   import ProgressBars from './ProgressBars.svelte'
   import GroupProgressBars from './GroupProgressBars.svelte'
   import CompactGroupRow from './CompactGroupRow.svelte'
@@ -292,6 +293,17 @@
         if (hasSearch) return g.items.length > 0
         return g._groupMatches || g.items.length > 0
       })
+  })
+
+  const nextPractice = $derived.by(() => {
+    if ($isAuthenticated) {
+      return pickNextPractice(filteredGroups, $datasetGroupSessions, $datasetGroupSessionsStroke, $datasetGroupSessionsPinyin)
+    }
+    return filteredGroups.length > 0 ? { groupId: filteredGroups[0].group, type: 'stroke' } : null
+  })
+  const practiceHref = $derived.by(() => {
+    const np = nextPractice
+    return np ? `${basePath}/practice.html?group=${np.groupId}&dataset=${$datasetId}&type=${np.type}` : null
   })
 
   const groupCount = $derived.by(() => filteredGroups.length)
@@ -846,6 +858,9 @@
       {/if}
     {:else}
       <p class="login-hint"><button type="button" class="login-hint-link" onclick={() => showAuthDropdown = true}>Log in</button> to track your learning progress</p>
+    {/if}
+    {#if practiceHref}
+      <a class="practice-btn" href={practiceHref}>Practice</a>
     {/if}
 
     <div class="controls">
