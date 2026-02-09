@@ -24,7 +24,7 @@ body {
 #app {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 3rem 2rem 4rem;
+  padding: 1.5rem 2rem 4rem;
 }
 
 main {
@@ -64,6 +64,10 @@ main:has(> .page-header) {
   color: var(--muted);
   margin: 0;
   text-transform: uppercase;
+}
+
+.app-title-sep {
+  margin: 0 0.3em;
 }
 
 .hero-content {
@@ -1378,7 +1382,7 @@ select:focus {
 
 @media (max-width: 900px) {
   #app {
-    padding: 2rem 1.5rem 3rem;
+    padding: 1rem 1.5rem 3rem;
   }
 
   .hero {

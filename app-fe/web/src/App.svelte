@@ -774,7 +774,7 @@
           <span class="github-text">Want to add vocabulary?<br>Contributions welcome</span>
         </a>
       </div>
-      <h2 class="app-title">Anuka Uchika</h2>
+      <h2 class="app-title">Anuka Uchika{#if $currentDataset?.appTitle}<span class="app-title-sep">&middot;</span>{$currentDataset.appTitle}{/if}</h2>
 
       <select class="dataset-picker" bind:value={$datasetId}>
         {#each datasets as dataset}
