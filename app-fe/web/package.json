@@ -8,15 +8,26 @@
     "build": "vite build",
     "build:inline": "vite build && node scripts/inline.mjs",
     "preview": "vite preview",
+    "lint": "eslint src/",
+    "format": "prettier --write 'src/**/*.{js,ts,svelte}'",
+    "format:check": "prettier --check 'src/**/*.{js,ts,svelte}'",
+    "check": "tsc --noEmit",
     "db:link": "supabase link --project-ref $SUPABASE_PROJECT_REF --workdir ../../",
     "db:push": "supabase db push --workdir ../../"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.2",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "eslint": "^9.39.2",
+    "eslint-plugin-svelte": "^3.14.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-svelte": "^3.4.1",
+    "supabase": "^2.23.4",
     "svelte": "^5.43.8",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0",
     "vite": "^7.2.4",
-    "vite-plugin-pwa": "^1.2.0",
-    "supabase": "^2.23.4"
+    "vite-plugin-pwa": "^1.2.0"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.94.1",

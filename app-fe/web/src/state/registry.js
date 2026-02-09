@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store'
 import registry from '../../../data/registry.json'
-import { localPrefs as prefs } from '../data/local-prefs-repo.js'
+import { prefsRepo as prefs } from '../data/idb-prefs-repo.js'
 const PREF_DATASET = 'datasetId'
 
 // Dynamically import all JSON files from data directory
@@ -20,21 +20,24 @@ export const datasets = registry.map((entry) => ({
   data: dataByPath[entry.path] ?? null,
 }))
 
-function resolveInitialDataset() {
-  const saved = prefs.get(PREF_DATASET)
-  if (saved && datasets.some((d) => d.id === saved)) return saved
-  return datasets[0]?.id ?? ''
-}
+const defaultDatasetId = datasets[0]?.id ?? ''
 
-export const datasetId = writable(resolveInitialDataset())
+export const datasetId = writable(defaultDatasetId)
 
-/** Re-read saved dataset from (switched) localStorage */
-export function reloadDatasetPref() {
-  const saved = prefs.get(PREF_DATASET)
+// Load saved preference from IDB on startup
+prefs.get(PREF_DATASET).then((saved) => {
+  if (saved && datasets.some((d) => d.id === saved)) {
+    datasetId.set(saved)
+  }
+})
+
+/** Re-read saved dataset from (switched) prefs DB */
+export async function reloadDatasetPref() {
+  const saved = await prefs.get(PREF_DATASET)
   if (saved && datasets.some((d) => d.id === saved)) {
     datasetId.set(saved)
   } else {
-    datasetId.set(datasets[0]?.id ?? '')
+    datasetId.set(defaultDatasetId)
   }
 }
 
