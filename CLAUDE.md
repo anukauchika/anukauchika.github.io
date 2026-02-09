@@ -1,5 +1,6 @@
-# General Info
+# General Instructions
 
+- be concise
 - read @README.md
 - read @docs/README.md
 - read @app-fe/README.md

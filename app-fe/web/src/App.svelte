@@ -12,6 +12,7 @@
   import GroupItemEnglish from './kind/english/GroupItem.svelte'
   import WordCardChinese from './kind/chinese/WordCard.svelte'
   import WordCardEnglish from './kind/english/WordCard.svelte'
+  import HowItWorks from './HowItWorks.svelte'
 
   const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || ''
   const basePath = $derived.by(() => `${baseUrl}/${$currentDataset.kind}`)
@@ -66,6 +67,7 @@
   let showPracticedList = $state(false)
   let showPracticedGroups = $state(false)
   let showPracticedChars = $state(false)
+  let showHowItWorks = $state(false)
   let activeStat = $state(null)
   let avatarError = $state(false)
   let hoveredBar = $state(null)
@@ -761,6 +763,8 @@
         {/each}
       </div>
     </section>
+  {:else if showHowItWorks}
+    <HowItWorks onClose={() => showHowItWorks = false} />
   {:else}
   <header class="hero">
     <div class="hero-top">
@@ -859,6 +863,7 @@
     {:else}
       <p class="login-hint"><button type="button" class="login-hint-link" onclick={() => showAuthDropdown = true}>Log in</button> to track your learning progress</p>
     {/if}
+    <p class="how-it-works-link"><button type="button" class="login-hint-link" onclick={() => showHowItWorks = true}>How it works?</button></p>
     {#if practiceHref}
       <a class="practice-btn" href={practiceHref}>Practice</a>
     {/if}

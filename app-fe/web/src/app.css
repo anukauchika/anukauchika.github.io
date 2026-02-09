@@ -33,6 +33,10 @@ main {
   gap: 2.5rem;
 }
 
+main:has(> .page-header) {
+  gap: 1rem;
+}
+
 .hero {
   position: relative;
   background: var(--card);
@@ -149,6 +153,13 @@ h1 {
 }
 
 .login-hint {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 1rem 0 -0.5rem;
+}
+
+.how-it-works-link {
   text-align: center;
   font-size: 0.8rem;
   color: var(--muted);
@@ -1215,6 +1226,27 @@ select:focus {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.how-section {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 1.2rem 1.5rem;
+  border: 1px solid rgba(31, 111, 92, 0.08);
+}
+
+.how-section h4 {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.how-section p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.6;
 }
 
 .char-grid {
