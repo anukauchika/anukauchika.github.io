@@ -130,6 +130,16 @@
     return `${months}mo ago`
   }
 
+  const formatDuration = (ms) => {
+    if (!ms) return ''
+    const totalMin = Math.round(ms / 60000)
+    if (totalMin < 1) return '<1 min'
+    if (totalMin < 60) return `${totalMin} min`
+    const h = Math.floor(totalMin / 60)
+    const m = totalMin % 60
+    return m > 0 ? `${h}h ${m}m` : `${h}h`
+  }
+
   const formatDate = (isoString) => {
     if (!isoString) return ''
     const date = new Date(isoString)
@@ -444,7 +454,8 @@
       const d = new Date(today)
       d.setDate(d.getDate() - i)
       const key = toLocalDateKey(d)
-      const count = dayCounts.get(key) || 0
+      const entry = dayCounts.get(key) || { count: 0, durationMs: 0, sessions: 0 }
+      const count = entry.count
       if (count > maxCount) maxCount = count
       bars.push({
         date: key,
@@ -603,7 +614,8 @@
       const d = new Date(today)
       d.setDate(d.getDate() - i)
       const key = toLocalDateKey(d)
-      const count = dayCounts.get(key) || 0
+      const entry = dayCounts.get(key) || { count: 0, durationMs: 0, sessions: 0 }
+      const count = entry.count
       let level = 0
       if (count > 0) {
         level = Math.min(4, Math.ceil((count / ACTIVITY_MAX) * 4))
@@ -611,6 +623,8 @@
       days.push({
         date: key,
         count,
+        durationMs: entry.durationMs,
+        sessions: entry.sessions,
         level,
         isFuture: false,
         label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -624,12 +638,21 @@
       days.push({
         date: key,
         count: 0,
+        durationMs: 0,
+        sessions: 0,
         level: 0,
         isFuture: true,
         label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
       })
     }
     return days
+  })
+
+  // Auto-select today
+  $effect(() => {
+    const todayKey = toLocalDateKey(new Date())
+    const today = activityData.find(d => d.date === todayKey)
+    if (today && !selectedDay) selectedDay = today
   })
 </script>
 
@@ -847,7 +870,7 @@
             class:future={day.isFuture}
             class:selected={selectedDay?.date === day.date}
             data-level={day.level}
-            title="{day.label}{day.isFuture ? '' : `: ${day.count} word${day.count !== 1 ? 's' : ''}`}"
+            title="{day.label}{day.isFuture ? '' : `: ${[day.count > 0 ? `${day.count} word${day.count !== 1 ? 's' : ''}` : '', day.sessions > 0 ? `${day.sessions} session${day.sessions !== 1 ? 's' : ''}` : '', day.durationMs > 0 ? formatDuration(day.durationMs) : ''].filter(Boolean).join(' \u00b7 ') || 'no practice'}`}"
             onclick={() => selectedDay = selectedDay?.date === day.date ? null : day}
           ></button>
         {/each}
@@ -856,7 +879,13 @@
         <div class="activity-info">
           <span class="activity-info-date">{selectedDay.label}</span>
           {#if !selectedDay.isFuture}
-            <span class="activity-info-count">{selectedDay.count} word{selectedDay.count !== 1 ? 's' : ''}</span>
+            {#if selectedDay.count > 0 || selectedDay.sessions > 0}
+              {#if selectedDay.count > 0}<span class="activity-info-count">{selectedDay.count} word{selectedDay.count !== 1 ? 's' : ''}</span>{/if}
+              {#if selectedDay.sessions > 0}{#if selectedDay.count > 0}<span class="activity-info-sep">&middot;</span>{/if}<span class="activity-info-count">{selectedDay.sessions} session{selectedDay.sessions !== 1 ? 's' : ''}</span>{/if}
+              {#if selectedDay.durationMs > 0}<span class="activity-info-sep">&middot;</span><span class="activity-info-count">{formatDuration(selectedDay.durationMs)}</span>{/if}
+            {:else}
+              <span class="activity-info-none">No sessions</span>
+            {/if}
           {/if}
         </div>
       {/if}

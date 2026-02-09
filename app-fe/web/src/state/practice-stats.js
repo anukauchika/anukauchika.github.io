@@ -35,7 +35,7 @@ export const datasetGroupSessionsStroke = writable(new Map())
 export const datasetGroupSessionsPinyin = writable(new Map())
 
 /**
- * Daily word practice counts: Map<dateString, count>
+ * Daily practice stats: Map<dateString, {count, durationMs, sessions}>
  * Used for activity line visualization
  */
 export const dailyActivity = writable(new Map())
@@ -106,18 +106,37 @@ export async function loadDatasetGroupSessions(datasetId, practiceType) {
   datasetGroupSessions.set(map)
 }
 
+const MAX_SESSION_MS = 2 * 60 * 60 * 1000 // 2h safety cap
+
 export async function loadDailyActivity(datasetId, practiceType) {
   try {
     const sessions = await idb.getGroupSessions(dsCode(datasetId), ptCode(practiceType))
     const dayMap = new Map()
+    const dayWords = new Map() // dateKey -> Set of "groupId::wordId"
     for (const s of sessions) {
+      // Accumulate session duration
+      if (s.done_at) {
+        const dateKey = toLocalDateKey(new Date(s.done_at))
+        const entry = dayMap.get(dateKey) || { count: 0, durationMs: 0, sessions: 0 }
+        const dur = Math.min(new Date(s.done_at) - new Date(s.started_at), MAX_SESSION_MS)
+        entry.durationMs += Math.max(dur, 0)
+        entry.sessions += 1
+        dayMap.set(dateKey, entry)
+      }
+      // Collect unique words per day
       const words = await idb.getWordAttempts(s.id)
       for (const w of words) {
         if (w.done_at) {
           const dateKey = toLocalDateKey(new Date(w.done_at))
-          dayMap.set(dateKey, (dayMap.get(dateKey) || 0) + 1)
+          if (!dayMap.has(dateKey)) dayMap.set(dateKey, { count: 0, durationMs: 0, sessions: 0 })
+          const set = dayWords.get(dateKey) || new Set()
+          set.add(`${s.group_id}::${w.word_id}`)
+          dayWords.set(dateKey, set)
         }
       }
+    }
+    for (const [dateKey, set] of dayWords) {
+      dayMap.get(dateKey).count = set.size
     }
     dailyActivity.set(dayMap)
   } catch (err) {
@@ -220,17 +239,34 @@ export async function loadDatasetGroupSessionsAll(datasetId) {
 export async function loadDailyActivityAll(datasetId) {
   try {
     const dayMap = new Map()
+    const dayWords = new Map() // dateKey -> Set of "groupId::wordId"
     for (const pt of ALL_PT) {
       const sessions = await idb.getGroupSessions(dsCode(datasetId), ptCode(pt))
       for (const s of sessions) {
+        // Accumulate session duration
+        if (s.done_at) {
+          const dateKey = toLocalDateKey(new Date(s.done_at))
+          const entry = dayMap.get(dateKey) || { count: 0, durationMs: 0, sessions: 0 }
+          const dur = Math.min(new Date(s.done_at) - new Date(s.started_at), MAX_SESSION_MS)
+          entry.durationMs += Math.max(dur, 0)
+          entry.sessions += 1
+          dayMap.set(dateKey, entry)
+        }
+        // Collect unique words per day (merged across practice types)
         const words = await idb.getWordAttempts(s.id)
         for (const w of words) {
           if (w.done_at) {
             const dateKey = toLocalDateKey(new Date(w.done_at))
-            dayMap.set(dateKey, (dayMap.get(dateKey) || 0) + 1)
+            if (!dayMap.has(dateKey)) dayMap.set(dateKey, { count: 0, durationMs: 0, sessions: 0 })
+            const set = dayWords.get(dateKey) || new Set()
+            set.add(`${s.group_id}::${w.word_id}`)
+            dayWords.set(dateKey, set)
           }
         }
       }
+    }
+    for (const [dateKey, set] of dayWords) {
+      dayMap.get(dateKey).count = set.size
     }
     dailyActivity.set(dayMap)
   } catch (err) {
@@ -420,12 +456,5 @@ export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, ch
     })
   }
 
-  // Update dailyActivity store
-  const dateKey = toLocalDateKey(new Date(doneAt))
-  dailyActivity.update((map) => {
-    const next = new Map(map)
-    next.set(dateKey, (next.get(dateKey) || 0) + 1)
-    return next
-  })
 }
 
