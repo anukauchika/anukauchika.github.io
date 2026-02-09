@@ -1,4 +1,4 @@
-import { prefsRepo as repo } from '../data/idb-prefs-repo.js'
+import { prefsRepo as repo } from '../data/idb-prefs-repo'
 
 const KEYS = {
   mainSearch: (datasetId) => `main:search:${datasetId}`,

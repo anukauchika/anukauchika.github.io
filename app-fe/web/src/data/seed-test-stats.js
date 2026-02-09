@@ -1,3 +1,4 @@
+// @ts-nocheck — dev-only seed utility, will be typed when migrated to TS
 /**
  * Generates realistic practice stats for the chinese-test dataset.
  * Seeds IDB directly via bulk insert — no server sync.
@@ -8,7 +9,7 @@
  * Usage (browser console):
  *   import('/src/data/seed-test-stats.js').then(m => m.seed())
  */
-import * as idb from './idb-stats.js'
+import * as idb from './idb-stats-repo'
 
 const DATASET_CODE = 'ae'   // chinese-test
 const PRACTICE_TYPE = 's'   // stroke

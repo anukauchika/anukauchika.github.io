@@ -1,6 +1,6 @@
 import { writable, get } from 'svelte/store'
-import * as idb from '../data/idb-stats.js'
-import { api } from '../api.js'
+import * as idb from '../data/idb-stats-repo'
+import { api } from '../supabase.js'
 import { syncPending, setActiveSessionId } from './sync.js'
 import { user } from './auth.js'
 import { getDatasetCode } from './registry.js'

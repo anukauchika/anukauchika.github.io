@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store'
-import { filtersApi } from '../api/filters.js'
+import { filtersApi } from '../supabase/filters.js'
 
 export const mainSearch = writable('')
 export const mainTags = writable([])

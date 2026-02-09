@@ -1,5 +1,5 @@
-import { api } from '../api.js'
-import * as idb from '../data/idb-stats.js'
+import { api } from '../supabase.js'
+import * as idb from '../data/idb-stats-repo'
 
 let syncing = false
 let activeSessionId = null

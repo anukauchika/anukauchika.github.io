@@ -1,8 +1,8 @@
 import { writable, derived } from 'svelte/store'
-import { api } from '../api.js'
+import { api } from '../supabase.js'
 import { syncPending, restoreFromServer } from './sync.js'
-import { switchDatabase } from '../data/idb-stats.js'
-import { switchPrefsDatabase } from '../data/idb-prefs-repo.js'
+import { switchDatabase } from '../data/idb-stats-repo'
+import { switchPrefsDatabase } from '../data/idb-prefs-repo'
 import { reloadDatasetPref } from './registry.js'
 
 export const session = writable(null)

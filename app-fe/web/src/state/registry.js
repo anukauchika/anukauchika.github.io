@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store'
 import registry from '../../../data/registry.json'
-import { prefsRepo as prefs } from '../data/idb-prefs-repo.js'
+import { prefsRepo as prefs } from '../data/idb-prefs-repo'
 const PREF_DATASET = 'datasetId'
 
 // Dynamically import all JSON files from data directory
