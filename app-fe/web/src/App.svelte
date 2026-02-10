@@ -1,7 +1,7 @@
 <script>
   import { datasets, datasetId, currentDataset } from './state/registry.js'
   import { datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from './state/practice-stats.js'
-  import { mainSearch, mainTags, mainGroup, mainCompact, loadMainFilters } from './state/filters.js'
+  import { mainSearch, mainTags, mainGroups, mainListViewStyle, loadMainFilters } from './state/filters.js'
   import { user, isAuthenticated, dbVersion, signInWithGoogle, signInWithApple, signInWithEmail, signOut } from './state/auth.js'
   import { formatGroup } from './utils/format.js'
   import { pickNextPractice } from './utils/pick-next-practice.js'
@@ -191,7 +191,7 @@
   const groupSuggestions = $derived.by(() => {
     const q = groupQuery.trim().toLowerCase()
     return groups.filter((g) =>
-      (!q || formatGroup(g.group).toLowerCase().includes(q)) && !$mainGroup.includes(g.group)
+      (!q || formatGroup(g.group).toLowerCase().includes(q)) && !$mainGroups.includes(g.group)
     )
   })
 
@@ -201,8 +201,8 @@
   })
 
   const addGroup = (groupId) => {
-    if (!$mainGroup.includes(groupId)) {
-      $mainGroup = [...$mainGroup, groupId]
+    if (!$mainGroups.includes(groupId)) {
+      $mainGroups = [...$mainGroups, groupId]
     }
     groupQuery = ''
     showGroupSuggestions = false
@@ -210,7 +210,7 @@
   }
 
   const removeGroup = (groupId) => {
-    $mainGroup = $mainGroup.filter((id) => id !== groupId)
+    $mainGroups = $mainGroups.filter((id) => id !== groupId)
   }
 
   const handleGroupKeydown = (e) => {
@@ -223,8 +223,8 @@
     } else if (e.key === 'Enter' && groupSuggestions.length > 0) {
       e.preventDefault()
       addGroup(groupSuggestions[groupHighlightedIndex].group)
-    } else if (e.key === 'Backspace' && groupQuery === '' && $mainGroup.length > 0) {
-      removeGroup($mainGroup[$mainGroup.length - 1])
+    } else if (e.key === 'Backspace' && groupQuery === '' && $mainGroups.length > 0) {
+      removeGroup($mainGroups[$mainGroups.length - 1])
     } else if (e.key === 'Escape') {
       showGroupSuggestions = false
     }
@@ -264,8 +264,8 @@
   }
 
   const matchesGroup = (groupId) => {
-    if ($mainGroup.length === 0) return true
-    return $mainGroup.includes(groupId)
+    if ($mainGroups.length === 0) return true
+    return $mainGroups.includes(groupId)
   }
 
   const openWord = (item) => {
@@ -279,11 +279,11 @@
   }
 
   $effect(() => {
-    if ($mainGroup.length > 0) {
+    if ($mainGroups.length > 0) {
       const validIds = new Set(groups.map((g) => g.group))
-      const filtered = $mainGroup.filter((id) => validIds.has(id))
-      if (filtered.length !== $mainGroup.length) {
-        $mainGroup = filtered
+      const filtered = $mainGroups.filter((id) => validIds.has(id))
+      if (filtered.length !== $mainGroups.length) {
+        $mainGroups = filtered
       }
     }
   })
@@ -473,7 +473,7 @@
     for (const bar of bars) {
       let cum = 0
       for (const { stat } of practicedItems) {
-        if (stat.lastPracticedAt && stat.lastPracticedAt.slice(0, 10) <= bar.date) cum++
+        if (stat.lastPracticedAt && toLocalDateKey(new Date(stat.lastPracticedAt)) <= bar.date) cum++
       }
       cumulativeData.push(cum)
       if (cum > maxCumulative) maxCumulative = cum
@@ -907,10 +907,10 @@
             bind:value={$mainSearch}
           />
           <div class="view-buttons">
-            <button type="button" class:active={!$mainCompact} onclick={() => $mainCompact = false} title="Grid view">
+            <button type="button" class:active={$mainListViewStyle === 'full'} onclick={() => $mainListViewStyle = 'full'} title="Grid view">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
             </button>
-            <button type="button" class:active={$mainCompact} onclick={() => $mainCompact = true} title="List view">
+            <button type="button" class:active={$mainListViewStyle === 'compact'} onclick={() => $mainListViewStyle = 'compact'} title="List view">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
           </div>
@@ -952,7 +952,7 @@
       <label class="group-filter">
         <span>Groups</span>
         <div class="tag-input-wrap">
-          {#each $mainGroup as groupId (groupId)}
+          {#each $mainGroups as groupId (groupId)}
             <span class="selected-tag">{formatGroup(groupId)}<button type="button" onmousedown={(e) => { e.preventDefault(); e.stopPropagation(); removeGroup(groupId) }}>&times;</button></span>
           {/each}
           <div class="autocomplete">
@@ -973,8 +973,8 @@
               </ul>
             {/if}
           </div>
-          {#if $mainGroup.length > 0}
-            <button type="button" class="input-clear" onmousedown={(e) => { e.preventDefault(); e.stopPropagation(); $mainGroup = [] }}>&times;</button>
+          {#if $mainGroups.length > 0}
+            <button type="button" class="input-clear" onmousedown={(e) => { e.preventDefault(); e.stopPropagation(); $mainGroups = [] }}>&times;</button>
           {/if}
         </div>
       </label>
@@ -982,12 +982,12 @@
     </div>
   </header>
 
-  <section class="groups" class:compact={$mainCompact}>
+  <section class="groups" class:compact={$mainListViewStyle === 'compact'}>
     {#if filteredGroups.length === 0}
       <div class="empty">
         <p>No matches. Try clearing filters or searching a different term.</p>
       </div>
-    {:else if $mainCompact}
+    {:else if $mainListViewStyle === 'compact'}
       <div class="compact-list">
         {#each filteredGroups as group (group.group)}
           <CompactGroupRow {group} formatTime={(gs) => timeAgo(gs.lastPracticedAt)} />

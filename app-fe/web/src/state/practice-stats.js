@@ -1,5 +1,5 @@
 import { writable, get } from 'svelte/store'
-import * as idb from '../data/idb-stats-repo'
+import { statsRepo, getWordStats } from '../data/idb-stats-repo'
 import { api } from '../supabase.js'
 import { syncPending, setActiveSessionId } from './sync.js'
 import { user } from './auth.js'
@@ -54,12 +54,12 @@ function toLocalDateKey(date) {
 }
 
 let nextTempId = -1
-const tempIdReady = idb.getMinId().then((min) => { nextTempId = min - 1 })
+const tempIdReady = statsRepo.getMinId().then((min) => { nextTempId = min - 1 })
 
 // --- Load functions ---
 
 export async function loadGroupStats(datasetId, practiceType, groupId) {
-  const stats = await idb.getWordStats(dsCode(datasetId), ptCode(practiceType))
+  const stats = await getWordStats(dsCode(datasetId), ptCode(practiceType))
   const map = new Map()
   for (const s of stats) {
     if (s.groupId === groupId) map.set(s.wordId, s)
@@ -68,7 +68,7 @@ export async function loadGroupStats(datasetId, practiceType, groupId) {
 }
 
 export async function loadDatasetStats(datasetId, practiceType) {
-  const stats = await idb.getWordStats(dsCode(datasetId), ptCode(practiceType))
+  const stats = await getWordStats(dsCode(datasetId), ptCode(practiceType))
   const map = new Map()
   for (const s of stats) {
     map.set(`${s.groupId}::${s.wordId}`, s)
@@ -77,7 +77,7 @@ export async function loadDatasetStats(datasetId, practiceType) {
 }
 
 export async function loadDatasetGroupSessions(datasetId, practiceType) {
-  const sessions = await idb.getGroupSessions(dsCode(datasetId), ptCode(practiceType))
+  const sessions = await statsRepo.getGroupSessions(dsCode(datasetId), ptCode(practiceType))
   const map = new Map()
   for (const s of sessions) {
     const existing = map.get(s.group_id)
@@ -110,7 +110,7 @@ const MAX_SESSION_MS = 2 * 60 * 60 * 1000 // 2h safety cap
 
 export async function loadDailyActivity(datasetId, practiceType) {
   try {
-    const sessions = await idb.getGroupSessions(dsCode(datasetId), ptCode(practiceType))
+    const sessions = await statsRepo.getGroupSessions(dsCode(datasetId), ptCode(practiceType))
     const dayMap = new Map()
     const dayWords = new Map() // dateKey -> Set of "groupId::wordId"
     for (const s of sessions) {
@@ -124,7 +124,7 @@ export async function loadDailyActivity(datasetId, practiceType) {
         dayMap.set(dateKey, entry)
       }
       // Collect unique words per day
-      const words = await idb.getWordAttempts(s.id)
+      const words = await statsRepo.getWordAttempts(s.id)
       for (const w of words) {
         if (w.done_at) {
           const dateKey = toLocalDateKey(new Date(w.done_at))
@@ -154,7 +154,7 @@ export async function loadDatasetStatsAll(datasetId) {
   for (const pt of ALL_PT) {
     const code = ptCode(pt)
     const ptMap = perType[code]
-    const stats = await idb.getWordStats(dsCode(datasetId), code)
+    const stats = await getWordStats(dsCode(datasetId), code)
     for (const s of stats) {
       const key = `${s.groupId}::${s.wordId}`
       // Per-type map
@@ -183,7 +183,7 @@ export async function loadDatasetGroupSessionsAll(datasetId) {
   for (const pt of ALL_PT) {
     const code = ptCode(pt)
     const ptMap = perType[code]
-    const sessions = await idb.getGroupSessions(dsCode(datasetId), code)
+    const sessions = await statsRepo.getGroupSessions(dsCode(datasetId), code)
     for (const s of sessions) {
       const isFull = s.done_at != null
       const ts = s.done_at || s.started_at
@@ -241,7 +241,7 @@ export async function loadDailyActivityAll(datasetId) {
     const dayMap = new Map()
     const dayWords = new Map() // dateKey -> Set of "groupId::wordId"
     for (const pt of ALL_PT) {
-      const sessions = await idb.getGroupSessions(dsCode(datasetId), ptCode(pt))
+      const sessions = await statsRepo.getGroupSessions(dsCode(datasetId), ptCode(pt))
       for (const s of sessions) {
         // Accumulate session duration
         if (s.done_at) {
@@ -253,7 +253,7 @@ export async function loadDailyActivityAll(datasetId) {
           dayMap.set(dateKey, entry)
         }
         // Collect unique words per day (merged across practice types)
-        const words = await idb.getWordAttempts(s.id)
+        const words = await statsRepo.getWordAttempts(s.id)
         for (const w of words) {
           if (w.done_at) {
             const dateKey = toLocalDateKey(new Date(w.done_at))
@@ -306,7 +306,7 @@ export async function startGroupSession(datasetId, practiceType, groupId) {
     synced = 0
   }
 
-  await idb.saveGroupSession({
+  await statsRepo.saveGroupSession({
     id,
     user_id: userId,
     dataset_id: dsCode(datasetId),
@@ -324,13 +324,13 @@ export async function startGroupSession(datasetId, practiceType, groupId) {
 }
 
 export async function endGroupSession(sessionId) {
-  const session = await idb.getSessionById(sessionId)
+  const session = await statsRepo.getGroupSessionById(sessionId)
   if (!session) return
 
   setActiveSessionId(null)
 
   const now = new Date().toISOString()
-  await idb.saveGroupSession({ ...session, done_at: now, synced: 0 })
+  await statsRepo.saveGroupSession({ ...session, done_at: now, synced: 0 })
 
   syncPending().catch((e) => console.error('sync failed', e))
 
@@ -368,7 +368,7 @@ export async function endGroupSession(sessionId) {
 
 export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, chars) {
   await tempIdReady
-  const session = await idb.getSessionById(sessionId)
+  const session = await statsRepo.getGroupSessionById(sessionId)
   if (!session) {
     console.error('recordWordAttempt: session not found', sessionId)
     return
@@ -376,7 +376,7 @@ export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, ch
   const groupId = session.group_id
   const wordTempId = nextTempId--
 
-  await idb.saveWordAttempt({
+  await statsRepo.saveWordAttempt({
     id: wordTempId,
     group_session_id: sessionId,
     word_id: wordId,
@@ -386,7 +386,7 @@ export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, ch
   })
 
   if (chars.length > 0) {
-    await idb.saveCharLogs(
+    await statsRepo.saveCharLogs(
       chars.map((c) => ({
         word_attempt_id: wordTempId,
         char_index: c.charIndex,

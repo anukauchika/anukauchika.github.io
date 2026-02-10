@@ -1,8 +1,8 @@
 import { writable, derived } from 'svelte/store'
 import { api } from '../supabase.js'
 import { syncPending, restoreFromServer } from './sync.js'
-import { switchDatabase } from '../data/idb-stats-repo'
-import { switchPrefsDatabase } from '../data/idb-prefs-repo'
+import { statsRepo } from '../data/idb-stats-repo'
+import { prefsRepo } from '../data/idb-prefs-repo'
 import { reloadDatasetPref } from './registry.js'
 
 export const session = writable(null)
@@ -15,8 +15,8 @@ export const isAuthenticated = derived(user, ($user) => $user !== null)
 export const dbVersion = writable(0)
 
 async function onUserChanged(userId) {
-  await switchDatabase(userId)
-  await switchPrefsDatabase(userId)
+  await statsRepo.switchDatabase(userId)
+  await prefsRepo.switchDatabase(userId)
   await reloadDatasetPref()
   if (userId) {
     await syncPending()

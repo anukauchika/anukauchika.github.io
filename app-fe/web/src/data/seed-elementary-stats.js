@@ -10,7 +10,7 @@
  * Usage (browser console):
  *   import('/src/data/seed-elementary-stats.js').then(m => m.seed())
  */
-import * as idb from './idb-stats-repo'
+import { statsRepo } from './idb-stats-repo'
 
 const DATASET_CODE = 'aa'   // chinese-hskv3-elementary
 const PRACTICE_TYPE = 's'   // stroke
@@ -131,9 +131,9 @@ export async function seed() {
     }
   }
 
-  await idb.bulkInsertSessions(sessions)
-  await idb.bulkInsertWordAttempts(words)
-  await idb.bulkInsertCharLogs(chars)
+  await statsRepo.bulkInsertGroupSessions(sessions)
+  await statsRepo.bulkInsertWordAttempts(words)
+  await statsRepo.bulkInsertCharLogs(chars)
 
   console.log(`Seeded: ${sessions.length} sessions, ${words.length} word attempts, ${chars.length} char logs`)
   console.log('Reload the page and select "HSK V3 2026 Elementary" dataset to see the data.')

@@ -1,10 +1,10 @@
 import { writable } from 'svelte/store'
-import { filtersApi } from '../supabase/filters.js'
+import { prefsRepo } from '../data/idb-prefs-repo'
 
 export const mainSearch = writable('')
 export const mainTags = writable([])
-export const mainGroup = writable([])
-export const mainCompact = writable(false)
+export const mainGroups = writable([])
+export const mainListViewStyle = writable('full')
 
 let mainDatasetId = null
 let initialized = false
@@ -12,35 +12,35 @@ let initialized = false
 export async function loadMainFilters(datasetId) {
   mainDatasetId = datasetId
   initialized = false
-  const filters = await filtersApi.getMainFilters(datasetId)
+  const filters = await prefsRepo.getMainFilters(datasetId)
   mainSearch.set(filters.search)
   mainTags.set(filters.tags)
-  mainGroup.set(filters.group)
-  mainCompact.set(filters.compact)
+  mainGroups.set(filters.groups)
+  mainListViewStyle.set(filters.listViewStyle)
   initialized = true
 }
 
 // Auto-persist on changes
 mainSearch.subscribe((value) => {
   if (initialized && mainDatasetId) {
-    filtersApi.setMainSearch(mainDatasetId, value)
+    prefsRepo.setMainSearch(mainDatasetId, value)
   }
 })
 
 mainTags.subscribe((value) => {
   if (initialized && mainDatasetId) {
-    filtersApi.setMainTags(mainDatasetId, value)
+    prefsRepo.setMainTags(mainDatasetId, value)
   }
 })
 
-mainGroup.subscribe((value) => {
+mainGroups.subscribe((value) => {
   if (initialized && mainDatasetId) {
-    filtersApi.setMainGroup(mainDatasetId, value)
+    prefsRepo.setMainGroups(mainDatasetId, value)
   }
 })
 
-mainCompact.subscribe((value) => {
+mainListViewStyle.subscribe((value) => {
   if (initialized && mainDatasetId) {
-    filtersApi.setMainCompact(mainDatasetId, value)
+    prefsRepo.setMainListViewStyle(mainDatasetId, value)
   }
 })

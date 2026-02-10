@@ -15,6 +15,6 @@ Bring code structure to order & make it architecturally nice and easy to fix & e
 - 006-01: introduce typescript, linter formatter: done
 - 006-02: IDB low level service: done
 - 006-03: Core data types: done
-- 006-04: Repo layer: `StatsRepo`, `PrefsRepo` typed interfaces
+- 006-04: Repo layer: `StatsRepo`, `PrefsRepo` typed interfaces: done
 - 006-05: Services layer: `StatsService`, `SyncService`, `SessionService`, `MaintenanceService`
 - Component decomposition: App.svelte split, practice component dedup

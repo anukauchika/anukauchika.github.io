@@ -1,5 +1,5 @@
 import { api } from '../supabase.js'
-import * as idb from '../data/idb-stats-repo'
+import { statsRepo } from '../data/idb-stats-repo'
 
 let syncing = false
 let activeSessionId = null
@@ -11,7 +11,7 @@ export async function syncPending() {
   syncing = true
   try {
     // 1a. New sessions (temp ID) — skip only the current active session
-    const allPendingSessions = await idb.getPendingSessions()
+    const allPendingSessions = await statsRepo.getPendingGroupSessions()
     const newSessions = allPendingSessions.filter((s) => s.id < 0 && s.id !== activeSessionId)
     for (const s of newSessions) {
       const { id: realId } = await api.stats.createGroupSession({
@@ -22,18 +22,18 @@ export async function syncPending() {
         started_at: s.started_at,
         done_at: s.done_at,
       })
-      await idb.markSessionSynced(s.id, realId)
+      await statsRepo.markGroupSessionSynced(s.id, realId)
     }
 
     // 1b. Updated sessions (real ID, need done_at push)
     const updatedSessions = allPendingSessions.filter((s) => s.id > 0)
     for (const s of updatedSessions) {
       await api.stats.updateGroupSessionDone(s.id, s.done_at)
-      await idb.saveGroupSession({ ...s, synced: 1 })
+      await statsRepo.saveGroupSession({ ...s, synced: 1 })
     }
 
     // 2. Word attempts (positive session ID = session already synced; active session stays negative)
-    const allPendingWords = await idb.getPendingWordAttempts()
+    const allPendingWords = await statsRepo.getPendingWordAttempts()
     const words = allPendingWords.filter((w) => w.group_session_id > 0)
     for (const w of words) {
       const { id: realId } = await api.stats.insertWordAttempt({
@@ -42,11 +42,11 @@ export async function syncPending() {
         started_at: w.started_at,
         done_at: w.done_at,
       })
-      await idb.markWordAttemptSynced(w.id, realId)
+      await statsRepo.markWordAttemptSynced(w.id, realId)
     }
 
     // 3. Char logs (only those whose word attempt is already synced — positive id)
-    const allPendingChars = await idb.getPendingCharLogs()
+    const allPendingChars = await statsRepo.getPendingCharLogs()
     const chars = allPendingChars.filter((c) => c.word_attempt_id > 0)
     if (chars.length > 0) {
       await api.stats.insertCharLogs(
@@ -58,7 +58,7 @@ export async function syncPending() {
           error_count: c.error_count,
         }))
       )
-      await idb.saveCharLogs(chars.map((c) => ({ ...c, synced: 1 })))
+      await statsRepo.saveCharLogs(chars.map((c) => ({ ...c, synced: 1 })))
     }
   } finally {
     syncing = false
@@ -69,19 +69,19 @@ export async function restoreFromServer() {
   const sessions = await api.stats.fetchAllUserSessions()
   if (sessions.length === 0) return
 
-  await idb.bulkInsertSessions(
+  await statsRepo.bulkInsertGroupSessions(
     sessions.map((s) => ({ ...s, synced: 1 }))
   )
 
   const sessionIds = sessions.map((s) => s.id)
   const words = await api.stats.fetchWordAttempts(sessionIds)
-  await idb.bulkInsertWordAttempts(
+  await statsRepo.bulkInsertWordAttempts(
     words.map((w) => ({ ...w, synced: 1 }))
   )
 
   const wordIds = words.map((w) => w.id)
   const chars = await api.stats.fetchCharLogs(wordIds)
-  await idb.bulkInsertCharLogs(
+  await statsRepo.bulkInsertCharLogs(
     chars.map((c) => ({ ...c, synced: 1 }))
   )
 }

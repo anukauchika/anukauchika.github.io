@@ -46,6 +46,15 @@ export interface CharLog {
   synced: SyncStatus
 }
 
+// --- Preferences ---
+
+export interface MainFilters {
+  search: string
+  tags: string[]
+  groups: string[]
+  listViewStyle: ListViewStyle
+}
+
 // --- Derived (computed by services) ---
 
 export interface WordStat {
