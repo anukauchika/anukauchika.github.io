@@ -1,12 +1,15 @@
 import { api } from '../supabase.js'
 import { statsRepo } from '../data/idb-stats-repo'
+import type { SyncService } from '../api/sync-service'
 
 let syncing = false
-let activeSessionId = null
+let activeSessionId: number | null = null
 
-export function setActiveSessionId(id) { activeSessionId = id }
+function setActiveSessionId(id: number | null): void {
+  activeSessionId = id
+}
 
-export async function syncPending() {
+async function syncPending(): Promise<void> {
   if (syncing) return
   syncing = true
   try {
@@ -56,7 +59,7 @@ export async function syncPending() {
           started_at: c.started_at,
           done_at: c.done_at,
           error_count: c.error_count,
-        }))
+        })),
       )
       await statsRepo.saveCharLogs(chars.map((c) => ({ ...c, synced: 1 })))
     }
@@ -65,23 +68,23 @@ export async function syncPending() {
   }
 }
 
-export async function restoreFromServer() {
+async function restoreFromServer(): Promise<void> {
   const sessions = await api.stats.fetchAllUserSessions()
   if (sessions.length === 0) return
 
-  await statsRepo.bulkInsertGroupSessions(
-    sessions.map((s) => ({ ...s, synced: 1 }))
-  )
+  await statsRepo.bulkInsertGroupSessions(sessions.map((s) => ({ ...s, synced: 1 })))
 
   const sessionIds = sessions.map((s) => s.id)
   const words = await api.stats.fetchWordAttempts(sessionIds)
-  await statsRepo.bulkInsertWordAttempts(
-    words.map((w) => ({ ...w, synced: 1 }))
-  )
+  await statsRepo.bulkInsertWordAttempts(words.map((w) => ({ ...w, synced: 1 })))
 
   const wordIds = words.map((w) => w.id)
   const chars = await api.stats.fetchCharLogs(wordIds)
-  await statsRepo.bulkInsertCharLogs(
-    chars.map((c) => ({ ...c, synced: 1 }))
-  )
+  await statsRepo.bulkInsertCharLogs(chars.map((c) => ({ ...c, synced: 1 })))
+}
+
+export const syncService: SyncService = {
+  setActiveSessionId,
+  syncPending,
+  restoreFromServer,
 }

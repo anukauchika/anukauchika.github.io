@@ -3,8 +3,10 @@ import './app.css'
 import App from './App.svelte'
 import { initAnalytics } from './utils/analytics.js'
 import { initAuth } from './state/auth.js'
+import { maintenanceService } from './services/maintenance-service'
 
 initAnalytics()
+maintenanceService.runStartupTasks()
 await initAuth()
 
 const app = mount(App, {

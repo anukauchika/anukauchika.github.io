@@ -1,6 +1,6 @@
 import { writable, derived } from 'svelte/store'
 import { api } from '../supabase.js'
-import { syncPending, restoreFromServer } from './sync.js'
+import { syncService } from '../services/sync-service'
 import { statsRepo } from '../data/idb-stats-repo'
 import { prefsRepo } from '../data/idb-prefs-repo'
 import { reloadDatasetPref } from './registry.js'
@@ -19,8 +19,8 @@ async function onUserChanged(userId) {
   await prefsRepo.switchDatabase(userId)
   await reloadDatasetPref()
   if (userId) {
-    await syncPending()
-    await restoreFromServer()
+    await syncService.syncPending()
+    await syncService.restoreFromServer()
   }
   dbVersion.update((n) => n + 1)
 }

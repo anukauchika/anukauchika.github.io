@@ -55,6 +55,24 @@ export interface MainFilters {
   listViewStyle: ListViewStyle
 }
 
+// --- Service inputs ---
+
+export interface CharAttemptInput {
+  charIndex: number
+  startedAt: string
+  doneAt: string
+  errorCount: number
+}
+
+// --- Service outputs ---
+
+export interface WordAttemptResult {
+  wordId: string
+  groupId: string
+  practiceType: PracticeType
+  errorCount: number
+}
+
 // --- Derived (computed by services) ---
 
 export interface WordStat {

@@ -1,6 +1,3 @@
-// TODO: Remove after 2026-03-06 — legacy database cleanup
-indexedDB.deleteDatabase('memris-prefs')
-
 import { req, createDatabase } from './idb'
 import type { PrefsRepo } from '../api/prefs-repo'
 import type { ListViewStyle, MainFilters } from '../api/types'

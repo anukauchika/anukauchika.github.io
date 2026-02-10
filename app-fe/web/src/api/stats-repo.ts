@@ -31,6 +31,10 @@ export interface StatsRepo {
   // Utils
   isEmpty(): Promise<boolean>
   getMinId(): Promise<number>
+  nextTempId(): Promise<number>
+
+  // Cleanup
+  deleteOldSyncedRecords(cutoffDate: string): Promise<void>
 
   // Lifecycle
   switchDatabase(userId: string | null): Promise<void>

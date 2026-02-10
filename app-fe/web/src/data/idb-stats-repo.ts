@@ -1,10 +1,6 @@
-// TODO: Remove after 2026-03-06 — legacy database cleanup
-indexedDB.deleteDatabase('memris-stats')
-indexedDB.deleteDatabase('memris-stats-v2')
-
 import { req, tx, createDatabase } from './idb'
 import type { StatsRepo } from '../api/stats-repo'
-import type { GroupSession, WordAttempt, CharLog, PracticeType, WordStat } from '../api/types'
+import type { GroupSession, WordAttempt, CharLog, PracticeType } from '../api/types'
 
 const ST_SESSIONS = 'group_sessions'
 const ST_WORDS = 'word_attempts'
@@ -185,6 +181,51 @@ async function isEmpty(): Promise<boolean> {
   return count === 0
 }
 
+async function deleteOldSyncedRecords(cutoffDate: string): Promise<void> {
+  const db = await statsDb.db()
+
+  // Find old synced sessions
+  const allSessions = await req(
+    db.transaction(ST_SESSIONS, 'readonly').objectStore(ST_SESSIONS).index('synced').getAll(1),
+  )
+  const old = allSessions.filter((s: GroupSession) => (s.done_at || s.started_at) < cutoffDate)
+  if (old.length === 0) return
+
+  const oldSessionIds = new Set(old.map((s: GroupSession) => s.id))
+
+  // Find word attempts belonging to old sessions
+  const allWords = await req(db.transaction(ST_WORDS, 'readonly').objectStore(ST_WORDS).getAll())
+  const oldWords = allWords.filter((w: WordAttempt) => w.synced && oldSessionIds.has(w.group_session_id))
+
+  // Delete in one transaction
+  const t = db.transaction([ST_SESSIONS, ST_WORDS, ST_CHARS], 'readwrite')
+  const ss = t.objectStore(ST_SESSIONS)
+  const ws = t.objectStore(ST_WORDS)
+  const cs = t.objectStore(ST_CHARS)
+
+  for (const s of old) ss.delete(s.id)
+  for (const w of oldWords) {
+    ws.delete(w.id)
+    const range = IDBKeyRange.bound([w.id], [w.id, Infinity])
+    const chars = await req(cs.getAll(range))
+    for (const c of chars) cs.delete([c.word_attempt_id, c.char_index])
+  }
+
+  await tx(t)
+}
+
+// --- Temp ID counter ---
+
+let nextId: number | null = null
+
+async function nextTempId(): Promise<number> {
+  if (nextId === null) {
+    const min = await getMinId()
+    nextId = min - 1
+  }
+  return nextId--
+}
+
 // --- StatsRepo object ---
 
 export const statsRepo: StatsRepo = {
@@ -205,102 +246,7 @@ export const statsRepo: StatsRepo = {
   bulkInsertCharLogs,
   isEmpty,
   getMinId,
+  nextTempId,
+  deleteOldSyncedRecords,
   switchDatabase,
 }
-
-// --- TODO 006-05: move to StatsService ---
-
-export async function getWordStats(datasetId: string, practiceType: string): Promise<WordStat[]> {
-  const sessions = await getGroupSessions(datasetId, practiceType as PracticeType)
-  const sessionIds = new Set(sessions.map((s) => s.id))
-
-  const db = await statsDb.db()
-  const t = db.transaction([ST_WORDS, ST_CHARS], 'readonly')
-  const allWords = await req(t.objectStore(ST_WORDS).getAll())
-  const words = allWords.filter((w) => sessionIds.has(w.group_session_id))
-
-  // Load char logs for all relevant word attempts to sum error counts
-  const charStore = t.objectStore(ST_CHARS)
-  const errorsByAttempt = new Map()
-  for (const w of words) {
-    const range = IDBKeyRange.bound([w.id], [w.id, Infinity])
-    const chars = await req(charStore.getAll(range))
-    let total = 0
-    for (const c of chars) total += c.error_count || 0
-    errorsByAttempt.set(w.id, total)
-  }
-
-  // Aggregate: per (group_id, word_id) → { successCount, errorCount, lastPracticedAt }
-  const stats = new Map()
-  for (const s of sessions) {
-    const sessionWords = words.filter((w) => w.group_session_id === s.id)
-    for (const w of sessionWords) {
-      const key = `${s.group_id}::${w.word_id}`
-      const existing = stats.get(key) || {
-        datasetId,
-        practiceType,
-        groupId: s.group_id,
-        wordId: w.word_id,
-        successCount: 0,
-        errorCount: 0,
-        lastPracticedAt: null,
-      }
-      existing.successCount += 1
-      existing.errorCount += errorsByAttempt.get(w.id) || 0
-      if (!existing.lastPracticedAt || w.done_at > existing.lastPracticedAt) {
-        existing.lastPracticedAt = w.done_at
-      }
-      stats.set(key, existing)
-    }
-  }
-  return [...stats.values()]
-}
-
-// --- TODO 006-05: move to MaintenanceService ---
-
-const CLEANUP_KEY = 'uch-stats-last-cleanup'
-const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000
-const RETENTION_MS = 90 * 24 * 60 * 60 * 1000
-
-export async function cleanupOldRecords(): Promise<void> {
-  const last = localStorage.getItem(CLEANUP_KEY)
-  if (last && Date.now() - Number(last) < CLEANUP_INTERVAL_MS) return
-
-  const cutoff = new Date(Date.now() - RETENTION_MS).toISOString()
-  const db = await statsDb.db()
-
-  // Find old synced sessions
-  const allSessions = await req(db.transaction(ST_SESSIONS, 'readonly').objectStore(ST_SESSIONS).index('synced').getAll(1))
-  const old = allSessions.filter((s) => (s.done_at || s.started_at) < cutoff)
-  if (old.length === 0) {
-    localStorage.setItem(CLEANUP_KEY, String(Date.now()))
-    return
-  }
-
-  const oldSessionIds = new Set(old.map((s) => s.id))
-
-  // Find word attempts belonging to old sessions
-  const allWords = await req(db.transaction(ST_WORDS, 'readonly').objectStore(ST_WORDS).getAll())
-  const oldWords = allWords.filter((w) => w.synced && oldSessionIds.has(w.group_session_id))
-
-  // Delete in one transaction
-  const t = db.transaction([ST_SESSIONS, ST_WORDS, ST_CHARS], 'readwrite')
-  const ss = t.objectStore(ST_SESSIONS)
-  const ws = t.objectStore(ST_WORDS)
-  const cs = t.objectStore(ST_CHARS)
-
-  for (const s of old) ss.delete(s.id)
-  for (const w of oldWords) {
-    ws.delete(w.id)
-    // Delete char logs for this word attempt
-    const range = IDBKeyRange.bound([w.id], [w.id, Infinity])
-    const chars = await req(cs.getAll(range))
-    for (const c of chars) cs.delete([c.word_attempt_id, c.char_index])
-  }
-
-  await tx(t)
-  localStorage.setItem(CLEANUP_KEY, String(Date.now()))
-}
-
-// TODO 006-05: move to MaintenanceService — run cleanup on module load (non-blocking)
-cleanupOldRecords().catch((e) => console.error('stats cleanup failed', e))
