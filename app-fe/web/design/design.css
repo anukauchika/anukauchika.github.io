@@ -104,6 +104,22 @@
   margin: 0;
 }
 
+/* ── Tags: pill list inside island ── */
+
+.anuka-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.anuka-tag {
+  background: var(--anuka-color-glow-warm);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: var(--anuka-color-muted);
+}
+
 /* ── Quick: icon button, top-right of island ── */
 
 .anuka-quick {
