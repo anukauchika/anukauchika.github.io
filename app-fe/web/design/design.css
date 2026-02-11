@@ -1,0 +1,67 @@
+@import './icons.css';
+
+/* ── Color palette ── */
+
+:root {
+  --anuka-color-charcoal: #1d1a15;
+  --anuka-color-cream: #fffaf2;
+  --anuka-color-linen: #f6efe8;
+  --anuka-color-sand: #efe4d1;
+  --anuka-color-warm-glow: rgba(244, 192, 122, 0.35);
+  --anuka-color-green-glow: rgba(31, 111, 92, 0.2);
+  --anuka-color-border: rgba(31, 111, 92, 0.08);
+  --anuka-color-shadow: rgba(47, 39, 28, 0.18);
+}
+
+/* ── Page: gradient bg + vertical flow ── */
+
+.anuka-page {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 10% 20%, var(--anuka-color-warm-glow), transparent 40%),
+    radial-gradient(circle at 80% 0%, var(--anuka-color-green-glow), transparent 45%),
+    linear-gradient(135deg, var(--anuka-color-linen), var(--anuka-color-sand));
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.anuka-page > * {
+  width: 100%;
+  max-width: 960px;
+}
+
+/* ── Island: rounded content card ── */
+
+.anuka-island {
+  font-family: "Avenir Next", "Gill Sans", sans-serif;
+  color: var(--anuka-color-charcoal);
+  line-height: 1.5;
+  background: var(--anuka-color-cream);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--anuka-color-border);
+  box-shadow: 0 20px 50px var(--anuka-color-shadow);
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* ── Quick: icon button, top-right of island ── */
+
+.anuka-quick {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--anuka-color-charcoal);
+  cursor: pointer;
+}

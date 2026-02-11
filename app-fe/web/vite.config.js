@@ -57,6 +57,7 @@ export default defineConfig({
         chinesePractice: path.resolve(__dirname, 'chinese/practice.html'),
         english: path.resolve(__dirname, 'english/index.html'),
         englishWorkbook: path.resolve(__dirname, 'english/workbook.html'),
+        design: path.resolve(__dirname, 'design/index.html'),
       },
     },
   },
