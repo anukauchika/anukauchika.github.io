@@ -22,12 +22,14 @@ Grow the framework step by step, with very focused changes, adding entity by ent
 
 | Entity | Class | Description |
 |---|---|---|
+| theme | data-theme attr | day/night themes via semantic CSS vars, auto-detects OS preference, manual toggle via `data-theme="dark"` on `<html>` |
 | page | anuka-page | turn HTML body into anuka page, subtle unintrusive gradient background, nothing more |
 | island | anuka-island | visual container for content, rounded corners, nice spacing, clean surface color |
 | quick | anuka-quick | top-right corner icon button, top right icon button for islands |
 | app-title | anuka-app-title | brand heading with two children: `anuka-app-name` + `anuka-app-kind`, separator via CSS `::before` |
 | island-title | anuka-island-title | large serif heading inside island |
 | tags | anuka-tags, anuka-tag | pill list container (full width, wrapping) with individual tag pills, used inside island |
-| theme | data-theme attr | day/night themes via semantic CSS vars, auto-detects OS preference, manual toggle via `data-theme="dark"` on `<html>` |
+| card | anuka-card | pill list container (full width, wrapping) with individual tag pills, used inside island |
+
 
 

@@ -100,9 +100,13 @@
 
 .anuka-island-title {
   font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
-  font-size: 2.8rem;
   margin: 0;
 }
+
+h1.anuka-island-title { font-size: 2.8rem; }
+h2.anuka-island-title { font-size: 2rem; }
+h3.anuka-island-title { font-size: 1.5rem; }
+h4.anuka-island-title { font-size: 1.2rem; }
 
 /* ── Tags: pill list inside island ── */
 
