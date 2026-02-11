@@ -6,6 +6,7 @@
   --anuka-color-bg-base: #f6efe8;
   --anuka-color-bg-accent: #efe4d1;
   --anuka-color-surface: #fffaf2;
+  --anuka-color-surface-raised: #ffffff;
   --anuka-color-text: #1d1a15;
   --anuka-color-muted: #5a5147;
   --anuka-color-border: rgba(31, 111, 92, 0.08);
@@ -21,6 +22,7 @@
     --anuka-color-bg-base: #1a1a1e;
     --anuka-color-bg-accent: #23232a;
     --anuka-color-surface: #2a2a32;
+    --anuka-color-surface-raised: #35353f;
     --anuka-color-text: #e8e2d8;
     --anuka-color-muted: #9a9088;
     --anuka-color-border: rgba(255, 255, 255, 0.08);
@@ -88,7 +90,11 @@
   text-align: center;
   color: var(--anuka-color-text);
   opacity: 0.55;
-  margin: 0 0 0.9rem;
+  margin: 0;
+}
+
+.anuka-island .anuka-app-title {
+  margin-bottom: 0.9rem;
 }
 
 .anuka-app-kind::before {
@@ -122,6 +128,23 @@ h4.anuka-island-title { font-size: 1.2rem; }
   border-radius: 999px;
   font-size: 0.75rem;
   color: var(--anuka-color-muted);
+}
+
+/* ── Grid: responsive auto-fit layout ── */
+
+.anuka-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+/* ── Card: raised surface inside island ── */
+
+.anuka-card {
+  background: var(--anuka-color-surface-raised);
+  border-radius: 1rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(31, 111, 92, 0.12);
 }
 
 /* ── Quick: icon button, top-right of island ── */

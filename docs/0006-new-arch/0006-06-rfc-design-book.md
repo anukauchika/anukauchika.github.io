@@ -29,7 +29,8 @@ Grow the framework step by step, with very focused changes, adding entity by ent
 | app-title | anuka-app-title | brand heading with two children: `anuka-app-name` + `anuka-app-kind`, separator via CSS `::before` |
 | island-title | anuka-island-title | large serif heading inside island |
 | tags | anuka-tags, anuka-tag | pill list container (full width, wrapping) with individual tag pills, used inside island |
-| card | anuka-card | pill list container (full width, wrapping) with individual tag pills, used inside island |
+| grid | anuka-grid | responsive auto-fit grid layout (`minmax(220px, 1fr)`) |
+| card | anuka-card | raised surface card inside island, rounded, with border |
 
 
 
