@@ -1,16 +1,42 @@
 @import './icons.css';
 
-/* ── Color palette ── */
+/* ── Semantic tokens (light) ── */
 
 :root {
-  --anuka-color-charcoal: #1d1a15;
-  --anuka-color-cream: #fffaf2;
-  --anuka-color-linen: #f6efe8;
-  --anuka-color-sand: #efe4d1;
-  --anuka-color-warm-glow: rgba(244, 192, 122, 0.35);
-  --anuka-color-green-glow: rgba(31, 111, 92, 0.2);
+  --anuka-color-bg-base: #f6efe8;
+  --anuka-color-bg-accent: #efe4d1;
+  --anuka-color-surface: #fffaf2;
+  --anuka-color-text: #1d1a15;
   --anuka-color-border: rgba(31, 111, 92, 0.08);
   --anuka-color-shadow: rgba(47, 39, 28, 0.18);
+  --anuka-color-glow-warm: rgba(244, 192, 122, 0.35);
+  --anuka-color-glow-cool: rgba(31, 111, 92, 0.2);
+}
+
+/* ── Semantic tokens (dark) ── */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --anuka-color-bg-base: #1a1a1e;
+    --anuka-color-bg-accent: #23232a;
+    --anuka-color-surface: #2a2a32;
+    --anuka-color-text: #e8e2d8;
+    --anuka-color-border: rgba(255, 255, 255, 0.08);
+    --anuka-color-shadow: rgba(0, 0, 0, 0.4);
+    --anuka-color-glow-warm: rgba(244, 192, 122, 0.12);
+    --anuka-color-glow-cool: rgba(31, 111, 92, 0.1);
+  }
+}
+
+[data-theme="dark"] {
+  --anuka-color-bg-base: #1a1a1e;
+  --anuka-color-bg-accent: #23232a;
+  --anuka-color-surface: #2a2a32;
+  --anuka-color-text: #e8e2d8;
+  --anuka-color-border: rgba(255, 255, 255, 0.08);
+  --anuka-color-shadow: rgba(0, 0, 0, 0.4);
+  --anuka-color-glow-warm: rgba(244, 192, 122, 0.12);
+  --anuka-color-glow-cool: rgba(31, 111, 92, 0.1);
 }
 
 /* ── Page: gradient bg + vertical flow ── */
@@ -19,9 +45,9 @@
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(circle at 10% 20%, var(--anuka-color-warm-glow), transparent 40%),
-    radial-gradient(circle at 80% 0%, var(--anuka-color-green-glow), transparent 45%),
-    linear-gradient(135deg, var(--anuka-color-linen), var(--anuka-color-sand));
+    radial-gradient(circle at 10% 20%, var(--anuka-color-glow-warm), transparent 40%),
+    radial-gradient(circle at 80% 0%, var(--anuka-color-glow-cool), transparent 45%),
+    linear-gradient(135deg, var(--anuka-color-bg-base), var(--anuka-color-bg-accent));
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -38,9 +64,9 @@
 
 .anuka-island {
   font-family: "Avenir Next", "Gill Sans", sans-serif;
-  color: var(--anuka-color-charcoal);
+  color: var(--anuka-color-text);
   line-height: 1.5;
-  background: var(--anuka-color-cream);
+  background: var(--anuka-color-surface);
   border-radius: 1.5rem;
   padding: 1.5rem;
   border: 1px solid var(--anuka-color-border);
@@ -62,6 +88,6 @@
   justify-content: center;
   background: none;
   border: none;
-  color: var(--anuka-color-charcoal);
+  color: var(--anuka-color-text);
   cursor: pointer;
 }
