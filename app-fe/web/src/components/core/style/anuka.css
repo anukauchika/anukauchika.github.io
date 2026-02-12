@@ -172,6 +172,8 @@ h4.anuka-island-title { font-size: 1.2rem; }
 .anuka-right { justify-content: flex-end; }
 .anuka-justify { justify-content: space-between; }
 .anuka-grow { flex: 1; }
+.anuka-compact { gap: 0.25rem; }
+
 
 /* ── Island sticky: stays on top on scroll ── */
 

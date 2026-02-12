@@ -763,96 +763,10 @@ select:focus {
   gap: 1rem;
 }
 
-/* Compact view styles */
-.compact-list {
-  background: var(--card);
-  border-radius: 16px;
-  box-shadow: var(--shadow);
-  border: 1px solid rgba(31, 111, 92, 0.08);
-  overflow: hidden;
-}
-
-.compact-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 0.5rem 1rem;
-}
-
-.compact-row:hover {
-  background: rgba(31, 111, 92, 0.03);
-}
-
-.compact-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
-.compact-gid {
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.compact-passes {
-  font-weight: 600;
-  color: var(--accent);
-  font-size: 0.85rem;
-}
-
-.compact-date {
-  color: var(--muted);
-  font-size: 0.85rem;
-}
-
-.compact-actions {
-  display: flex;
-  gap: 0.35rem;
-  align-items: center;
-}
-
-.compact-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: rgba(31, 111, 92, 0.1);
-  color: var(--ink);
-  transition: background 0.15s ease, color 0.15s ease;
-}
-
-.compact-stat {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--accent);
-}
-
 .action-stat {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--accent);
-}
-
-.compact-icon:hover {
-  background: var(--accent);
-  color: white;
-}
-
-.compact-tags {
-  display: flex;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-}
-
-.compact-tag {
-  background: rgba(244, 192, 122, 0.35);
-  padding: 0.2rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  color: var(--muted);
 }
 
 
@@ -1394,10 +1308,6 @@ select:focus {
 
   .hero-top {
     gap: 1rem;
-  }
-
-  .compact-icon-workbook {
-    display: none;
   }
 }
 

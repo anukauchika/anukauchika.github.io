@@ -111,6 +111,20 @@
         <Card>&nbsp;</Card><Card>&nbsp;</Card><Card>justify</Card><Card>&nbsp;</Card><Card>&nbsp;</Card>
       </div>
     </div>
+
+    <IslandTitle level={3}>Compact modifier</IslandTitle>
+    <p>Add <code>anuka-compact</code> to any stack or row to tighten spacing. Useful for dense lists and compact cards.</p>
+    <div class="anuka-stack anuka-compact">
+      <div class="anuka-row anuka-justify">
+        <Card>Row 1</Card><Card>Value</Card>
+      </div>
+      <div class="anuka-row anuka-justify">
+        <Card>Row 2</Card><Card>Value</Card>
+      </div>
+      <div class="anuka-row anuka-justify">
+        <Card>Row 3</Card><Card>Value</Card>
+      </div>
+    </div>
   </Island>
 
   <!-- Structure: Progress -->
@@ -202,6 +216,24 @@
           />
         </div>
       </Card>
+    </div>
+  </Island>
+
+  <!-- Icons -->
+
+  <AppTitle parts={['Anuka', 'Icons']} />
+
+  <Island>
+    <IslandTitle level={3}>Icon buttons</IslandTitle>
+    <p>Icons inside <code>anuka-btn-icon</code> variant — used for compact action buttons.</p>
+    <div class="anuka-row">
+      <Btn variant="icon" label="Stroke" icon="stroke" />
+      <Btn variant="icon" label="Pinyin" icon="pinyin" />
+      <Btn variant="icon" label="Workbook" icon="book" />
+      <Btn variant="icon" label="Print" icon="print" />
+      <Btn variant="icon" label="Menu" icon="dots" />
+      <Btn variant="icon" label="Close" icon="close" />
+      <Btn variant="icon" label="Theme" icon="moon" />
     </div>
   </Island>
 

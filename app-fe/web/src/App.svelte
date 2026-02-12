@@ -6,9 +6,10 @@
   import { formatGroup } from './utils/format.js'
   import { pickNextPractice } from './utils/pick-next-practice.js'
   import ProgressBars from './components/app/chinese/ProgressBars.svelte'
-  import GroupProgressBars from './components/app/chinese/GroupProgressBars.svelte'
+  import ProgressLine from './components/core/ProgressLine.svelte'
   import DailyActivityHeatmap from './components/app/DailyActivityHeatmap.svelte'
-  import CompactGroupRow from './CompactGroupRow.svelte'
+  import PracticedGroups from './components/app/chinese/group/PracticedGroups.svelte'
+  import CompactGroupList from './components/app/chinese/group/CompactGroupList.svelte'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
   import GroupItemEnglish from './kind/english/GroupItem.svelte'
   import WordCardChinese from './kind/chinese/WordCard.svelte'
@@ -542,6 +543,26 @@
     return Math.min(Math.round((fullSessions / 10) * 100), 100)
   }
 
+  const compactRowProps = (group, from) => {
+    const fromParam = from ? `&from=${from}` : ''
+    const isChinese = $currentDataset?.kind === 'chinese'
+    const gsStroke = $datasetGroupSessionsStroke.get(group.group)
+    const gsPinyin = $datasetGroupSessionsPinyin.get(group.group)
+    return {
+      groupId: formatGroup(group.group),
+      lastPracticed: $isAuthenticated ? timeAgo($datasetGroupSessions.get(group.group)?.lastPracticedAt) : undefined,
+      tags: group.tags,
+      strokeHref: isChinese ? `${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke${fromParam}` : undefined,
+      pinyinHref: isChinese ? `${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin${fromParam}` : undefined,
+      strokeSessions: gsStroke?.full ?? 0,
+      pinyinSessions: gsPinyin?.full ?? 0,
+      strokeProgress: $isAuthenticated ? getGroupProgress(group, $datasetStatsStroke) : 0,
+      strokeMastery: $isAuthenticated ? getGroupMastery(group, $datasetGroupSessionsStroke) : 0,
+      pinyinProgress: $isAuthenticated ? getGroupProgress(group, $datasetStatsPinyin) : 0,
+      pinyinMastery: $isAuthenticated ? getGroupMastery(group, $datasetGroupSessionsPinyin) : 0,
+    }
+  }
+
   const practicedGroupsSorted = $derived.by(() => {
     return [...filteredGroups].sort((a, b) => {
       const gsA = $datasetGroupSessions.get(a.group)
@@ -726,19 +747,12 @@
       </div>
     </section>
   {:else if showPracticedGroups}
-    <div class="page-header">
-      <h3>Groups Practiced <span class="practiced-count-accent">{practicedGroupsSorted.filter(g => $datasetGroupSessions.has(g.group)).length}</span> <span class="practiced-count">| {practicedGroupsSorted.length}</span></h3>
-      <button type="button" class="page-close-btn" onclick={() => showPracticedGroups = false} title="Close">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
-      </button>
-    </div>
-    <section class="practiced-page">
-      <div class="compact-list">
-        {#each practicedGroupsSorted as group (group.group)}
-          <CompactGroupRow {group} from="groups" formatTime={(gs) => timeAgo(gs.lastPracticedAt)} />
-        {/each}
-      </div>
-    </section>
+    <PracticedGroups
+      groups={practicedGroupsSorted.map(g => compactRowProps(g, 'groups'))}
+      practicedCount={practicedGroupsSorted.filter(g => $datasetGroupSessions.has(g.group)).length}
+      totalCount={practicedGroupsSorted.length}
+      onclose={() => showPracticedGroups = false}
+    />
   {:else if showPracticedChars}
     <div class="page-header">
       <h3>Chars Practiced <span class="practiced-count-accent">{practicedCharsCount}</span> <span class="practiced-count">| {uniqueChars}</span></h3>
@@ -942,11 +956,7 @@
         <p>No matches. Try clearing filters or searching a different term.</p>
       </div>
     {:else if $mainListViewStyle === 'compact'}
-      <div class="compact-list">
-        {#each filteredGroups as group (group.group)}
-          <CompactGroupRow {group} formatTime={(gs) => timeAgo(gs.lastPracticedAt)} />
-        {/each}
-      </div>
+      <CompactGroupList groups={filteredGroups.map(g => compactRowProps(g))} />
     {:else}
       {#each fullViewGroups as group, i (group.group)}
         {@const gs = $isAuthenticated ? $datasetGroupSessions.get(group.group) : null}
@@ -995,14 +1005,10 @@
               </a>
             </div>
             {#if $isAuthenticated}
-              <GroupProgressBars
-                strokeProgress={getGroupProgress(group, $datasetStatsStroke)}
-                strokeMastery={getGroupMastery(group, $datasetGroupSessionsStroke)}
-                strokeSessions={$datasetGroupSessionsStroke.get(group.group)?.full ?? 0}
-                pinyinProgress={getGroupProgress(group, $datasetStatsPinyin)}
-                pinyinMastery={getGroupMastery(group, $datasetGroupSessionsPinyin)}
-                pinyinSessions={$datasetGroupSessionsPinyin.get(group.group)?.full ?? 0}
-              />
+              <div class="anuka-stack anuka-compact anuka-grow">
+                <ProgressLine fill={getGroupProgress(group, $datasetStatsStroke)} fillStrong={getGroupMastery(group, $datasetGroupSessionsStroke)} />
+                <ProgressLine fill={getGroupProgress(group, $datasetStatsPinyin)} fillStrong={getGroupMastery(group, $datasetGroupSessionsPinyin)} />
+              </div>
             {/if}
           </div>
 
