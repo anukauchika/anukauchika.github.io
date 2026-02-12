@@ -211,6 +211,26 @@ h4.anuka-island-title { font-size: 1.2rem; }
   border-radius: 2px;
 }
 
+/* ── Activity heatmap: row of intensity cells ── */
+
+.anuka-activity-heatmap {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+}
+
+.anuka-activity-heatmap-cell {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--anuka-color-border);
+}
+
+.anuka-activity-heatmap-cell[data-level="1"] { background: rgba(31, 111, 92, 0.25); }
+.anuka-activity-heatmap-cell[data-level="2"] { background: rgba(31, 111, 92, 0.45); }
+.anuka-activity-heatmap-cell[data-level="3"] { background: rgba(31, 111, 92, 0.7); }
+.anuka-activity-heatmap-cell[data-level="4"] { background: #1f6f5c; }
+
 /* ── Quick: icon button, top-right of island ── */
 
 .anuka-quick {

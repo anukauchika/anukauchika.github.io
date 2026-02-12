@@ -37,6 +37,7 @@ Grow the framework step by step, with very focused changes, adding entity by ent
 | island-sticky | anuka-island-sticky | modifier to pin an island to the top on scroll |
 | progress | anuka-progress-line | thin bar track with `anuka-progress-line-fill` and `anuka-progress-line-fill-strong` for overlapping fills |
 | card | anuka-card | raised surface card inside island, rounded, with border |
+| activity-heatmap | anuka-activity-heatmap, anuka-activity-heatmap-cell | row of intensity cells, `data-level="1-4"` for intensity |
 
 
 
