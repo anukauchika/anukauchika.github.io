@@ -13,6 +13,7 @@
   --anuka-color-accent-strong: rgba(31, 111, 92, 0.5);
   --anuka-color-border: rgba(31, 111, 92, 0.08);
   --anuka-color-shadow: rgba(47, 39, 28, 0.18);
+  --anuka-color-primary: #1f6f5c;
   --anuka-color-glow-warm: rgba(244, 192, 122, 0.35);
   --anuka-color-glow-cool: rgba(31, 111, 92, 0.2);
 }
@@ -31,6 +32,7 @@
     --anuka-color-accent-strong: rgba(100, 200, 170, 0.55);
     --anuka-color-border: rgba(255, 255, 255, 0.08);
     --anuka-color-shadow: rgba(0, 0, 0, 0.4);
+    --anuka-color-primary: #2a9a7e;
     --anuka-color-glow-warm: rgba(244, 192, 122, 0.12);
     --anuka-color-glow-cool: rgba(31, 111, 92, 0.1);
   }
@@ -40,9 +42,14 @@
   --anuka-color-bg-base: #1a1a1e;
   --anuka-color-bg-accent: #23232a;
   --anuka-color-surface: #2a2a32;
+  --anuka-color-surface-raised: #35353f;
   --anuka-color-text: #e8e2d8;
+  --anuka-color-muted: #9a9088;
+  --anuka-color-accent: rgba(100, 200, 170, 0.3);
+  --anuka-color-accent-strong: rgba(100, 200, 170, 0.55);
   --anuka-color-border: rgba(255, 255, 255, 0.08);
   --anuka-color-shadow: rgba(0, 0, 0, 0.4);
+  --anuka-color-primary: #2a9a7e;
   --anuka-color-glow-warm: rgba(244, 192, 122, 0.12);
   --anuka-color-glow-cool: rgba(31, 111, 92, 0.1);
 }
@@ -230,6 +237,100 @@ h4.anuka-island-title { font-size: 1.2rem; }
 .anuka-activity-heatmap-cell[data-level="2"] { background: rgba(31, 111, 92, 0.45); }
 .anuka-activity-heatmap-cell[data-level="3"] { background: rgba(31, 111, 92, 0.7); }
 .anuka-activity-heatmap-cell[data-level="4"] { background: #1f6f5c; }
+
+/* ── Button: action element with variants ── */
+
+.anuka-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.4rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--anuka-color-primary);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.anuka-btn:hover { opacity: 0.85; }
+
+.anuka-btn-outline {
+  background: none;
+  color: var(--anuka-color-text);
+  border-color: var(--anuka-color-accent);
+}
+
+.anuka-btn-outline:hover {
+  border-color: var(--anuka-color-primary);
+  opacity: 1;
+}
+
+.anuka-btn-ghost {
+  background: none;
+  border: none;
+  color: var(--anuka-color-primary);
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.anuka-btn-ghost:hover { opacity: 0.8; }
+
+.anuka-btn-toggle {
+  background: none;
+  color: var(--anuka-color-muted);
+  border-color: var(--anuka-color-accent);
+}
+
+.anuka-btn-toggle:hover {
+  background: var(--anuka-color-border);
+  opacity: 1;
+}
+
+.anuka-btn-toggle.active {
+  background: var(--anuka-color-primary);
+  color: #fff;
+  border-color: var(--anuka-color-primary);
+}
+
+.anuka-btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: none;
+  border-color: var(--anuka-color-accent);
+  color: var(--anuka-color-muted);
+}
+
+.anuka-btn-icon:hover {
+  background: var(--anuka-color-border);
+  color: var(--anuka-color-primary);
+  opacity: 1;
+}
+
+/* ── Input: text field ── */
+
+.anuka-input {
+  border: 1px solid var(--anuka-color-accent);
+  background: var(--anuka-color-surface);
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  color: var(--anuka-color-text);
+  outline: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.anuka-input:focus {
+  border-color: var(--anuka-color-primary);
+  box-shadow: 0 0 0 3px var(--anuka-color-accent);
+}
 
 /* ── Quick: icon button, top-right of island ── */
 

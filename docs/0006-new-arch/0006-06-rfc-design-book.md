@@ -38,6 +38,8 @@ Grow the framework step by step, with very focused changes, adding entity by ent
 | progress | anuka-progress-line | thin bar track with `anuka-progress-line-fill` and `anuka-progress-line-fill-strong` for overlapping fills |
 | card | anuka-card | raised surface card inside island, rounded, with border |
 | activity-heatmap | anuka-activity-heatmap, anuka-activity-heatmap-cell | row of intensity cells, `data-level="1-4"` for intensity |
+| btn | anuka-btn | primary action button, pill shape, filled accent. Variants: `anuka-btn-outline`, `anuka-btn-ghost`, `anuka-btn-toggle` (+`.active`), `anuka-btn-icon` |
+| input | anuka-input | text field with border, rounded corners, focus ring |
 
 
 
