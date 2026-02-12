@@ -9,12 +9,19 @@
   import ActivityHeatmap from '../components/core/ActivityHeatmap.svelte'
   import Btn from '../components/core/Btn.svelte'
   import Input from '../components/core/Input.svelte'
+  import Stat from '../components/core/Stat.svelte'
+  import Autocomplete from '../components/core/Autocomplete.svelte'
 
   function toggleTheme() {
     const current = document.documentElement.dataset.theme
       ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
     document.documentElement.dataset.theme = current === 'dark' ? 'light' : 'dark'
   }
+
+  // Autocomplete demo state
+  let demoTags = $state<string[]>(['beginner'])
+  const allDemoTags = ['beginner', 'intermediate', 'advanced', 'hsk1', 'hsk2', 'greetings', 'food', 'travel', 'numbers', 'colors']
+  const demoTagItems = allDemoTags.map(t => ({ id: t, label: '#' + t }))
 
   // Interactive heatmap demo state
   let selectedCell = $state<number | null>(5)
@@ -261,6 +268,27 @@
         <Btn variant="icon" label="Theme" icon="moon" />
       </div>
     </div>
+
+    <IslandTitle level={3}>Stat</IslandTitle>
+    <p>Big number with small label underneath. Renders as <code>&lt;button&gt;</code> when <code>onclick</code> is provided, <code>&lt;div&gt;</code> otherwise.</p>
+    <div class="anuka-row anuka-justify">
+      <Stat value={42} label="Groups" />
+      <Stat value={156} label="Words" />
+      <Stat value={89} label="Chars" />
+      <Stat value={37} label="Practiced" onclick={() => {}} />
+    </div>
+
+    <IslandTitle level={3}>Autocomplete</IslandTitle>
+    <p>Chip input with dropdown suggestions. Type to filter, arrow keys to navigate, enter to select, backspace to remove last chip.</p>
+    <Autocomplete
+      items={demoTagItems}
+      selected={demoTags}
+      formatSelected={(id) => '#' + id}
+      placeholder="Add tags..."
+      onadd={(id) => { if (!demoTags.includes(id)) demoTags = [...demoTags, id] }}
+      onremove={(id) => demoTags = demoTags.filter(t => t !== id)}
+      onclear={() => demoTags = []}
+    />
 
     <IslandTitle level={3}>Input</IslandTitle>
     <p>Standard text field with focus ring. Composes with buttons in rows using grow.</p>

@@ -14,6 +14,7 @@
   --anuka-color-border: rgba(31, 111, 92, 0.08);
   --anuka-color-shadow: rgba(47, 39, 28, 0.18);
   --anuka-color-primary: #1f6f5c;
+  --anuka-color-on-primary: #ffffff;
   --anuka-color-glow-warm: rgba(244, 192, 122, 0.35);
   --anuka-color-glow-cool: rgba(31, 111, 92, 0.2);
 }
@@ -33,6 +34,7 @@
     --anuka-color-border: rgba(255, 255, 255, 0.08);
     --anuka-color-shadow: rgba(0, 0, 0, 0.4);
     --anuka-color-primary: #2a9a7e;
+    --anuka-color-on-primary: #ffffff;
     --anuka-color-glow-warm: rgba(244, 192, 122, 0.12);
     --anuka-color-glow-cool: rgba(31, 111, 92, 0.1);
   }
@@ -50,6 +52,7 @@
   --anuka-color-border: rgba(255, 255, 255, 0.08);
   --anuka-color-shadow: rgba(0, 0, 0, 0.4);
   --anuka-color-primary: #2a9a7e;
+  --anuka-color-on-primary: #ffffff;
   --anuka-color-glow-warm: rgba(244, 192, 122, 0.12);
   --anuka-color-glow-cool: rgba(31, 111, 92, 0.1);
 }
@@ -274,7 +277,7 @@ button.anuka-activity-heatmap-cell {
   border: 1px solid transparent;
   border-radius: 999px;
   background: var(--anuka-color-primary);
-  color: #fff;
+  color: var(--anuka-color-on-primary);
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: 600;
@@ -319,7 +322,7 @@ button.anuka-activity-heatmap-cell {
 
 .anuka-btn-toggle.active {
   background: var(--anuka-color-primary);
-  color: #fff;
+  color: var(--anuka-color-on-primary);
   border-color: var(--anuka-color-primary);
 }
 
@@ -336,6 +339,12 @@ button.anuka-activity-heatmap-cell {
   background: var(--anuka-color-border);
   color: var(--anuka-color-primary);
   opacity: 1;
+}
+
+.anuka-btn-icon.active {
+  background: var(--anuka-color-primary);
+  color: var(--anuka-color-on-primary);
+  border-color: var(--anuka-color-primary);
 }
 
 /* ── Input: text field ── */
@@ -355,6 +364,146 @@ button.anuka-activity-heatmap-cell {
 .anuka-input:focus {
   border-color: var(--anuka-color-primary);
   box-shadow: 0 0 0 3px var(--anuka-color-accent);
+}
+
+/* ── Stat: big number + small label ── */
+
+.anuka-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.4rem;
+}
+
+.anuka-stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--anuka-color-text);
+}
+
+.anuka-stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--anuka-color-muted);
+}
+
+button.anuka-stat {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 0.75rem;
+  transition: background 0.15s ease;
+}
+
+button.anuka-stat:hover {
+  background: var(--anuka-color-border);
+}
+
+/* ── Autocomplete: chip input with dropdown ── */
+
+.anuka-autocomplete {
+  position: relative;
+}
+
+.anuka-autocomplete-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid var(--anuka-color-accent);
+  background: var(--anuka-color-surface);
+  border-radius: 12px;
+  padding: 0.4rem 0.6rem;
+  cursor: text;
+}
+
+.anuka-autocomplete-field:focus-within {
+  border-color: var(--anuka-color-primary);
+  box-shadow: 0 0 0 3px var(--anuka-color-accent);
+}
+
+.anuka-autocomplete-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: var(--anuka-color-glow-warm);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  color: var(--anuka-color-text);
+  white-space: nowrap;
+}
+
+.anuka-autocomplete-chip button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--anuka-color-muted);
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.anuka-autocomplete-input {
+  flex: 1;
+  min-width: 60px;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--anuka-color-text);
+  padding: 0.2rem 0;
+}
+
+.anuka-autocomplete-clear {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--anuka-color-muted);
+  font-size: 1rem;
+  padding: 0 0.2rem;
+  line-height: 1;
+}
+
+.anuka-autocomplete-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  margin-top: 0.25rem;
+  background: var(--anuka-color-surface-raised);
+  border: 1px solid var(--anuka-color-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px var(--anuka-color-shadow);
+  max-height: 200px;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0.3rem;
+}
+
+.anuka-autocomplete-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  color: var(--anuka-color-text);
+  cursor: pointer;
+}
+
+.anuka-autocomplete-dropdown button:hover,
+.anuka-autocomplete-dropdown button.active {
+  background: var(--anuka-color-border);
 }
 
 /* ── Quick: icon button, top-right of island ── */
