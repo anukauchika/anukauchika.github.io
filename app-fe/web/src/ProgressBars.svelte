@@ -1,9 +1,27 @@
-<script>
-  let { strokeProgress = 0, strokeMastery = 0, pinyinProgress = 0, pinyinMastery = 0, strokeFullSessions = 0, pinyinFullSessions = 0 } = $props()
+<script lang="ts">
+  import ProgressLine from './components/core/ProgressLine.svelte'
 
-  let tooltip = $state(null)
+  interface Props {
+    strokeProgress?: number
+    strokeMastery?: number
+    pinyinProgress?: number
+    pinyinMastery?: number
+    strokeFullSessions?: number
+    pinyinFullSessions?: number
+  }
 
-  function show(label, e) {
+  let {
+    strokeProgress = 0,
+    strokeMastery = 0,
+    pinyinProgress = 0,
+    pinyinMastery = 0,
+    strokeFullSessions = 0,
+    pinyinFullSessions = 0,
+  }: Props = $props()
+
+  let tooltip = $state<string | null>(null)
+
+  function show(label: string, e: MouseEvent) {
     e.stopPropagation()
     tooltip = tooltip === label ? null : label
   }
@@ -17,9 +35,8 @@
   <div class="bar-wrap">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="bar" onclick={(e) => show('stroke', e)}>
-      <div class="fill-words" style="width: {strokeProgress}%"></div>
-      <div class="fill-mastery" style="width: {strokeMastery}%"></div>
+    <div onclick={(e) => show('stroke', e)}>
+      <ProgressLine fill={strokeProgress} fillStrong={strokeMastery} />
     </div>
     {#if tooltip === 'stroke'}
       <div class="tooltip below">Stroke practice · {strokeFullSessions} sessions<div class="arrow"></div></div>
@@ -28,9 +45,8 @@
   <div class="bar-wrap">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
-    <div class="bar" onclick={(e) => show('pinyin', e)}>
-      <div class="fill-words" style="width: {pinyinProgress}%"></div>
-      <div class="fill-mastery" style="width: {pinyinMastery}%"></div>
+    <div onclick={(e) => show('pinyin', e)}>
+      <ProgressLine fill={pinyinProgress} fillStrong={pinyinMastery} />
     </div>
     {#if tooltip === 'pinyin'}
       <div class="tooltip above">Pinyin practice · {pinyinFullSessions} sessions<div class="arrow"></div></div>
@@ -49,35 +65,6 @@
 
   .bar-wrap {
     position: relative;
-  }
-
-  .bar {
-    position: relative;
-    height: 6px;
-    background: rgba(31, 111, 92, 0.08);
-    overflow: hidden;
-    border-radius: 2px;
-    cursor: pointer;
-  }
-
-  .fill-words {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background: rgba(31, 111, 92, 0.25);
-    border-radius: 2px;
-    transition: width 0.4s ease;
-  }
-
-  .fill-mastery {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background: rgba(31, 111, 92, 0.5);
-    border-radius: 2px;
-    transition: width 0.4s ease;
   }
 
   .tooltip {
