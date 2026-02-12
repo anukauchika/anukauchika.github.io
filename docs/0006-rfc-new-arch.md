@@ -18,3 +18,6 @@ Bring code structure to order & make it architecturally nice and easy to fix & e
 - 006-04: Repo layer: `StatsRepo`, `PrefsRepo` typed interfaces: done
 - 006-05: Services layer: `StatsService`, `SyncService`, `SessionService`, `MaintenanceService`: done
 - 006-06: Design book
+- 006-07: Move to components based on design book
+
+Check for detailed docs in docs/0006-new-arch/
