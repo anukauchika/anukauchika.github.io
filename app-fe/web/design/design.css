@@ -9,6 +9,8 @@
   --anuka-color-surface-raised: #ffffff;
   --anuka-color-text: #1d1a15;
   --anuka-color-muted: #5a5147;
+  --anuka-color-accent: rgba(31, 111, 92, 0.25);
+  --anuka-color-accent-strong: rgba(31, 111, 92, 0.5);
   --anuka-color-border: rgba(31, 111, 92, 0.08);
   --anuka-color-shadow: rgba(47, 39, 28, 0.18);
   --anuka-color-glow-warm: rgba(244, 192, 122, 0.35);
@@ -25,6 +27,8 @@
     --anuka-color-surface-raised: #35353f;
     --anuka-color-text: #e8e2d8;
     --anuka-color-muted: #9a9088;
+    --anuka-color-accent: rgba(100, 200, 170, 0.3);
+    --anuka-color-accent-strong: rgba(100, 200, 170, 0.55);
     --anuka-color-border: rgba(255, 255, 255, 0.08);
     --anuka-color-shadow: rgba(0, 0, 0, 0.4);
     --anuka-color-glow-warm: rgba(244, 192, 122, 0.12);
@@ -109,6 +113,10 @@
   margin: 0 0 0.9rem;
 }
 
+.anuka-island-title:not(:first-child) {
+  margin-top: 1.5rem;
+}
+
 .anuka-island-title:has(~ .anuka-tags) {
   margin-bottom: 0.7rem;
 }
@@ -173,6 +181,34 @@ h4.anuka-island-title { font-size: 1.2rem; }
   border-radius: 1rem;
   padding: 1rem 1.2rem;
   border: 1px solid rgba(31, 111, 92, 0.12);
+}
+
+/* ── Progress: thin bar with fill ── */
+
+.anuka-progress-line {
+  position: relative;
+  height: 6px;
+  background: var(--anuka-color-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.anuka-progress-line-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--anuka-color-accent);
+  border-radius: 2px;
+}
+
+.anuka-progress-line-fill-strong {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--anuka-color-accent-strong);
+  border-radius: 2px;
 }
 
 /* ── Quick: icon button, top-right of island ── */
