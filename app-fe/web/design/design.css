@@ -97,6 +97,11 @@
   margin-bottom: 0.9rem;
 }
 
+.anuka-island .anuka-app-title:last-child,
+.anuka-island .anuka-app-title:has(+ .anuka-quick:last-child) {
+  margin-bottom: 0;
+}
+
 /* ── Island title: serif heading, auto-delimited spans ── */
 
 .anuka-island-title {
@@ -152,6 +157,14 @@ h4.anuka-island-title { font-size: 1.2rem; }
 .anuka-right { justify-content: flex-end; }
 .anuka-justify { justify-content: space-between; }
 .anuka-grow { flex: 1; }
+
+/* ── Island sticky: stays on top on scroll ── */
+
+.anuka-island-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 
 /* ── Card: raised surface inside island ── */
 

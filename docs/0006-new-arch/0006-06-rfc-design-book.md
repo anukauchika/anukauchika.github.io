@@ -34,6 +34,7 @@ Grow the framework step by step, with very focused changes, adding entity by ent
 | row | anuka-row | horizontal flex layout with consistent gap |
 | center | anuka-center | center children horizontally |
 | grow | anuka-grow | fill remaining space (`flex: 1`) |
+| island-sticky | anuka-island-sticky | modifier to pin an island to the top on scroll |
 | card | anuka-card | raised surface card inside island, rounded, with border |
 
 
