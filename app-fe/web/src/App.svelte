@@ -7,6 +7,7 @@
   import { pickNextPractice } from './utils/pick-next-practice.js'
   import ProgressBars from './components/app/chinese/ProgressBars.svelte'
   import GroupProgressBars from './components/app/chinese/GroupProgressBars.svelte'
+  import DailyActivityHeatmap from './components/app/DailyActivityHeatmap.svelte'
   import CompactGroupRow from './CompactGroupRow.svelte'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
   import GroupItemEnglish from './kind/english/GroupItem.svelte'
@@ -32,7 +33,7 @@
       reloadStats()
       loadMainFilters($datasetId)
       showAllGroups = false
-      selectedDay = null
+      selectedActivityDate = null
     }
   })
 
@@ -130,15 +131,6 @@
     return `${months}mo ago`
   }
 
-  const formatDuration = (ms) => {
-    if (!ms) return ''
-    const totalMin = Math.round(ms / 60000)
-    if (totalMin < 1) return '<1 min'
-    if (totalMin < 60) return `${totalMin} min`
-    const h = Math.floor(totalMin / 60)
-    const m = totalMin % 60
-    return m > 0 ? `${h}h ${m}m` : `${h}h`
-  }
 
   const formatDate = (isoString) => {
     if (!isoString) return ''
@@ -560,7 +552,7 @@
     })
   })
 
-  // Activity line: practice activity with fixed 0-50 gradation
+  // Activity line
   const ACTIVITY_MAX = 50
   const CELL_SIZE = 10
   const CELL_GAP = 3
@@ -570,7 +562,7 @@
   let activityContainer = $state(null)
   let totalCells = $state(60)
   let futureDays = $state(FUTURE_DAYS_DESKTOP)
-  let selectedDay = $state(null)
+  let selectedActivityDate = $state(null)
   let dayCounts = $state(new Map())
 
   // Sync store to reactive state
@@ -594,7 +586,6 @@
     return () => observer.disconnect()
   })
 
-  // Helper to format date as YYYY-MM-DD in local timezone
   const toLocalDateKey = (date) => {
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0')
@@ -602,44 +593,34 @@
     return `${year}-${month}-${day}`
   }
 
-  const activityData = $derived.by(() => {
+  const activityDays = $derived.by(() => {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
     const pastDays = totalCells - futureDays
 
     const days = []
-    // Past days (including today)
     for (let i = pastDays - 1; i >= 0; i--) {
       const d = new Date(today)
       d.setDate(d.getDate() - i)
       const key = toLocalDateKey(d)
       const entry = dayCounts.get(key) || { count: 0, durationMs: 0, sessions: 0 }
-      const count = entry.count
-      let level = 0
-      if (count > 0) {
-        level = Math.min(4, Math.ceil((count / ACTIVITY_MAX) * 4))
-      }
       days.push({
         date: key,
-        count,
+        count: entry.count,
         durationMs: entry.durationMs,
         sessions: entry.sessions,
-        level,
         isFuture: false,
         label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
       })
     }
-    // Future days
     for (let i = 1; i <= futureDays; i++) {
       const d = new Date(today)
       d.setDate(d.getDate() + i)
-      const key = toLocalDateKey(d)
       days.push({
-        date: key,
+        date: toLocalDateKey(d),
         count: 0,
         durationMs: 0,
         sessions: 0,
-        level: 0,
         isFuture: true,
         label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
       })
@@ -649,9 +630,7 @@
 
   // Auto-select today
   $effect(() => {
-    const todayKey = toLocalDateKey(new Date())
-    const today = activityData.find(d => d.date === todayKey)
-    if (today && !selectedDay) selectedDay = today
+    if (!selectedActivityDate) selectedActivityDate = toLocalDateKey(new Date())
   })
 </script>
 
@@ -862,32 +841,8 @@
       <ProgressBars {strokeProgress} {strokeMastery} {pinyinProgress} {pinyinMastery} {strokeFullSessions} {pinyinFullSessions} />
 
       <div class="activity-line" bind:this={activityContainer}>
-        {#each activityData as day}
-          <button
-            type="button"
-            class="activity-cell"
-            class:future={day.isFuture}
-            class:selected={selectedDay?.date === day.date}
-            data-level={day.level}
-            title="{day.label}{day.isFuture ? '' : `: ${[day.count > 0 ? `${day.count} word${day.count !== 1 ? 's' : ''}` : '', day.sessions > 0 ? `${day.sessions} session${day.sessions !== 1 ? 's' : ''}` : '', day.durationMs > 0 ? formatDuration(day.durationMs) : ''].filter(Boolean).join(' \u00b7 ') || 'no practice'}`}"
-            onclick={() => selectedDay = selectedDay?.date === day.date ? null : day}
-          ></button>
-        {/each}
+        <DailyActivityHeatmap days={activityDays} max={ACTIVITY_MAX} selectedDate={selectedActivityDate} onselect={(d) => selectedActivityDate = d} />
       </div>
-      {#if selectedDay}
-        <div class="activity-info">
-          <span class="activity-info-date">{selectedDay.label}</span>
-          {#if !selectedDay.isFuture}
-            {#if selectedDay.count > 0 || selectedDay.sessions > 0}
-              {#if selectedDay.count > 0}<span class="activity-info-count">{selectedDay.count} word{selectedDay.count !== 1 ? 's' : ''}</span>{/if}
-              {#if selectedDay.sessions > 0}{#if selectedDay.count > 0}<span class="activity-info-sep">&middot;</span>{/if}<span class="activity-info-count">{selectedDay.sessions} session{selectedDay.sessions !== 1 ? 's' : ''}</span>{/if}
-              {#if selectedDay.durationMs > 0}<span class="activity-info-sep">&middot;</span><span class="activity-info-count">{formatDuration(selectedDay.durationMs)}</span>{/if}
-            {:else}
-              <span class="activity-info-none">No sessions</span>
-            {/if}
-          {/if}
-        </div>
-      {/if}
     {:else}
       <p class="login-hint"><button type="button" class="login-hint-link" onclick={() => showAuthDropdown = true}>Log in</button> to track your learning progress</p>
     {/if}
