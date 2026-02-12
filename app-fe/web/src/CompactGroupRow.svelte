@@ -1,9 +1,9 @@
 <script>
   import { datasetId, currentDataset } from './state/registry.js'
   import { isAuthenticated } from './state/auth.js'
-  import { datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin } from './state/practice-stats.js'
+  import { datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin } from './state/practice-stats.js'
   import { formatGroup } from './utils/format.js'
-  import GroupProgressBars from './GroupProgressBars.svelte'
+  import GroupProgressBars from './components/app/chinese/GroupProgressBars.svelte'
 
   let { group, from = '', formatTime } = $props()
 
@@ -13,6 +13,15 @@
   const gsStroke = $derived($datasetGroupSessionsStroke.get(group.group))
   const gsPinyin = $derived($datasetGroupSessionsPinyin.get(group.group))
   const fromParam = $derived(from ? `&from=${from}` : '')
+
+  const getGroupProgress = (statsMap) => {
+    const practiced = group.items.filter(item => statsMap.has(`${group.group}::${item.id}`)).length
+    return group.items.length > 0 ? Math.round((practiced / group.items.length) * 100) : 0
+  }
+  const getGroupMastery = (sessionsMap) => {
+    const fullSessions = sessionsMap.get(group.group)?.full ?? 0
+    return Math.min(Math.round((fullSessions / 10) * 100), 100)
+  }
 </script>
 
 <article class="compact-row">
@@ -44,6 +53,14 @@
     </div>
   {/if}
   {#if $isAuthenticated}
-    <GroupProgressBars {group} variant="compact" />
+    <GroupProgressBars
+      variant="compact"
+      strokeProgress={getGroupProgress($datasetStatsStroke)}
+      strokeMastery={getGroupMastery($datasetGroupSessionsStroke)}
+      strokeSessions={$datasetGroupSessionsStroke.get(group.group)?.full ?? 0}
+      pinyinProgress={getGroupProgress($datasetStatsPinyin)}
+      pinyinMastery={getGroupMastery($datasetGroupSessionsPinyin)}
+      pinyinSessions={$datasetGroupSessionsPinyin.get(group.group)?.full ?? 0}
+    />
   {/if}
 </article>

@@ -5,8 +5,8 @@
   import { user, isAuthenticated, dbVersion, signInWithGoogle, signInWithApple, signInWithEmail, signOut } from './state/auth.js'
   import { formatGroup } from './utils/format.js'
   import { pickNextPractice } from './utils/pick-next-practice.js'
-  import ProgressBars from './ProgressBars.svelte'
-  import GroupProgressBars from './GroupProgressBars.svelte'
+  import ProgressBars from './components/app/chinese/ProgressBars.svelte'
+  import GroupProgressBars from './components/app/chinese/GroupProgressBars.svelte'
   import CompactGroupRow from './CompactGroupRow.svelte'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
   import GroupItemEnglish from './kind/english/GroupItem.svelte'
@@ -539,15 +539,14 @@
   const pinyinProgress = $derived(calcProgress($datasetStatsPinyin))
   const pinyinMastery = $derived(calcMastery($datasetStatsPinyin))
 
-  const getGroupProgress = (group) => {
+  const getGroupProgress = (group, statsMap) => {
     const practiced = group.items.filter(item =>
-      $datasetStats.has(`${group.group}::${item.id}`)
+      statsMap.has(`${group.group}::${item.id}`)
     ).length
     return group.items.length > 0 ? Math.round((practiced / group.items.length) * 100) : 0
   }
-  const getGroupMastery = (group) => {
-    const gs = $datasetGroupSessions.get(group.group)
-    const fullSessions = gs?.full ?? 0
+  const getGroupMastery = (group, sessionsMap) => {
+    const fullSessions = sessionsMap.get(group.group)?.full ?? 0
     return Math.min(Math.round((fullSessions / 10) * 100), 100)
   }
 
@@ -1041,7 +1040,14 @@
               </a>
             </div>
             {#if $isAuthenticated}
-              <GroupProgressBars {group} />
+              <GroupProgressBars
+                strokeProgress={getGroupProgress(group, $datasetStatsStroke)}
+                strokeMastery={getGroupMastery(group, $datasetGroupSessionsStroke)}
+                strokeSessions={$datasetGroupSessionsStroke.get(group.group)?.full ?? 0}
+                pinyinProgress={getGroupProgress(group, $datasetStatsPinyin)}
+                pinyinMastery={getGroupMastery(group, $datasetGroupSessionsPinyin)}
+                pinyinSessions={$datasetGroupSessionsPinyin.get(group.group)?.full ?? 0}
+              />
             {/if}
           </div>
 

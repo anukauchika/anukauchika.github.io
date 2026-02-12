@@ -1,22 +1,24 @@
 <script lang="ts">
-  import ProgressLine from './components/core/ProgressLine.svelte'
+  import ProgressLine from '../../core/ProgressLine.svelte'
 
   interface Props {
     strokeProgress?: number
     strokeMastery?: number
+    strokeSessions?: number
     pinyinProgress?: number
     pinyinMastery?: number
-    strokeFullSessions?: number
-    pinyinFullSessions?: number
+    pinyinSessions?: number
+    variant?: 'group' | 'compact'
   }
 
   let {
     strokeProgress = 0,
     strokeMastery = 0,
+    strokeSessions = 0,
     pinyinProgress = 0,
     pinyinMastery = 0,
-    strokeFullSessions = 0,
-    pinyinFullSessions = 0,
+    pinyinSessions = 0,
+    variant = 'group',
   }: Props = $props()
 
   let tooltip = $state<string | null>(null)
@@ -31,7 +33,7 @@
 
 <svelte:document onclick={close} />
 
-<div class="progress-bars">
+<div class="bars" class:compact={variant === 'compact'}>
   <div class="bar-wrap">
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -39,7 +41,7 @@
       <ProgressLine fill={strokeProgress} fillStrong={strokeMastery} />
     </div>
     {#if tooltip === 'stroke'}
-      <div class="tooltip below">Stroke practice · {strokeFullSessions} sessions<div class="arrow"></div></div>
+      <div class="tooltip below">Stroke practice · {strokeSessions} sessions<div class="arrow"></div></div>
     {/if}
   </div>
   <div class="bar-wrap">
@@ -49,18 +51,22 @@
       <ProgressLine fill={pinyinProgress} fillStrong={pinyinMastery} />
     </div>
     {#if tooltip === 'pinyin'}
-      <div class="tooltip above">Pinyin practice · {pinyinFullSessions} sessions<div class="arrow"></div></div>
+      <div class="tooltip above">Pinyin practice · {pinyinSessions} sessions<div class="arrow"></div></div>
     {/if}
   </div>
 </div>
 
 <style>
-  .progress-bars {
+  .bars {
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    margin-top: 1.5rem;
-    margin-bottom: -0.5rem;
+    gap: 5px;
+    width: 100%;
+    margin-top: -1rem;
+  }
+
+  .bars.compact {
+    margin-top: 0.25rem;
   }
 
   .bar-wrap {
