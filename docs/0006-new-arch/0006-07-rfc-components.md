@@ -13,6 +13,7 @@ Replace current ad-hoc components with a layered component architecture where **
 - **No CSS duplication** — core components use design book classes (zero `<style>` blocks), app components may have domain-specific styles
 - **Composable** — small, single-purpose, nest freely
 - **Grow on demand** — only create folders/files needed for the current implementation step
+- **Consistent naming** — a single concept uses the same name everywhere: design book CSS class, core component prop, app component prop, and entry point variable. No renaming across layers. If the design book calls it `fill` and `fillStrong`, those exact names flow through core → app → entry point. This eliminates mental mapping and makes grep reliable across the entire codebase
 
 ## Folder structure
 
