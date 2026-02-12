@@ -26,10 +26,14 @@ Grow the framework step by step, with very focused changes, adding entity by ent
 | page | anuka-page | turn HTML body into anuka page, subtle unintrusive gradient background, nothing more |
 | island | anuka-island | visual container for content, rounded corners, nice spacing, clean surface color |
 | quick | anuka-quick | top-right corner icon button, top right icon button for islands |
-| app-title | anuka-app-title | brand heading with two children: `anuka-app-name` + `anuka-app-kind`, separator via CSS `::before` |
-| island-title | anuka-island-title | large serif heading inside island |
+| app-title | anuka-app-title | small uppercase muted brand label, auto-delimited spans |
+| island-title | anuka-island-title | serif heading (h1-h4 sizes), auto-delimited spans |
 | tags | anuka-tags, anuka-tag | pill list container (full width, wrapping) with individual tag pills, used inside island |
-| grid | anuka-grid | responsive auto-fit grid layout (`minmax(220px, 1fr)`) |
+| grid | anuka-grid-sm/md/lg | responsive auto-fit grids: sm (80px), md (180px), lg (300px) |
+| stack | anuka-stack | vertical flex layout with consistent gap |
+| row | anuka-row | horizontal flex layout with consistent gap |
+| center | anuka-center | center children horizontally |
+| grow | anuka-grow | fill remaining space (`flex: 1`) |
 | card | anuka-card | raised surface card inside island, rounded, with border |
 
 

@@ -79,7 +79,7 @@
   position: relative;
 }
 
-/* ── App title: brand + subtitle ── */
+/* ── App title: brand label, auto-delimited spans ── */
 
 .anuka-app-title {
   font-family: "Avenir Next", "Gill Sans", sans-serif;
@@ -97,22 +97,29 @@
   margin-bottom: 0.9rem;
 }
 
-.anuka-app-kind::before {
-  content: "·";
-  margin: 0 0.3em;
-}
-
-/* ── Island title: serif heading + optional subtitle ── */
+/* ── Island title: serif heading, auto-delimited spans ── */
 
 .anuka-island-title {
   font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
-  margin: 0;
+  margin: 0 0 0.9rem;
+}
+
+.anuka-island-title:has(~ .anuka-tags) {
+  margin-bottom: 0.7rem;
 }
 
 h1.anuka-island-title { font-size: 2.8rem; }
 h2.anuka-island-title { font-size: 2rem; }
 h3.anuka-island-title { font-size: 1.5rem; }
 h4.anuka-island-title { font-size: 1.2rem; }
+
+/* ── Shared: auto dot delimiter for multi-span headings ── */
+
+.anuka-app-title span + span::before,
+.anuka-island-title span + span::before {
+  content: "·";
+  margin: 0 0.3em;
+}
 
 /* ── Tags: pill list inside island ── */
 
@@ -130,13 +137,21 @@ h4.anuka-island-title { font-size: 1.2rem; }
   color: var(--anuka-color-muted);
 }
 
-/* ── Grid: responsive auto-fit layout ── */
+/* ── Grid: responsive auto-fit presets ── */
 
-.anuka-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-}
+.anuka-grid-sm { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 0.5rem; }
+.anuka-grid-md { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.anuka-grid-lg { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+
+/* ── Layout: stack, row, modifiers ── */
+
+.anuka-stack { display: flex; flex-direction: column; gap: 1rem; }
+.anuka-row { display: flex; gap: 1rem; align-items: center; }
+.anuka-left { justify-content: flex-start; }
+.anuka-center { justify-content: center; }
+.anuka-right { justify-content: flex-end; }
+.anuka-justify { justify-content: space-between; }
+.anuka-grow { flex: 1; }
 
 /* ── Card: raised surface inside island ── */
 

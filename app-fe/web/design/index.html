@@ -9,19 +9,26 @@
   </head>
   <body class="anuka-page">
 
-    <h2 class="anuka-app-title"><span class="anuka-app-name">Anuka Uchika</span><span class="anuka-app-kind">Learn Chinese</span></h2>
+    <h2 class="anuka-app-title"><span>Anuka Uchika</span><span>Design Book</span></h2>
 
     <section class="anuka-island">
-      A short island with just one line of text.
+      <h1 class="anuka-island-title">Design Book</h1>
       <button class="anuka-quick" type="button" aria-label="Toggle theme"
         onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'">
         <span class="anuka-icon anuka-icon-moon"></span>
       </button>
+      <p>Visual reference for all design tokens and UI elements used in Anuka Uchika. Every component on this page is built from the same reusable classes it documents. Absolute minimum CSS — only what the app actually uses.</p>
+    </section>
+
+    <h2 class="anuka-app-title"><span>Anuka</span><span>Structure</span><span>Islands</span></h2>
+
+    <section class="anuka-island">
+      Minimal island — just text content, no title, no extras. The basic content container for everything.
     </section>
 
     <section class="anuka-island">
-      <h2 class="anuka-app-title"><span class="anuka-app-name">App Title</span><span class="anuka-app-kind">Island example</span></h2>
-      A medium island. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+      <h2 class="anuka-app-title"><span>App Title</span><span>Inside Island</span></h2>
+      App title works both standalone between islands (as section headers above) and inside islands. Multiple <code>&lt;span&gt;</code> children are auto-separated with a dot.
     </section>
 
     <section class="anuka-island">
@@ -34,16 +41,40 @@
         <span class="anuka-tag">#beginner</span>
         <span class="anuka-tag">#greetings</span>
       </div>
+      <p>Island title — content heading for islands. Size follows the HTML tag: h1 is largest, h4 is smallest. Supports multiple <code>&lt;span&gt;</code> children with auto dot delimiter, same as app title.</p>
+      <p>Quick button — action button for islands. Shown here with a dots icon.</p>
+      <p>Tags — category labels for content. Spacing adjusts automatically when placed after an island title.</p>
+    </section>
 
-      <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <h2 class="anuka-app-title"><span>Anuka</span><span>Structure</span><span>Grid</span></h2>
 
-      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-
-      <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet.</p>
+    <section class="anuka-island">
+      <h2 class="anuka-island-title">Small Grid</h2>
+      <p>Dense grid for compact items like character tiles.</p>
+      <div class="anuka-grid-sm">
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+      </div>
     </section>
 
     <section class="anuka-island">
-      <div class="anuka-grid">
+      <h2 class="anuka-island-title">Medium Grid</h2>
+      <p>Standard grid for word cards and similar content.</p>
+      <div class="anuka-grid-md">
         <div class="anuka-card">&nbsp;</div>
         <div class="anuka-card">&nbsp;</div>
         <div class="anuka-card">&nbsp;</div>
@@ -60,6 +91,75 @@
         <div class="anuka-card">&nbsp;</div>
         <div class="anuka-card">&nbsp;</div>
         <div class="anuka-card">&nbsp;</div>
+      </div>
+    </section>
+
+    <section class="anuka-island">
+      <h2 class="anuka-island-title">Large Grid</h2>
+      <p>Wide grid for side-by-side content blocks.</p>
+      <div class="anuka-grid-lg">
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+        <div class="anuka-card">&nbsp;</div>
+      </div>
+    </section>
+
+    <h2 class="anuka-app-title"><span>Anuka</span><span>Structure</span><span>Stack</span></h2>
+
+    <section class="anuka-island">
+      <h3 class="anuka-island-title">
+        <span>Stack</span>
+        <span>Row</span>
+        <span>Grow</span>
+        <span>Alignment</span>
+      </h3>
+      <p>Stack arranges items vertically. Row arranges items horizontally. Combine them for any form or layout.</p>
+      <div class="anuka-stack">
+        <div class="anuka-row">
+          <div class="anuka-card anuka-grow">grow</div>
+          <div class="anuka-card">fixed</div>
+        </div>
+        <div class="anuka-row anuka-left">
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">left</div>
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">&nbsp;</div>
+        </div>
+        <div class="anuka-row anuka-center">
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">center</div>
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">&nbsp;</div>
+        </div>
+        <div class="anuka-row anuka-right">
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">right</div>
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">&nbsp;</div>
+        </div>
+        <div class="anuka-row anuka-justify">
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">justify</div>
+          <div class="anuka-card">&nbsp;</div>
+          <div class="anuka-card">&nbsp;</div>
+        </div>
       </div>
     </section>
 
