@@ -15,6 +15,13 @@
       ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
     document.documentElement.dataset.theme = current === 'dark' ? 'light' : 'dark'
   }
+
+  // Interactive heatmap demo state
+  let selectedCell = $state<number | null>(5)
+  const demoItems = [
+    0,0,8,0,20,10,0,35,18,50,40,12,15,50,48,30,22,5,0,6,16,38,50,25,0,0,0,0
+  ].map((count, i) => ({ day: i + 1, count, future: i >= 24 }))
+  const demoMax = 50
 </script>
 
 <div class="anuka-page">
@@ -162,8 +169,23 @@
 
   <Island>
     <IslandTitle level={3}>Activity Heatmap</IslandTitle>
-    <p>Row of intensity cells showing activity over time. Each cell uses a <code>data-level</code> attribute (0–4) to indicate intensity.</p>
-    <ActivityHeatmap levels={[0,0,1,0,2,1,0,3,2,4,3,1,2,4,4,3,2,1,0,1,2,3,4,2,1,0,0,1]} />
+    <p>Accepts an array of items with accessor functions. <code>value</code> extracts the raw number, <code>max</code> sets the range — the component maps to 4 intensity levels internally.</p>
+    <ActivityHeatmap items={demoItems} range={[0, demoMax]} value={(d) => d.count} />
+
+    <IslandTitle level={3}>Interactive with selection</IslandTitle>
+    <p>When <code>onselect</code> is provided, cells render as buttons. Click to select — the component renders the <code>title</code> of the selected cell.</p>
+    <ActivityHeatmap
+      items={demoItems}
+      range={[0, demoMax]}
+      value={(d) => d.count}
+      title={(d) => `Day ${d.day} · ${d.count} words`}
+      selectedIndex={selectedCell}
+      onselect={(i) => selectedCell = selectedCell === i ? null : i}
+    />
+
+    <IslandTitle level={3}>Muted cells</IslandTitle>
+    <p>Per-item <code>muted</code> accessor dims cells (e.g. future/placeholder slots). Last 4 cells are muted below.</p>
+    <ActivityHeatmap items={demoItems} range={[0, demoMax]} value={(d) => d.count} muted={(d) => d.future} />
 
     <IslandTitle level={3}>Heatmap inside card</IslandTitle>
     <div class="anuka-grid-md">
@@ -173,7 +195,11 @@
             <div>Last 14 days</div>
             <div>8 active</div>
           </div>
-          <ActivityHeatmap levels={[0,1,2,0,3,4,2,0,1,0,2,3,0,1]} />
+          <ActivityHeatmap
+            items={demoItems.slice(0, 14)}
+            range={[0, demoMax]}
+            value={(d) => d.count}
+          />
         </div>
       </Card>
     </div>
