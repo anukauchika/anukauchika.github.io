@@ -71,7 +71,7 @@
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--ink);
+    background: var(--anuka-color-text);
     color: white;
     font-size: 0.75rem;
     padding: 4px 10px;
@@ -101,11 +101,11 @@
 
   .tooltip.below .arrow {
     top: -5px;
-    border-bottom: 5px solid var(--ink);
+    border-bottom: 5px solid var(--anuka-color-text);
   }
 
   .tooltip.above .arrow {
     bottom: -5px;
-    border-top: 5px solid var(--ink);
+    border-top: 5px solid var(--anuka-color-text);
   }
 </style>

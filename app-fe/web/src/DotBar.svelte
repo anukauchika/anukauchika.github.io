@@ -5,9 +5,9 @@
     dots = 20,
     size = 10,
     gap = 3,
-    emptyColor = 'rgba(31, 111, 92, 0.12)',
-    progressColor = 'rgba(31, 111, 92, 0.5)',
-    masteryColor = 'var(--accent)',
+    emptyColor = 'var(--anuka-color-border)',
+    progressColor = 'var(--anuka-color-accent-strong)',
+    masteryColor = 'var(--anuka-color-primary)',
   } = $props()
 </script>
 

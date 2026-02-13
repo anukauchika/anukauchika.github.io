@@ -4,6 +4,9 @@
   import { formatGroup } from './utils/format.js'
   import { loadDatasetGroupSessions, datasetGroupSessions } from './state/practice-stats.js'
   import { isAuthenticated } from './state/auth.js'
+  import Island from './components/core/Island.svelte'
+  import IslandTitle from './components/core/IslandTitle.svelte'
+  import Tags from './components/core/Tags.svelte'
   import PracticeChinese from './kind/chinese/Practice.svelte'
   import PracticePinyin from './kind/chinese/PracticePinyin.svelte'
 
@@ -47,7 +50,7 @@
   const headerTitle = practiceType === 'pinyin' ? 'Pinyin Practice' : 'Stroke Practice'
 </script>
 
-<main>
+<main class="anuka-page">
   {#if activeGroup}
     {@const from = getSearchParams().get('from')}
     {@const backUrl = `${basePath ?? baseUrl}/?dataset=${$datasetId}${from ? `&from=${from}` : ''}`}
@@ -58,83 +61,33 @@
     {/if}
   {/if}
 
-  <header class="practice-header">
-    <h1>{headerTitle}</h1>
+  <Island>
+    <IslandTitle level={1}>{headerTitle}</IslandTitle>
     {#if activeGroup}
-      <div class="group-meta">
+      <div class="anuka-row anuka-center" style="flex-wrap: wrap;">
         <span class="group-id">{formatGroup(activeGroup.group)}</span>
-        <span class="group-tags">
-          {#each activeGroup.tags as tag}
-            <span>#{tag}</span>
-          {/each}
-        </span>
-        <span class="item-count">{activeGroup.items.length} words</span>
+        {#if activeGroup.tags?.length}
+          <Tags tags={activeGroup.tags} />
+        {/if}
+        <span class="group-id">{activeGroup.items.length} words</span>
         {#if $isAuthenticated && groupStats}
           <span class="group-stats">{groupStats.total} passes ({groupStats.full} full)</span>
         {/if}
       </div>
     {/if}
-  </header>
+  </Island>
 </main>
 
 <style>
-  main {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-
-  .practice-header {
-    background: var(--card);
-    padding: 1.5rem 2rem;
-    border-radius: 20px;
-    box-shadow: var(--shadow);
-    border: 1px solid rgba(31, 111, 92, 0.08);
-    text-align: center;
-  }
-
-  h1 {
-    font-family: var(--font-serif);
-    font-size: 1.8rem;
-    margin: 0 0 0.5rem;
-  }
-
   .group-id {
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--muted);
-  }
-
-  .group-meta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-
-  .group-tags {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .group-tags span {
-    background: rgba(244, 192, 122, 0.35);
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    color: var(--muted);
-    font-weight: 600;
-  }
-
-  .item-count {
-    font-size: 0.85rem;
-    color: var(--muted);
+    color: var(--anuka-color-muted);
   }
 
   .group-stats {
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--accent);
+    color: var(--anuka-color-primary);
   }
 </style>

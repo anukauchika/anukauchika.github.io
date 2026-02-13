@@ -2,7 +2,7 @@
 
 :root {
   font-family: var(--font-sans);
-  color: var(--ink);
+  color: var(--anuka-color-text);
 }
 
 body {
@@ -45,7 +45,7 @@ main {
 
 .print-date {
   font-size: 1rem;
-  color: var(--muted);
+  color: var(--anuka-color-muted);
   font-weight: 600;
 }
 
@@ -57,8 +57,8 @@ main {
 }
 
 .group-tags span {
-  background: rgba(31, 111, 92, 0.12);
-  color: var(--muted);
+  background: var(--anuka-color-border);
+  color: var(--anuka-color-muted);
   padding: 0.2rem 0.6rem;
   border-radius: var(--radius-full);
   font-weight: 600;
@@ -81,7 +81,7 @@ label {
   flex-direction: column;
   gap: var(--space-xs);
   font-size: 0.85rem;
-  color: var(--muted);
+  color: var(--anuka-color-muted);
 }
 
 .header-actions label {
@@ -91,8 +91,8 @@ label {
 }
 
 select {
-  border: 1px solid rgba(31, 111, 92, 0.3);
-  background: #fffdf7;
+  border: 1px solid var(--anuka-color-accent);
+  background: var(--anuka-color-surface);
   padding: 0.5rem 0.8rem;
   border-radius: 10px;
   font-size: 0.95rem;
@@ -100,8 +100,8 @@ select {
 
 button {
   border: none;
-  background: var(--accent);
-  color: var(--white);
+  background: var(--anuka-color-primary);
+  color: var(--anuka-color-on-primary);
   border-radius: var(--radius-full);
   padding: 0.6rem 1.2rem;
   cursor: pointer;
@@ -109,10 +109,10 @@ button {
 }
 
 .sheet {
-  background: var(--card);
+  background: var(--anuka-color-surface);
   padding: 0.8rem;
   border-radius: var(--radius-xl);
-  border: 1px solid rgba(31, 111, 92, 0.12);
+  border: 1px solid var(--anuka-color-border);
 }
 
 .grid {
@@ -152,7 +152,7 @@ button {
   }
 
   body {
-    background: var(--white);
+    background: #fff;
   }
 
   main {

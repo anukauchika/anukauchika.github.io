@@ -1,7 +1,7 @@
 <script>
   import { datasets, datasetId, currentDataset } from './state/registry.js'
   import { datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from './state/practice-stats.js'
-  import { mainSearch, mainTags, mainGroups, loadMainFilters } from './state/filters.js'
+  import { mainSearch, mainTags, mainGroups, mainListViewStyle, loadMainFilters } from './state/filters.js'
   import { user, isAuthenticated, dbVersion, signInWithGoogle, signInWithApple, signInWithEmail, signOut } from './state/auth.js'
   import { formatGroup } from './utils/format.js'
   import { pickNextPractice } from './utils/pick-next-practice.js'
@@ -432,6 +432,33 @@
     }
   }
 
+  const fullGroupProps = (group) => {
+    const isChinese = $currentDataset?.kind === 'chinese'
+    const gsStroke = $datasetGroupSessionsStroke.get(group.group)
+    const gsPinyin = $datasetGroupSessionsPinyin.get(group.group)
+    return {
+      groupId: formatGroup(group.group),
+      tags: group.tags,
+      kind: $currentDataset?.kind,
+      strokeHref: isChinese ? `${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke` : undefined,
+      pinyinHref: isChinese ? `${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin` : undefined,
+      workbookHref: `${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}`,
+      printHref: `${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}&autoprint=1`,
+      strokeSessions: gsStroke?.full ?? 0,
+      pinyinSessions: gsPinyin?.full ?? 0,
+      strokeProgress: $isAuthenticated ? getGroupProgress(group, $datasetStatsStroke) : 0,
+      strokeMastery: $isAuthenticated ? getGroupMastery(group, $datasetGroupSessionsStroke) : 0,
+      pinyinProgress: $isAuthenticated ? getGroupProgress(group, $datasetStatsPinyin) : 0,
+      pinyinMastery: $isAuthenticated ? getGroupMastery(group, $datasetGroupSessionsPinyin) : 0,
+      showProgress: $isAuthenticated,
+      items: group.items.map(item => ({
+        item,
+        strokeStat: $isAuthenticated ? $datasetStatsStroke.get(`${group.group}::${item.id}`) : null,
+        pinyinStat: $isAuthenticated ? $datasetStatsPinyin.get(`${group.group}::${item.id}`) : null,
+      })),
+    }
+  }
+
   const practicedGroupsSorted = $derived.by(() => {
     return [...filteredGroups].sort((a, b) => {
       const gsA = $datasetGroupSessions.get(a.group)
@@ -460,7 +487,7 @@
 
 </script>
 
-<main>
+<main class="anuka-page">
   {#if showPracticedList}
     <div class="page-header">
       <h3>Unique Words Practiced <span class="practiced-count-accent">{practicedItems.length}</span> <span class="practiced-count">| {totalCount}</span></h3>
@@ -485,8 +512,8 @@
           <svg class="progress-chart" viewBox="0 0 {W} {H}">
             {#each chartData.ticks as tick}
               {@const y = toY(tick)}
-              <line x1={ML} y1={y} x2={ML + chartW} y2={y} stroke="var(--muted)" stroke-opacity="0.12" stroke-width="1" />
-              <text x={ML - 4} y={y + 6} text-anchor="end" font-size="21" fill="var(--muted)" opacity="0.5">{tick}</text>
+              <line x1={ML} y1={y} x2={ML + chartW} y2={y} stroke="var(--anuka-color-muted)" stroke-opacity="0.12" stroke-width="1" />
+              <text x={ML - 4} y={y + 6} text-anchor="end" font-size="21" fill="var(--anuka-color-muted)" opacity="0.5">{tick}</text>
             {/each}
             {#each chartData.bars as bar, i}
               {@const barH = yMax > 0 ? (bar.count / yMax) * chartH : 0}
@@ -496,7 +523,7 @@
                 width={barW}
                 height={barH}
                 rx="2"
-                fill="var(--accent)"
+                fill="var(--anuka-color-primary)"
                 opacity={hoveredBar?.index === i ? 0.5 : 0.25}
               />
               <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
@@ -516,7 +543,7 @@
                   x={ML + i * step}
                   y={H - 4}
                   font-size="21"
-                  fill="var(--muted)"
+                  fill="var(--anuka-color-muted)"
                   opacity="0.5"
                 >{bar.monthLabel}</text>
               {/if}
@@ -524,7 +551,7 @@
             {#if chartData.maxCumulative > 0}
               <polyline
                 fill="none"
-                stroke="var(--accent)"
+                stroke="var(--anuka-color-primary)"
                 stroke-width="2"
                 points={chartData.cumulativeData.map((v, i) => `${ML + i * step + barW / 2},${toY(v)}`).join(' ')}
               />
@@ -600,8 +627,10 @@
   />
 
   <Groups
-    {filteredGroups}
-    onOpenWord={openWord}
+    groups={filteredGroups.map(g => fullGroupProps(g))}
+    viewStyle={$mainListViewStyle}
+    hasSearch={$mainSearch.trim().length > 0}
+    datasetId={$datasetId}
   >
     {#snippet compact()}
       <CompactGroupList groups={filteredGroups.map(g => compactRowProps(g))} />

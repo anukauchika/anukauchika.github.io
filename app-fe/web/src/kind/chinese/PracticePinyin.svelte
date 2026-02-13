@@ -3,6 +3,9 @@
   import { startGroupSession, endGroupSession, recordWordAttempt, loadGroupStats, groupStats } from '../../state/practice-stats.js'
   import { isAuthenticated } from '../../state/auth.js'
   import { diacriticToToneNumber, splitPinyin } from '../../utils/pinyin.js'
+  import Island from '../../components/core/Island.svelte'
+  import ProgressLine from '../../components/core/ProgressLine.svelte'
+  import Btn from '../../components/core/Btn.svelte'
 
   let { group, datasetId, translationField, backUrl } = $props()
   const practiceType = 'pinyin'
@@ -294,101 +297,102 @@
 
 <svelte:window onkeydown={(e) => { if (e.key === 'F1') { e.preventDefault(); hintManuallySet = true; showHint = !showHint }}} />
 
-<div class="practice-container">
+<div class="anuka-stack" style="gap: 1.5rem;">
   {#if currentItem && !sessionDone}
-    <div class="quiz-area">
-      <a class="close-btn" href={backUrl} title="Back">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    <Island>
+      <a class="anuka-quick" href={backUrl} title="Back">
+        <span class="anuka-icon anuka-icon-close"></span>
       </a>
       {#if $isAuthenticated && currentStat}
-        <span class="quiz-count" title="Times practiced">{currentStat.successCount}{#if currentStat.errorCount > 0}<span class="quiz-error-count">| {currentStat.errorCount}</span>{/if}</span>
+        <span class="quiz-count">{currentStat.successCount}{#if currentStat.errorCount > 0}<span class="quiz-error-count">| {currentStat.errorCount}</span>{/if}</span>
       {/if}
-      <div class="word-info" class:hidden-text={!showTranslation}>
-        <span class="word-translation">{currentItem[translationField]}</span>
-      </div>
+      <div class="quiz-content">
+        <div class="word-info" class:hidden-text={!showTranslation}>
+          <span>{currentItem[translationField]}</span>
+        </div>
 
-      <div class="char-tabs" translate="no" lang="zh">
-        {#each hanChars as char, idx}
-          <div class="char-tab-wrapper">
-            <span
-              class="char-tab"
-              class:active={idx === charIndex && !wordDelay}
-              class:completed={charDoneMap.has(idx) || (completedWords.has(currentIndex) && wordDelay)}
-            >
-              {#if charDoneMap.has(idx) || (completedWords.has(currentIndex) && wordDelay)}
-                {char}
-              {:else}
-                {char}
-              {/if}
-            </span>
-            {#if charDoneMap.has(idx)}
-              <span class="char-pinyin-label">{charDoneMap.get(idx)}</span>
-            {:else if idx === charIndex && !wordDelay}
-              <span class="char-pinyin-label {showHint ? '' : 'hint-hidden'}">
-                {#if showHint}{pinyinSlots[charIndex]?.pinyin ?? ''}{:else}?{/if}
+        <div class="char-tabs" translate="no" lang="zh">
+          {#each hanChars as char, idx}
+            <div class="char-tab-wrapper">
+              <span
+                class="char-tab"
+                class:active={idx === charIndex && !wordDelay}
+                class:completed={charDoneMap.has(idx) || (completedWords.has(currentIndex) && wordDelay)}
+              >
+                {#if charDoneMap.has(idx) || (completedWords.has(currentIndex) && wordDelay)}
+                  {char}
+                {:else}
+                  {char}
+                {/if}
               </span>
-            {:else}
-              <span class="char-pinyin-label placeholder">&nbsp;</span>
-            {/if}
-          </div>
-        {/each}
-      </div>
-
-      <div class="input-wrapper" class:shaking={shaking}>
-        {#if wordDelay}
-          <button type="button" class="delay-next-btn" onclick={skipDelay}>Next</button>
-          <button type="button" class="delay-bar-btn" onclick={skipDelay} title="Skip to next word">
-            <div class="delay-bar">
-              <div class="delay-fill" style="width: {wordDelayProgress}%"></div>
+              {#if charDoneMap.has(idx)}
+                <span class="char-pinyin-label">{charDoneMap.get(idx)}</span>
+              {:else if idx === charIndex && !wordDelay}
+                <span class="char-pinyin-label {showHint ? '' : 'hint-hidden'}">
+                  {#if showHint}{pinyinSlots[charIndex]?.pinyin ?? ''}{:else}?{/if}
+                </span>
+              {:else}
+                <span class="char-pinyin-label placeholder">&nbsp;</span>
+              {/if}
             </div>
-          </button>
+          {/each}
+        </div>
+
+        <div class="input-wrapper" class:shaking={shaking}>
+          {#if wordDelay}
+            <button type="button" class="delay-next-btn" onclick={skipDelay}>Next</button>
+            <button type="button" class="delay-bar-btn" onclick={skipDelay} title="Skip to next word">
+              <div class="delay-bar">
+                <div class="delay-fill" style="width: {wordDelayProgress}%"></div>
+              </div>
+            </button>
+          {:else}
+            <input
+              bind:this={inputEl}
+              bind:value={inputValue}
+              oninput={handleInput}
+              type="text"
+              class="pinyin-input"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              placeholder="pinyin (ex: lao3, shi1)"
+            />
+          {/if}
+        </div>
+
+        {#if !wordDelay}
+          <div class="anuka-row anuka-center" style="gap: 0.75rem;">
+            <Btn variant="icon" onclick={() => speak(currentItem.word)} label="Play audio">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            </Btn>
+            <Btn variant="toggle" active={showTranslation} onclick={() => showTranslation = !showTranslation}>Tr</Btn>
+            <Btn variant="toggle" active={showHint} onclick={() => { hintManuallySet = true; showHint = !showHint }}>Hint</Btn>
+            <Btn variant="outline" onclick={skipWord}>Skip</Btn>
+          </div>
         {:else}
-          <input
-            bind:this={inputEl}
-            bind:value={inputValue}
-            oninput={handleInput}
-            type="text"
-            class="pinyin-input"
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-            placeholder="pinyin (ex: lao3, shi1)"
-          />
+          <div class="anuka-row anuka-center" style="gap: 0.75rem;">
+            <Btn variant="icon" onclick={() => speak(currentItem.word)} label="Play audio">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+            </Btn>
+          </div>
         {/if}
       </div>
-
-      {#if !wordDelay}
-        <div class="skip-area">
-          <button type="button" class="btn-icon" onclick={() => speak(currentItem.word)} title="Play audio">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-          </button>
-          <button type="button" class="btn-toggle" class:active={showTranslation} onclick={() => showTranslation = !showTranslation}>Tr</button>
-          <button type="button" class="btn-toggle" class:active={showHint} onclick={() => { hintManuallySet = true; showHint = !showHint }}>Hint</button>
-          <button type="button" class="btn-skip" onclick={skipWord}>Skip</button>
-        </div>
-      {:else}
-        <div class="skip-area">
-          <button type="button" class="btn-icon" onclick={() => speak(currentItem.word)} title="Play audio">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-          </button>
-        </div>
-      {/if}
-
-    </div>
+    </Island>
   {/if}
 
   {#if sessionDone}
-    <div class="session-banner">
-      <p class="session-title">Session complete</p>
-      <p class="session-detail">{practicedCount} practiced &middot; {skippedCount} skipped</p>
-      <button type="button" class="btn-restart" onclick={restartSession}>Restart</button>
-      <button type="button" class="btn-groups" onclick={() => window.location.href = backUrl}>Groups</button>
-    </div>
+    <Island>
+      <div class="session-content">
+        <p class="session-title">Session complete</p>
+        <p class="session-detail">{practicedCount} practiced &middot; {skippedCount} skipped</p>
+        <Btn onclick={restartSession}>Restart</Btn>
+        <Btn variant="outline" onclick={() => window.location.href = backUrl}>Groups</Btn>
+      </div>
+    </Island>
   {/if}
 
-  <div class="progress-bar">
-    <div class="progress-fill" style="width: {progress}%"></div>
-  </div>
+  <ProgressLine fill={progress} />
   <div class="progress-text">{currentIndex + 1} / {items.length}</div>
 
   <div class="word-nav">
@@ -410,115 +414,11 @@
 </div>
 
 <style>
-  .practice-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .progress-bar {
-    height: 8px;
-    background: rgba(31, 111, 92, 0.12);
-    border-radius: 999px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 999px;
-    transition: width 0.4s ease;
-  }
-
-  .progress-text {
-    text-align: center;
-    font-size: 0.85rem;
-    color: var(--muted);
-    margin-top: -1.25rem;
-  }
-
-  .word-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
-  }
-
-  .word-dot {
-    border: 1px solid rgba(31, 111, 92, 0.2);
-    background: var(--card);
-    padding: 0.3rem 0.6rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-family: var(--font-chinese);
-    color: var(--ink);
-    transition: all 0.2s ease;
-  }
-
-  .word-dot.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-
-  .word-dot.done {
-    background: var(--accent-soft);
-    border-color: var(--accent-soft);
-    color: #fff;
-  }
-
-  .word-dot.done.active {
-    background: var(--accent);
-    border-color: var(--accent);
-  }
-
-  .dot-count {
-    font-size: 0.65rem;
-    font-weight: 700;
-    opacity: 0.7;
-    margin-left: 0.15rem;
-  }
-
-  .dot-error-count {
-    color: var(--sun);
-    margin-left: 0.25em;
-  }
-
-  .quiz-error-count {
-    color: #b85450;
-    margin-left: 0.25em;
-  }
-
-  .quiz-area {
-    position: relative;
-    background: var(--card);
-    border-radius: 24px;
-    padding: 2rem;
-    box-shadow: var(--shadow);
-    border: 1px solid rgba(31, 111, 92, 0.08);
+  .quiz-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 1.2rem;
-  }
-
-  .close-btn {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    color: var(--muted);
-    transition: background 0.15s ease, color 0.15s ease;
-  }
-
-  .close-btn:hover {
-    background: rgba(31, 111, 92, 0.1);
-    color: var(--ink);
   }
 
   .quiz-count {
@@ -527,10 +427,15 @@
     left: 1.2rem;
     font-size: 0.8rem;
     font-weight: 700;
-    color: var(--accent);
-    background: rgba(31, 111, 92, 0.08);
+    color: var(--anuka-color-primary);
+    background: var(--anuka-color-border);
     padding: 0.2rem 0.6rem;
     border-radius: 999px;
+  }
+
+  .quiz-error-count {
+    color: #b85450;
+    margin-left: 0.25em;
   }
 
   .word-info {
@@ -538,25 +443,11 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-  }
-
-  .word-translation {
     font-size: 1.1rem;
-    color: var(--ink);
   }
 
   .word-info.hidden-text {
     visibility: hidden;
-  }
-
-  .word-speak {
-    background: none;
-    border: none;
-    color: var(--accent);
-    cursor: pointer;
-    padding: 0;
-    display: flex;
-    align-items: center;
   }
 
   .char-tabs {
@@ -581,31 +472,30 @@
     display: grid;
     place-items: center;
     border-radius: 10px;
-    background: rgba(31, 111, 92, 0.06);
-    color: var(--muted);
+    background: var(--anuka-color-border);
+    color: var(--anuka-color-muted);
     transition: all 0.2s ease;
   }
 
   .char-tab.active {
-    background: rgba(31, 111, 92, 0.06);
-    color: var(--ink);
-    box-shadow: 0 0 0 2px var(--accent);
+    color: var(--anuka-color-text);
+    box-shadow: 0 0 0 2px var(--anuka-color-primary);
   }
 
   .char-tab.completed {
-    background: var(--accent);
-    color: #fff;
+    background: var(--anuka-color-primary);
+    color: var(--anuka-color-on-primary);
   }
 
   .char-pinyin-label {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--accent);
+    color: var(--anuka-color-primary);
     min-height: 1.4rem;
   }
 
   .char-pinyin-label.hint-hidden {
-    color: var(--accent);
+    color: var(--anuka-color-primary);
   }
 
   .char-pinyin-label.placeholder {
@@ -641,21 +531,21 @@
     font-size: 1.8rem;
     font-weight: 600;
     padding: 0.6rem 1rem;
-    border: 2px solid rgba(31, 111, 92, 0.15);
+    border: 2px solid var(--anuka-color-accent);
     border-radius: 14px;
-    background: #fff;
-    color: var(--ink);
+    background: var(--anuka-color-surface-raised);
+    color: var(--anuka-color-text);
     outline: none;
     transition: border-color 0.2s ease;
     font-family: inherit;
   }
 
   .pinyin-input:focus {
-    border-color: var(--accent);
+    border-color: var(--anuka-color-primary);
   }
 
   .pinyin-input::placeholder {
-    color: var(--muted);
+    color: var(--anuka-color-muted);
     font-size: 1rem;
     font-weight: 400;
   }
@@ -663,7 +553,7 @@
   .delay-next-btn {
     background: none;
     border: none;
-    color: var(--muted);
+    color: var(--anuka-color-muted);
     font-size: 0.85rem;
     cursor: pointer;
     padding: 0.3rem 0.8rem;
@@ -685,141 +575,94 @@
 
   .delay-bar {
     height: 2px;
-    background: rgba(31, 111, 92, 0.06);
+    background: var(--anuka-color-border);
     border-radius: 1px;
     overflow: hidden;
   }
 
   .delay-fill {
     height: 100%;
-    background: rgba(31, 111, 92, 0.25);
+    background: var(--anuka-color-accent);
     border-radius: 1px;
     transition: width 16ms linear;
   }
 
-  .skip-area {
-    display: flex;
-    justify-content: center;
-    gap: 0.75rem;
-  }
-
-  .btn-icon {
-    border: 1px solid rgba(31, 111, 92, 0.3);
-    background: none;
-    color: var(--muted);
-    border-radius: 999px;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
-  }
-
-  .btn-icon:hover {
-    background: rgba(31, 111, 92, 0.06);
-    color: var(--accent);
-  }
-
-  .btn-toggle {
-    border: 1px solid rgba(31, 111, 92, 0.3);
-    background: none;
-    color: var(--muted);
-    border-radius: 999px;
-    padding: 0.4rem 1.2rem;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: background 0.2s ease, border-color 0.2s ease;
-  }
-
-  .btn-toggle:hover {
-    background: rgba(31, 111, 92, 0.06);
-  }
-
-  .btn-toggle.active {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-
-  .btn-skip {
-    border: 1px dashed rgba(31, 111, 92, 0.3);
-    background: none;
-    color: var(--muted);
-    border-radius: 999px;
-    padding: 0.4rem 1.2rem;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: background 0.2s ease;
-  }
-
-  .btn-skip:hover {
-    background: rgba(31, 111, 92, 0.06);
-  }
-
-  .session-banner {
+  .progress-text {
     text-align: center;
-    background: rgba(31, 111, 92, 0.08);
-    border: 1px solid rgba(31, 111, 92, 0.2);
-    border-radius: 16px;
-    padding: 1.2rem;
+    font-size: 0.85rem;
+    color: var(--anuka-color-muted);
+    margin-top: -1.25rem;
+  }
+
+  .word-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+
+  .word-dot {
+    border: 1px solid var(--anuka-color-accent);
+    background: var(--anuka-color-surface);
+    padding: 0.3rem 0.6rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: var(--font-chinese);
+    color: var(--anuka-color-text);
+    transition: all 0.2s ease;
+  }
+
+  .word-dot.active {
+    background: var(--anuka-color-primary);
+    color: var(--anuka-color-on-primary);
+    border-color: var(--anuka-color-primary);
+  }
+
+  .word-dot.done {
+    background: var(--anuka-color-accent-strong);
+    border-color: var(--anuka-color-accent-strong);
+    color: var(--anuka-color-on-primary);
+  }
+
+  .word-dot.done.active {
+    background: var(--anuka-color-primary);
+    border-color: var(--anuka-color-primary);
+  }
+
+  .dot-count {
+    font-size: 0.65rem;
+    font-weight: 700;
+    opacity: 0.7;
+    margin-left: 0.15rem;
+  }
+
+  .dot-error-count {
+    color: var(--anuka-color-glow-warm);
+    margin-left: 0.25em;
+  }
+
+  .session-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .session-title {
     margin: 0;
     font-weight: 700;
     font-size: 1.1rem;
-    color: var(--accent);
+    color: var(--anuka-color-primary);
   }
 
   .session-detail {
-    margin: 0.3rem 0 0;
+    margin: 0;
     font-size: 0.85rem;
-    color: var(--muted);
-  }
-
-  .btn-restart {
-    margin-top: 1rem;
-    border: 1px solid var(--accent);
-    background: var(--accent);
-    color: #fff;
-    border-radius: 999px;
-    padding: 0.5rem 1.5rem;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: opacity 0.2s ease;
-  }
-
-  .btn-restart:hover {
-    opacity: 0.9;
-  }
-
-  .btn-groups {
-    margin-top: 0.75rem;
-    border: 1px solid #b8b8b8;
-    background: #b8b8b8;
-    color: #fff;
-    border-radius: 999px;
-    padding: 0.5rem 1.5rem;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: opacity 0.2s ease;
-  }
-
-  .btn-groups:hover {
-    opacity: 0.9;
+    color: var(--anuka-color-muted);
   }
 
   @media (max-width: 600px) {
-    .quiz-area {
-      padding: 0.75rem;
-    }
-
     .input-wrapper {
       width: calc(100vw - 4rem);
       max-width: 320px;
