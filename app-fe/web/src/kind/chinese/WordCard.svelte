@@ -85,8 +85,6 @@
 
 <style>
   .word-card {
-    position: relative;
-    z-index: 1;
     width: fit-content;
     max-width: min(900px, 96vw);
   }

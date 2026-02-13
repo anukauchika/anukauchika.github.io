@@ -37,8 +37,6 @@
 
 <style>
   .word-card {
-    position: relative;
-    z-index: 1;
     max-width: min(900px, 96vw);
   }
 

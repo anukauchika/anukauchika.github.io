@@ -11,6 +11,7 @@
   import Input from '../components/core/Input.svelte'
   import Stat from '../components/core/Stat.svelte'
   import Autocomplete from '../components/core/Autocomplete.svelte'
+  import Modal from '../components/core/Modal.svelte'
 
   function toggleTheme() {
     const current = document.documentElement.dataset.theme
@@ -29,6 +30,9 @@
     0,0,8,0,20,10,0,35,18,50,40,12,15,50,48,30,22,5,0,6,16,38,50,25,0,0,0,0
   ].map((count, i) => ({ day: i + 1, count, future: i >= 24 }))
   const demoMax = 50
+
+  // Modal demo state
+  let showModal = $state(false)
 </script>
 
 <div class="anuka-page">
@@ -118,6 +122,15 @@
         <Card>&nbsp;</Card><Card>&nbsp;</Card><Card>justify</Card><Card>&nbsp;</Card><Card>&nbsp;</Card>
       </div>
     </div>
+
+    <IslandTitle level={3}>Center on stack</IslandTitle>
+    <p>Add <code>anuka-center</code> to a stack to center items horizontally. On rows it centers the main axis (already shown above).</p>
+    <Card>
+      <div class="anuka-stack anuka-center">
+        <Card>Centered card</Card>
+        <Btn variant="outline">Centered button</Btn>
+      </div>
+    </Card>
 
     <IslandTitle level={3}>Compact modifier</IslandTitle>
     <p>Add <code>anuka-compact</code> to any stack or row to tighten spacing. Useful for dense lists and compact cards.</p>
@@ -322,5 +335,27 @@
       </Card>
     </div>
   </Island>
+
+  <!-- Modal -->
+
+  <AppTitle parts={['Anuka', 'Controls', 'Modal']} />
+
+  <Island>
+    <IslandTitle level={3}>Modal</IslandTitle>
+    <p>Full-screen backdrop with centered content. Click overlay or close button to dismiss. Content is auto-elevated above the overlay via <code>z-index</code>.</p>
+    <div class="anuka-row">
+      <Btn onclick={() => showModal = true}>Open Modal</Btn>
+    </div>
+  </Island>
+
+  {#if showModal}
+    <Modal onclose={() => showModal = false}>
+      <Island>
+        <Quick label="Close" icon="close" onclick={() => showModal = false} />
+        <IslandTitle level={3}>Modal Content</IslandTitle>
+        <p>This is a modal using the core Modal component. Click the overlay or the close button to dismiss.</p>
+      </Island>
+    </Modal>
+  {/if}
 
 </div>

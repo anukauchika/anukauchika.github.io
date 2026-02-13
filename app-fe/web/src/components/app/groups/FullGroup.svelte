@@ -3,6 +3,7 @@
   import IslandTitle from '../../core/IslandTitle.svelte'
   import Tags from '../../core/Tags.svelte'
   import ProgressLine from '../../core/ProgressLine.svelte'
+  import Modal from '../../core/Modal.svelte'
   import GroupItemChinese from '../../../kind/chinese/GroupItem.svelte'
   import GroupItemEnglish from '../../../kind/english/GroupItem.svelte'
   import WordCardChinese from '../../../kind/chinese/WordCard.svelte'
@@ -100,17 +101,11 @@
 </Island>
 
 {#if activeWord}
-  <div class="modal-backdrop">
-    <button
-      class="modal-overlay"
-      type="button"
-      aria-label="Close dialog"
-      onclick={closeWord}
-    ></button>
+  <Modal onclose={closeWord}>
     {#if kind === 'chinese'}
       <WordCardChinese item={activeWord} onClose={closeWord} />
     {:else if kind === 'english'}
       <WordCardEnglish item={activeWord} onClose={closeWord} />
     {/if}
-  </div>
+  </Modal>
 {/if}
