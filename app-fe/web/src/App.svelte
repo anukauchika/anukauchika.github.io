@@ -1,11 +1,10 @@
 <script>
   import { datasets, datasetId, currentDataset } from './state/registry.js'
   import { datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from './state/practice-stats.js'
-  import { mainSearch, mainTags, mainGroups, mainListViewStyle, loadMainFilters } from './state/filters.js'
+  import { mainSearch, mainTags, mainGroups, loadMainFilters } from './state/filters.js'
   import { user, isAuthenticated, dbVersion, signInWithGoogle, signInWithApple, signInWithEmail, signOut } from './state/auth.js'
   import { formatGroup } from './utils/format.js'
   import { pickNextPractice } from './utils/pick-next-practice.js'
-  import ProgressLine from './components/core/ProgressLine.svelte'
   import PracticedGroups from './components/app/chinese/group/PracticedGroups.svelte'
   import CompactGroupList from './components/app/chinese/group/CompactGroupList.svelte'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
@@ -14,6 +13,7 @@
   import WordCardEnglish from './kind/english/WordCard.svelte'
   import HowItWorks from './HowItWorks.svelte'
   import Hero from './components/app/hero'
+  import Groups from './components/app/groups'
 
   const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || ''
   const basePath = $derived.by(() => `${baseUrl}/${$currentDataset.kind}`)
@@ -32,7 +32,6 @@
     if ($datasetId) {
       reloadStats()
       loadMainFilters($datasetId)
-      showAllGroups = false
     }
   })
 
@@ -47,7 +46,6 @@
 
   let activeWord = $state(null)
   let modalOpen = $state(false)
-  let showAllGroups = $state(false)
   let showAuthDropdown = $state(false)
   let showPracticedList = $state(false)
   let showPracticedGroups = $state(false)
@@ -189,12 +187,6 @@
   })
 
   const groupCount = $derived.by(() => filteredGroups.length)
-  const MAX_MAIN_GROUPS = 10
-  const hasActiveSearch = $derived.by(() => $mainSearch.trim().length > 0)
-  const isLimited = $derived.by(() => !hasActiveSearch && !showAllGroups && filteredGroups.length > MAX_MAIN_GROUPS)
-  const fullViewGroups = $derived.by(() =>
-    hasActiveSearch || showAllGroups ? filteredGroups : filteredGroups.slice(0, MAX_MAIN_GROUPS)
-  )
   const totalCount = $derived.by(() =>
     filteredGroups.reduce((sum, g) => sum + g.items.length, 0)
   )
@@ -607,86 +599,14 @@
     onShowStatInfo={(stat) => activeStat = stat}
   />
 
-  <section class="groups" class:compact={$mainListViewStyle === 'compact'}>
-    {#if filteredGroups.length === 0}
-      <div class="empty">
-        <p>No matches. Try clearing filters or searching a different term.</p>
-      </div>
-    {:else if $mainListViewStyle === 'compact'}
+  <Groups
+    {filteredGroups}
+    onOpenWord={openWord}
+  >
+    {#snippet compact()}
       <CompactGroupList groups={filteredGroups.map(g => compactRowProps(g))} />
-    {:else}
-      {#each fullViewGroups as group, i (group.group)}
-        {@const gs = $isAuthenticated ? $datasetGroupSessions.get(group.group) : null}
-        {@const gsStroke = $datasetGroupSessionsStroke.get(group.group)}
-        {@const gsPinyin = $datasetGroupSessionsPinyin.get(group.group)}
-        <article class="group-card" style={`--delay:${i * 70}ms`}>
-          <div class="group-header">
-            <div class="group-tags">
-              {#each group.tags as tag}
-                <span>#{tag}</span>
-              {/each}
-            </div>
-            <div class="group-title">{formatGroup(group.group)}</div>
-            <div class="group-actions">
-              {#if $currentDataset?.kind === 'chinese'}
-                {#if gsStroke?.full}<span class="action-stat">{gsStroke.full}</span>{/if}
-                <a
-                  class="print-link"
-                  href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke`}
-                >
-                  Stroke
-                </a>
-                {#if gsPinyin?.full}<span class="action-stat">{gsPinyin.full}</span>{/if}
-                <a
-                  class="print-link"
-                  href={`${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin`}
-                >
-                  Pinyin
-                </a>
-              {/if}
-              <a
-                class="print-link"
-                href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Open workbook
-              </a>
-              <a
-                class="print-link"
-                href={`${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}&autoprint=1`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Print workbook
-              </a>
-            </div>
-            {#if $isAuthenticated}
-              <div class="anuka-stack anuka-compact anuka-grow">
-                <ProgressLine fill={getGroupProgress(group, $datasetStatsStroke)} fillStrong={getGroupMastery(group, $datasetGroupSessionsStroke)} />
-                <ProgressLine fill={getGroupProgress(group, $datasetStatsPinyin)} fillStrong={getGroupMastery(group, $datasetGroupSessionsPinyin)} />
-              </div>
-            {/if}
-          </div>
-
-          <div class="word-grid">
-            {#each group.items as item (`${group.group}-${item.id}`)}
-              {#if $currentDataset?.kind === 'chinese'}
-                <GroupItemChinese {item} strokeStat={$isAuthenticated ? $datasetStatsStroke.get(`${group.group}::${item.id}`) : null} pinyinStat={$isAuthenticated ? $datasetStatsPinyin.get(`${group.group}::${item.id}`) : null} onclick={() => openWord(item)} />
-              {:else if $currentDataset?.kind === 'english'}
-                <GroupItemEnglish {item} onclick={() => openWord(item)} />
-              {/if}
-            {/each}
-          </div>
-        </article>
-      {/each}
-      {#if isLimited}
-        <button type="button" class="show-all-btn" onclick={() => showAllGroups = true}>
-          Show all {filteredGroups.length} groups
-        </button>
-      {/if}
-    {/if}
-  </section>
+    {/snippet}
+  </Groups>
   {/if}
 
   {#if activeStat}

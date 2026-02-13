@@ -3,6 +3,19 @@
 - app-fe: frontend, svelte, vite.
 - docs: reqs, rfcs, plans.
 
+`app-fe/web/src/components/core` contains `anuka` framework. Easy to use css toolkit tailored specifically for this project.
+Do not edit it freely, any changes discuss with a user. All the additions & changes should be
+reflected in the Design Book: app-fe/web/src/app/DesignBook.svelte which is a showroom for those tools.
+
+Core components tend to be generic, do not carry any domain semantics. They are pure, stateless & parametric.
+App components pure & stateless as well, no state & service imports allowed. But they carry domain semantics.
+
+This affects naming patterns, e.g.:
+  - core: ActivityHeatmap, app: DailyActivityHeatmap
+  - core: fillStrong, app: mastery in ProgressLine
+
+Only entry points are allowed to import state & services, so all the assembly happens there.
+
 # Usual work flow docs
 
 - @docs/xxxx-req-topic.md: feature requiremments
