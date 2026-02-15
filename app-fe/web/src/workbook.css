@@ -1,15 +1,3 @@
-@import './shared.css';
-
-:root {
-  font-family: var(--font-sans);
-  color: var(--anuka-color-text);
-}
-
-body {
-  margin: 0;
-  background: #f7f1e8;
-}
-
 #app {
   padding: 1.25rem;
 }

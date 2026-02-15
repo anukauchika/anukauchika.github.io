@@ -1,20 +1,3 @@
-@import './shared.css';
-
-:root {
-  color: var(--anuka-color-text);
-  background-color: var(--anuka-color-bg-base);
-  font-family: var(--font-sans);
-  line-height: 1.5;
-  font-weight: 400;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-}
-
-body {
-  margin: 0;
-}
-
 .anuka-page:has(> .page-header) {
   gap: 1rem;
 }

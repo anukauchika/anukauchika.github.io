@@ -1,8 +1,30 @@
 @import './icons.css';
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=block');
+
+/* ── Base reset ── */
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
 
 /* ── Semantic tokens (light) ── */
 
 :root {
+  --font-sans: "Avenir Next", "Gill Sans", "Trebuchet MS", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-chinese: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Heiti SC", "Noto Sans CJK SC", sans-serif;
+  --font-chinese-hw: "Ma Shan Zheng", "Noto Sans SC", "PingFang SC", sans-serif;
+
+  color: var(--anuka-color-text);
+  background-color: var(--anuka-color-bg-base);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+
   --anuka-color-bg-base: #f6efe8;
   --anuka-color-bg-accent: #efe4d1;
   --anuka-color-surface: #fffaf2;
@@ -234,6 +256,7 @@ button.anuka-stat:hover {
 .anuka-warn { color: var(--anuka-color-warn); }
 
 .anuka-hanzi { font-family: var(--font-chinese-hw); }
+.anuka-hidden { visibility: hidden; }
 
 /* ── Size modifiers ── */
 

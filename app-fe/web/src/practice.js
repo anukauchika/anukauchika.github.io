@@ -1,5 +1,4 @@
 import { mount } from 'svelte'
-import './practice.css'
 import './components/core/style/anuka.css'
 import Practice from './Practice.svelte'
 import { initAnalytics } from './utils/analytics.js'

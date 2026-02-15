@@ -1,4 +1,5 @@
 import { mount } from 'svelte'
+import './components/core/style/anuka.css'
 import './workbook.css'
 import Workbook from './Workbook.svelte'
 import { initAnalytics } from './utils/analytics.js'

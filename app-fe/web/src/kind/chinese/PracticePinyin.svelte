@@ -298,21 +298,21 @@
 
 <svelte:window onkeydown={(e) => { if (e.key === 'F1') { e.preventDefault(); hintManuallySet = true; showHint = !showHint }}} />
 
-<div class="anuka-stack" style="gap: 1.5rem;">
+<div class="anuka-stack">
   {#if currentItem && !sessionDone}
     <Island>
       <a class="anuka-quick" href={backUrl} title="Back">
         <span class="anuka-icon anuka-icon-close"></span>
       </a>
       {#if $isAuthenticated && currentStat}
-        <span class="anuka-badge anuka-main" style="position: absolute; top: 1rem; left: 1.2rem; font-weight: 700;">{currentStat.successCount}{#if currentStat.errorCount > 0}<span class="anuka-fail" style="margin-left: 0.25em;">| {currentStat.errorCount}</span>{/if}</span>
+        <span class="anuka-badge anuka-main">{currentStat.successCount}{#if currentStat.errorCount > 0}<span class="anuka-fail">| {currentStat.errorCount}</span>{/if}</span>
       {/if}
-      <div class="anuka-stack anuka-center" style="gap: 1.2rem;">
-        <div class="anuka-row anuka-center" style="gap: 0.5rem; font-size: 1.1rem;" style:visibility={showTranslation ? null : 'hidden'}>
+      <div class="anuka-stack anuka-center">
+        <div class="anuka-row anuka-center anuka-compact" class:anuka-hidden={!showTranslation}>
           <span>{currentItem[translationField]}</span>
         </div>
 
-        <div class="anuka-row anuka-compact" translate="no" lang="zh" style="font-family: var(--font-chinese-hw); font-size: 3.5rem;">
+        <div class="anuka-row anuka-compact anuka-hanzi anuka-lg" translate="no" lang="zh">
           {#each hanChars as char, idx}
             {@const done = charDoneMap.has(idx) || (completedWords.has(currentIndex) && wordDelay)}
             {@const active = idx === charIndex && !wordDelay}
@@ -321,13 +321,13 @@
                 {char}
               </span>
               {#if charDoneMap.has(idx)}
-                <span class="anuka-main anuka-lg" style="font-weight: 600; min-height: 1.4rem;">{charDoneMap.get(idx)}</span>
+                <span class="anuka-main anuka-lg">{charDoneMap.get(idx)}</span>
               {:else if active}
-                <span class="anuka-main anuka-lg" style="font-weight: 600; min-height: 1.4rem;">
+                <span class="anuka-main anuka-lg">
                   {#if showHint}{pinyinSlots[charIndex]?.pinyin ?? ''}{:else}?{/if}
                 </span>
               {:else}
-                <span style="min-height: 1.4rem; visibility: hidden;">&nbsp;</span>
+                <span class="anuka-lg anuka-hidden">&nbsp;</span>
               {/if}
             </div>
           {/each}
@@ -352,7 +352,7 @@
         {/if}
 
         {#if !wordDelay}
-          <div class="anuka-row anuka-center" style="gap: 0.75rem;">
+          <div class="anuka-row anuka-center">
             <BtnIcon onclick={() => speak(currentItem.word)} label="Play audio">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
             </BtnIcon>
@@ -361,7 +361,7 @@
             <Btn onclick={skipWord}>Skip</Btn>
           </div>
         {:else}
-          <div class="anuka-row anuka-center" style="gap: 0.75rem;">
+          <div class="anuka-row anuka-center">
             <BtnIcon onclick={() => speak(currentItem.word)} label="Play audio">
               <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
             </BtnIcon>
@@ -373,17 +373,18 @@
 
   {#if sessionDone}
     <Island>
-      <div class="anuka-stack anuka-center" style="gap: 0.5rem;">
-        <p class="anuka-main" style="margin: 0; font-weight: 700; font-size: 1.1rem;">Session complete</p>
-        <p class="anuka-mute" style="margin: 0; font-size: 0.85rem;">{practicedCount} practiced &middot; {skippedCount} skipped</p>
+      <div class="anuka-stack anuka-center anuka-compact">
+        <div class="anuka-main anuka-lg">Session complete</div>
+        <div class="anuka-mute anuka-sm">{practicedCount} practiced &middot; {skippedCount} skipped</div>
         <Btn main onclick={restartSession}>Restart</Btn>
         <Btn onclick={() => window.location.href = backUrl}>Groups</Btn>
       </div>
     </Island>
   {/if}
 
-  <ProgressLine fill={progress} />
-  <div class="anuka-mute" style="text-align: center; font-size: 0.85rem; margin-top: -1.25rem;">{currentIndex + 1} / {items.length}</div>
+  <ProgressLine fill={progress}>
+    {#snippet bottom()}<div class="anuka-row anuka-center"><span class="anuka-mute anuka-sm">{currentIndex + 1} / {items.length}</span></div>{/snippet}
+  </ProgressLine>
 
   <div class="anuka-tags anuka-center">
     {#each items as item, idx}
