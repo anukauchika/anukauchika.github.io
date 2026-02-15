@@ -3,8 +3,10 @@
   import { datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from './state/practice-stats.js'
   import { mainSearch, mainTags, mainGroups, mainListViewStyle, loadMainFilters } from './state/filters.js'
   import { user, isAuthenticated, dbVersion, signInWithGoogle, signInWithApple, signInWithEmail, signOut } from './state/auth.js'
-  import { formatGroup } from './utils/format.js'
+  import { formatGroup, toLocalDateKey, timeAgo } from './utils/format.js'
   import { pickNextPractice } from './utils/pick-next-practice.js'
+  import PracticedWords from './components/app/PracticedWords.svelte'
+  import PracticedChars from './components/app/PracticedChars.svelte'
   import PracticedGroups from './components/app/chinese/group/PracticedGroups.svelte'
   import CompactGroupList from './components/app/chinese/group/CompactGroupList.svelte'
   import GroupItemChinese from './kind/chinese/GroupItem.svelte'
@@ -13,11 +15,11 @@
   import WordCardEnglish from './kind/english/WordCard.svelte'
   import HowItWorks from './HowItWorks.svelte'
   import Hero from './components/app/hero'
+  import Toolbar from './components/app/hero/Toolbar.svelte'
+  import Filters from './components/app/hero/Filters.svelte'
   import Groups from './components/app/groups'
   import Modal from './components/core/Modal.svelte'
   import Island from './components/core/Island.svelte'
-  import IslandTitle from './components/core/IslandTitle.svelte'
-  import PracticeChart from './components/app/PracticeChart.svelte'
 
   const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || ''
   const basePath = $derived.by(() => `${baseUrl}/${$currentDataset.kind}`)
@@ -77,22 +79,6 @@
   }
 
   function focus(node) { node.focus() }
-
-  const timeAgo = (ts) => {
-    if (!ts) return ''
-    const diff = Date.now() - (typeof ts === 'number' ? ts : new Date(ts).getTime())
-    const mins = Math.floor(diff / 60000)
-    if (mins < 1) return 'just now'
-    if (mins < 60) return `${mins}mins ago`
-    const hrs = Math.floor(mins / 60)
-    if (hrs < 24) return `${hrs}hrs ago`
-    const days = Math.floor(hrs / 24)
-    if (days < 7) return `${days}d ago`
-    const weeks = Math.floor(days / 7)
-    if (weeks < 5) return `${weeks}w ago`
-    const months = Math.floor(days / 30)
-    return `${months}mo ago`
-  }
 
 
   const normalize = (value) =>
@@ -460,40 +446,26 @@
     })
   })
 
-  const toLocalDateKey = (date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
 
 </script>
 
 <main class="anuka-page">
   {#if showPracticedList}
-    <Island sticky>
-      <a class="anuka-quick" href="#" onclick={(e) => { e.preventDefault(); showPracticedList = false }} title="Close">
-        <span class="anuka-icon anuka-icon-close"></span>
-      </a>
-      <IslandTitle level={3}>Unique Words Practiced <span class="anuka-main">{practicedItems.length}</span> | {totalCount}</IslandTitle>
-    </Island>
-    <section class="anuka-stack">
-      {#if chartData}
-        <PracticeChart bars={chartData.bars} line={chartData.cumulativeData} ticks={chartData.ticks} yMax={chartData.yMax} />
-      {/if}
-      <div class="anuka-grid">
-        {#each practicedItems as { item, group, stat } (`${group.group}-${item.id}`)}
-          <div class="anuka-stack anuka-compact">
-            <span class="anuka-mute anuka-sm">{timeAgo(stat.lastPracticedAt)}</span>
-            {#if $currentDataset?.kind === 'chinese'}
-              <GroupItemChinese {item} strokeStat={$datasetStatsStroke.get(`${group.group}::${item.id}`)} pinyinStat={$datasetStatsPinyin.get(`${group.group}::${item.id}`)} onclick={() => openWord(item)} />
-            {:else if $currentDataset?.kind === 'english'}
-              <GroupItemEnglish {item} onclick={() => openWord(item)} />
-            {/if}
-          </div>
-        {/each}
-      </div>
-    </section>
+    <PracticedWords
+      items={practicedItems}
+      {chartData}
+      practicedCount={practicedItems.length}
+      {totalCount}
+      onclose={() => showPracticedList = false}
+    >
+      {#snippet itemSnippet(entry)}
+        {#if $currentDataset?.kind === 'chinese'}
+          <GroupItemChinese item={entry.item} strokeStat={$datasetStatsStroke.get(`${entry.group.group}::${entry.item.id}`)} pinyinStat={$datasetStatsPinyin.get(`${entry.group.group}::${entry.item.id}`)} onclick={() => openWord(entry.item)} />
+        {:else if $currentDataset?.kind === 'english'}
+          <GroupItemEnglish item={entry.item} onclick={() => openWord(entry.item)} />
+        {/if}
+      {/snippet}
+    </PracticedWords>
   {:else if showPracticedGroups}
     <PracticedGroups
       groups={practicedGroupsSorted.map(g => compactRowProps(g, 'groups'))}
@@ -502,34 +474,22 @@
       onclose={() => showPracticedGroups = false}
     />
   {:else if showPracticedChars}
-    <Island sticky>
-      <a class="anuka-quick" href="#" onclick={(e) => { e.preventDefault(); showPracticedChars = false }} title="Close">
-        <span class="anuka-icon anuka-icon-close"></span>
-      </a>
-      <IslandTitle level={3}>Chars Practiced <span class="anuka-main">{practicedCharsCount}</span> | {uniqueChars}</IslandTitle>
-    </Island>
-    <section class="anuka-stack">
-      <div class="anuka-grid anuka-sm">
-        {#each practicedCharsData as c (c.char)}
-          <div class="anuka-card anuka-stack anuka-center anuka-compact" class:anuka-mute={!c.practiced}>
-            <span class="anuka-lg" lang="zh" translate="no">{c.char}</span>
-            {#if c.practiced}
-              {#if c.stroke.successCount > 0}
-                <span class="anuka-sm anuka-main">{c.stroke.successCount}{#if c.stroke.errorCount > 0}<span class="anuka-fail">| {c.stroke.errorCount}</span>{/if}</span>
-              {/if}
-              {#if c.pinyin.successCount > 0}
-                <span class="anuka-sm anuka-main">{c.pinyin.successCount}{#if c.pinyin.errorCount > 0}<span class="anuka-fail">| {c.pinyin.errorCount}</span>{/if}</span>
-              {/if}
-              <span class="anuka-sm anuka-mute">{timeAgo(c.lastPracticedAt)}</span>
-            {/if}
-          </div>
-        {/each}
-      </div>
-    </section>
+    <PracticedChars
+      chars={practicedCharsData}
+      practicedCount={practicedCharsCount}
+      {uniqueChars}
+      onclose={() => showPracticedChars = false}
+    />
   {:else if showHowItWorks}
     <HowItWorks onClose={() => showHowItWorks = false} />
   {:else}
   <Hero
+    datasetName={$currentDataset?.name}
+    datasetDescription={$currentDataset?.description}
+    datasetTags={$currentDataset?.tags}
+    datasetId={$datasetId}
+    dailyActivity={dayCounts}
+    isAuthenticated={$isAuthenticated}
     {groupCount} {totalCount} {uniqueChars} {strokePracticedCount}
     {strokeProgress} {strokeMastery} {pinyinProgress} {pinyinMastery}
     {practiceHref}
@@ -539,7 +499,35 @@
     onShowPracticedChars={() => showPracticedChars = true}
     onShowHowItWorks={() => showHowItWorks = true}
     onShowStatInfo={(stat) => activeStat = stat}
-  />
+  >
+    {#snippet toolbar()}
+      <Toolbar
+        {datasets}
+        datasetId={$datasetId}
+        appTitle={$currentDataset?.appTitle}
+        user={$user}
+        onDatasetChange={(id) => $datasetId = id}
+        onShowAuthDropdown={() => showAuthDropdown = true}
+      />
+    {/snippet}
+    {#snippet filters()}
+      <Filters
+        groups={groups}
+        search={$mainSearch}
+        tags={$mainTags}
+        selectedGroups={$mainGroups}
+        listViewStyle={$mainListViewStyle}
+        onSearchChange={(v) => $mainSearch = v}
+        onTagAdd={(tag) => { if (!$mainTags.includes(tag)) $mainTags = [...$mainTags, tag] }}
+        onTagRemove={(tag) => $mainTags = $mainTags.filter(t => t !== tag)}
+        onTagsClear={() => $mainTags = []}
+        onGroupAdd={(id) => { if (!$mainGroups.includes(id)) $mainGroups = [...$mainGroups, id] }}
+        onGroupRemove={(id) => $mainGroups = $mainGroups.filter(g => g !== id)}
+        onGroupsClear={() => $mainGroups = []}
+        onToggleView={() => $mainListViewStyle = $mainListViewStyle === 'full' ? 'compact' : 'full'}
+      />
+    {/snippet}
+  </Hero>
 
   <Groups
     groups={filteredGroups.map(g => fullGroupProps(g))}

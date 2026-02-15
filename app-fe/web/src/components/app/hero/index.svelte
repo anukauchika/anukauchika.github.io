@@ -1,7 +1,5 @@
 <script>
-  import { datasetId, currentDataset } from '../../../state/registry.js'
-  import { dailyActivity } from '../../../state/practice-stats.js'
-  import { isAuthenticated } from '../../../state/auth.js'
+  import { toLocalDateKey } from '../../../utils/format.js'
   import Island from '../../core/Island.svelte'
   import IslandTitle from '../../core/IslandTitle.svelte'
   import Tags from '../../core/Tags.svelte'
@@ -9,11 +7,15 @@
   import BtnLink from '../../core/BtnLink.svelte'
   import ProgressLine from '../../core/ProgressLine.svelte'
   import DailyActivityHeatmap from '../DailyActivityHeatmap.svelte'
-  import Toolbar from './Toolbar.svelte'
   import Stats from './Stats.svelte'
-  import Filters from './Filters.svelte'
 
   let {
+    datasetName,
+    datasetDescription,
+    datasetTags,
+    datasetId,
+    dailyActivity,
+    isAuthenticated,
     groupCount,
     totalCount,
     uniqueChars,
@@ -29,6 +31,8 @@
     onShowPracticedChars,
     onShowHowItWorks,
     onShowStatInfo,
+    toolbar,
+    filters,
   } = $props()
 
   // Activity heatmap
@@ -57,13 +61,6 @@
     return () => observer.disconnect()
   })
 
-  const toLocalDateKey = (date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, '0')
-    const day = String(date.getDate()).padStart(2, '0')
-    return `${year}-${month}-${day}`
-  }
-
   const activityDays = $derived.by(() => {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -74,7 +71,7 @@
       const d = new Date(today)
       d.setDate(d.getDate() - i)
       const key = toLocalDateKey(d)
-      const entry = $dailyActivity.get(key) || { count: 0, durationMs: 0, sessions: 0 }
+      const entry = dailyActivity.get(key) || { count: 0, durationMs: 0, sessions: 0 }
       days.push({
         date: key,
         count: entry.count,
@@ -101,7 +98,7 @@
 
   // Reset activity selection on dataset change
   $effect(() => {
-    $datasetId
+    datasetId
     selectedActivityDate = null
   })
 
@@ -113,14 +110,14 @@
 
 <Island>
   <div class="anuka-stack anuka-compact">
-    <Toolbar {onShowAuthDropdown} />
+    {@render toolbar()}
 
     <div class="anuka-row anuka-justify">
       <div>
-        <IslandTitle level={1}>{$currentDataset?.name ?? 'Vocabulary'}</IslandTitle>
-        <p>{$currentDataset?.description ?? ''}</p>
-        {#if $currentDataset?.tags?.length}
-          <Tags tags={$currentDataset.tags} />
+        <IslandTitle level={1}>{datasetName ?? 'Vocabulary'}</IslandTitle>
+        <p>{datasetDescription ?? ''}</p>
+        {#if datasetTags?.length}
+          <Tags tags={datasetTags} />
         {/if}
       </div>
       <Stats
@@ -128,6 +125,7 @@
         {totalCount}
         {uniqueChars}
         {strokePracticedCount}
+        {isAuthenticated}
         {onShowPracticedGroups}
         {onShowPracticedList}
         {onShowPracticedChars}
@@ -135,7 +133,7 @@
       />
     </div>
 
-    {#if $isAuthenticated}
+    {#if isAuthenticated}
       <div class="anuka-stack anuka-compact">
         <ProgressLine fill={strokeProgress} fillStrong={strokeMastery} />
         <ProgressLine fill={pinyinProgress} fillStrong={pinyinMastery} />
@@ -163,6 +161,6 @@
       </div>
     {/if}
 
-    <Filters />
+    {@render filters()}
   </div>
 </Island>

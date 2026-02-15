@@ -1,23 +1,31 @@
 <script>
-  import { currentDataset } from '../../../state/registry.js'
-  import { mainSearch, mainTags, mainGroups, mainListViewStyle } from '../../../state/filters.js'
   import { formatGroup } from '../../../utils/format.js'
   import BtnIcon from '../../core/BtnIcon.svelte'
   import Autocomplete from '../../core/Autocomplete.svelte'
 
-  const toggleView = () => {
-    $mainListViewStyle = $mainListViewStyle === 'full' ? 'compact' : 'full'
-  }
+  let {
+    groups,
+    search,
+    tags,
+    selectedGroups,
+    listViewStyle,
+    onSearchChange,
+    onTagAdd,
+    onTagRemove,
+    onTagsClear,
+    onGroupAdd,
+    onGroupRemove,
+    onGroupsClear,
+    onToggleView,
+  } = $props()
 
-  const viewIcon = $derived($mainListViewStyle === 'full' ? 'grid' : 'list')
+  const viewIcon = $derived(listViewStyle === 'full' ? 'grid' : 'list')
 
   const toggleTheme = () => {
     const current = document.documentElement.dataset.theme
       ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
     document.documentElement.dataset.theme = current === 'dark' ? 'light' : 'dark'
   }
-
-  const groups = $derived.by(() => $currentDataset?.data?.groups ?? [])
 
   const allTags = $derived.by(() => {
     const tagSet = new Set()
@@ -38,31 +46,32 @@
       class="anuka-input anuka-grow"
       type="search"
       placeholder="word, pinyin, English, tags"
-      bind:value={$mainSearch}
+      value={search}
+      oninput={(e) => onSearchChange(e.target.value)}
     />
-    <BtnIcon onclick={toggleView} label="Toggle view" icon={viewIcon} />
+    <BtnIcon onclick={onToggleView} label="Toggle view" icon={viewIcon} />
     <BtnIcon onclick={toggleTheme} label="Toggle theme" icon="moon" />
   </div>
 
   {#if allTags.length > 0}
     <Autocomplete
       items={tagItems}
-      selected={$mainTags}
+      selected={tags}
       formatSelected={(id) => '#' + id}
       placeholder="Tags..."
-      onadd={(tag) => { if (!$mainTags.includes(tag)) $mainTags = [...$mainTags, tag] }}
-      onremove={(tag) => $mainTags = $mainTags.filter(t => t !== tag)}
-      onclear={() => $mainTags = []}
+      onadd={onTagAdd}
+      onremove={onTagRemove}
+      onclear={onTagsClear}
     />
   {/if}
 
   <Autocomplete
     items={groupItems}
-    selected={$mainGroups}
+    selected={selectedGroups}
     formatSelected={formatGroup}
     placeholder="Groups..."
-    onadd={(id) => { if (!$mainGroups.includes(id)) $mainGroups = [...$mainGroups, id] }}
-    onremove={(id) => $mainGroups = $mainGroups.filter(g => g !== id)}
-    onclear={() => $mainGroups = []}
+    onadd={onGroupAdd}
+    onremove={onGroupRemove}
+    onclear={onGroupsClear}
   />
 </div>
