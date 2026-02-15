@@ -46,4 +46,24 @@
     <span class="anuka-badge">default</span>
     <span class="anuka-badge anuka-lg">large</span>
   </div>
+
+  <IslandTitle level={3}>Avatar</IslandTitle>
+  <p>Round image with default 28px size. Size and semantic modifiers apply (semantic adds outline).</p>
+  <div class="anuka-row anuka-center">
+    <img class="anuka-avatar anuka-sm" src="https://i.pravatar.cc/40?u=sm" alt="Small" />
+    <img class="anuka-avatar" src="https://i.pravatar.cc/56?u=md" alt="Default" />
+    <img class="anuka-avatar anuka-lg" src="https://i.pravatar.cc/80?u=lg" alt="Large" />
+  </div>
+  <div class="anuka-row anuka-center">
+    <img class="anuka-avatar anuka-main" src="https://i.pravatar.cc/56?u=main" alt="Main" />
+    <img class="anuka-avatar anuka-succ" src="https://i.pravatar.cc/56?u=succ" alt="Success" />
+    <img class="anuka-avatar anuka-fail" src="https://i.pravatar.cc/56?u=fail" alt="Fail" />
+    <img class="anuka-avatar anuka-warn" src="https://i.pravatar.cc/56?u=warn" alt="Warn" />
+  </div>
+
+  <IslandTitle level={3}>Divider</IslandTitle>
+  <p>Horizontal line with optional text label. Use for visual separation between sections.</p>
+  <div class="anuka-divider"><span>or</span></div>
+  <div class="anuka-divider"><span>section</span></div>
+  <div class="anuka-divider"></div>
 </Island>

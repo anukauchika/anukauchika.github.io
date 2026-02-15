@@ -16,6 +16,7 @@
   import Groups from './components/app/groups'
   import Modal from './components/core/Modal.svelte'
   import Island from './components/core/Island.svelte'
+  import IslandTitle from './components/core/IslandTitle.svelte'
 
   const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || ''
   const basePath = $derived.by(() => `${baseUrl}/${$currentDataset.kind}`)
@@ -470,13 +471,13 @@
 
 <main class="anuka-page">
   {#if showPracticedList}
-    <div class="page-header">
-      <h3>Unique Words Practiced <span class="practiced-count-accent">{practicedItems.length}</span> <span class="practiced-count">| {totalCount}</span></h3>
-      <button type="button" class="page-close-btn" onclick={() => showPracticedList = false} title="Close">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
-      </button>
-    </div>
-    <section class="practiced-page">
+    <Island sticky>
+      <a class="anuka-quick" href="#" onclick={(e) => { e.preventDefault(); showPracticedList = false }} title="Close">
+        <span class="anuka-icon anuka-icon-close"></span>
+      </a>
+      <IslandTitle level={3}>Unique Words Practiced <span class="anuka-main">{practicedItems.length}</span> | {totalCount}</IslandTitle>
+    </Island>
+    <section class="anuka-stack">
       {#if chartData}
         {@const yMax = chartData.yMax}
         {@const ML = 44}
@@ -546,10 +547,10 @@
           {/if}
         </div>
       {/if}
-      <div class="word-grid">
+      <div class="anuka-grid">
         {#each practicedItems as { item, group, stat } (`${group.group}-${item.id}`)}
-          <div class="practiced-item">
-            <span class="practiced-time">{timeAgo(stat.lastPracticedAt)}</span>
+          <div class="anuka-stack anuka-compact">
+            <span class="anuka-mute anuka-sm">{timeAgo(stat.lastPracticedAt)}</span>
             {#if $currentDataset?.kind === 'chinese'}
               <GroupItemChinese {item} strokeStat={$datasetStatsStroke.get(`${group.group}::${item.id}`)} pinyinStat={$datasetStatsPinyin.get(`${group.group}::${item.id}`)} onclick={() => openWord(item)} />
             {:else if $currentDataset?.kind === 'english'}
@@ -567,25 +568,25 @@
       onclose={() => showPracticedGroups = false}
     />
   {:else if showPracticedChars}
-    <div class="page-header">
-      <h3>Chars Practiced <span class="practiced-count-accent">{practicedCharsCount}</span> <span class="practiced-count">| {uniqueChars}</span></h3>
-      <button type="button" class="page-close-btn" onclick={() => showPracticedChars = false} title="Close">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18"/><path d="M6 6l12 12"/></svg>
-      </button>
-    </div>
-    <section class="practiced-page">
-      <div class="char-grid">
+    <Island sticky>
+      <a class="anuka-quick" href="#" onclick={(e) => { e.preventDefault(); showPracticedChars = false }} title="Close">
+        <span class="anuka-icon anuka-icon-close"></span>
+      </a>
+      <IslandTitle level={3}>Chars Practiced <span class="anuka-main">{practicedCharsCount}</span> | {uniqueChars}</IslandTitle>
+    </Island>
+    <section class="anuka-stack">
+      <div class="anuka-grid anuka-sm">
         {#each practicedCharsData as c (c.char)}
-          <div class="char-tile" class:practiced={c.practiced}>
-            <span class="char-glyph" lang="zh" translate="no">{c.char}</span>
+          <div class="anuka-card anuka-stack anuka-center anuka-compact" class:anuka-mute={!c.practiced}>
+            <span class="anuka-lg" lang="zh" translate="no">{c.char}</span>
             {#if c.practiced}
               {#if c.stroke.successCount > 0}
-                <span class="char-stat">{c.stroke.successCount}{#if c.stroke.errorCount > 0}<span class="char-errors">| {c.stroke.errorCount}</span>{/if}</span>
+                <span class="anuka-sm anuka-main">{c.stroke.successCount}{#if c.stroke.errorCount > 0}<span class="anuka-fail">| {c.stroke.errorCount}</span>{/if}</span>
               {/if}
               {#if c.pinyin.successCount > 0}
-                <span class="char-stat char-stat-pinyin">{c.pinyin.successCount}{#if c.pinyin.errorCount > 0}<span class="char-errors">| {c.pinyin.errorCount}</span>{/if}</span>
+                <span class="anuka-sm anuka-main">{c.pinyin.successCount}{#if c.pinyin.errorCount > 0}<span class="anuka-fail">| {c.pinyin.errorCount}</span>{/if}</span>
               {/if}
-              <span class="char-time">{timeAgo(c.lastPracticedAt)}</span>
+              <span class="anuka-sm anuka-mute">{timeAgo(c.lastPracticedAt)}</span>
             {/if}
           </div>
         {/each}
@@ -621,9 +622,9 @@
   {#if activeStat}
     <Modal onclose={() => activeStat = null}>
       <Island>
-        <div class="anuka-stack anuka-center" style="text-align: center; min-width: 240px; max-width: 320px;" role="dialog" aria-modal="true">
+        <div class="anuka-stack anuka-center" role="dialog" aria-modal="true">
           {#if activeStat === 'words'}
-            <p style="margin: 0;">Total number of words in the filtered dataset.</p>
+            <div>Total number of words in the filtered dataset.</div>
           {/if}
         </div>
       </Island>
@@ -644,10 +645,10 @@
     <Modal onclose={() => { showAuthDropdown = false; emailSent = false; emailError = ''; emailInput = '' }}>
       {#if $user}
         <Island>
-          <div class="anuka-stack anuka-center" style="min-width: 240px;" role="dialog" aria-modal="true">
+          <div class="anuka-stack anuka-center" role="dialog" aria-modal="true">
             <div class="anuka-stack anuka-compact anuka-center">
               <strong>{$user.user_metadata?.full_name || $user.email}</strong>
-              <small style="color: var(--anuka-color-muted);">{$user.email}</small>
+              <small class="anuka-mute">{$user.email}</small>
             </div>
             <button type="button" class="anuka-btn" onclick={() => { signOut(); showAuthDropdown = false }}>
               Sign out
@@ -656,15 +657,15 @@
         </Island>
       {:else}
         <Island>
-          <div class="anuka-stack anuka-center" style="min-width: 240px;" role="dialog" aria-modal="true">
+          <div class="anuka-stack anuka-center" role="dialog" aria-modal="true">
             <p class="anuka-app-title">ANUKA UCHIKA</p>
             <button type="button" class="anuka-btn" onclick={() => { signInWithGoogle(); showAuthDropdown = false }}>
               <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
               Sign in with Google
             </button>
-            <div class="auth-divider"><span>or</span></div>
+            <div class="anuka-divider"><span>or</span></div>
             {#if emailSent}
-              <p style="text-align: center; color: var(--anuka-color-primary); font-size: 0.9rem; margin: 0; padding: 0.5rem 0;">Check your email for the login link</p>
+              <div class="anuka-main anuka-sm">Check your email for the login link</div>
             {:else}
               <form class="anuka-stack anuka-compact" onsubmit={(e) => {
                 e.preventDefault()
@@ -674,7 +675,7 @@
                   .catch((err) => { emailError = err.message })
               }}>
                 <input type="email" class="anuka-input" bind:value={emailInput} placeholder="Email" required use:focus />
-                {#if emailError}<p style="color: #c0392b; font-size: 0.8rem; margin: 0;">{emailError}</p>{/if}
+                {#if emailError}<div class="anuka-fail anuka-sm">{emailError}</div>{/if}
                 <button type="submit" class="anuka-btn">Send Sign In Link</button>
               </form>
             {/if}
@@ -684,3 +685,22 @@
     </Modal>
   {/if}
 </main>
+
+<style>
+  .chart-container { position: relative; margin-bottom: 0.4rem; }
+  .progress-chart { width: 100%; height: 90px; display: block; }
+  .chart-tooltip {
+    position: absolute;
+    top: -8px;
+    transform: translateX(-50%) translateY(-100%);
+    background: var(--anuka-color-surface);
+    border: 1px solid var(--anuka-color-accent);
+    border-radius: 8px;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+    pointer-events: none;
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    line-height: 1.4;
+  }
+</style>

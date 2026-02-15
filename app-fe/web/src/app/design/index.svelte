@@ -10,6 +10,7 @@
   import S0302ControlsLabels from './S03-02ControlsLabels.svelte'
   import S0303ControlsInputs from './S03-03ControlsInputs.svelte'
   import S0304ControlsData from './S03-04ControlsData.svelte'
+  import S0305ControlsIcons from './S03-05ControlsIcons.svelte'
   import S0401Composition from './S04-01Composition.svelte'
 
   function toggleTheme() {
@@ -39,6 +40,7 @@
   <S0302ControlsLabels />
   <S0303ControlsInputs />
   <S0304ControlsData />
+  <S0305ControlsIcons />
 
   <S0401Composition />
 </div>

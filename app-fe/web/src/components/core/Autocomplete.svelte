@@ -75,7 +75,7 @@
   {#if showSuggestions && filtered.length > 0}
     <ul class="anuka-autocomplete-dropdown">
       {#each filtered as item, i}
-        <li><button type="button" style={i === highlightedIndex ? 'background: var(--anuka-color-border)' : undefined} onmousedown={() => add(item.id)}>{item.label}</button></li>
+        <li><button type="button" class:anuka-active={i === highlightedIndex} onmousedown={() => add(item.id)}>{item.label}</button></li>
       {/each}
     </ul>
   {/if}

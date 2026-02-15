@@ -115,7 +115,7 @@
   <div class="anuka-stack anuka-compact">
     <Toolbar {onShowAuthDropdown} />
 
-    <div class="anuka-row anuka-justify" style="flex-wrap: wrap">
+    <div class="anuka-row anuka-justify">
       <div>
         <IslandTitle level={1}>{$currentDataset?.name ?? 'Vocabulary'}</IslandTitle>
         <p>{$currentDataset?.description ?? ''}</p>

@@ -201,6 +201,16 @@ h4.anuka-island-title { font-size: 1.2rem; }
 .anuka-badge.anuka-sm { font-size: 0.65rem; padding: 0.15rem 0.4rem; }
 .anuka-badge.anuka-lg { font-size: 0.85rem; padding: 0.3rem 0.65rem; }
 
+/* ── Avatar: round image ── */
+
+.anuka-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+.anuka-avatar.anuka-sm { width: 20px; height: 20px; }
+.anuka-avatar.anuka-lg { width: 40px; height: 40px; }
+.anuka-avatar.anuka-main { outline: 2px solid var(--anuka-color-primary); }
+.anuka-avatar.anuka-succ { outline: 2px solid var(--anuka-color-success); }
+.anuka-avatar.anuka-fail { outline: 2px solid var(--anuka-color-fail); }
+.anuka-avatar.anuka-warn { outline: 2px solid var(--anuka-color-warn); }
+
 /* ── Stat: big number + small label ── */
 
 .anuka-stat {
@@ -257,6 +267,20 @@ button.anuka-stat:hover {
 
 .anuka-hanzi { font-family: var(--font-chinese-hw); }
 .anuka-hidden { visibility: hidden; }
+.anuka-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--anuka-color-muted);
+  font-size: 0.8rem;
+}
+.anuka-divider::before,
+.anuka-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--anuka-color-accent);
+}
 
 /* ── Size modifiers ── */
 
@@ -609,6 +633,9 @@ button.anuka-activity-heatmap-cell {
 }
 
 .anuka-autocomplete-dropdown button:hover,
+.anuka-autocomplete-dropdown button.anuka-active {
+  background: var(--anuka-color-border);
+}
 
 /* ── Quick: icon button, top-right of island ── */
 
