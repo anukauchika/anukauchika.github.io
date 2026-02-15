@@ -69,6 +69,40 @@
 </Island>
 
 <Island>
+  <IslandTitle level={3}>Frame</IslandTitle>
+  <p>Bordered container for images, canvases, and media. Centers content, supports overlays via <code>position: relative</code>. Add <code>data-no-touch</code> for drawing surfaces.</p>
+  <div class="anuka-row anuka-center">
+    <div class="anuka-frame anuka-sm">SM</div>
+    <div class="anuka-frame">Default</div>
+    <div class="anuka-frame anuka-lg">LG</div>
+  </div>
+  <div class="anuka-row anuka-center">
+    <div class="anuka-frame anuka-sm anuka-main">main</div>
+    <div class="anuka-frame anuka-sm anuka-succ">succ</div>
+    <div class="anuka-frame anuka-sm anuka-fail">fail</div>
+    <div class="anuka-frame anuka-sm anuka-warn">warn</div>
+    <div class="anuka-frame anuka-sm anuka-mute">mute</div>
+  </div>
+</Island>
+
+<Island>
+  <IslandTitle level={3}>Tile</IslandTitle>
+  <p>Compact square cell for labels, characters, and icons. Centers content automatically.</p>
+  <div class="anuka-row anuka-center">
+    <span class="anuka-tile anuka-sm">SM</span>
+    <span class="anuka-tile">Def</span>
+    <span class="anuka-tile anuka-lg">LG</span>
+  </div>
+  <div class="anuka-row anuka-center">
+    <span class="anuka-tile anuka-main">main</span>
+    <span class="anuka-tile anuka-succ">succ</span>
+    <span class="anuka-tile anuka-fail">fail</span>
+    <span class="anuka-tile anuka-warn">warn</span>
+    <span class="anuka-tile anuka-mute">mute</span>
+  </div>
+</Island>
+
+<Island>
   <IslandTitle level={3}>Modal</IslandTitle>
   <p>Full-screen backdrop with centered content. Click overlay or close button to dismiss. Content is auto-elevated above the overlay via <code>z-index</code>.</p>
   <div class="anuka-row">

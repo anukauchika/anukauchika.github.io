@@ -100,7 +100,12 @@
   box-shadow: 0 20px 50px var(--anuka-color-shadow);
   box-sizing: border-box;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
+
+.anuka-island > * { margin-top: 0; margin-bottom: 0; }
 
 /* ── App title: brand label, auto-delimited spans ── */
 
@@ -116,28 +121,15 @@
   margin: 0;
 }
 
-.anuka-island .anuka-app-title {
-  margin-bottom: 0.9rem;
-}
-
-.anuka-island .anuka-app-title:last-child,
-.anuka-island .anuka-app-title:has(+ .anuka-quick:last-child) {
-  margin-bottom: 0;
-}
-
 /* ── Island title: serif heading, auto-delimited spans ── */
 
 .anuka-island-title {
   font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
-  margin: 0 0 0.9rem;
+  margin: 0;
 }
 
 .anuka-island-title:not(:first-child) {
-  margin-top: 1.5rem;
-}
-
-.anuka-island-title:has(~ .anuka-tags) {
-  margin-bottom: 0.7rem;
+  padding-top: 0.5rem;
 }
 
 h1.anuka-island-title { font-size: 2.8rem; }
@@ -592,6 +584,55 @@ button.anuka-activity-heatmap-cell {
   color: var(--anuka-color-text);
   cursor: pointer;
 }
+
+/* ── Frame: bordered container for images, canvases, media ── */
+
+.anuka-frame {
+  position: relative;
+  width: 280px;
+  max-width: 100%;
+  aspect-ratio: 1;
+  background: var(--anuka-color-surface-raised);
+  border-radius: 1rem;
+  border: 2px solid var(--anuka-color-accent);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+.anuka-frame.anuka-sm { width: 160px; }
+.anuka-frame.anuka-lg { width: 360px; }
+
+.anuka-frame.anuka-main { border-color: var(--anuka-color-primary); }
+.anuka-frame.anuka-succ { border-color: var(--anuka-color-success); }
+.anuka-frame.anuka-fail { border-color: var(--anuka-color-fail); }
+.anuka-frame.anuka-warn { border-color: var(--anuka-color-warn); }
+.anuka-frame.anuka-mute { border-color: var(--anuka-color-border); }
+
+.anuka-frame[data-no-touch] { touch-action: none; }
+
+/* ── Tile: compact square cell for labels, characters, icons ── */
+
+.anuka-tile {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  aspect-ratio: 1;
+  border-radius: 0.6rem;
+  background: var(--anuka-color-border);
+  color: var(--anuka-color-muted);
+  line-height: 1;
+  transition: all 0.2s ease;
+}
+
+.anuka-tile.anuka-sm { width: 2.5rem; }
+.anuka-tile.anuka-lg { width: 4.5rem; }
+
+.anuka-tile.anuka-main { background: var(--anuka-color-primary); color: var(--anuka-color-on-primary); }
+.anuka-tile.anuka-succ { background: var(--anuka-color-success); color: var(--anuka-color-on-primary); }
+.anuka-tile.anuka-fail { background: var(--anuka-color-fail); color: var(--anuka-color-on-primary); }
+.anuka-tile.anuka-warn { background: var(--anuka-color-warn); color: var(--anuka-color-on-primary); }
+.anuka-tile.anuka-mute { background: var(--anuka-color-bg-accent); color: var(--anuka-color-muted); }
 
 /* ── Modal: backdrop + overlay + auto-elevate content ── */
 

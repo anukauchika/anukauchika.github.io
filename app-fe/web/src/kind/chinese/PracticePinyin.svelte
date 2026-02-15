@@ -312,28 +312,22 @@
           <span>{currentItem[translationField]}</span>
         </div>
 
-        <div class="anuka-row anuka-compact" translate="no" lang="zh">
+        <div class="anuka-row anuka-compact" translate="no" lang="zh" style="font-family: var(--font-chinese-hw); font-size: 3.5rem;">
           {#each hanChars as char, idx}
+            {@const done = charDoneMap.has(idx) || (completedWords.has(currentIndex) && wordDelay)}
+            {@const active = idx === charIndex && !wordDelay}
             <div class="anuka-stack anuka-center anuka-compact">
-              <span
-                class="char-tab"
-                class:active={idx === charIndex && !wordDelay}
-                class:completed={charDoneMap.has(idx) || (completedWords.has(currentIndex) && wordDelay)}
-              >
-                {#if charDoneMap.has(idx) || (completedWords.has(currentIndex) && wordDelay)}
-                  {char}
-                {:else}
-                  {char}
-                {/if}
+              <span class="anuka-tile anuka-lg" class:anuka-main={done} class:anuka-mute={!done && !active}>
+                {char}
               </span>
               {#if charDoneMap.has(idx)}
-                <span class="char-pinyin-label">{charDoneMap.get(idx)}</span>
-              {:else if idx === charIndex && !wordDelay}
-                <span class="char-pinyin-label {showHint ? '' : 'hint-hidden'}">
+                <span class="anuka-main anuka-lg" style="font-weight: 600; min-height: 1.4rem;">{charDoneMap.get(idx)}</span>
+              {:else if active}
+                <span class="anuka-main anuka-lg" style="font-weight: 600; min-height: 1.4rem;">
                   {#if showHint}{pinyinSlots[charIndex]?.pinyin ?? ''}{:else}?{/if}
                 </span>
               {:else}
-                <span class="char-pinyin-label placeholder">&nbsp;</span>
+                <span style="min-height: 1.4rem; visibility: hidden;">&nbsp;</span>
               {/if}
             </div>
           {/each}
@@ -416,45 +410,6 @@
 
 <style>
 
-  .char-tab {
-    font-family: var(--font-chinese-hw);
-    font-size: 3.5rem;
-    line-height: 1;
-    padding: 0.35rem;
-    min-width: 4rem;
-    min-height: 4rem;
-    display: grid;
-    place-items: center;
-    border-radius: 10px;
-    background: var(--anuka-color-border);
-    color: var(--anuka-color-muted);
-    transition: all 0.2s ease;
-  }
-
-  .char-tab.active {
-    color: var(--anuka-color-text);
-    box-shadow: 0 0 0 2px var(--anuka-color-primary);
-  }
-
-  .char-tab.completed {
-    background: var(--anuka-color-primary);
-    color: var(--anuka-color-on-primary);
-  }
-
-  .char-pinyin-label {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--anuka-color-primary);
-    min-height: 1.4rem;
-  }
-
-  .char-pinyin-label.hint-hidden {
-    color: var(--anuka-color-primary);
-  }
-
-  .char-pinyin-label.placeholder {
-    visibility: hidden;
-  }
 
   .input-wrapper {
     position: relative;

@@ -8,7 +8,6 @@
   <IslandTitle level={3}>Tags</IslandTitle>
   <p>Category labels for content. Auto-spaced when placed after an island title. Semantic modifiers apply.</p>
   <Tags tags={['hsk1', 'beginner', 'greetings', 'food']} />
-  <br />
   <div class="anuka-tags">
     <span class="anuka-tag anuka-main">main</span>
     <span class="anuka-tag anuka-succ">success</span>
@@ -32,7 +31,6 @@
     <span class="anuka-badge">hsk1</span>
     <span class="anuka-badge">v2.1</span>
   </div>
-  <br />
   <div class="anuka-row">
     <span class="anuka-badge anuka-main">main</span>
     <span class="anuka-badge anuka-succ">success</span>

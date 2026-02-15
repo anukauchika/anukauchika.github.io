@@ -325,23 +325,16 @@
           {/if}
         </div>
 
-        <div class="anuka-row" style="gap: 0.6rem;" translate="no" lang="zh">
+        <div class="anuka-row anuka-compact" translate="no" lang="zh" style="font-family: var(--font-chinese-hw); font-size: 3rem;">
           {#each hanChars as char, idx}
-            <span
-              class="char-tab"
-              class:active={idx === charIndex}
-              class:completed={idx < charIndex || (idx === charIndex && wordDelay) || quizResult === 'correct'}
-            >
-              {#if idx < charIndex || (idx === charIndex && wordDelay) || quizResult === 'correct'}
-                {char}
-              {:else}
-                &nbsp;
-              {/if}
+            {@const done = idx < charIndex || (idx === charIndex && wordDelay) || quizResult === 'correct'}
+            <span class="anuka-tile" class:anuka-main={idx === charIndex || done}>
+              {#if done}{char}{:else}&nbsp;{/if}
             </span>
           {/each}
         </div>
 
-        <div class="canvas-wrapper">
+        <div class="anuka-frame" data-no-touch>
           <div id="practice-canvas"></div>
           {#if wordDelay}
             <button type="button" class="delay-next-btn" onclick={skipDelay}>Next</button>
@@ -405,43 +398,7 @@
 
 <style>
 
-  .char-tab {
-    font-family: var(--font-chinese-hw);
-    font-size: 3rem;
-    line-height: 1;
-    padding: 0.25rem;
-    min-width: 3.5rem;
-    min-height: 3.5rem;
-    display: grid;
-    place-items: center;
-    border-radius: 10px;
-    background: var(--anuka-color-border);
-    color: var(--anuka-color-muted);
-    transition: all 0.2s ease;
-  }
 
-  .char-tab.active {
-    background: var(--anuka-color-primary);
-    color: var(--anuka-color-on-primary);
-    font-weight: 600;
-  }
-
-  .char-tab.completed {
-    background: var(--anuka-color-primary);
-    color: var(--anuka-color-on-primary);
-  }
-
-  .canvas-wrapper {
-    position: relative;
-    width: 280px;
-    height: 280px;
-    background: var(--anuka-color-surface-raised);
-    border-radius: 18px;
-    border: 2px solid var(--anuka-color-accent);
-    display: grid;
-    place-items: center;
-    touch-action: none;
-  }
 
   .delay-next-btn {
     position: absolute;
@@ -488,12 +445,4 @@
   }
 
 
-  @media (max-width: 600px) {
-    .canvas-wrapper {
-      width: calc(100vw - 4rem);
-      height: calc(100vw - 4rem);
-      max-width: 320px;
-      max-height: 320px;
-    }
-  }
 </style>
