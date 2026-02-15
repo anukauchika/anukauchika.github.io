@@ -85,6 +85,17 @@ export interface WordStat {
   lastPracticedAt: string | null
 }
 
+/** Value side of stats maps — the fields consumers actually read */
+export interface StatEntry {
+  successCount: number
+  errorCount: number
+  lastPracticedAt: string | null
+}
+
+export type StatsMap = Map<string, StatEntry>
+export type SessionsMap = Map<string, GroupSessionSummary>
+export type DailyActivityMap = Map<string, DailyActivity>
+
 export interface GroupSessionSummary {
   total: number
   full: number

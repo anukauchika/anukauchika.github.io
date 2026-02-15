@@ -1,65 +1,60 @@
-import { writable, get } from 'svelte/store'
+import { writable, get, type Writable } from 'svelte/store'
 import { statsService } from '../services/stats-service'
 import { syncService } from '../services/sync-service'
 import { groupSessionService } from '../services/group-session-service'
 import { user } from './auth.js'
 import { getDatasetCode } from './registry.js'
+import type { CharAttemptInput, DailyActivity, GroupSessionSummary, PracticeType, StatEntry, StatsMap, SessionsMap, DailyActivityMap } from '@app/api/types'
 
 // Code conversion: callers use full IDs ('chinese-hskv3-elementary', 'stroke'),
 // IDB/Supabase use compact codes ('aa', 's')
-const PT_CODES = { stroke: 's', pinyin: 'p' }
-function dsCode(id) {
+const PT_CODES: Record<string, PracticeType> = { stroke: 's' as PracticeType, pinyin: 'p' as PracticeType }
+
+function dsCode(id: string): string {
   return getDatasetCode(id) || id
 }
-function ptCode(type) {
-  return PT_CODES[type] || type
+
+function ptCode(type: string): PracticeType {
+  return PT_CODES[type] || type as PracticeType
 }
 
 // --- Stores ---
 
-/** @type {import('svelte/store').Writable<Map<number, {datasetId,practiceType,groupId,wordId,successCount,lastPracticedAt}>>} */
-export const groupStats = writable(new Map())
+export const groupStats: Writable<Map<string, StatEntry>> = writable(new Map())
 
-/** Merged stats across all practice types — used for chart, calendar, practiced count */
-/** @type {import('svelte/store').Writable<Map<string, {datasetId,practiceType,groupId,wordId,successCount,lastPracticedAt}>>} */
-export const datasetStats = writable(new Map())
+/** Merged stats across all practice types */
+export const datasetStats: Writable<StatsMap> = writable(new Map())
 
-/** Per-practice-type stats — used for separate progress bars and stat displays */
-export const datasetStatsStroke = writable(new Map())
-export const datasetStatsPinyin = writable(new Map())
+/** Per-practice-type stats */
+export const datasetStatsStroke: Writable<StatsMap> = writable(new Map())
+export const datasetStatsPinyin: Writable<StatsMap> = writable(new Map())
 
-/**
- * Merged per-group session summaries: Map<groupId, { total, full, lastPracticedAt, lastFullSessionAt }>
- * "full" = sessions where done_at is set (completed without skip)
- */
-export const datasetGroupSessions = writable(new Map())
+/** Merged per-group session summaries */
+export const datasetGroupSessions: Writable<SessionsMap> = writable(new Map())
 
 /** Per-practice-type group sessions */
-export const datasetGroupSessionsStroke = writable(new Map())
-export const datasetGroupSessionsPinyin = writable(new Map())
+export const datasetGroupSessionsStroke: Writable<SessionsMap> = writable(new Map())
+export const datasetGroupSessionsPinyin: Writable<SessionsMap> = writable(new Map())
 
-/**
- * Daily practice stats: Map<dateString, {count, durationMs, sessions}>
- * Used for activity line visualization
- */
-export const dailyActivity = writable(new Map())
+/** Daily practice stats — used for activity visualization */
+export const dailyActivity: Writable<DailyActivityMap> = writable(new Map())
 
 /** Map practice_type code to per-type stores */
-const PT_STATS_STORES = { s: datasetStatsStroke, p: datasetStatsPinyin }
-const PT_SESSION_STORES = { s: datasetGroupSessionsStroke, p: datasetGroupSessionsPinyin }
+const PT_STATS_STORES: Record<string, Writable<StatsMap>> = { s: datasetStatsStroke, p: datasetStatsPinyin }
+const PT_SESSION_STORES: Record<string, Writable<SessionsMap>> = { s: datasetGroupSessionsStroke, p: datasetGroupSessionsPinyin }
 
 // --- Load functions ---
 
-export async function loadGroupStats(datasetId, practiceType, groupId) {
+export async function loadGroupStats(datasetId: string, practiceType: string, groupId: string): Promise<void> {
   const stats = await statsService.getWordStats(dsCode(datasetId), ptCode(practiceType))
-  const map = new Map()
+  const map = new Map<string, StatEntry>()
   for (const s of stats) {
     if (s.groupId === groupId) map.set(s.wordId, s)
   }
   groupStats.set(map)
 }
 
-export async function loadDatasetGroupSessions(datasetId, practiceType) {
+export async function loadDatasetGroupSessions(datasetId: string, practiceType: string): Promise<void> {
   const map = await statsService.getGroupSessionSummaries(dsCode(datasetId), ptCode(practiceType))
   datasetGroupSessions.set(map)
 }
@@ -68,18 +63,16 @@ export async function loadDatasetGroupSessions(datasetId, practiceType) {
 
 const ALL_PT = Object.keys(PT_CODES)
 
-export async function loadDatasetStatsAll(datasetId) {
-  const merged = new Map()
-  const perType = { s: new Map(), p: new Map() }
+export async function loadDatasetStatsAll(datasetId: string): Promise<void> {
+  const merged = new Map<string, StatEntry>()
+  const perType: Record<string, StatsMap> = { s: new Map(), p: new Map() }
   for (const pt of ALL_PT) {
     const code = ptCode(pt)
     const ptMap = perType[code]
     const stats = await statsService.getWordStats(dsCode(datasetId), code)
     for (const s of stats) {
       const key = `${s.groupId}::${s.wordId}`
-      // Per-type map
-      ptMap.set(key, { ...s })
-      // Merged map
+      ptMap.set(key, { successCount: s.successCount, errorCount: s.errorCount, lastPracticedAt: s.lastPracticedAt })
       const existing = merged.get(key)
       if (existing) {
         existing.successCount += s.successCount ?? 0
@@ -88,7 +81,7 @@ export async function loadDatasetStatsAll(datasetId) {
           existing.lastPracticedAt = s.lastPracticedAt
         }
       } else {
-        merged.set(key, { ...s })
+        merged.set(key, { successCount: s.successCount, errorCount: s.errorCount, lastPracticedAt: s.lastPracticedAt })
       }
     }
   }
@@ -97,16 +90,15 @@ export async function loadDatasetStatsAll(datasetId) {
   datasetStatsPinyin.set(perType.p)
 }
 
-export async function loadDatasetGroupSessionsAll(datasetId) {
-  const merged = new Map()
-  const perType = { s: new Map(), p: new Map() }
+export async function loadDatasetGroupSessionsAll(datasetId: string): Promise<void> {
+  const merged = new Map<string, GroupSessionSummary>()
+  const perType: Record<string, SessionsMap> = { s: new Map(), p: new Map() }
   for (const pt of ALL_PT) {
     const code = ptCode(pt)
     const ptMap = perType[code]
     const map = await statsService.getGroupSessionSummaries(dsCode(datasetId), code)
     for (const [groupId, summary] of map) {
       ptMap.set(groupId, { ...summary })
-      // Merged map
       const existing = merged.get(groupId)
       if (existing) {
         existing.total += summary.total
@@ -133,9 +125,9 @@ export async function loadDatasetGroupSessionsAll(datasetId) {
   datasetGroupSessionsPinyin.set(perType.p)
 }
 
-export async function loadDailyActivityAll(datasetId) {
+export async function loadDailyActivityAll(datasetId: string): Promise<void> {
   try {
-    const merged = new Map()
+    const merged = new Map<string, DailyActivity>()
     for (const pt of ALL_PT) {
       const map = await statsService.getDailyActivity(dsCode(datasetId), ptCode(pt))
       for (const [dateKey, activity] of map) {
@@ -157,7 +149,7 @@ export async function loadDailyActivityAll(datasetId) {
 
 // --- Session lifecycle ---
 
-export async function startGroupSession(datasetId, practiceType, groupId) {
+export async function startGroupSession(datasetId: string, practiceType: string, groupId: string): Promise<number> {
   syncService.setActiveSessionId(null)
   const userId = get(user)?.id ?? null
   const id = await groupSessionService.startGroupSession(userId, dsCode(datasetId), ptCode(practiceType), groupId)
@@ -165,7 +157,7 @@ export async function startGroupSession(datasetId, practiceType, groupId) {
   return id
 }
 
-export async function endGroupSession(sessionId) {
+export async function endGroupSession(sessionId: number): Promise<void> {
   syncService.setActiveSessionId(null)
   const session = await groupSessionService.endGroupSession(sessionId)
   if (!session) return
@@ -174,39 +166,32 @@ export async function endGroupSession(sessionId) {
 
   const now = session.done_at
 
-  // Update datasetGroupSessions store (merged)
-  datasetGroupSessions.update((map) => {
+  const updateSessions = (map: SessionsMap): SessionsMap => {
     const next = new Map(map)
     const existing = next.get(session.group_id)
     if (existing) {
       next.set(session.group_id, {
         ...existing,
         full: existing.full + 1,
-        lastFullSessionAt: now > (existing.lastFullSessionAt ?? '') ? now : existing.lastFullSessionAt,
+        lastFullSessionAt: now && now > (existing.lastFullSessionAt ?? '') ? now : existing.lastFullSessionAt,
       })
     }
     return next
-  })
-
-  // Update per-type group sessions store
-  const ptStore = PT_SESSION_STORES[session.practice_type]
-  if (ptStore) {
-    ptStore.update((map) => {
-      const next = new Map(map)
-      const existing = next.get(session.group_id)
-      if (existing) {
-        next.set(session.group_id, {
-          ...existing,
-          full: existing.full + 1,
-          lastFullSessionAt: now > (existing.lastFullSessionAt ?? '') ? now : existing.lastFullSessionAt,
-        })
-      }
-      return next
-    })
   }
+
+  datasetGroupSessions.update(updateSessions)
+
+  const ptStore = PT_SESSION_STORES[session.practice_type]
+  if (ptStore) ptStore.update(updateSessions)
 }
 
-export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, chars) {
+export async function recordWordAttempt(
+  sessionId: number,
+  wordId: string,
+  startedAt: string,
+  doneAt: string,
+  chars: CharAttemptInput[],
+): Promise<void> {
   const result = await groupSessionService.recordWordAttempt(sessionId, wordId, startedAt, doneAt, chars)
 
   syncService.syncPending().catch((e) => console.error('sync failed', e))
@@ -218,10 +203,6 @@ export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, ch
     const next = new Map(map)
     const existing = next.get(wordId)
     next.set(wordId, {
-      datasetId: null,
-      practiceType: null,
-      groupId,
-      wordId,
       successCount: (existing?.successCount ?? 0) + 1,
       errorCount: (existing?.errorCount ?? 0) + attemptErrors,
       lastPracticedAt: doneAt,
@@ -229,39 +210,21 @@ export async function recordWordAttempt(sessionId, wordId, startedAt, doneAt, ch
     return next
   })
 
-  // Update datasetStats store (merged)
+  // Update datasetStats + per-type store
   const key = `${groupId}::${wordId}`
-  datasetStats.update((map) => {
+  const updateStats = (map: StatsMap): StatsMap => {
     const next = new Map(map)
     const existing = next.get(key)
     next.set(key, {
-      datasetId: null,
-      practiceType: null,
-      groupId,
-      wordId,
       successCount: (existing?.successCount ?? 0) + 1,
       errorCount: (existing?.errorCount ?? 0) + attemptErrors,
       lastPracticedAt: doneAt,
     })
     return next
-  })
-
-  // Update per-type stats store
-  const ptStore = PT_STATS_STORES[pt]
-  if (ptStore) {
-    ptStore.update((map) => {
-      const next = new Map(map)
-      const existing = next.get(key)
-      next.set(key, {
-        datasetId: null,
-        practiceType: null,
-        groupId,
-        wordId,
-        successCount: (existing?.successCount ?? 0) + 1,
-        errorCount: (existing?.errorCount ?? 0) + attemptErrors,
-        lastPracticedAt: doneAt,
-      })
-      return next
-    })
   }
+
+  datasetStats.update(updateStats)
+
+  const ptStore = PT_STATS_STORES[pt]
+  if (ptStore) ptStore.update(updateStats)
 }

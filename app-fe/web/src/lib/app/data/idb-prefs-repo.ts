@@ -1,6 +1,6 @@
 import { req, createDatabase } from './idb'
 import type { PrefsRepo } from '@app/api/prefs-repo'
-import type { ListViewStyle, MainFilters } from '@app/api/types'
+import { ListViewStyle, type MainFilters } from '@app/api/types'
 
 const PREFS_STORE = 'prefs'
 
@@ -52,7 +52,7 @@ async function getMainFilters(datasetId: string): Promise<MainFilters> {
     search: search ?? '',
     tags: tags ?? [],
     groups: Array.isArray(groups) ? groups : [],
-    listViewStyle: listViewStyle === true || listViewStyle === 'compact' ? 'compact' : 'full',
+    listViewStyle: listViewStyle === true || listViewStyle === 'compact' ? ListViewStyle.Compact : ListViewStyle.Full,
   }
 }
 

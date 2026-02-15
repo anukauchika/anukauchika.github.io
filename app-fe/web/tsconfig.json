@@ -13,7 +13,12 @@
     "allowJs": true,
     "checkJs": true,
     "noEmit": true,
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "@std/*": ["src/lib/std/*"],
+      "@app/*": ["src/lib/app/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.js", "src/**/*.svelte"]
 }

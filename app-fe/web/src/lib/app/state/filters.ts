@@ -1,15 +1,16 @@
-import { writable } from 'svelte/store'
+import { writable, type Writable } from 'svelte/store'
 import { prefsRepo } from '@app/data/idb-prefs-repo'
+import type { ListViewStyle } from '@app/api/types'
 
-export const mainSearch = writable('')
-export const mainTags = writable([])
-export const mainGroups = writable([])
-export const mainListViewStyle = writable('full')
+export const mainSearch: Writable<string> = writable('')
+export const mainTags: Writable<string[]> = writable([])
+export const mainGroups: Writable<string[]> = writable([])
+export const mainListViewStyle: Writable<ListViewStyle> = writable('full' as ListViewStyle)
 
-let mainDatasetId = null
+let mainDatasetId: string | null = null
 let initialized = false
 
-export async function loadMainFilters(datasetId) {
+export async function loadMainFilters(datasetId: string): Promise<void> {
   mainDatasetId = datasetId
   initialized = false
   const filters = await prefsRepo.getMainFilters(datasetId)
