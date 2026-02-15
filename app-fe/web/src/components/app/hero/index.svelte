@@ -6,6 +6,7 @@
   import IslandTitle from '../../core/IslandTitle.svelte'
   import Tags from '../../core/Tags.svelte'
   import Btn from '../../core/Btn.svelte'
+  import BtnLink from '../../core/BtnLink.svelte'
   import ProgressLine from '../../core/ProgressLine.svelte'
   import DailyActivityHeatmap from '../DailyActivityHeatmap.svelte'
   import Toolbar from './Toolbar.svelte'
@@ -149,16 +150,16 @@
         </div>
       </div>
     {:else}
-      <p><Btn variant="ghost" onclick={onShowAuthDropdown}>Log in</Btn> to track your learning progress</p>
+      <p><BtnLink onclick={onShowAuthDropdown}>Log in</BtnLink> to track your learning progress</p>
     {/if}
 
     <div class="anuka-row anuka-center">
-      <p><Btn variant="ghost" onclick={onShowHowItWorks}>How it works?</Btn></p>
+      <p><BtnLink onclick={onShowHowItWorks}>How it works?</BtnLink></p>
     </div>
 
     {#if practiceHref}
       <div class="anuka-row anuka-center">
-        <Btn onclick={() => (window.location.href = practiceHref)}>Practice</Btn>
+        <Btn main onclick={() => (window.location.href = practiceHref)}>Practice</Btn>
       </div>
     {/if}
 

@@ -2,7 +2,7 @@
   import { currentDataset } from '../../../state/registry.js'
   import { mainSearch, mainTags, mainGroups, mainListViewStyle } from '../../../state/filters.js'
   import { formatGroup } from '../../../utils/format.js'
-  import Btn from '../../core/Btn.svelte'
+  import BtnIcon from '../../core/BtnIcon.svelte'
   import Autocomplete from '../../core/Autocomplete.svelte'
 
   const toggleView = () => {
@@ -40,8 +40,8 @@
       placeholder="word, pinyin, English, tags"
       bind:value={$mainSearch}
     />
-    <Btn variant="icon" onclick={toggleView} label="Toggle view" icon={viewIcon} />
-    <Btn variant="icon" onclick={toggleTheme} label="Toggle theme" icon="moon" />
+    <BtnIcon onclick={toggleView} label="Toggle view" icon={viewIcon} />
+    <BtnIcon onclick={toggleTheme} label="Toggle theme" icon="moon" />
   </div>
 
   {#if allTags.length > 0}

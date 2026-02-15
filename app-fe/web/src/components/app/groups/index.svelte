@@ -1,6 +1,6 @@
 <script>
   import Island from '../../core/Island.svelte'
-  import Btn from '../../core/Btn.svelte'
+  import BtnLink from '../../core/BtnLink.svelte'
   import FullGroup from './FullGroup.svelte'
 
   let {
@@ -35,7 +35,7 @@
     {/each}
     {#if isLimited}
       <div class="anuka-row anuka-center">
-        <Btn variant="ghost" onclick={() => showAllGroups = true}>Show all {groups.length} groups</Btn>
+        <BtnLink onclick={() => showAllGroups = true}>Show all {groups.length} groups</BtnLink>
       </div>
     {/if}
   {/if}

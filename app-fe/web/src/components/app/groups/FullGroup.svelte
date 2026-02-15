@@ -88,7 +88,7 @@
         <ProgressLine fill={pinyinProgress} fillStrong={pinyinMastery} />
       </div>
     {/if}
-    <div class="anuka-grid-md">
+    <div class="anuka-grid">
       {#each items as { item, strokeStat, pinyinStat } (item.id)}
         {#if kind === 'chinese'}
           <GroupItemChinese {item} {strokeStat} {pinyinStat} onclick={() => openWord(item)} />

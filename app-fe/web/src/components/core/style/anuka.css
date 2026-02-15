@@ -157,6 +157,7 @@ h4.anuka-island-title { font-size: 1.2rem; }
 
 .anuka-tags {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
 }
@@ -169,12 +170,8 @@ h4.anuka-island-title { font-size: 1.2rem; }
   color: var(--anuka-color-muted);
 }
 
-/* ── Text: semantic color modifiers ── */
-
-.anuka-mute { color: var(--anuka-color-muted); }
-.anuka-succ { color: var(--anuka-color-success); }
-.anuka-fail { color: var(--anuka-color-fail); }
-.anuka-warn { color: var(--anuka-color-warn); }
+.anuka-tag.anuka-sm { font-size: 0.65rem; padding: 0.15rem 0.45rem; }
+.anuka-tag.anuka-lg { font-size: 0.85rem; padding: 0.3rem 0.8rem; }
 
 /* ── Badge: small muted pill label ── */
 
@@ -187,11 +184,73 @@ h4.anuka-island-title { font-size: 1.2rem; }
   font-size: 0.75rem;
 }
 
+.anuka-badge.anuka-sm { font-size: 0.65rem; padding: 0.15rem 0.4rem; }
+.anuka-badge.anuka-lg { font-size: 0.85rem; padding: 0.3rem 0.65rem; }
+
+/* ── Stat: big number + small label ── */
+
+.anuka-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.4rem;
+  color: var(--anuka-color-text);
+}
+
+.anuka-stat-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+  color: inherit;
+}
+
+.anuka-stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--anuka-color-muted);
+}
+
+button.anuka-stat {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: 0.75rem;
+  transition: background 0.15s ease;
+}
+
+button.anuka-stat:hover {
+  background: var(--anuka-color-border);
+}
+
+.anuka-stat.anuka-sm { padding: 0.4rem 0.3rem; }
+.anuka-stat.anuka-sm .anuka-stat-value { font-size: 1.2rem; }
+.anuka-stat.anuka-sm .anuka-stat-label { font-size: 0.6rem; }
+
+.anuka-stat.anuka-lg { padding: 0.8rem 0.6rem; }
+.anuka-stat.anuka-lg .anuka-stat-value { font-size: 2rem; }
+.anuka-stat.anuka-lg .anuka-stat-label { font-size: 0.8rem; }
+
+/* ── Text: semantic color modifiers ── */
+
+.anuka-main { color: var(--anuka-color-primary); }
+.anuka-mute { color: var(--anuka-color-muted); }
+.anuka-succ { color: var(--anuka-color-success); }
+.anuka-fail { color: var(--anuka-color-fail); }
+.anuka-warn { color: var(--anuka-color-warn); }
+
+/* ── Size modifiers ── */
+
+.anuka-sm { font-size: 0.75rem; }
+.anuka-lg { font-size: 1.1rem; }
+
 /* ── Grid: responsive auto-fit presets ── */
 
-.anuka-grid-sm { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 0.5rem; }
-.anuka-grid-md { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
-.anuka-grid-lg { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; }
+.anuka-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+.anuka-grid.anuka-sm { grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 0.5rem; }
+.anuka-grid.anuka-lg { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 
 /* ── Layout: stack, row, modifiers ── */
 
@@ -311,7 +370,7 @@ button.anuka-activity-heatmap-cell {
 .anuka-activity-heatmap-cell[data-level="3"] { background: rgba(31, 111, 92, 0.7); }
 .anuka-activity-heatmap-cell[data-level="4"] { background: var(--anuka-color-primary); }
 
-/* ── Button: action element with variants ── */
+/* ── Button: outline by default, filled with anuka-main ── */
 
 .anuka-btn {
   display: inline-flex;
@@ -319,10 +378,10 @@ button.anuka-activity-heatmap-cell {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem 1.4rem;
-  border: 1px solid transparent;
+  border: 1px solid var(--anuka-color-accent);
   border-radius: 999px;
-  background: var(--anuka-color-primary);
-  color: var(--anuka-color-on-primary);
+  background: none;
+  color: var(--anuka-color-text);
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: 600;
@@ -330,67 +389,72 @@ button.anuka-activity-heatmap-cell {
   transition: opacity 0.15s ease;
 }
 
-.anuka-btn:hover { opacity: 0.85; }
+.anuka-btn:hover { border-color: var(--anuka-color-primary); }
 
-.anuka-btn-outline {
-  background: none;
-  color: var(--anuka-color-text);
-  border-color: var(--anuka-color-accent);
+.anuka-btn.anuka-main {
+  background: var(--anuka-color-primary);
+  color: var(--anuka-color-on-primary);
+  border-color: transparent;
 }
 
-.anuka-btn-outline:hover {
-  border-color: var(--anuka-color-primary);
-  opacity: 1;
-}
+.anuka-btn.anuka-main:hover { opacity: 0.85; }
 
-.anuka-btn-ghost {
+.anuka-btn.anuka-sm { font-size: 0.75rem; padding: 0.35rem 1rem; }
+.anuka-btn.anuka-lg { font-size: 1.1rem; padding: 0.65rem 1.8rem; }
+
+/* ── Button Link: inline text link ── */
+
+.anuka-btn-link {
+  display: inline-flex;
+  align-items: center;
   background: none;
   border: none;
   color: var(--anuka-color-primary);
   padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;
+  transition: opacity 0.15s ease;
 }
 
-.anuka-btn-ghost:hover { opacity: 0.8; }
+.anuka-btn-link:hover { opacity: 0.8; }
 
-.anuka-btn-toggle {
-  background: none;
-  color: var(--anuka-color-muted);
-  border-color: var(--anuka-color-accent);
-}
-
-.anuka-btn-toggle:hover {
-  background: var(--anuka-color-border);
-  opacity: 1;
-}
-
-.anuka-btn-toggle.active {
-  background: var(--anuka-color-primary);
-  color: var(--anuka-color-on-primary);
-  border-color: var(--anuka-color-primary);
-}
+/* ── Button Icon: compact icon-only action ── */
 
 .anuka-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 36px;
   height: 36px;
   padding: 0;
+  border: 1px solid var(--anuka-color-accent);
+  border-radius: 999px;
   background: none;
-  border-color: var(--anuka-color-accent);
+  font-family: inherit;
   color: var(--anuka-color-muted);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
 }
 
 .anuka-btn-icon:hover {
   background: var(--anuka-color-border);
   color: var(--anuka-color-primary);
-  opacity: 1;
 }
 
-.anuka-btn-icon.active {
+.anuka-btn-icon.anuka-main {
   background: var(--anuka-color-primary);
   color: var(--anuka-color-on-primary);
-  border-color: var(--anuka-color-primary);
+  border-color: transparent;
 }
+
+.anuka-btn-icon.anuka-main:hover { opacity: 0.85; }
+
+.anuka-btn-icon.anuka-sm { width: 28px; height: 28px; }
+.anuka-btn-icon.anuka-lg { width: 44px; height: 44px; }
 
 /* ── Input: text field ── */
 
@@ -411,42 +475,6 @@ button.anuka-activity-heatmap-cell {
   box-shadow: 0 0 0 3px var(--anuka-color-accent);
 }
 
-/* ── Stat: big number + small label ── */
-
-.anuka-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.15rem;
-  padding: 0.6rem 0.4rem;
-}
-
-.anuka-stat-value {
-  font-size: 1.6rem;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--anuka-color-text);
-}
-
-.anuka-stat-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--anuka-color-muted);
-}
-
-button.anuka-stat {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  border-radius: 0.75rem;
-  transition: background 0.15s ease;
-}
-
-button.anuka-stat:hover {
-  background: var(--anuka-color-border);
-}
 
 /* ── Autocomplete: chip input with dropdown ── */
 
@@ -547,9 +575,6 @@ button.anuka-stat:hover {
 }
 
 .anuka-autocomplete-dropdown button:hover,
-.anuka-autocomplete-dropdown button.active {
-  background: var(--anuka-color-border);
-}
 
 /* ── Quick: icon button, top-right of island ── */
 

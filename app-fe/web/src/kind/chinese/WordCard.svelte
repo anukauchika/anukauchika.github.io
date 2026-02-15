@@ -72,7 +72,7 @@
           <div class="anuka-stack" style="align-items: center;">
             {#if isHanChar(char)}
               <div class="stroke-canvas" id={`hanzi-${idx}`}></div>
-              <Btn onclick={() => animateChar(idx)}>Animate</Btn>
+              <Btn main onclick={() => animateChar(idx)}>Animate</Btn>
             {:else}
               <div class="stroke-fallback">No stroke data</div>
             {/if}
