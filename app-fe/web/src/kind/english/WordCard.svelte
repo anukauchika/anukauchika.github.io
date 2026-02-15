@@ -7,48 +7,30 @@
   let { item, onClose } = $props()
 </script>
 
-<div class="word-card" role="dialog" aria-modal="true">
+<div role="dialog" aria-modal="true">
   <Island>
     <Quick label="Close" icon="close" onclick={onClose} />
     <IslandTitle level={3}>{item.word}</IslandTitle>
-    <p class="anuka-mute" style="margin: 0;">{item.phonetics} · {item.russian}</p>
+    <div class="anuka-mute">{item.phonetics} · {item.russian}</div>
     <div class="anuka-stack">
-      <div class="detail-row">
-        <span class="detail-label">Word:</span>
+      <div class="anuka-row">
+        <span class="anuka-mute">Word:</span>
         <span>{item.word}</span>
       </div>
-      <div class="detail-row">
-        <span class="detail-label">Phonetics:</span>
+      <div class="anuka-row">
+        <span class="anuka-mute">Phonetics:</span>
         <span>{item.phonetics}</span>
       </div>
-      <div class="detail-row">
-        <span class="detail-label">Translation:</span>
+      <div class="anuka-row">
+        <span class="anuka-mute">Translation:</span>
         <span>{item.russian}</span>
       </div>
       {#if item.tags && item.tags.length > 0}
-        <div class="detail-row">
-          <span class="detail-label">Tags:</span>
+        <div class="anuka-row">
+          <span class="anuka-mute">Tags:</span>
           <Tags tags={item.tags} />
         </div>
       {/if}
     </div>
   </Island>
 </div>
-
-<style>
-  .word-card {
-    max-width: min(900px, 96vw);
-  }
-
-  .detail-row {
-    display: flex;
-    gap: 1rem;
-    align-items: baseline;
-  }
-
-  .detail-label {
-    font-weight: 600;
-    color: var(--anuka-color-muted);
-    min-width: 100px;
-  }
-</style>

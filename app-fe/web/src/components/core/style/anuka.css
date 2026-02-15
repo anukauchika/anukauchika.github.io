@@ -233,6 +233,8 @@ button.anuka-stat:hover {
 .anuka-fail { color: var(--anuka-color-fail); }
 .anuka-warn { color: var(--anuka-color-warn); }
 
+.anuka-hanzi { font-family: var(--font-chinese-hw); }
+
 /* ── Size modifiers ── */
 
 .anuka-sm { font-size: 0.75rem; }
@@ -247,7 +249,7 @@ button.anuka-stat:hover {
 /* ── Layout: stack, row, modifiers ── */
 
 .anuka-stack { display: flex; flex-direction: column; gap: 1rem; }
-.anuka-row { display: flex; gap: 1rem; align-items: center; }
+.anuka-row { display: flex; column-gap: 1rem; row-gap: 0.4rem; align-items: center; flex-wrap: wrap; }
 .anuka-left { justify-content: flex-start; }
 .anuka-center { justify-content: center; align-items: center; }
 .anuka-right { justify-content: flex-end; }

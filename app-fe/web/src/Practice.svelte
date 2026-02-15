@@ -64,30 +64,17 @@
   <Island>
     <IslandTitle level={1}>{headerTitle}</IslandTitle>
     {#if activeGroup}
-      <div class="anuka-row anuka-center" style="flex-wrap: wrap;">
-        <span class="group-id">{formatGroup(activeGroup.group)}</span>
+      <div class="anuka-row anuka-center">
+        <span class="anuka-sm anuka-mute">{formatGroup(activeGroup.group)}</span>
         {#if activeGroup.tags?.length}
           <Tags tags={activeGroup.tags} />
         {/if}
-        <span class="group-id">{activeGroup.items.length} words</span>
+        <span class="anuka-sm anuka-mute">{activeGroup.items.length} words</span>
         {#if $isAuthenticated && groupStats}
-          <span class="group-stats">{groupStats.total} passes ({groupStats.full} full)</span>
+          <span class="anuka-sm anuka-main">{groupStats.total} passes ({groupStats.full} full)</span>
         {/if}
       </div>
     {/if}
   </Island>
 </main>
 
-<style>
-  .group-id {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--anuka-color-muted);
-  }
-
-  .group-stats {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--anuka-color-primary);
-  }
-</style>
