@@ -59,27 +59,9 @@ export async function loadGroupStats(datasetId, practiceType, groupId) {
   groupStats.set(map)
 }
 
-export async function loadDatasetStats(datasetId, practiceType) {
-  const stats = await statsService.getWordStats(dsCode(datasetId), ptCode(practiceType))
-  const map = new Map()
-  for (const s of stats) {
-    map.set(`${s.groupId}::${s.wordId}`, s)
-  }
-  datasetStats.set(map)
-}
-
 export async function loadDatasetGroupSessions(datasetId, practiceType) {
   const map = await statsService.getGroupSessionSummaries(dsCode(datasetId), ptCode(practiceType))
   datasetGroupSessions.set(map)
-}
-
-export async function loadDailyActivity(datasetId, practiceType) {
-  try {
-    const map = await statsService.getDailyActivity(dsCode(datasetId), ptCode(practiceType))
-    dailyActivity.set(map)
-  } catch (err) {
-    console.error('Failed to load daily activity:', err)
-  }
 }
 
 // --- Aggregated loaders (all practice types) ---

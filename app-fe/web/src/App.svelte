@@ -94,12 +94,6 @@
   }
 
 
-  const formatDate = (isoString) => {
-    if (!isoString) return ''
-    const date = new Date(isoString)
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-  }
-
   const normalize = (value) =>
     value
       .toLowerCase()
@@ -278,21 +272,6 @@
   }
   const strokePracticedCount = $derived(countPracticed($datasetStatsStroke))
   const pinyinPracticedCount = $derived(countPracticed($datasetStatsPinyin))
-  const strokeFullSessions = $derived.by(() => {
-    let total = 0
-    for (const gs of $datasetGroupSessionsStroke.values()) total += gs.full
-    return total
-  })
-  const pinyinFullSessions = $derived.by(() => {
-    let total = 0
-    for (const gs of $datasetGroupSessionsPinyin.values()) total += gs.full
-    return total
-  })
-  const totalSessionsCount = $derived.by(() => {
-    let total = 0
-    for (const gs of $datasetGroupSessions.values()) total += gs.total
-    return total
-  })
   const practicedItems = $derived.by(() => {
     const items = []
     filteredGroups.forEach((g) => {
@@ -618,7 +597,6 @@
   <Hero
     {groupCount} {totalCount} {uniqueChars} {strokePracticedCount}
     {strokeProgress} {strokeMastery} {pinyinProgress} {pinyinMastery}
-    {strokeFullSessions} {pinyinFullSessions}
     {practiceHref}
     onShowAuthDropdown={() => showAuthDropdown = true}
     onShowPracticedGroups={() => showPracticedGroups = true}
