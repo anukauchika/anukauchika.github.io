@@ -2,8 +2,9 @@
   import { onMount } from 'svelte'
   import { datasetId, currentDataset, setDatasetById } from '@app/state/registry.js'
   import { formatGroup } from '@std/format.js'
-  import { loadDatasetGroupSessions, datasetGroupSessions } from '@app/state/practice-stats.js'
+  import { loadDatasetGroupSessions, datasetGroupSessions, loadGroupStats, groupStats as groupStatsStore, startGroupSession, endGroupSession, recordWordAttempt } from '@app/state/practice-stats.js'
   import { isAuthenticated } from '@app/state/auth.js'
+  import { get } from 'svelte/store'
   import Island from '@std/ui/Island.svelte'
   import IslandTitle from '@std/ui/IslandTitle.svelte'
   import Tags from '@std/ui/Tags.svelte'
@@ -47,6 +48,11 @@
   const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || ''
   const basePath = $derived.by(() => $currentDataset?.kind ? `${baseUrl}/${$currentDataset.kind}` : null)
 
+  const handleLoadGroupStats = async (dsId, pt, gId) => {
+    await loadGroupStats(dsId, pt, gId)
+    return get(groupStatsStore)
+  }
+
   const headerTitle = practiceType === 'pinyin' ? 'Pinyin Practice' : 'Stroke Practice'
 </script>
 
@@ -55,9 +61,13 @@
     {@const from = getSearchParams().get('from')}
     {@const backUrl = `${basePath ?? baseUrl}/?dataset=${$datasetId}${from ? `&from=${from}` : ''}`}
     {#if practiceType === 'pinyin'}
-      <PracticePinyin group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} {backUrl} />
+      <PracticePinyin group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} {backUrl}
+        groupStats={$groupStatsStore} isAuthenticated={$isAuthenticated}
+        onLoadGroupStats={handleLoadGroupStats} onStartSession={startGroupSession} onEndSession={endGroupSession} onRecordAttempt={recordWordAttempt} />
     {:else}
-      <PracticeChinese group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} {backUrl} />
+      <PracticeChinese group={activeGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} {backUrl}
+        groupStats={$groupStatsStore} isAuthenticated={$isAuthenticated}
+        onLoadGroupStats={handleLoadGroupStats} onStartSession={startGroupSession} onEndSession={endGroupSession} onRecordAttempt={recordWordAttempt} />
     {/if}
   {/if}
 

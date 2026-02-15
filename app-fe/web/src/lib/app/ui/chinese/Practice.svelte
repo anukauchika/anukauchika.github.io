@@ -1,14 +1,20 @@
 <script>
   import { tick } from 'svelte'
   import HanziWriter from 'hanzi-writer'
-  import { startGroupSession, endGroupSession, recordWordAttempt, loadGroupStats, groupStats } from '@app/state/practice-stats.js'
-  import { isAuthenticated } from '@app/state/auth.js'
   import Island from '@std/ui/Island.svelte'
   import ProgressLine from '@std/ui/ProgressLine.svelte'
   import Btn from '@std/ui/Btn.svelte'
   import BtnIcon from '@std/ui/BtnIcon.svelte'
 
-  let { group, datasetId, translationField, backUrl } = $props()
+  let {
+    group, datasetId, translationField, backUrl,
+    groupStats = new Map(),
+    isAuthenticated = false,
+    onLoadGroupStats = async () => new Map(),
+    onStartSession = async () => null,
+    onEndSession = async () => {},
+    onRecordAttempt = async () => {},
+  } = $props()
   const practiceType = 'stroke'
 
   const rawItems = $derived.by(() => group?.items ?? [])
@@ -35,7 +41,7 @@
   let charData = $state([])
 
   const currentItem = $derived.by(() => items[currentIndex] ?? null)
-  const currentStat = $derived.by(() => currentItem ? $groupStats.get(currentItem.id) : null)
+  const currentStat = $derived.by(() => currentItem ? groupStats.get(currentItem.id) : null)
   const isHanChar = (char) => /[\u4e00-\u9fff]/.test(char)
   const hanChars = $derived.by(() =>
     currentItem ? currentItem.word.split('').filter(isHanChar) : []
@@ -188,12 +194,12 @@
           const item = items[currentIndex]
           const wStartedAt = wordStartedAt
           charData = []
-          if ($isAuthenticated && item) {
+          if (isAuthenticated && item) {
             if (!sessionIdPromise) {
-              sessionIdPromise = startGroupSession(datasetId, practiceType, group.group)
+              sessionIdPromise = onStartSession(datasetId, practiceType, group.group)
             }
             sessionIdPromise.then((sid) => {
-              if (sid != null) recordWordAttempt(sid, item.id, wStartedAt, charDoneAt, updatedCharData)
+              if (sid != null) onRecordAttempt(sid, item.id, wStartedAt, charDoneAt, updatedCharData)
             }).catch((e) => console.error('recordWordAttempt failed', e))
           }
           if (currentIndex < items.length - 1) {
@@ -213,9 +219,9 @@
   const maybeFinishSession = () => {
     if (completedWords.size >= items.length) {
       sessionDone = true
-      if ($isAuthenticated && sessionIdPromise) {
+      if (isAuthenticated && sessionIdPromise) {
         sessionIdPromise.then((sid) => {
-          if (sid != null) endGroupSession(sid)
+          if (sid != null) onEndSession(sid)
         }).catch((e) => console.error('endGroupSession failed', e))
       }
     }
@@ -289,8 +295,7 @@
       charErrorCount = 0
       if (datasetId) {
         sessionIdPromise = null
-        loadGroupStats(datasetId, practiceType, group.group).then(() => {
-          const stats = $groupStats
+        onLoadGroupStats(datasetId, practiceType, group.group).then((stats) => {
           items = [...rawItems].sort((a, b) => {
             const ca = stats.get(a.id)?.successCount ?? 0
             const cb = stats.get(b.id)?.successCount ?? 0
@@ -313,7 +318,7 @@
       <a class="anuka-quick" href={backUrl} title="Back">
         <span class="anuka-icon anuka-icon-close"></span>
       </a>
-      {#if $isAuthenticated && currentStat}
+      {#if isAuthenticated && currentStat}
         <span class="anuka-badge anuka-main">{currentStat.successCount}{#if currentStat.errorCount > 0}<span class="anuka-fail">| {currentStat.errorCount}</span>{/if}</span>
       {/if}
       <div class="anuka-stack anuka-center">
@@ -378,7 +383,7 @@
 
   <div class="anuka-tags anuka-center">
     {#each items as item, idx}
-      {@const stat = $groupStats.get(item.id)}
+      {@const stat = groupStats.get(item.id)}
       <span
         class="anuka-tag"
         class:anuka-main={idx === currentIndex}
@@ -386,7 +391,7 @@
         title="{item.word}"
       >
         {item[translationField]}
-        {#if $isAuthenticated && stat}
+        {#if isAuthenticated && stat}
           <span class="anuka-sm">{stat.successCount}{#if stat.errorCount > 0}<span class="anuka-fail">| {stat.errorCount}</span>{/if}</span>
         {/if}
       </span>

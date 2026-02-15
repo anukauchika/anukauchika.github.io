@@ -5,7 +5,7 @@
 - app-fe: frontend, svelte, vite.
 - docs: reqs, rfcs, plans.
 
-`app-fe/web/src/components/core` contains `anuka` framework. Easy to use css toolkit tailored specifically for this project.
+`anuka` framework is easy to use css toolkit tailored specifically for this project.
 Do not edit it freely, any changes discuss with a user. All the additions & changes should be
 reflected in the Design Book: app-fe/web/src/app/DesignBook.svelte which is a showroom for those tools.
 
@@ -18,6 +18,13 @@ This affects naming patterns, e.g.:
 
 Only entry points are allowed to import state & services, so all the assembly happens there.
 App should only use anuka framework for css, no custom css is allowed in components both core & app.
+
+## Project structure
+
+src/lib/std - generic no domain knowledge framework but still tailored specifically to be used by this project
+src/lib/app - app level components & tools that have domain knoowledge
+src/lib should not have components that directly import state or services, only pure parametric ones
+all state & services wiring happeps in pages
 
 ## Design Book
 
