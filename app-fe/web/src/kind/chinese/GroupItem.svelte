@@ -2,7 +2,7 @@
   let { item, strokeStat, pinyinStat, onclick } = $props()
 </script>
 
-<button class="anuka-card group-item" type="button" {onclick}>
+<button class="anuka-card anuka-stack anuka-compact" type="button" {onclick}>
   <div class="anuka-row anuka-justify">
     <span class="hanzi">{item.word}</span>
     <span class="item-id">{(item.id ?? 0).toString().padStart(2, '0')}</span>
@@ -23,28 +23,7 @@
 </button>
 
 <style>
-  .group-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    text-align: left;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: inherit;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .group-item:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 30px var(--anuka-color-shadow);
-  }
-
-  .group-item:focus-visible {
-    outline: 3px solid var(--anuka-color-accent);
-    outline-offset: 3px;
-  }
-
-  .hanzi {
+.hanzi {
     font-size: 1.6rem;
     font-weight: 600;
     font-family: var(--font-chinese);

@@ -313,6 +313,27 @@
       </div>
     </div>
 
+    <IslandTitle level={3}>Clickable Card</IslandTitle>
+    <p>When <code>anuka-card</code> is on a <code>&lt;button&gt;</code>, it becomes interactive: cursor, hover lift, focus ring. No extra classes needed.</p>
+    <div class="anuka-grid-md">
+      <button class="anuka-card" type="button">
+        <div class="anuka-stack anuka-compact">
+          <div class="anuka-row anuka-justify">
+            <span>Title</span>
+            <span>Label</span>
+          </div>
+          <div>Subtitle</div>
+          <div>Detail text</div>
+        </div>
+      </button>
+      <button class="anuka-card" type="button">
+        <div class="anuka-stack anuka-compact">
+          <div>Another card</div>
+          <ProgressLine fill={60} />
+        </div>
+      </button>
+    </div>
+
     <IslandTitle level={3}>Controls in context</IslandTitle>
     <div class="anuka-grid-md">
       <Card>

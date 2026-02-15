@@ -1,4 +1,6 @@
-# General info
+# Anuka Uchika langauage learning app
+
+## Architecture requirements
 
 - app-fe: frontend, svelte, vite.
 - docs: reqs, rfcs, plans.
@@ -15,21 +17,31 @@ This affects naming patterns, e.g.:
   - core: fillStrong, app: mastery in ProgressLine
 
 Only entry points are allowed to import state & services, so all the assembly happens there.
+App should only use anuka framework for css, no custom css is allowed in components both core & app.
 
-# Usual work flow docs
+## Design Book
+
+All the core components are show cased in the Design Book. The new UI implementation process is as follows:
+
+- Try to implement using existing components
+- Do not modify core components just to fit some narrow case needs, they need to stay app generic
+- Main purpose is to avoid turning anuka.css to some project-specific messy css with exceptions and hacks, have clean architecture for the design instead.
+- If existing tools in anuka are not suitable to create smooth and exceptional UX, propose additions to the core & Design Book, according to the principle above
+
+## Usual work flow docs
 
 - @docs/xxxx-req-topic.md: feature requiremments
 - @docs/xxxx-rfc-topic.md: tech side of the feature reqs, libs, infra, external deps, key points
 - @docs/xxxx-pln-topic.md: exact ready to implement tech plan for the feature
 
-## RFC
+### RFC
 
 - Defines libs, structure and architecture
 - Used to create a follow up plan
 - No big chunks of code, instead explain what approach to use, only use small code examples if needed
 - Not very detailed, only key tech points, details are to be in a tech plan
 
-## Tech plan
+### Tech plan
 
 - Uses concise tech language
 - Sufficiently detailed action list with enough context

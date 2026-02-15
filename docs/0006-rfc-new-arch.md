@@ -3,10 +3,14 @@ Bring code structure to order & make it architecturally nice and easy to fix & e
 
 ## General Requirements
 
-- Remove code duplication
-- Make components and functions purely functional (functions - pure, components soft req, but mostly parametric)
-- Components small and focused
-- Consistent code patterns across the codebase
+- Core css library, easy to use without any css knowledge - clasess & core components
+- Core is stable, only changed with the user confirmation, every change should be well tested via design book
+- Core is not super generic, it's tailored specifically for this project
+- There are core & app svelte components. Core components should have no domain specific things & naming.
+- App components do have domain knowledge, still being pure and parametric
+- App components should not have any custom css styling, only core is used
+- Components are small and focused
+- Consistent code & naming patterns across the codebase
 - Clear folder structure
 - Update READMEs everywhere
 

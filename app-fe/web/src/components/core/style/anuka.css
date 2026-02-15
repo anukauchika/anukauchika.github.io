@@ -195,6 +195,24 @@ h4.anuka-island-title { font-size: 1.2rem; }
   border: 1px solid rgba(31, 111, 92, 0.12);
 }
 
+button.anuka-card {
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button.anuka-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px var(--anuka-color-shadow);
+}
+
+button.anuka-card:focus-visible {
+  outline: 3px solid var(--anuka-color-accent);
+  outline-offset: 3px;
+}
+
 /* ── Progress: thin bar with fill ── */
 
 .anuka-progress-line {
