@@ -314,18 +314,18 @@
         <span class="anuka-icon anuka-icon-close"></span>
       </a>
       {#if $isAuthenticated && currentStat}
-        <span class="quiz-count">{currentStat.successCount}{#if currentStat.errorCount > 0}<span class="anuka-fail" style="margin-left: 0.25em;">| {currentStat.errorCount}</span>{/if}</span>
+        <span class="anuka-badge anuka-main" style="position: absolute; top: 1rem; left: 1.2rem; font-weight: 700;">{currentStat.successCount}{#if currentStat.errorCount > 0}<span class="anuka-fail" style="margin-left: 0.25em;">| {currentStat.errorCount}</span>{/if}</span>
       {/if}
-      <div class="quiz-content">
+      <div class="anuka-stack anuka-center" style="gap: 1.2rem;">
         <div class="anuka-row anuka-center" style="gap: 0.5rem;">
           <span>{currentItem[translationField]}</span>
           {#if showPinyin}
             <span style="color: var(--anuka-color-muted);">·</span>
-            <button class="word-pinyin" type="button" translate="no" onclick={() => speak(currentItem.word)}>{currentItem.pinyin}</button>
+            <button class="anuka-btn-link" type="button" translate="no" onclick={() => speak(currentItem.word)}>{currentItem.pinyin}</button>
           {/if}
         </div>
 
-        <div class="char-tabs" translate="no" lang="zh">
+        <div class="anuka-row" style="gap: 0.6rem;" translate="no" lang="zh">
           {#each hanChars as char, idx}
             <span
               class="char-tab"
@@ -373,9 +373,9 @@
 
   {#if sessionDone}
     <Island>
-      <div class="session-content">
-        <p class="session-title">Session complete</p>
-        <p class="session-detail">{practicedCount} practiced &middot; {skippedCount} skipped</p>
+      <div class="anuka-stack anuka-center" style="gap: 0.5rem;">
+        <p class="anuka-main" style="margin: 0; font-weight: 700; font-size: 1.1rem;">Session complete</p>
+        <p class="anuka-mute" style="margin: 0; font-size: 0.85rem;">{practicedCount} practiced &middot; {skippedCount} skipped</p>
         <Btn main onclick={restartSession}>Restart</Btn>
         <Btn onclick={() => window.location.href = backUrl}>Groups</Btn>
       </div>
@@ -383,20 +383,20 @@
   {/if}
 
   <ProgressLine fill={progress} />
-  <div class="progress-text">{currentIndex + 1} / {items.length}</div>
+  <div class="anuka-mute" style="text-align: center; font-size: 0.85rem; margin-top: -1.25rem;">{currentIndex + 1} / {items.length}</div>
 
-  <div class="word-nav">
+  <div class="anuka-tags anuka-center">
     {#each items as item, idx}
       {@const stat = $groupStats.get(item.id)}
       <span
-        class="word-dot"
-        class:active={idx === currentIndex}
-        class:done={completedWords.has(idx)}
+        class="anuka-tag"
+        class:anuka-main={idx === currentIndex}
+        class:anuka-succ={completedWords.has(idx)}
         title="{item.word}"
       >
         {item[translationField]}
         {#if $isAuthenticated && stat}
-          <span class="dot-count">{stat.successCount}{#if stat.errorCount > 0}<span class="dot-error-count">| {stat.errorCount}</span>{/if}</span>
+          <span class="anuka-sm">{stat.successCount}{#if stat.errorCount > 0}<span class="anuka-fail">| {stat.errorCount}</span>{/if}</span>
         {/if}
       </span>
     {/each}
@@ -404,41 +404,6 @@
 </div>
 
 <style>
-  .quiz-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.2rem;
-  }
-
-  .quiz-count {
-    position: absolute;
-    top: 1rem;
-    left: 1.2rem;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: var(--anuka-color-primary);
-    background: var(--anuka-color-border);
-    padding: 0.2rem 0.6rem;
-    border-radius: 999px;
-  }
-
-
-  .word-pinyin {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--anuka-color-primary);
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    font-family: inherit;
-  }
-
-  .char-tabs {
-    display: flex;
-    gap: 0.6rem;
-  }
 
   .char-tab {
     font-family: var(--font-chinese-hw);
@@ -522,80 +487,6 @@
     transition: width 16ms linear;
   }
 
-  .progress-text {
-    text-align: center;
-    font-size: 0.85rem;
-    color: var(--anuka-color-muted);
-    margin-top: -1.25rem;
-  }
-
-  .word-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    justify-content: center;
-  }
-
-  .word-dot {
-    border: 1px solid var(--anuka-color-accent);
-    background: var(--anuka-color-surface);
-    padding: 0.3rem 0.6rem;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-family: var(--font-chinese);
-    color: var(--anuka-color-text);
-    transition: all 0.2s ease;
-  }
-
-  .word-dot.active {
-    background: var(--anuka-color-primary);
-    color: var(--anuka-color-on-primary);
-    border-color: var(--anuka-color-primary);
-  }
-
-  .word-dot.done {
-    background: var(--anuka-color-accent-strong);
-    border-color: var(--anuka-color-accent-strong);
-    color: var(--anuka-color-on-primary);
-  }
-
-  .word-dot.done.active {
-    background: var(--anuka-color-primary);
-    border-color: var(--anuka-color-primary);
-  }
-
-  .dot-count {
-    font-size: 0.65rem;
-    font-weight: 700;
-    opacity: 0.7;
-    margin-left: 0.15rem;
-  }
-
-  .dot-error-count {
-    color: var(--anuka-color-glow-warm);
-    margin-left: 0.25em;
-  }
-
-  .session-content {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .session-title {
-    margin: 0;
-    font-weight: 700;
-    font-size: 1.1rem;
-    color: var(--anuka-color-primary);
-  }
-
-  .session-detail {
-    margin: 0;
-    font-size: 0.85rem;
-    color: var(--anuka-color-muted);
-  }
 
   @media (max-width: 600px) {
     .canvas-wrapper {
