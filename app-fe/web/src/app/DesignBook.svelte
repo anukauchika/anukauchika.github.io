@@ -47,6 +47,33 @@
     <p>Visual reference for all design tokens and UI elements used in Anuka Uchika. Every component on this page is built from the same reusable classes it documents. Absolute minimum CSS — only what the app actually uses.</p>
   </Island>
 
+  <!-- Text -->
+
+  <AppTitle parts={['Anuka', 'Text']} />
+
+  <Island>
+    <IslandTitle level={3}>Semantic modifiers</IslandTitle>
+    <p>Semantic color classes for text. Apply to any inline or block element.</p>
+    <div class="anuka-stack">
+      <p>Default text — no modifier needed, inherits from island.</p>
+      <p class="anuka-mute">Muted text — secondary information, labels, descriptions.</p>
+      <p class="anuka-succ">Success text — correct answers, completed items.</p>
+      <p class="anuka-fail">Fail text — errors, wrong answers, warnings.</p>
+      <p class="anuka-warn">Warn text — caution, attention needed.</p>
+    </div>
+
+    <IslandTitle level={3}>Inline usage</IslandTitle>
+    <p>Mix colors within a sentence: <span class="anuka-succ">12 correct</span> · <span class="anuka-fail">3 errors</span> · <span class="anuka-mute">last practiced yesterday</span></p>
+
+    <IslandTitle level={3}>Badge</IslandTitle>
+    <p>Small muted pill for labels, identifiers &amp; stats.</p>
+    <div class="anuka-row">
+      <span class="anuka-badge">01</span>
+      <span class="anuka-badge">hsk1</span>
+      <span class="anuka-badge">v2.1</span>
+    </div>
+  </Island>
+
   <!-- Structure: Islands -->
 
   <AppTitle parts={['Anuka', 'Structure', 'Islands']} />

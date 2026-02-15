@@ -40,6 +40,9 @@ Grow the framework step by step, with very focused changes, adding entity by ent
 | activity-heatmap | anuka-activity-heatmap, anuka-activity-heatmap-cell | row of intensity cells, `data-level="1-4"` for intensity |
 | btn | anuka-btn | primary action button, pill shape, filled accent. Variants: `anuka-btn-outline`, `anuka-btn-ghost`, `anuka-btn-toggle` (+`.active`), `anuka-btn-icon` |
 | input | anuka-input | text field with border, rounded corners, focus ring |
+| card (button) | button.anuka-card | interactive card: button reset, hover lift, focus ring. Just put `anuka-card` on a `<button>` |
+| text colors | anuka-mute, anuka-succ, anuka-fail, anuka-warn | semantic text color modifiers, dark-mode aware |
+| badge | anuka-badge | small muted pill label for identifiers and counts |
 
 
 

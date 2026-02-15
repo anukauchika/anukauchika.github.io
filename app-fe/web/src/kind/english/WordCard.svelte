@@ -11,7 +11,7 @@
   <Island>
     <Quick label="Close" icon="close" onclick={onClose} />
     <IslandTitle level={3}>{item.word}</IslandTitle>
-    <p class="subtitle">{item.phonetics} · {item.russian}</p>
+    <p class="anuka-mute" style="margin: 0;">{item.phonetics} · {item.russian}</p>
     <div class="anuka-stack">
       <div class="detail-row">
         <span class="detail-label">Word:</span>
@@ -38,11 +38,6 @@
 <style>
   .word-card {
     max-width: min(900px, 96vw);
-  }
-
-  .subtitle {
-    margin: 0;
-    color: var(--anuka-color-muted);
   }
 
   .detail-row {

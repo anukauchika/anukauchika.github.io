@@ -17,6 +17,9 @@
   --anuka-color-on-primary: #ffffff;
   --anuka-color-glow-warm: rgba(244, 192, 122, 0.35);
   --anuka-color-glow-cool: rgba(31, 111, 92, 0.2);
+  --anuka-color-success: #2d8659;
+  --anuka-color-fail: #b85450;
+  --anuka-color-warn: #c07d2b;
 }
 
 /* ── Semantic tokens (dark) ── */
@@ -37,6 +40,9 @@
     --anuka-color-on-primary: #ffffff;
     --anuka-color-glow-warm: rgba(244, 192, 122, 0.12);
     --anuka-color-glow-cool: rgba(31, 111, 92, 0.1);
+    --anuka-color-success: #3aab72;
+    --anuka-color-fail: #e06b67;
+    --anuka-color-warn: #dba04a;
   }
 }
 
@@ -55,6 +61,9 @@
   --anuka-color-on-primary: #ffffff;
   --anuka-color-glow-warm: rgba(244, 192, 122, 0.12);
   --anuka-color-glow-cool: rgba(31, 111, 92, 0.1);
+  --anuka-color-success: #3aab72;
+  --anuka-color-fail: #e06b67;
+  --anuka-color-warn: #dba04a;
 }
 
 /* ── Page: gradient bg + vertical flow ── */
@@ -158,6 +167,24 @@ h4.anuka-island-title { font-size: 1.2rem; }
   border-radius: 999px;
   font-size: 0.75rem;
   color: var(--anuka-color-muted);
+}
+
+/* ── Text: semantic color modifiers ── */
+
+.anuka-mute { color: var(--anuka-color-muted); }
+.anuka-succ { color: var(--anuka-color-success); }
+.anuka-fail { color: var(--anuka-color-fail); }
+.anuka-warn { color: var(--anuka-color-warn); }
+
+/* ── Badge: small muted pill label ── */
+
+.anuka-badge {
+  display: inline-block;
+  background: var(--anuka-color-border);
+  color: var(--anuka-color-muted);
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
 }
 
 /* ── Grid: responsive auto-fit presets ── */

@@ -304,7 +304,7 @@
         <span class="anuka-icon anuka-icon-close"></span>
       </a>
       {#if $isAuthenticated && currentStat}
-        <span class="quiz-count">{currentStat.successCount}{#if currentStat.errorCount > 0}<span class="quiz-error-count">| {currentStat.errorCount}</span>{/if}</span>
+        <span class="quiz-count">{currentStat.successCount}{#if currentStat.errorCount > 0}<span class="anuka-fail" style="margin-left: 0.25em;">| {currentStat.errorCount}</span>{/if}</span>
       {/if}
       <div class="quiz-content">
         <div class="word-info" class:hidden-text={!showTranslation}>
@@ -433,10 +433,6 @@
     border-radius: 999px;
   }
 
-  .quiz-error-count {
-    color: #b85450;
-    margin-left: 0.25em;
-  }
 
   .word-info {
     display: flex;
