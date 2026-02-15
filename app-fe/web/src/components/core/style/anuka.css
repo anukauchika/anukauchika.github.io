@@ -319,6 +319,18 @@ button.anuka-card:focus-visible {
   border-radius: 2px;
 }
 
+.anuka-progress-line.anuka-sm { height: 2px; }
+.anuka-progress-line.anuka-lg { height: 10px; }
+
+.anuka-progress-line.anuka-main .anuka-progress-line-fill { background: var(--anuka-color-primary); }
+.anuka-progress-line.anuka-main .anuka-progress-line-fill-strong { background: var(--anuka-color-primary); opacity: 0.6; }
+.anuka-progress-line.anuka-succ .anuka-progress-line-fill { background: var(--anuka-color-success); }
+.anuka-progress-line.anuka-succ .anuka-progress-line-fill-strong { background: var(--anuka-color-success); opacity: 0.6; }
+.anuka-progress-line.anuka-fail .anuka-progress-line-fill { background: var(--anuka-color-fail); }
+.anuka-progress-line.anuka-fail .anuka-progress-line-fill-strong { background: var(--anuka-color-fail); opacity: 0.6; }
+.anuka-progress-line.anuka-warn .anuka-progress-line-fill { background: var(--anuka-color-warn); }
+.anuka-progress-line.anuka-warn .anuka-progress-line-fill-strong { background: var(--anuka-color-warn); opacity: 0.6; }
+
 /* ── Activity heatmap: row of intensity cells ── */
 
 .anuka-activity-heatmap {
