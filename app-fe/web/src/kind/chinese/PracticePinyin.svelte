@@ -32,9 +32,9 @@
 
   // Pinyin-specific
   let inputValue = $state('')
+  let feedback = $state(null) // null | 'fail'
   let showHint = $state(false)
   let hintManuallySet = $state(false)
-  let shaking = $state(false)
   let showTranslation = $state(true)
   let charDoneMap = $state(new Map()) // charIndex → numbered pinyin (for display on completed tabs)
 
@@ -191,8 +191,8 @@
     } else {
       // Wrong
       charErrorCount += 1
-      shaking = true
-      setTimeout(() => { shaking = false }, 300)
+      feedback = 'fail'
+      setTimeout(() => { feedback = null }, 400)
       inputValue = ''
       focusInput()
     }
@@ -333,25 +333,23 @@
           {/each}
         </div>
 
-        <div class="input-wrapper" class:shaking={shaking}>
-          {#if wordDelay}
-            <ProgressLine class="anuka-sm" fill={wordDelayProgress}>
-              {#snippet top()}<div class="anuka-row anuka-center"><button class="anuka-btn-link anuka-sm" type="button" onclick={skipDelay}>Next</button></div>{/snippet}
-            </ProgressLine>
-          {:else}
-            <input
-              bind:this={inputEl}
-              bind:value={inputValue}
-              oninput={handleInput}
-              type="text"
-              class="pinyin-input"
-              autocomplete="off"
-              autocapitalize="off"
-              spellcheck="false"
-              placeholder="pinyin (ex: lao3, shi1)"
-            />
-          {/if}
-        </div>
+        {#if wordDelay}
+          <ProgressLine class="anuka-sm" fill={wordDelayProgress}>
+            {#snippet top()}<div class="anuka-row anuka-center"><button class="anuka-btn-link anuka-sm" type="button" onclick={skipDelay}>Next</button></div>{/snippet}
+          </ProgressLine>
+        {:else}
+          <input
+            bind:this={inputEl}
+            bind:value={inputValue}
+            oninput={handleInput}
+            type="text"
+            class="anuka-input" class:anuka-fail={feedback === 'fail'}
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="pinyin (ex: lao3, shi1)"
+          />
+        {/if}
 
         {#if !wordDelay}
           <div class="anuka-row anuka-center" style="gap: 0.75rem;">
@@ -405,62 +403,3 @@
   </div>
 </div>
 
-<style>
-
-
-  .input-wrapper {
-    position: relative;
-    width: 280px;
-    min-height: 80px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-  }
-
-  .input-wrapper.shaking {
-    animation: shake 0.3s ease;
-  }
-
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-6px); }
-    80% { transform: translateX(6px); }
-  }
-
-  .pinyin-input {
-    width: 100%;
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: 600;
-    padding: 0.6rem 1rem;
-    border: 2px solid var(--anuka-color-accent);
-    border-radius: 14px;
-    background: var(--anuka-color-surface-raised);
-    color: var(--anuka-color-text);
-    outline: none;
-    transition: border-color 0.2s ease;
-    font-family: inherit;
-  }
-
-  .pinyin-input:focus {
-    border-color: var(--anuka-color-primary);
-  }
-
-  .pinyin-input::placeholder {
-    color: var(--anuka-color-muted);
-    font-size: 1rem;
-    font-weight: 400;
-  }
-
-
-  @media (max-width: 600px) {
-    .input-wrapper {
-      width: calc(100vw - 4rem);
-      max-width: 320px;
-    }
-  }
-</style>

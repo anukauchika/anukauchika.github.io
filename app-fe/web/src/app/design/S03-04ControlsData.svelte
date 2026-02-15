@@ -41,25 +41,25 @@
   <IslandTitle level={3}>Progress Line</IslandTitle>
   <p>Single fill for progress, overlapping <code>fillStrong</code> for mastery.</p>
   <div class="anuka-stack">
-    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow" style="min-width: 80px;">fill + strong</span><div class="anuka-grow"><ProgressLine fill={70} fillStrong={35} /></div></div>
-    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow" style="min-width: 80px;">fill only</span><div class="anuka-grow"><ProgressLine fill={45} /></div></div>
-    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow" style="min-width: 80px;">complete</span><div class="anuka-grow"><ProgressLine fill={100} fillStrong={100} /></div></div>
+    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow">fill + strong</span><div class="anuka-grow"><ProgressLine fill={70} fillStrong={35} /></div></div>
+    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow">fill only</span><div class="anuka-grow"><ProgressLine fill={45} /></div></div>
+    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow">complete</span><div class="anuka-grow"><ProgressLine fill={100} fillStrong={100} /></div></div>
   </div>
 
   <IslandTitle level={3}>Semantic Modifiers</IslandTitle>
   <div class="anuka-stack">
-    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow" style="min-width: 80px;">main</span><div class="anuka-grow"><ProgressLine class="anuka-main" fill={70} fillStrong={35} /></div></div>
-    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow" style="min-width: 80px;">success</span><div class="anuka-grow"><ProgressLine class="anuka-succ" fill={80} fillStrong={50} /></div></div>
-    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow" style="min-width: 80px;">fail</span><div class="anuka-grow"><ProgressLine class="anuka-fail" fill={45} fillStrong={20} /></div></div>
-    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow" style="min-width: 80px;">warn</span><div class="anuka-grow"><ProgressLine class="anuka-warn" fill={55} fillStrong={25} /></div></div>
+    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow">main</span><div class="anuka-grow"><ProgressLine class="anuka-main" fill={70} fillStrong={35} /></div></div>
+    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow">success</span><div class="anuka-grow"><ProgressLine class="anuka-succ" fill={80} fillStrong={50} /></div></div>
+    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow">fail</span><div class="anuka-grow"><ProgressLine class="anuka-fail" fill={45} fillStrong={20} /></div></div>
+    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow">warn</span><div class="anuka-grow"><ProgressLine class="anuka-warn" fill={55} fillStrong={25} /></div></div>
   </div>
 
   <IslandTitle level={3}>Sizes</IslandTitle>
   <p>Size modifiers: <code>anuka-sm</code> (2px) / default (6px) / <code>anuka-lg</code> (10px).</p>
   <div class="anuka-stack">
-    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow" style="min-width: 80px;">sm</span><div class="anuka-grow"><ProgressLine class="anuka-sm" fill={60} /></div></div>
-    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow" style="min-width: 80px;">default</span><div class="anuka-grow"><ProgressLine fill={60} /></div></div>
-    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow" style="min-width: 80px;">lg</span><div class="anuka-grow"><ProgressLine class="anuka-lg" fill={60} /></div></div>
+    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow">sm</span><div class="anuka-grow"><ProgressLine class="anuka-sm" fill={60} /></div></div>
+    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow">default</span><div class="anuka-grow"><ProgressLine fill={60} /></div></div>
+    <div class="anuka-row"><span class="anuka-mute anuka-sm anuka-grow">lg</span><div class="anuka-grow"><ProgressLine class="anuka-lg" fill={60} /></div></div>
   </div>
 
   <IslandTitle level={3}>With Content</IslandTitle>

@@ -481,6 +481,11 @@ button.anuka-activity-heatmap-cell {
   box-shadow: 0 0 0 3px var(--anuka-color-accent);
 }
 
+.anuka-input.anuka-main { border-color: var(--anuka-color-primary); }
+.anuka-input.anuka-succ { border-color: var(--anuka-color-success); }
+.anuka-input.anuka-fail { border-color: var(--anuka-color-fail); }
+.anuka-input.anuka-warn { border-color: var(--anuka-color-warn); }
+
 
 /* ── Autocomplete: chip input with dropdown ── */
 
