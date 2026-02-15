@@ -1,0 +1,36 @@
+<script>
+  import { timeAgo } from '@std/format.js'
+  import Island from '@std/ui/Island.svelte'
+  import IslandTitle from '@std/ui/IslandTitle.svelte'
+  import BtnIcon from '@std/ui/BtnIcon.svelte'
+  import PracticeChart from './PracticeChart.svelte'
+
+  let {
+    items,
+    chartData,
+    practicedCount,
+    totalCount,
+    onclose,
+    itemSnippet,
+  } = $props()
+</script>
+
+<Island sticky>
+  <div class="anuka-row anuka-justify">
+    <IslandTitle level={3}>Unique Words Practiced <span class="anuka-main">{practicedCount}</span> | {totalCount}</IslandTitle>
+    <BtnIcon icon="close" label="Close" onclick={onclose} />
+  </div>
+</Island>
+<section class="anuka-stack">
+  {#if chartData}
+    <PracticeChart bars={chartData.bars} line={chartData.cumulativeData} ticks={chartData.ticks} yMax={chartData.yMax} />
+  {/if}
+  <div class="anuka-grid">
+    {#each items as entry (`${entry.group.group}-${entry.item.id}`)}
+      <div class="anuka-stack anuka-compact">
+        <span class="anuka-mute anuka-sm">{timeAgo(entry.stat.lastPracticedAt)}</span>
+        {@render itemSnippet(entry)}
+      </div>
+    {/each}
+  </div>
+</section>

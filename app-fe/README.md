@@ -49,15 +49,6 @@ Each fold transforms one sheet into a different practice pass, enabling tactile,
   registry.json         # Dataset metadata and paths
   /chinese/             # Chinese vocabulary files
   /english/             # English vocabulary files
-
-/web/                   # Svelte web application
-  /src/
-    App.svelte          # Main vocabulary browser
-    Print.svelte        # Workbook generator
-    /state/
-      registry.js       # Dataset loading and management
-    /utils/
-      format.js         # Formatting utilities
 ```
 
 ## Key Concepts

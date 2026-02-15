@@ -49,6 +49,10 @@ export default defineConfig({
     })
   ],
   resolve: {
+    alias: {
+      '@std': path.resolve(__dirname, 'src/lib/std'),
+      '@app': path.resolve(__dirname, 'src/lib/app'),
+    },
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.svelte'],
   },
   build: {
