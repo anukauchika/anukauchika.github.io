@@ -25,7 +25,7 @@
 {/snippet}
 
 {#if hasContent}
-  <div class="anuka-stack anuka-compact {cls}">
+  <div class="anuka-progress-line-group anuka-stack anuka-compact {cls}">
     {#if top}{@render top()}{/if}
     {@render bar()}
     {#if bottom}{@render bottom()}{/if}

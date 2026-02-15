@@ -615,6 +615,9 @@ button.anuka-activity-heatmap-cell {
 .anuka-frame.anuka-sm { width: 160px; }
 .anuka-frame.anuka-lg { width: 360px; }
 
+.anuka-frame > .anuka-progress-line,
+.anuka-frame > .anuka-progress-line-group { position: absolute; bottom: 0.75rem; left: 0.75rem; right: 0.75rem; border-radius: 4px; }
+
 .anuka-frame.anuka-main { border-color: var(--anuka-color-primary); }
 .anuka-frame.anuka-succ { border-color: var(--anuka-color-success); }
 .anuka-frame.anuka-fail { border-color: var(--anuka-color-fail); }
@@ -626,6 +629,7 @@ button.anuka-activity-heatmap-cell {
 /* ── Tile: compact square cell for labels, characters, icons ── */
 
 .anuka-tile {
+  position: relative;
   display: grid;
   place-items: center;
   width: 3.5rem;
@@ -634,6 +638,7 @@ button.anuka-activity-heatmap-cell {
   background: var(--anuka-color-border);
   color: var(--anuka-color-muted);
   line-height: 1;
+  overflow: hidden;
   transition: all 0.2s ease;
 }
 
@@ -645,6 +650,9 @@ button.anuka-activity-heatmap-cell {
 .anuka-tile.anuka-fail { background: var(--anuka-color-fail); color: var(--anuka-color-on-primary); }
 .anuka-tile.anuka-warn { background: var(--anuka-color-warn); color: var(--anuka-color-on-primary); }
 .anuka-tile.anuka-mute { background: var(--anuka-color-bg-accent); color: var(--anuka-color-muted); }
+
+.anuka-tile > .anuka-progress-line,
+.anuka-tile > .anuka-progress-line-group { position: absolute; bottom: 0.4rem; left: 0.4rem; right: 0.4rem; border-radius: 2px; }
 
 /* ── Modal: backdrop + overlay + auto-elevate content ── */
 
