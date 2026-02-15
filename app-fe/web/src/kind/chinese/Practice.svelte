@@ -337,12 +337,9 @@
         <div class="anuka-frame" data-no-touch>
           <div id="practice-canvas"></div>
           {#if wordDelay}
-            <button type="button" class="delay-next-btn" onclick={skipDelay}>Next</button>
-            <button type="button" class="delay-bar-btn" onclick={skipDelay} title="Skip to next word">
-              <div class="delay-bar">
-                <div class="delay-fill" style="width: {wordDelayProgress}%"></div>
-              </div>
-            </button>
+            <ProgressLine class="anuka-sm" fill={wordDelayProgress}>
+              {#snippet top()}<div class="anuka-row anuka-center"><button class="anuka-btn-link anuka-sm" type="button" onclick={skipDelay}>Next</button></div>{/snippet}
+            </ProgressLine>
           {/if}
         </div>
 
@@ -396,53 +393,3 @@
   </div>
 </div>
 
-<style>
-
-
-
-  .delay-next-btn {
-    position: absolute;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: none;
-    border: none;
-    color: var(--anuka-color-muted);
-    font-size: 0.75rem;
-    cursor: pointer;
-    padding: 0.2rem 0.5rem;
-    opacity: 0.7;
-    transition: opacity 0.15s ease;
-  }
-
-  .delay-next-btn:hover {
-    opacity: 1;
-  }
-
-  .delay-bar-btn {
-    position: absolute;
-    bottom: 10px;
-    left: 20px;
-    right: 20px;
-    padding: 4px 0;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-
-  .delay-bar {
-    height: 2px;
-    background: var(--anuka-color-border);
-    border-radius: 1px;
-    overflow: hidden;
-  }
-
-  .delay-fill {
-    height: 100%;
-    background: var(--anuka-color-accent);
-    border-radius: 1px;
-    transition: width 16ms linear;
-  }
-
-
-</style>
