@@ -6,9 +6,9 @@
   import { isAuthenticated } from '@app/state/auth.js'
   import { formatGroup } from '@std/format.js'
   import { get } from 'svelte/store'
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import Tags from '@std/ui/Tags.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import Tags from '@std/ui/tags.svelte'
   import PracticePinyin from '$lib/app/ui/chinese/practice-pinyin.svelte'
 
   onMount(() => {

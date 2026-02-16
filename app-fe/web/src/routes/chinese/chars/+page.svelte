@@ -3,7 +3,7 @@
   import { datasetStatsStroke, datasetStatsPinyin } from '@app/state/kind/chinese/practice-stats.js'
   import { filteredGroups } from '@app/state/filters.js'
   import { calcStats, buildPracticedCharsData } from '@app/std/kind/chinese/stats'
-  import PracticedChars from '@app/ui/PracticedChars.svelte'
+  import PracticedChars from '@app/ui/practiced-chars.svelte'
 
   const stats = $derived(calcStats($filteredGroups))
   const uniqueChars = $derived(stats.chars)

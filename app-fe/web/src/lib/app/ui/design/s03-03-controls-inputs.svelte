@@ -1,9 +1,9 @@
 <script lang="ts">
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import Input from '@std/ui/Input.svelte'
-  import Btn from '@std/ui/Btn.svelte'
-  import Autocomplete from '@std/ui/Autocomplete.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import Input from '@std/ui/input.svelte'
+  import Btn from '@std/ui/btn.svelte'
+  import Autocomplete from '@std/ui/autocomplete.svelte'
 
   let demoTags = $state<string[]>(['beginner'])
   const allDemoTags = ['beginner', 'intermediate', 'advanced', 'hsk1', 'hsk2', 'greetings', 'food', 'travel', 'numbers', 'colors']

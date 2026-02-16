@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ActivityHeatmap from '@std/ui/ActivityHeatmap.svelte'
+  import ActivityHeatmap from '@std/ui/activity-heatmap.svelte'
 
   interface Day {
     date: string

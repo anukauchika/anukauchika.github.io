@@ -1,10 +1,10 @@
 <script lang="ts">
-  import AppTitle from '@std/ui/AppTitle.svelte'
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import Stat from '@std/ui/Stat.svelte'
-  import ProgressLine from '@std/ui/ProgressLine.svelte'
-  import ActivityHeatmap from '@std/ui/ActivityHeatmap.svelte'
+  import AppTitle from '@std/ui/app-title.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import Stat from '@std/ui/stat.svelte'
+  import ProgressLine from '@std/ui/progress-line.svelte'
+  import ActivityHeatmap from '@std/ui/activity-heatmap.svelte'
 
   let selectedCell = $state<number | null>(5)
   const demoItems = [

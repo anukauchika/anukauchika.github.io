@@ -1,5 +1,5 @@
 <script>
-  import Stat from '@std/ui/Stat.svelte'
+  import Stat from '@std/ui/stat.svelte'
 
   let {
     groupCount,

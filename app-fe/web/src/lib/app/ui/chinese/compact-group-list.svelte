@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Island from '@std/ui/Island.svelte'
-  import CompactGroup from './CompactGroup.svelte'
+  import Island from '@std/ui/island.svelte'
+  import CompactGroup from './compact-group.svelte'
 
   interface GroupProps {
     groupId: string

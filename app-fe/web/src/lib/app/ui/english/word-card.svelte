@@ -1,8 +1,8 @@
 <script>
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import Quick from '@std/ui/Quick.svelte'
-  import Tags from '@std/ui/Tags.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import Quick from '@std/ui/quick.svelte'
+  import Tags from '@std/ui/tags.svelte'
 
   let { item, onClose } = $props()
 </script>

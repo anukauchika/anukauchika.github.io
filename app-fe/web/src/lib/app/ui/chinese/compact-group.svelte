@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ProgressLine from '@std/ui/ProgressLine.svelte'
+  import ProgressLine from '@std/ui/progress-line.svelte'
 
   interface Props {
     groupId: string

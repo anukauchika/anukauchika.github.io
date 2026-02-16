@@ -1,6 +1,6 @@
 <script>
-  import Modal from '@std/ui/Modal.svelte'
-  import Island from '@std/ui/Island.svelte'
+  import Modal from '@std/ui/modal.svelte'
+  import Island from '@std/ui/island.svelte'
 
   let { user, onclose, onSignInWithGoogle, onSignInWithEmail, onSignOut } = $props()
 

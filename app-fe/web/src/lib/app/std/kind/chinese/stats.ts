@@ -1,4 +1,4 @@
-import type { ChineseGroup, ChineseItem, ChineseDatasetStats } from '@app/api/data/kind/chinese/Dataset'
+import type { ChineseGroup, ChineseItem, ChineseDatasetStats } from '@app/api/data/kind/chinese/dataset'
 import type { StatsMap, SessionsMap, StatEntry, DailyActivityMap } from '@app/api/services/kind/chinese/types'
 import { toLocalDateKey } from '@std/format'
 

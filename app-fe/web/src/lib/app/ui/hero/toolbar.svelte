@@ -1,6 +1,6 @@
 <script>
-  import AppTitle from '@std/ui/AppTitle.svelte'
-  import BtnIcon from '@std/ui/BtnIcon.svelte'
+  import AppTitle from '@std/ui/app-title.svelte'
+  import BtnIcon from '@std/ui/btn-icon.svelte'
 
   let {
     datasets,

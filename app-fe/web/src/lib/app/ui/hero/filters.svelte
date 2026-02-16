@@ -1,7 +1,7 @@
 <script>
   import { formatGroup } from '@std/format.js'
-  import BtnIcon from '@std/ui/BtnIcon.svelte'
-  import Autocomplete from '@std/ui/Autocomplete.svelte'
+  import BtnIcon from '@std/ui/btn-icon.svelte'
+  import Autocomplete from '@std/ui/autocomplete.svelte'
 
   let {
     groups,

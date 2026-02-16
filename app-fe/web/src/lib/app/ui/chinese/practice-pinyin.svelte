@@ -1,10 +1,10 @@
 <script>
   import { tick } from 'svelte'
   import { diacriticToToneNumber, splitPinyin } from '@std/pinyin.js'
-  import Island from '@std/ui/Island.svelte'
-  import ProgressLine from '@std/ui/ProgressLine.svelte'
-  import Btn from '@std/ui/Btn.svelte'
-  import BtnIcon from '@std/ui/BtnIcon.svelte'
+  import Island from '@std/ui/island.svelte'
+  import ProgressLine from '@std/ui/progress-line.svelte'
+  import Btn from '@std/ui/btn.svelte'
+  import BtnIcon from '@std/ui/btn-icon.svelte'
 
   let {
     group, datasetId, translationField, backUrl,

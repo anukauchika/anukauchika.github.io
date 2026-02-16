@@ -1,9 +1,9 @@
 <script>
-  import AppTitle from '@std/ui/AppTitle.svelte'
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import Card from '@std/ui/Card.svelte'
-  import Btn from '@std/ui/Btn.svelte'
+  import AppTitle from '@std/ui/app-title.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import Card from '@std/ui/card.svelte'
+  import Btn from '@std/ui/btn.svelte'
 </script>
 
 <AppTitle parts={['Anuka', 'Layout']} />

@@ -3,14 +3,14 @@
   import { datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from '@app/state/kind/chinese/practice-stats.js'
   import { mainSearch, mainListViewStyle, filteredGroups } from '@app/state/filters.js'
   import { isAuthenticated, dbVersion } from '@app/state/auth.js'
-  import { buildProps as buildCompactProps } from '@app/ui/chinese/CompactGroupList'
-  import { buildProps as buildFullProps } from '@app/ui/chinese/GroupItem'
-  import CompactGroupList from '@app/ui/chinese/CompactGroupList.svelte'
-  import WordCardChinese from '@app/ui/chinese/WordCard.svelte'
+  import { buildProps as buildCompactProps } from '@app/ui/chinese/compact-group-list'
+  import { buildProps as buildFullProps } from '@app/ui/chinese/group-item'
+  import CompactGroupList from '@app/ui/chinese/compact-group-list.svelte'
+  import WordCardChinese from '@app/ui/chinese/word-card.svelte'
   import Groups from '@app/ui/groups'
-  import Modal from '@std/ui/Modal.svelte'
-  import Island from '@std/ui/Island.svelte'
-  import BrowseHero from './BrowseHero.svelte'
+  import Modal from '@std/ui/modal.svelte'
+  import Island from '@std/ui/island.svelte'
+  import BrowseHero from './browse-hero.svelte'
 
   const basePath = $derived.by(() => `/${$currentDataset.kind}`)
 

@@ -1,13 +1,13 @@
 <script>
   import { toLocalDateKey } from '@std/format.js'
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import Tags from '@std/ui/Tags.svelte'
-  import Btn from '@std/ui/Btn.svelte'
-  import BtnLink from '@std/ui/BtnLink.svelte'
-  import ProgressLine from '@std/ui/ProgressLine.svelte'
-  import DailyActivityHeatmap from '@app/ui/DailyActivityHeatmap.svelte'
-  import Stats from './Stats.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import Tags from '@std/ui/tags.svelte'
+  import Btn from '@std/ui/btn.svelte'
+  import BtnLink from '@std/ui/btn-link.svelte'
+  import ProgressLine from '@std/ui/progress-line.svelte'
+  import DailyActivityHeatmap from '@app/ui/daily-activity-heatmap.svelte'
+  import Stats from './stats.svelte'
 
   let {
     datasetName,

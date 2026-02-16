@@ -1,13 +1,13 @@
 <script lang="ts">
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import Tags from '@std/ui/Tags.svelte'
-  import ProgressLine from '@std/ui/ProgressLine.svelte'
-  import Modal from '@std/ui/Modal.svelte'
-  import GroupItemChinese from '../chinese/GroupItem.svelte'
-  import GroupItemEnglish from '../english/GroupItem.svelte'
-  import WordCardChinese from '../chinese/WordCard.svelte'
-  import WordCardEnglish from '../english/WordCard.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import Tags from '@std/ui/tags.svelte'
+  import ProgressLine from '@std/ui/progress-line.svelte'
+  import Modal from '@std/ui/modal.svelte'
+  import GroupItemChinese from '../chinese/group-item.svelte'
+  import GroupItemEnglish from '../english/group-item.svelte'
+  import WordCardChinese from '../chinese/word-card.svelte'
+  import WordCardEnglish from '../english/word-card.svelte'
 
   interface Props {
     groupId: string

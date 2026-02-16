@@ -1,10 +1,10 @@
 <script>
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import Btn from '@std/ui/Btn.svelte'
-  import BtnLink from '@std/ui/BtnLink.svelte'
-  import BtnIcon from '@std/ui/BtnIcon.svelte'
-  import Quick from '@std/ui/Quick.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import Btn from '@std/ui/btn.svelte'
+  import BtnLink from '@std/ui/btn-link.svelte'
+  import BtnIcon from '@std/ui/btn-icon.svelte'
+  import Quick from '@std/ui/quick.svelte'
 </script>
 
 <Island>

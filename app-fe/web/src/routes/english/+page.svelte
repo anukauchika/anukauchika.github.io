@@ -4,12 +4,12 @@
   import { mainSearch, mainTags, mainGroups, mainListViewStyle, groups, filteredGroups } from '@app/state/filters.js'
   import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@app/state/auth.js'
   import { formatGroup } from '@std/format.js'
-  import WordCardEnglish from '@app/ui/english/WordCard.svelte'
+  import WordCardEnglish from '@app/ui/english/word-card.svelte'
   import Hero from '@app/ui/hero'
-  import Toolbar from '@app/ui/hero/Toolbar.svelte'
-  import Filters from '@app/ui/hero/Filters.svelte'
+  import Toolbar from '@app/ui/hero/toolbar.svelte'
+  import Filters from '@app/ui/hero/filters.svelte'
   import Groups from '@app/ui/groups'
-  import Modal from '@std/ui/Modal.svelte'
+  import Modal from '@std/ui/modal.svelte'
   import AuthModal from '@app/ui/auth-modal.svelte'
 
   onMount(() => { setDatasetByKind('english') })

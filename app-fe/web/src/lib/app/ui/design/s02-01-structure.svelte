@@ -1,12 +1,12 @@
 <script>
-  import AppTitle from '@std/ui/AppTitle.svelte'
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import Card from '@std/ui/Card.svelte'
-  import ProgressLine from '@std/ui/ProgressLine.svelte'
-  import Quick from '@std/ui/Quick.svelte'
-  import Btn from '@std/ui/Btn.svelte'
-  import Modal from '@std/ui/Modal.svelte'
+  import AppTitle from '@std/ui/app-title.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import Card from '@std/ui/card.svelte'
+  import ProgressLine from '@std/ui/progress-line.svelte'
+  import Quick from '@std/ui/quick.svelte'
+  import Btn from '@std/ui/btn.svelte'
+  import Modal from '@std/ui/modal.svelte'
 
   let showModal = $state(false)
 </script>

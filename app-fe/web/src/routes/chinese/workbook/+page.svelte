@@ -4,8 +4,8 @@
   import { onMount } from 'svelte'
   import { datasetId, currentDataset, setDatasetById } from '@app/state/registry.js'
   import { formatGroup } from '@std/format.js'
-  import WorkbookChinese from '@app/ui/chinese/Workbook.svelte'
-  import WorkbookEnglish from '@app/ui/english/Workbook.svelte'
+  import WorkbookChinese from '@app/ui/chinese/workbook.svelte'
+  import WorkbookEnglish from '@app/ui/english/workbook.svelte'
 
   const exerciseSets = 2
 

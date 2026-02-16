@@ -1,7 +1,7 @@
 <script>
-  import Island from '@std/ui/Island.svelte'
-  import BtnLink from '@std/ui/BtnLink.svelte'
-  import FullGroup from './FullGroup.svelte'
+  import Island from '@std/ui/island.svelte'
+  import BtnLink from '@std/ui/btn-link.svelte'
+  import FullGroup from './full-group.svelte'
 
   let {
     groups,

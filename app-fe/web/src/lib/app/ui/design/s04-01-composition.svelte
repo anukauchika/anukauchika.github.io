@@ -1,8 +1,8 @@
 <script>
-  import AppTitle from '@std/ui/AppTitle.svelte'
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import ProgressLine from '@std/ui/ProgressLine.svelte'
+  import AppTitle from '@std/ui/app-title.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import ProgressLine from '@std/ui/progress-line.svelte'
 </script>
 
 <AppTitle parts={['Anuka', 'Composition']} />

@@ -1,17 +1,17 @@
 <script>
-  import Island from '@std/ui/Island.svelte'
-  import AppTitle from '@std/ui/AppTitle.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import Quick from '@std/ui/Quick.svelte'
+  import Island from '@std/ui/island.svelte'
+  import AppTitle from '@std/ui/app-title.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import Quick from '@std/ui/quick.svelte'
 
-  import S0101Layout from '@app/ui/design/S01-01Layout.svelte'
-  import S0201Structure from '@app/ui/design/S02-01Structure.svelte'
-  import S0301ControlsButtons from '@app/ui/design/S03-01ControlsButtons.svelte'
-  import S0302ControlsLabels from '@app/ui/design/S03-02ControlsLabels.svelte'
-  import S0303ControlsInputs from '@app/ui/design/S03-03ControlsInputs.svelte'
-  import S0304ControlsData from '@app/ui/design/S03-04ControlsData.svelte'
-  import S0305ControlsIcons from '@app/ui/design/S03-05ControlsIcons.svelte'
-  import S0401Composition from '@app/ui/design/S04-01Composition.svelte'
+  import S0101Layout from '@app/ui/design/s01-01-layout.svelte'
+  import S0201Structure from '@app/ui/design/s02-01-structure.svelte'
+  import S0301ControlsButtons from '@app/ui/design/s03-01-controls-buttons.svelte'
+  import S0302ControlsLabels from '@app/ui/design/s03-02-controls-labels.svelte'
+  import S0303ControlsInputs from '@app/ui/design/s03-03-controls-inputs.svelte'
+  import S0304ControlsData from '@app/ui/design/s03-04-controls-data.svelte'
+  import S0305ControlsIcons from '@app/ui/design/s03-05-controls-icons.svelte'
+  import S0401Composition from '@app/ui/design/s04-01-composition.svelte'
 
   function toggleTheme() {
     const current = document.documentElement.dataset.theme

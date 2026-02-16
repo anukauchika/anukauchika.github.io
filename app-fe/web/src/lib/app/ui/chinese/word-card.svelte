@@ -1,12 +1,12 @@
 <script>
   import { tick } from 'svelte'
   import HanziWriter from 'hanzi-writer'
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import Quick from '@std/ui/Quick.svelte'
-  import Card from '@std/ui/Card.svelte'
-  import Btn from '@std/ui/Btn.svelte'
-  import BtnIcon from '@std/ui/BtnIcon.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import Quick from '@std/ui/quick.svelte'
+  import Card from '@std/ui/card.svelte'
+  import Btn from '@std/ui/btn.svelte'
+  import BtnIcon from '@std/ui/btn-icon.svelte'
 
   let { item, onClose } = $props()
 

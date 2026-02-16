@@ -3,10 +3,10 @@
   import { datasetStats, datasetStatsStroke, datasetStatsPinyin } from '@app/state/kind/chinese/practice-stats.js'
   import { filteredGroups } from '@app/state/filters.js'
   import { buildPracticedItems, buildChartData } from '@app/std/kind/chinese/stats'
-  import PracticedWords from '@app/ui/PracticedWords.svelte'
-  import GroupItemChinese from '@app/ui/chinese/GroupItem.svelte'
-  import WordCardChinese from '@app/ui/chinese/WordCard.svelte'
-  import Modal from '@std/ui/Modal.svelte'
+  import PracticedWords from '@app/ui/practiced-words.svelte'
+  import GroupItemChinese from '@app/ui/chinese/group-item.svelte'
+  import WordCardChinese from '@app/ui/chinese/word-card.svelte'
+  import Modal from '@std/ui/modal.svelte'
 
   const practicedItems = $derived(buildPracticedItems($filteredGroups, $datasetStats))
   const totalCount = $derived($filteredGroups.reduce((sum, g) => sum + g.items.length, 0))

@@ -1,8 +1,8 @@
 <script>
   import { timeAgo } from '@std/format.js'
-  import Island from '@std/ui/Island.svelte'
-  import IslandTitle from '@std/ui/IslandTitle.svelte'
-  import BtnIcon from '@std/ui/BtnIcon.svelte'
+  import Island from '@std/ui/island.svelte'
+  import IslandTitle from '@std/ui/island-title.svelte'
+  import BtnIcon from '@std/ui/btn-icon.svelte'
 
   let {
     chars,

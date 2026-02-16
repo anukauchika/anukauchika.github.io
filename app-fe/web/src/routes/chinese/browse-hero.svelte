@@ -7,8 +7,8 @@
   import { pickNextPractice } from '@std/kind/chinese/pick-next-practice.js'
   import { calcStats, countPracticed, calcProgress, calcMastery } from '@app/std/kind/chinese/stats'
   import Hero from '@app/ui/hero'
-  import Toolbar from '@app/ui/hero/Toolbar.svelte'
-  import Filters from '@app/ui/hero/Filters.svelte'
+  import Toolbar from '@app/ui/hero/toolbar.svelte'
+  import Filters from '@app/ui/hero/filters.svelte'
   import AuthModal from '@app/ui/auth-modal.svelte'
 
   let { onShowStatInfo } = $props()
