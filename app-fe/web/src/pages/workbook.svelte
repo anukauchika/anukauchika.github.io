@@ -1,4 +1,5 @@
 <script>
+  import './workbook.css'
   import { onMount } from 'svelte'
   import { datasetId, currentDataset, setDatasetById } from '@app/state/registry.js'
   import { formatGroup } from '@std/format.js'
@@ -67,7 +68,7 @@
   })
 </script>
 
-<main>
+<main class="workbook-page">
   <header class="sheet-header">
     <div class="group-line">
       <span class="group-title">{formatGroup(activeGroup.group)}</span>

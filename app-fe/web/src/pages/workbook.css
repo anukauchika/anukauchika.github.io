@@ -1,8 +1,5 @@
-#app {
+.workbook-page {
   padding: 1.25rem;
-}
-
-main {
   max-width: 1200px;
   margin: 0 auto;
   display: flex;
@@ -10,7 +7,7 @@ main {
   gap: 0.8rem;
 }
 
-.sheet-header {
+.workbook-page .sheet-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -18,7 +15,7 @@ main {
   flex-wrap: nowrap;
 }
 
-.group-line {
+.workbook-page .group-line {
   display: flex;
   align-items: center;
   gap: 0.8rem;
@@ -26,25 +23,25 @@ main {
   flex: 1;
 }
 
-.group-title {
+.workbook-page .group-title {
   font-size: 1rem;
   font-weight: 700;
 }
 
-.print-date {
+.workbook-page .print-date {
   font-size: 1rem;
   color: var(--anuka-color-muted);
   font-weight: 600;
 }
 
-.group-tags {
+.workbook-page .group-tags {
   display: inline-flex;
   gap: var(--space-xs);
   flex-wrap: wrap;
   font-size: 1rem;
 }
 
-.group-tags span {
+.workbook-page .group-tags span {
   background: var(--anuka-color-border);
   color: var(--anuka-color-muted);
   padding: 0.2rem 0.6rem;
@@ -52,19 +49,19 @@ main {
   font-weight: 600;
 }
 
-.header-actions {
+.workbook-page .header-actions {
   display: flex;
   gap: 1rem;
   align-items: center;
 }
 
 @media (max-width: 720px) {
-  .sheet-header {
+  .workbook-page .sheet-header {
     flex-wrap: wrap;
   }
 }
 
-label {
+.workbook-page label {
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
@@ -72,13 +69,13 @@ label {
   color: var(--anuka-color-muted);
 }
 
-.header-actions label {
+.workbook-page .header-actions label {
   flex-direction: row;
   align-items: center;
   gap: 0.6rem;
 }
 
-select {
+.workbook-page select {
   border: 1px solid var(--anuka-color-accent);
   background: var(--anuka-color-surface);
   padding: 0.5rem 0.8rem;
@@ -86,7 +83,7 @@ select {
   font-size: 0.95rem;
 }
 
-button {
+.workbook-page button {
   border: none;
   background: var(--anuka-color-primary);
   color: var(--anuka-color-on-primary);
@@ -96,21 +93,21 @@ button {
   font-weight: 600;
 }
 
-.sheet {
+.workbook-page .sheet {
   background: var(--anuka-color-surface);
   padding: 0.8rem;
   border-radius: var(--radius-xl);
   border: 1px solid var(--anuka-color-border);
 }
 
-.grid {
+.workbook-page .grid {
   --sets: 4;
   display: grid;
   grid-template-columns: repeat(var(--sets), minmax(80px, 1fr));
   border: 1px solid #888;
 }
 
-.cell {
+.workbook-page .cell {
   border: 1px solid #b5b5b5;
   min-height: 48px;
   padding: 0.35rem 0.4rem;
@@ -121,7 +118,7 @@ button {
   font-size: 0.95rem;
 }
 
-.cell.header {
+.workbook-page .cell.header {
   background: #f2e6d4;
   font-weight: 700;
   font-size: 0.85rem;
@@ -129,7 +126,7 @@ button {
   text-transform: uppercase;
 }
 
-.cell.filled {
+.workbook-page .cell.filled {
   font-weight: 600;
 }
 
@@ -143,45 +140,41 @@ button {
     background: #fff;
   }
 
-  main {
+  .workbook-page {
     gap: 0;
-  }
-
-  #app {
     padding: 0;
   }
 
-  .sheet-header {
+  .workbook-page .sheet-header {
     margin-bottom: 0;
   }
 
-  button,
-  select,
-  .header-actions {
+  .workbook-page button,
+  .workbook-page select,
+  .workbook-page .header-actions {
     display: none;
   }
 
-  .sheet {
+  .workbook-page .sheet {
     border: none;
     padding: 0;
     margin: 0;
   }
 
-  .grid {
+  .workbook-page .grid {
     border: 1px solid #666;
   }
 
-  .cell {
+  .workbook-page .cell {
     border-color: #999;
   }
-
 }
 
-.cell.pinyin,
-.cell.english {
+.workbook-page .cell.pinyin,
+.workbook-page .cell.english {
   font-size: 0.8rem;
 }
 
-.cell.chinese {
+.workbook-page .cell.chinese {
   font-size: 1.2rem;
 }

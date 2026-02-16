@@ -7,6 +7,22 @@ import path from 'node:path'
 export default defineConfig({
   base: '/',
   plugins: [
+    // SPA fallback: rewrite /chinese/*, /english/* sub-paths to their index.html
+    {
+      name: 'spa-fallback',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          const url = req.url.split('?')[0]
+          const qs = req.url.includes('?') ? '?' + req.url.split('?')[1] : ''
+          if (url.startsWith('/chinese/') && !url.includes('.') && url !== '/chinese/') {
+            req.url = '/chinese/index.html' + qs
+          } else if (url.startsWith('/english/') && !url.includes('.') && url !== '/english/') {
+            req.url = '/english/index.html' + qs
+          }
+          next()
+        })
+      },
+    },
     svelte(),
     VitePWA({
       devOptions: {
@@ -60,10 +76,7 @@ export default defineConfig({
       input: {
         main: path.resolve(__dirname, 'index.html'),
         chinese: path.resolve(__dirname, 'chinese/index.html'),
-        chineseWorkbook: path.resolve(__dirname, 'chinese/workbook.html'),
-        chinesePractice: path.resolve(__dirname, 'chinese/practice.html'),
         english: path.resolve(__dirname, 'english/index.html'),
-        englishWorkbook: path.resolve(__dirname, 'english/workbook.html'),
         designBook: path.resolve(__dirname, 'design-book.html'),
       },
     },

@@ -6,6 +6,7 @@
   import { formatGroup, timeAgo } from '@std/format.js'
   import { pickNextPractice } from '@std/kind/chinese/pick-next-practice.js'
   import { calcStats, countPracticed, buildPracticedItems, buildPracticedCharsData, buildChartData, calcProgress, calcMastery, calcGroupProgress, calcGroupMastery, sortGroupsByLastPracticed } from '@app/std/kind/chinese/stats'
+  import { filterGroups } from '@app/std/dataset'
   import PracticedWords from '@app/ui/PracticedWords.svelte'
   import PracticedChars from '@app/ui/PracticedChars.svelte'
   import PracticedGroups from '@app/ui/chinese/PracticedGroups.svelte'
@@ -14,7 +15,7 @@
   import GroupItemEnglish from '@app/ui/english/GroupItem.svelte'
   import WordCardChinese from '@app/ui/chinese/WordCard.svelte'
   import WordCardEnglish from '@app/ui/english/WordCard.svelte'
-  import HowItWorks from './HowItWorks.svelte'
+  import HowItWorks from './how-it-works.svelte'
   import Hero from '@app/ui/hero'
   import Toolbar from '@app/ui/hero/Toolbar.svelte'
   import Filters from '@app/ui/hero/Filters.svelte'
@@ -81,45 +82,6 @@
 
   function focus(node) { node.focus() }
 
-
-  const normalize = (value) =>
-    value
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-
-  const matchesQuery = (item) => {
-    const q = $mainSearch.trim()
-    if (!q) return true
-
-    const searchFields = $currentDataset?.data?.search || []
-    const values = searchFields.map((field) => item[field] || '').concat(item.tags || [])
-    const raw = values.join(' ')
-
-    const hayLower = raw.toLowerCase()
-    const hayNorm = normalize(raw)
-    const qLower = q.toLowerCase()
-    const qNorm = normalize(q)
-    return hayLower.includes(qLower) || (qNorm && hayNorm.includes(qNorm))
-  }
-
-  const matchesTags = (item) => {
-    if ($mainTags.length === 0) return true
-    const tags = item.tags || []
-    return $mainTags.every((t) => tags.includes(t))
-  }
-
-  const matchesGroupTags = (group) => {
-    if ($mainTags.length === 0) return true
-    const tags = group.tags || []
-    return $mainTags.every((t) => tags.includes(t))
-  }
-
-  const matchesGroup = (groupId) => {
-    if ($mainGroups.length === 0) return true
-    return $mainGroups.includes(groupId)
-  }
-
   const openWord = (item) => {
     activeWord = item
     modalOpen = true
@@ -140,24 +102,8 @@
     }
   })
 
-
-  const filteredGroups = $derived.by(() => {
-    return groups
-      .filter((g) => matchesGroup(g.group))
-      .map((g) => {
-        const groupMatches = matchesGroupTags(g)
-        const items = g.items.filter(
-          (item) => matchesQuery(item) && (groupMatches || matchesTags(item))
-        )
-        return { ...g, items, _groupMatches: groupMatches }
-      })
-      .filter((g) => {
-        const hasSearch = $mainSearch.trim().length > 0
-        // When searching, only show groups with matching items
-        if (hasSearch) return g.items.length > 0
-        return g._groupMatches || g.items.length > 0
-      })
-  })
+  const searchFields = $derived($currentDataset?.data?.search || [])
+  const filteredGroups = $derived(filterGroups(groups, $mainSearch, $mainTags, $mainGroups, searchFields))
 
   const nextPractice = $derived.by(() => {
     if ($isAuthenticated) {
@@ -167,7 +113,8 @@
   })
   const practiceHref = $derived.by(() => {
     const np = nextPractice
-    return np ? `${basePath}/practice.html?group=${np.groupId}&dataset=${$datasetId}&type=${np.type}` : null
+    const typeToPath = { stroke: 'hanzi', pinyin: 'pinyin' }
+    return np ? `${basePath}/practice/${typeToPath[np.type] || 'hanzi'}?group=${np.groupId}&dataset=${$datasetId}` : null
   })
 
   const stats = $derived(calcStats(filteredGroups))
@@ -194,8 +141,8 @@
       groupId: formatGroup(group.group),
       lastPracticed: $isAuthenticated ? timeAgo($datasetGroupSessions.get(group.group)?.lastPracticedAt) : undefined,
       tags: group.tags,
-      strokeHref: isChinese ? `${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke${fromParam}` : undefined,
-      pinyinHref: isChinese ? `${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin${fromParam}` : undefined,
+      strokeHref: isChinese ? `${basePath}/practice/hanzi?group=${group.group}&dataset=${$datasetId}${fromParam}` : undefined,
+      pinyinHref: isChinese ? `${basePath}/practice/pinyin?group=${group.group}&dataset=${$datasetId}${fromParam}` : undefined,
       strokeSessions: gsStroke?.full ?? 0,
       pinyinSessions: gsPinyin?.full ?? 0,
       strokeProgress: $isAuthenticated ? calcGroupProgress(group, $datasetStatsStroke) : 0,
@@ -213,10 +160,10 @@
       groupId: formatGroup(group.group),
       tags: group.tags,
       kind: $currentDataset?.kind,
-      strokeHref: isChinese ? `${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=stroke` : undefined,
-      pinyinHref: isChinese ? `${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin` : undefined,
-      workbookHref: `${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}`,
-      printHref: `${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}&autoprint=1`,
+      strokeHref: isChinese ? `${basePath}/practice/hanzi?group=${group.group}&dataset=${$datasetId}` : undefined,
+      pinyinHref: isChinese ? `${basePath}/practice/pinyin?group=${group.group}&dataset=${$datasetId}` : undefined,
+      workbookHref: `${basePath}/workbook?group=${group.group}&dataset=${$datasetId}`,
+      printHref: `${basePath}/workbook?group=${group.group}&dataset=${$datasetId}&autoprint=1`,
       strokeSessions: gsStroke?.full ?? 0,
       pinyinSessions: gsPinyin?.full ?? 0,
       strokeProgress: $isAuthenticated ? calcGroupProgress(group, $datasetStatsStroke) : 0,
