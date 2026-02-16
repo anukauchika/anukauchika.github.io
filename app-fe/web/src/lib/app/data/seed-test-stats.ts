@@ -1,20 +1,16 @@
-// @ts-nocheck — dev-only seed utility, will be typed when migrated to TS
 /**
  * Generates realistic practice stats for the chinese-test dataset.
  * Seeds IDB directly via bulk insert — no server sync.
- *
- * Per-word success counts range from ~1 to ~150.
- * Groups 1-2 are heavily practiced, group 5 is barely touched.
  *
  * Usage (browser console):
  *   import('/src/data/seed-test-stats.js').then(m => m.seed())
  */
 import { statsRepo } from './idb-stats-repo'
+import type { GroupSession, WordAttempt, CharLog } from '@app/api/types'
 
-const DATASET_CODE = 'ae'   // chinese-test
-const PRACTICE_TYPE = 's'   // stroke
+const DATASET_CODE = 'ae'
+const PRACTICE_TYPE = 's'
 
-// Test dataset: 5 groups, 3 words each
 const GROUPS = [
   { group: 1, words: [1, 2, 3] },
   { group: 2, words: [1, 2, 3] },
@@ -23,27 +19,24 @@ const GROUPS = [
   { group: 5, words: [1, 2, 3] },
 ]
 
-function rand(min, max) {
+function rand(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-function isoAt(date) {
+function isoAt(date: Date): string {
   return date.toISOString()
 }
 
-export async function seed() {
+export async function seed(): Promise<void> {
   const now = new Date('2026-02-06T12:00:00')
   const monthAgo = new Date('2026-01-06T08:00:00')
 
   let sessionId = 900000
   let wordId = 900000
-  const sessions = []
-  const words = []
-  const chars = []
+  const sessions: GroupSession[] = []
+  const words: WordAttempt[] = []
+  const chars: CharLog[] = []
 
-  // Target per-word success counts: group 1 ~130-150, group 2 ~80-110,
-  // group 3 ~30-50, group 4 ~10-20, group 5 ~1-5
-  // Overshooting session counts to compensate for ~15% partial + future-date skips
   for (const g of GROUPS) {
     const sessionCount =
       g.group === 1 ? rand(160, 180) :
@@ -64,7 +57,6 @@ export async function seed() {
       const sid = sessionId++
       const startedAt = isoAt(sessionDate)
 
-      // ~85% full sessions
       const isFull = Math.random() < 0.85
       const doneDate = new Date(sessionDate.getTime() + rand(2, 8) * 60000)
       const doneAt = isFull ? isoAt(doneDate) : null
@@ -74,11 +66,11 @@ export async function seed() {
         user_id: null,
         dataset_id: DATASET_CODE,
         practice_type: PRACTICE_TYPE,
-        group_id: g.group,
+        group_id: String(g.group),
         started_at: startedAt,
         done_at: doneAt,
         synced: 1,
-      })
+      } as GroupSession)
 
       const wordsToAttempt = isFull ? g.words : g.words.slice(0, rand(1, g.words.length - 1))
       let wordTime = new Date(sessionDate.getTime() + 5000)
@@ -92,13 +84,12 @@ export async function seed() {
         words.push({
           id: wTempId,
           group_session_id: sid,
-          word_id: wid,
+          word_id: String(wid),
           started_at: wStarted,
           done_at: wDone,
           synced: 1,
-        })
+        } as WordAttempt)
 
-        // Char logs — fewer errors for heavily practiced groups
         const charCount = rand(1, 2)
         const errorChance = g.group <= 2 ? 0.1 : g.group <= 4 ? 0.25 : 0.4
         for (let ci = 0; ci < charCount; ci++) {
@@ -111,7 +102,7 @@ export async function seed() {
             done_at: isoAt(new Date(cStarted.getTime() + rand(1, 4) * 1000)),
             error_count: errorCount,
             synced: 1,
-          })
+          } as CharLog)
         }
 
         wordTime = new Date(wordTime.getTime() + wDuration + 1500)

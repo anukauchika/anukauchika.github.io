@@ -1,45 +1,36 @@
-// @ts-nocheck — dev-only seed utility, will be typed when migrated to TS
 /**
  * Generates realistic practice stats for the chinese-hskv3-elementary dataset.
  * Seeds IDB directly via bulk insert — no server sync.
- *
- * Day-driven: picks 1-3 sessions per active day, 15-45 word attempts.
- * Gradually unlocks groups over 2 months, revisits earlier groups.
- * ~60% of days are active, some rest days.
  *
  * Usage (browser console):
  *   import('/src/data/seed-elementary-stats.js').then(m => m.seed())
  */
 import { statsRepo } from './idb-stats-repo'
+import type { GroupSession, WordAttempt, CharLog } from '@app/api/types'
 
-const DATASET_CODE = 'aa'   // chinese-hskv3-elementary
-const PRACTICE_TYPE = 's'   // stroke
+const DATASET_CODE = 'aa'
+const PRACTICE_TYPE = 's'
 const WORDS = Array.from({ length: 15 }, (_, i) => i + 1)
 
-function rand(min, max) {
+function rand(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-function isoAt(date) {
+function isoAt(date: Date): string {
   return date.toISOString()
 }
 
-function pick(arr) {
-  return arr[rand(0, arr.length - 1)]
-}
-
-export async function seed() {
+export async function seed(): Promise<void> {
   const now = new Date('2026-02-06T12:00:00')
   const start = new Date('2025-12-06T08:00:00')
-  const totalDays = 62 // Dec 6 - Feb 6
+  const totalDays = 62
 
   let sessionId = 800000
   let wordId = 800000
-  const sessions = []
-  const words = []
-  const chars = []
+  const sessions: GroupSession[] = []
+  const words: WordAttempt[] = []
+  const chars: CharLog[] = []
 
-  // Track which groups are "unlocked" — learner progresses ~1 new group every 1-2 days
   let unlockedUpTo = 1
 
   for (let day = 0; day < totalDays; day++) {
@@ -49,25 +40,19 @@ export async function seed() {
 
     if (dayDate > now) break
 
-    // ~60% of days are active
     if (Math.random() > 0.6) continue
 
-    // Unlock new groups gradually
     if (Math.random() < 0.55 && unlockedUpTo < 55) {
       unlockedUpTo++
     }
 
-    // 1-3 sessions per active day
     const sessionsToday = rand(1, 3)
 
     for (let s = 0; s < sessionsToday; s++) {
-      // Pick a group: bias toward recent unlocks + spaced review of earlier ones
-      let group
+      let group: number
       if (Math.random() < 0.4 && unlockedUpTo > 3) {
-        // Review an older group
         group = rand(1, Math.max(1, unlockedUpTo - 3))
       } else {
-        // Practice recent groups
         group = rand(Math.max(1, unlockedUpTo - 2), unlockedUpTo)
       }
 
@@ -87,11 +72,11 @@ export async function seed() {
         user_id: null,
         dataset_id: DATASET_CODE,
         practice_type: PRACTICE_TYPE,
-        group_id: group,
+        group_id: String(group),
         started_at: startedAt,
         done_at: doneAt,
         synced: 1,
-      })
+      } as GroupSession)
 
       const wordsToAttempt = isFull ? WORDS : WORDS.slice(0, rand(1, WORDS.length - 1))
       let wordTime = new Date(sessionDate.getTime() + 5000)
@@ -105,11 +90,11 @@ export async function seed() {
         words.push({
           id: wTempId,
           group_session_id: sid,
-          word_id: wid,
+          word_id: String(wid),
           started_at: wStarted,
           done_at: wDone,
           synced: 1,
-        })
+        } as WordAttempt)
 
         const charCount = rand(1, 2)
         const errorChance = group <= 10 ? 0.1 : group <= 25 ? 0.2 : 0.35
@@ -123,7 +108,7 @@ export async function seed() {
             done_at: isoAt(new Date(cStarted.getTime() + rand(1, 4) * 1000)),
             error_count: errorCount,
             synced: 1,
-          })
+          } as CharLog)
         }
 
         wordTime = new Date(wordTime.getTime() + wDuration + 1500)

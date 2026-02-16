@@ -1,6 +1,6 @@
 import { mount } from 'svelte'
 import '@std/style/anuka.css'
-import App from './App.svelte'
+import Practice from './Practice.svelte'
 import { initAnalytics } from '../utils/analytics.js'
 import { initAuth } from '@app/state/auth.js'
 import { maintenanceService } from '@app/services/maintenance-service'
@@ -9,8 +9,6 @@ initAnalytics()
 maintenanceService.runStartupTasks()
 await initAuth()
 
-const app = mount(App, {
-  target: document.getElementById('app'),
+mount(Practice, {
+  target: document.getElementById('app')!,
 })
-
-export default app

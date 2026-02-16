@@ -7,5 +7,5 @@ import { initAnalytics } from '../utils/analytics.js'
 initAnalytics()
 
 mount(Workbook, {
-  target: document.getElementById('app'),
+  target: document.getElementById('app')!,
 })
