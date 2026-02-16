@@ -3,8 +3,9 @@
   import { datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from '@app/state/kind/chinese/practice-stats.js'
   import { mainSearch, mainTags, mainGroups, mainListViewStyle, loadMainFilters } from '@app/state/filters.js'
   import { user, isAuthenticated, dbVersion, signInWithGoogle, signInWithApple, signInWithEmail, signOut } from '@app/state/auth.js'
-  import { formatGroup, toLocalDateKey, timeAgo } from '@std/format.js'
+  import { formatGroup, timeAgo } from '@std/format.js'
   import { pickNextPractice } from '@std/kind/chinese/pick-next-practice.js'
+  import { calcStats, countPracticed, buildPracticedItems, buildPracticedCharsData, buildChartData, calcProgress, calcMastery, calcGroupProgress, calcGroupMastery, sortGroupsByLastPracticed } from '@app/std/kind/chinese/stats'
   import PracticedWords from '@app/ui/PracticedWords.svelte'
   import PracticedChars from '@app/ui/PracticedChars.svelte'
   import PracticedGroups from '@app/ui/chinese/PracticedGroups.svelte'
@@ -169,216 +170,20 @@
     return np ? `${basePath}/practice.html?group=${np.groupId}&dataset=${$datasetId}&type=${np.type}` : null
   })
 
-  const groupCount = $derived.by(() => filteredGroups.length)
-  const totalCount = $derived.by(() =>
-    filteredGroups.reduce((sum, g) => sum + g.items.length, 0)
-  )
-  const uniqueChars = $derived.by(() => {
-    const chars = new Set()
-    const isCJK = (c) => c >= '\u4E00' && c <= '\u9FFF'
-    filteredGroups.forEach((g) => {
-      g.items.forEach((item) => {
-        const word = item.word || ''
-        for (const char of word) {
-          if (isCJK(char)) chars.add(char)
-        }
-      })
-    })
-    return chars.size
-  })
-  const practicedCharsData = $derived.by(() => {
-    const isCJK = (c) => c >= '\u4E00' && c <= '\u9FFF'
-    const addStat = (obj, stat) => {
-      if (!stat) return
-      obj.successCount += stat.successCount ?? 0
-      obj.errorCount += stat.errorCount ?? 0
-    }
-    const emptyStat = () => ({ successCount: 0, errorCount: 0 })
-    const charMap = new Map()
-    filteredGroups.forEach((g) => {
-      g.items.forEach((item) => {
-        const word = item.word || ''
-        const key = `${g.group}::${item.id}`
-        const sStat = $datasetStatsStroke.get(key)
-        const pStat = $datasetStatsPinyin.get(key)
-        const hasStat = sStat || pStat
-        for (const char of word) {
-          if (!isCJK(char)) continue
-          const existing = charMap.get(char)
-          if (existing) {
-            existing.wordCount++
-            if (hasStat) {
-              existing.practiced = true
-              addStat(existing.stroke, sStat)
-              addStat(existing.pinyin, pStat)
-              const lp = sStat?.lastPracticedAt > (pStat?.lastPracticedAt ?? '') ? sStat.lastPracticedAt : pStat?.lastPracticedAt
-              if (lp && (!existing.lastPracticedAt || lp > existing.lastPracticedAt)) {
-                existing.lastPracticedAt = lp
-              }
-            }
-          } else {
-            const stroke = emptyStat()
-            const pinyin = emptyStat()
-            addStat(stroke, sStat)
-            addStat(pinyin, pStat)
-            const lp = (sStat?.lastPracticedAt ?? '') > (pStat?.lastPracticedAt ?? '') ? sStat?.lastPracticedAt : pStat?.lastPracticedAt
-            charMap.set(char, {
-              char,
-              wordCount: 1,
-              stroke,
-              pinyin,
-              lastPracticedAt: lp ?? null,
-              practiced: !!hasStat,
-            })
-          }
-        }
-      })
-    })
-    const chars = Array.from(charMap.values())
-    chars.sort((a, b) => (b.lastPracticedAt ?? '').localeCompare(a.lastPracticedAt ?? ''))
-    return chars
-  })
+  const stats = $derived(calcStats(filteredGroups))
+  const groupCount = $derived(stats.groups)
+  const totalCount = $derived(stats.words)
+  const uniqueChars = $derived(stats.chars)
+  const practicedCharsData = $derived(buildPracticedCharsData(filteredGroups, $datasetStatsStroke, $datasetStatsPinyin))
   const practicedCharsCount = $derived(practicedCharsData.filter(c => c.practiced).length)
-  const practicedCount = $derived.by(() => {
-    let count = 0
-    filteredGroups.forEach((g) => {
-      g.items.forEach((item) => {
-        if ($datasetStats.has(`${g.group}::${item.id}`)) count++
-      })
-    })
-    return count
-  })
-  const countPracticed = (statsMap) => {
-    let count = 0
-    filteredGroups.forEach((g) => {
-      g.items.forEach((item) => {
-        if (statsMap.has(`${g.group}::${item.id}`)) count++
-      })
-    })
-    return count
-  }
-  const strokePracticedCount = $derived(countPracticed($datasetStatsStroke))
-  const pinyinPracticedCount = $derived(countPracticed($datasetStatsPinyin))
-  const practicedItems = $derived.by(() => {
-    const items = []
-    filteredGroups.forEach((g) => {
-      g.items.forEach((item) => {
-        const key = `${g.group}::${item.id}`
-        const stat = $datasetStats.get(key)
-        if (stat) items.push({ item, group: g, stat })
-      })
-    })
-    items.sort((a, b) => (b.stat.lastPracticedAt ?? '').localeCompare(a.stat.lastPracticedAt ?? ''))
-    return items
-  })
-  const chartData = $derived.by(() => {
-    if (practicedItems.length === 0) return null
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const DAYS = 30
-
-    // Build 30-day range: today - 29 days through today
-    const bars = []
-    let maxCount = 0
-    for (let i = DAYS - 1; i >= 0; i--) {
-      const d = new Date(today)
-      d.setDate(d.getDate() - i)
-      const key = toLocalDateKey(d)
-      const entry = dayCounts.get(key) || { count: 0, durationMs: 0, sessions: 0 }
-      const count = entry.count
-      if (count > maxCount) maxCount = count
-      bars.push({
-        date: key,
-        count,
-        label: d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
-        monthLabel: d.getDate() === 1 || i === DAYS - 1
-          ? d.toLocaleDateString('en-US', { month: 'short' })
-          : null
-      })
-    }
-
-    // Cumulative unique words: count words whose lastPracticedAt <= each day
-    const cumulativeData = []
-    let maxCumulative = 0
-    for (const bar of bars) {
-      let cum = 0
-      for (const { stat } of practicedItems) {
-        if (stat.lastPracticedAt && toLocalDateKey(new Date(stat.lastPracticedAt)) <= bar.date) cum++
-      }
-      cumulativeData.push(cum)
-      if (cum > maxCumulative) maxCumulative = cum
-    }
-
-    // Shared scale: both bars and line use the same y-axis
-    const yMax = Math.max(maxCount, maxCumulative)
-
-    // Compute nice tick values for grid lines (3-4 lines)
-    const niceStep = (max) => {
-      if (max <= 0) return []
-      const rough = max / 4
-      const mag = Math.pow(10, Math.floor(Math.log10(rough)))
-      const candidates = [1, 2, 5, 10].map(m => m * mag)
-      const step = candidates.find(s => s >= rough) || candidates[candidates.length - 1]
-      const ticks = []
-      for (let v = step; v <= max; v += step) ticks.push(v)
-      return ticks
-    }
-
-    return { bars, maxCount, cumulativeData, maxCumulative, yMax, ticks: niceStep(yMax) }
-  })
-
-  const datasetProgress = $derived.by(() =>
-    totalCount > 0 ? Math.round((practicedCount / totalCount) * 100) : 0
-  )
-  const datasetMastery = $derived.by(() => {
-    if (totalCount === 0) return 0
-    let sum = 0
-    filteredGroups.forEach((g) => {
-      g.items.forEach((item) => {
-        const stat = $datasetStats.get(`${g.group}::${item.id}`)
-        sum += Math.min((stat?.successCount ?? 0) / 10, 1)
-      })
-    })
-    return Math.round((sum / totalCount) * 100)
-  })
-
-  // Per-type progress/mastery helpers
-  const calcProgress = (statsMap) => {
-    if (totalCount === 0) return 0
-    let count = 0
-    filteredGroups.forEach((g) => {
-      g.items.forEach((item) => {
-        if (statsMap.has(`${g.group}::${item.id}`)) count++
-      })
-    })
-    return Math.round((count / totalCount) * 100)
-  }
-  const calcMastery = (statsMap) => {
-    if (totalCount === 0) return 0
-    let sum = 0
-    filteredGroups.forEach((g) => {
-      g.items.forEach((item) => {
-        const stat = statsMap.get(`${g.group}::${item.id}`)
-        sum += Math.min((stat?.successCount ?? 0) / 10, 1)
-      })
-    })
-    return Math.round((sum / totalCount) * 100)
-  }
-  const strokeProgress = $derived(calcProgress($datasetStatsStroke))
-  const strokeMastery = $derived(calcMastery($datasetStatsStroke))
-  const pinyinProgress = $derived(calcProgress($datasetStatsPinyin))
-  const pinyinMastery = $derived(calcMastery($datasetStatsPinyin))
-
-  const getGroupProgress = (group, statsMap) => {
-    const practiced = group.items.filter(item =>
-      statsMap.has(`${group.group}::${item.id}`)
-    ).length
-    return group.items.length > 0 ? Math.round((practiced / group.items.length) * 100) : 0
-  }
-  const getGroupMastery = (group, sessionsMap) => {
-    const fullSessions = sessionsMap.get(group.group)?.full ?? 0
-    return Math.min(Math.round((fullSessions / 10) * 100), 100)
-  }
+  const strokePracticedCount = $derived(countPracticed(filteredGroups, $datasetStatsStroke))
+  const pinyinPracticedCount = $derived(countPracticed(filteredGroups, $datasetStatsPinyin))
+  const practicedItems = $derived(buildPracticedItems(filteredGroups, $datasetStats))
+  const chartData = $derived(buildChartData(practicedItems, dayCounts))
+  const strokeProgress = $derived(calcProgress(filteredGroups, $datasetStatsStroke))
+  const strokeMastery = $derived(calcMastery(filteredGroups, $datasetStatsStroke))
+  const pinyinProgress = $derived(calcProgress(filteredGroups, $datasetStatsPinyin))
+  const pinyinMastery = $derived(calcMastery(filteredGroups, $datasetStatsPinyin))
 
   const compactRowProps = (group, from) => {
     const fromParam = from ? `&from=${from}` : ''
@@ -393,10 +198,10 @@
       pinyinHref: isChinese ? `${basePath}/practice.html?group=${group.group}&dataset=${$datasetId}&type=pinyin${fromParam}` : undefined,
       strokeSessions: gsStroke?.full ?? 0,
       pinyinSessions: gsPinyin?.full ?? 0,
-      strokeProgress: $isAuthenticated ? getGroupProgress(group, $datasetStatsStroke) : 0,
-      strokeMastery: $isAuthenticated ? getGroupMastery(group, $datasetGroupSessionsStroke) : 0,
-      pinyinProgress: $isAuthenticated ? getGroupProgress(group, $datasetStatsPinyin) : 0,
-      pinyinMastery: $isAuthenticated ? getGroupMastery(group, $datasetGroupSessionsPinyin) : 0,
+      strokeProgress: $isAuthenticated ? calcGroupProgress(group, $datasetStatsStroke) : 0,
+      strokeMastery: $isAuthenticated ? calcGroupMastery(group, $datasetGroupSessionsStroke) : 0,
+      pinyinProgress: $isAuthenticated ? calcGroupProgress(group, $datasetStatsPinyin) : 0,
+      pinyinMastery: $isAuthenticated ? calcGroupMastery(group, $datasetGroupSessionsPinyin) : 0,
     }
   }
 
@@ -414,10 +219,10 @@
       printHref: `${basePath}/workbook.html?group=${group.group}&dataset=${$datasetId}&autoprint=1`,
       strokeSessions: gsStroke?.full ?? 0,
       pinyinSessions: gsPinyin?.full ?? 0,
-      strokeProgress: $isAuthenticated ? getGroupProgress(group, $datasetStatsStroke) : 0,
-      strokeMastery: $isAuthenticated ? getGroupMastery(group, $datasetGroupSessionsStroke) : 0,
-      pinyinProgress: $isAuthenticated ? getGroupProgress(group, $datasetStatsPinyin) : 0,
-      pinyinMastery: $isAuthenticated ? getGroupMastery(group, $datasetGroupSessionsPinyin) : 0,
+      strokeProgress: $isAuthenticated ? calcGroupProgress(group, $datasetStatsStroke) : 0,
+      strokeMastery: $isAuthenticated ? calcGroupMastery(group, $datasetGroupSessionsStroke) : 0,
+      pinyinProgress: $isAuthenticated ? calcGroupProgress(group, $datasetStatsPinyin) : 0,
+      pinyinMastery: $isAuthenticated ? calcGroupMastery(group, $datasetGroupSessionsPinyin) : 0,
       showProgress: $isAuthenticated,
       items: group.items.map(item => ({
         item,
@@ -427,15 +232,7 @@
     }
   }
 
-  const practicedGroupsSorted = $derived.by(() => {
-    return [...filteredGroups].sort((a, b) => {
-      const gsA = $datasetGroupSessions.get(a.group)
-      const gsB = $datasetGroupSessions.get(b.group)
-      const tA = gsA?.lastPracticedAt ?? ''
-      const tB = gsB?.lastPracticedAt ?? ''
-      return tB.localeCompare(tA)
-    })
-  })
+  const practicedGroupsSorted = $derived(sortGroupsByLastPracticed(filteredGroups, $datasetGroupSessions))
 
   let dayCounts = $state(new Map())
 
