@@ -1,6 +1,11 @@
 import { supabase } from './supabase-client.js'
+import type { GroupSession, WordAttempt, CharLog } from '@app/api/types'
 
-export async function createGroupSession(record) {
+type SessionRecord = Omit<GroupSession, 'id' | 'synced' | 'done_at'> & { done_at?: string | null }
+type WordAttemptRecord = Omit<WordAttempt, 'id' | 'synced'>
+type CharLogRecord = Omit<CharLog, 'synced'>
+
+export async function createGroupSession(record: SessionRecord): Promise<{ id: number }> {
   const { data, error } = await supabase
     .from('group_session')
     .upsert(record, {
@@ -25,7 +30,7 @@ export async function createGroupSession(record) {
   return existing
 }
 
-export async function updateGroupSessionDone(id, doneAt) {
+export async function updateGroupSessionDone(id: number, doneAt: string): Promise<void> {
   const { error } = await supabase
     .from('group_session')
     .update({ done_at: doneAt })
@@ -33,7 +38,7 @@ export async function updateGroupSessionDone(id, doneAt) {
   if (error) throw error
 }
 
-export async function insertWordAttempt(record) {
+export async function insertWordAttempt(record: WordAttemptRecord): Promise<{ id: number }> {
   const { data, error } = await supabase
     .from('word_attempt')
     .upsert(record, {
@@ -56,7 +61,7 @@ export async function insertWordAttempt(record) {
   return existing
 }
 
-export async function insertCharLogs(chars) {
+export async function insertCharLogs(chars: CharLogRecord[]): Promise<void> {
   const { error } = await supabase
     .from('char_log')
     .upsert(chars, {
@@ -66,7 +71,7 @@ export async function insertCharLogs(chars) {
   if (error) throw error
 }
 
-export async function fetchAllUserSessions() {
+export async function fetchAllUserSessions(): Promise<GroupSession[]> {
   const { data, error } = await supabase
     .from('group_session')
     .select('*')
@@ -75,7 +80,7 @@ export async function fetchAllUserSessions() {
   return data
 }
 
-export async function fetchWordAttempts(sessionIds) {
+export async function fetchWordAttempts(sessionIds: number[]): Promise<WordAttempt[]> {
   if (sessionIds.length === 0) return []
   const { data, error } = await supabase
     .from('word_attempt')
@@ -85,7 +90,7 @@ export async function fetchWordAttempts(sessionIds) {
   return data
 }
 
-export async function fetchCharLogs(wordAttemptIds) {
+export async function fetchCharLogs(wordAttemptIds: number[]): Promise<CharLog[]> {
   if (wordAttemptIds.length === 0) return []
   const { data, error } = await supabase
     .from('char_log')
