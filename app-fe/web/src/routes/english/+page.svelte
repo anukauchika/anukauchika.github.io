@@ -1,11 +1,9 @@
 <script>
   import { onMount } from 'svelte'
   import { datasets, datasetId, currentDataset, setDatasetByKind } from '@app/state/registry.js'
-  import { mainSearch, mainTags, mainGroups, mainListViewStyle, loadMainFilters } from '@app/state/filters.js'
-  import { user, isAuthenticated, dbVersion, signInWithGoogle, signInWithEmail, signOut } from '@app/state/auth.js'
+  import { mainSearch, mainTags, mainGroups, mainListViewStyle, groups, filteredGroups } from '@app/state/filters.js'
+  import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@app/state/auth.js'
   import { formatGroup } from '@std/format.js'
-  import { filterGroups } from '@app/std/dataset'
-  import GroupItemEnglish from '@app/ui/english/GroupItem.svelte'
   import WordCardEnglish from '@app/ui/english/WordCard.svelte'
   import Hero from '@app/ui/hero'
   import Toolbar from '@app/ui/hero/Toolbar.svelte'
@@ -17,12 +15,6 @@
   onMount(() => { setDatasetByKind('english') })
 
   const basePath = $derived.by(() => `/${$currentDataset?.kind ?? 'english'}`)
-  const groups = $derived.by(() => $currentDataset?.data?.groups ?? [])
-
-  $effect(() => {
-    $dbVersion
-    if ($datasetId) loadMainFilters($datasetId)
-  })
 
   let activeWord = $state(null)
   let modalOpen = $state(false)
@@ -30,17 +22,6 @@
 
   const openWord = (item) => { activeWord = item; modalOpen = true }
   const closeModal = () => { modalOpen = false; activeWord = null }
-
-  $effect(() => {
-    if ($mainGroups.length > 0) {
-      const validIds = new Set(groups.map((g) => g.group))
-      const filtered = $mainGroups.filter((id) => validIds.has(id))
-      if (filtered.length !== $mainGroups.length) $mainGroups = filtered
-    }
-  })
-
-  const searchFields = $derived($currentDataset?.data?.search || [])
-  const filteredGroups = $derived(filterGroups(groups, $mainSearch, $mainTags, $mainGroups, searchFields))
 
   const fullGroupProps = (group) => ({
     groupId: formatGroup(group.group),
@@ -72,8 +53,8 @@
     datasetId={$datasetId}
     dailyActivity={new Map()}
     isAuthenticated={$isAuthenticated}
-    groupCount={filteredGroups.length}
-    totalCount={filteredGroups.reduce((s, g) => s + g.items.length, 0)}
+    groupCount={$filteredGroups.length}
+    totalCount={$filteredGroups.reduce((s, g) => s + g.items.length, 0)}
     uniqueChars={0}
     strokePracticedCount={0}
     strokeProgress={0} strokeMastery={0} pinyinProgress={0} pinyinMastery={0}
@@ -97,7 +78,7 @@
     {/snippet}
     {#snippet filters()}
       <Filters
-        groups={groups}
+        groups={$groups}
         search={$mainSearch}
         tags={$mainTags}
         selectedGroups={$mainGroups}
@@ -115,7 +96,7 @@
   </Hero>
 
   <Groups
-    groups={filteredGroups.map(g => fullGroupProps(g))}
+    groups={$filteredGroups.map(g => fullGroupProps(g))}
     viewStyle={$mainListViewStyle}
     hasSearch={$mainSearch.trim().length > 0}
     datasetId={$datasetId}
