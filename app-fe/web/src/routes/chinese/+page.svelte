@@ -1,21 +1,18 @@
 <script>
+  import { goto } from '$app/navigation'
   import { datasets, datasetId, currentDataset } from '@app/state/registry.js'
   import { datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from '@app/state/kind/chinese/practice-stats.js'
   import { mainSearch, mainTags, mainGroups, mainListViewStyle, loadMainFilters } from '@app/state/filters.js'
-  import { user, isAuthenticated, dbVersion, signInWithGoogle, signInWithApple, signInWithEmail, signOut } from '@app/state/auth.js'
+  import { user, isAuthenticated, dbVersion, signInWithGoogle, signInWithEmail, signOut } from '@app/state/auth.js'
   import { formatGroup, timeAgo } from '@std/format.js'
   import { pickNextPractice } from '@std/kind/chinese/pick-next-practice.js'
   import { calcStats, countPracticed, buildPracticedItems, buildPracticedCharsData, buildChartData, calcProgress, calcMastery, calcGroupProgress, calcGroupMastery, sortGroupsByLastPracticed } from '@app/std/kind/chinese/stats'
   import { filterGroups } from '@app/std/dataset'
-  import PracticedWords from '@app/ui/PracticedWords.svelte'
-  import PracticedChars from '@app/ui/PracticedChars.svelte'
-  import PracticedGroups from '@app/ui/chinese/PracticedGroups.svelte'
   import CompactGroupList from '@app/ui/chinese/CompactGroupList.svelte'
   import GroupItemChinese from '@app/ui/chinese/GroupItem.svelte'
   import GroupItemEnglish from '@app/ui/english/GroupItem.svelte'
   import WordCardChinese from '@app/ui/chinese/WordCard.svelte'
   import WordCardEnglish from '@app/ui/english/WordCard.svelte'
-  import HowItWorks from './how-it-works.svelte'
   import Hero from '@app/ui/hero'
   import Toolbar from '@app/ui/hero/Toolbar.svelte'
   import Filters from '@app/ui/hero/Filters.svelte'
@@ -23,8 +20,7 @@
   import Modal from '@std/ui/Modal.svelte'
   import Island from '@std/ui/Island.svelte'
 
-  const baseUrl = import.meta.env.BASE_URL?.replace(/\/$/, '') || ''
-  const basePath = $derived.by(() => `${baseUrl}/${$currentDataset.kind}`)
+  const basePath = $derived.by(() => `/${$currentDataset.kind}`)
   const groups = $derived.by(() => $currentDataset?.data?.groups ?? [])
 
   const reloadStats = () => {
@@ -43,7 +39,6 @@
     }
   })
 
-  // Reload stats when returning to the page (e.g., after practicing)
   $effect(() => {
     const onVisible = () => {
       if (document.visibilityState === 'visible') reloadStats()
@@ -55,30 +50,10 @@
   let activeWord = $state(null)
   let modalOpen = $state(false)
   let showAuthDropdown = $state(false)
-  let showPracticedList = $state(false)
-  let showPracticedGroups = $state(false)
-  let showPracticedChars = $state(false)
-  let showHowItWorks = $state(false)
   let activeStat = $state(null)
   let emailInput = $state('')
   let emailSent = $state(false)
   let emailError = $state('')
-
-  // Restore page view from URL param (e.g., returning from practice)
-  {
-    const params = new URLSearchParams(window.location.search)
-    const from = params.get('from')
-    if ($isAuthenticated) {
-      if (from === 'groups') showPracticedGroups = true
-      if (from === 'words') showPracticedList = true
-      if (from === 'chars') showPracticedChars = true
-    }
-    if (from) {
-      params.delete('from')
-      const qs = params.toString()
-      history.replaceState(null, '', `${window.location.pathname}${qs ? `?${qs}` : ''}`)
-    }
-  }
 
   function focus(node) { node.focus() }
 
@@ -183,50 +158,19 @@
 
   let dayCounts = $state(new Map())
 
-  // Sync store to reactive state
   $effect(() => {
     return dailyActivity.subscribe(value => {
       dayCounts = value
     })
   })
-
-
 </script>
 
+<svelte:head>
+  <title>Anuka Uchika - Chinese</title>
+  <meta name="description" content="HSK Chinese characters with stroke & pinyin practice, focused word groups, stats-driven repetition and progress tracking" />
+</svelte:head>
+
 <main class="anuka-page">
-  {#if showPracticedList}
-    <PracticedWords
-      items={practicedItems}
-      {chartData}
-      practicedCount={practicedItems.length}
-      {totalCount}
-      onclose={() => showPracticedList = false}
-    >
-      {#snippet itemSnippet(entry)}
-        {#if $currentDataset?.kind === 'chinese'}
-          <GroupItemChinese item={entry.item} strokeStat={$datasetStatsStroke.get(`${entry.group.group}::${entry.item.id}`)} pinyinStat={$datasetStatsPinyin.get(`${entry.group.group}::${entry.item.id}`)} onclick={() => openWord(entry.item)} />
-        {:else if $currentDataset?.kind === 'english'}
-          <GroupItemEnglish item={entry.item} onclick={() => openWord(entry.item)} />
-        {/if}
-      {/snippet}
-    </PracticedWords>
-  {:else if showPracticedGroups}
-    <PracticedGroups
-      groups={practicedGroupsSorted.map(g => compactRowProps(g, 'groups'))}
-      practicedCount={practicedGroupsSorted.filter(g => $datasetGroupSessions.has(g.group)).length}
-      totalCount={practicedGroupsSorted.length}
-      onclose={() => showPracticedGroups = false}
-    />
-  {:else if showPracticedChars}
-    <PracticedChars
-      chars={practicedCharsData}
-      practicedCount={practicedCharsCount}
-      {uniqueChars}
-      onclose={() => showPracticedChars = false}
-    />
-  {:else if showHowItWorks}
-    <HowItWorks onClose={() => showHowItWorks = false} />
-  {:else}
   <Hero
     datasetName={$currentDataset?.name}
     datasetDescription={$currentDataset?.description}
@@ -238,10 +182,10 @@
     {strokeProgress} {strokeMastery} {pinyinProgress} {pinyinMastery}
     {practiceHref}
     onShowAuthDropdown={() => showAuthDropdown = true}
-    onShowPracticedGroups={() => showPracticedGroups = true}
-    onShowPracticedList={() => showPracticedList = true}
-    onShowPracticedChars={() => showPracticedChars = true}
-    onShowHowItWorks={() => showHowItWorks = true}
+    onShowPracticedGroups={() => goto('/chinese/groups')}
+    onShowPracticedList={() => goto('/chinese/words')}
+    onShowPracticedChars={() => goto('/chinese/chars')}
+    onShowHowItWorks={() => goto('/chinese/how-it-works')}
     onShowStatInfo={(stat) => activeStat = stat}
   >
     {#snippet toolbar()}
@@ -283,7 +227,6 @@
       <CompactGroupList groups={filteredGroups.map(g => compactRowProps(g))} />
     {/snippet}
   </Groups>
-  {/if}
 
   {#if activeStat}
     <Modal onclose={() => activeStat = null}>

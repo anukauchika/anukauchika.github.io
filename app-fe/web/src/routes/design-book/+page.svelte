@@ -20,6 +20,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>Design Book - Anuka Uchika</title>
+</svelte:head>
+
 <div class="anuka-page">
   <Island sticky>
     <AppTitle parts={['Anuka Uchika', 'Design Book']} />

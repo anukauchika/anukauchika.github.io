@@ -1,5 +1,6 @@
 <script>
-  import './workbook.css'
+  import { page } from '$app/stores'
+  import '$lib/app/ui/workbook.css'
   import { onMount } from 'svelte'
   import { datasetId, currentDataset, setDatasetById } from '@app/state/registry.js'
   import { formatGroup } from '@std/format.js'
@@ -8,19 +9,13 @@
 
   const exerciseSets = 2
 
-  const getSearchParams = () => {
-    if (typeof window === 'undefined') return new URLSearchParams()
-    return new URLSearchParams(window.location.search)
-  }
-
   onMount(() => {
-    const params = getSearchParams()
-    const requested = params.get('dataset')
+    const requested = $page.url.searchParams.get('dataset')
     if (requested) setDatasetById(requested)
   })
 
   const getInitialGroup = () => {
-    const value = Number(getSearchParams().get('group'))
+    const value = Number($page.url.searchParams.get('group'))
     return Number.isFinite(value) && value > 0 ? value : 1
   }
 
@@ -39,34 +34,32 @@
   const printDate = formatPrintDate()
 
   const updateUrl = () => {
-    if (typeof window === 'undefined') return
     const url = new URL(window.location.href)
     url.searchParams.set('group', String(groupFilter))
     if ($datasetId) url.searchParams.set('dataset', $datasetId)
     window.history.replaceState({}, '', url)
   }
 
-  $effect(() => {
-    updateUrl()
-  })
+  $effect(() => { updateUrl() })
 
   const activeGroup = $derived.by(() =>
     groups.find((g) => g.group === Number(groupFilter)) || groups[0]
   )
 
-  const handlePrint = () => {
-    if (typeof window !== 'undefined') window.print()
-  }
+  const handlePrint = () => { window.print() }
 
-  const shouldAutoPrint = () => getSearchParams().get('autoprint') === '1'
+  const shouldAutoPrint = () => $page.url.searchParams.get('autoprint') === '1'
 
   $effect(() => {
-    if (typeof window === 'undefined') return
     if (shouldAutoPrint()) {
       setTimeout(() => window.print(), 300)
     }
   })
 </script>
+
+<svelte:head>
+  <title>Workbook - Anuka Uchika</title>
+</svelte:head>
 
 <main class="workbook-page">
   <header class="sheet-header">
