@@ -1,6 +1,5 @@
 import { req, createDatabase } from './idb'
-import type { PrefsRepo } from '@app/api/prefs-repo'
-import { ListViewStyle, type MainFilters } from '@app/api/types'
+import { ListViewStyle, type MainFilters, type PrefsRepo } from '@app/api/data/prefs-repo'
 
 const PREFS_STORE = 'prefs'
 

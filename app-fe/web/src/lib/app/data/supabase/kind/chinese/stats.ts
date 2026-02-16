@@ -1,5 +1,5 @@
-import { supabase } from './supabase-client.js'
-import type { GroupSession, WordAttempt, CharLog } from '@app/api/types'
+import { supabase } from '@app/data/supabase/supabase-client.js'
+import type { GroupSession, WordAttempt, CharLog } from '@app/api/data/kind/chinese/types'
 
 type SessionRecord = Omit<GroupSession, 'id' | 'synced' | 'done_at'> & { done_at?: string | null }
 type WordAttemptRecord = Omit<WordAttempt, 'id' | 'synced'>

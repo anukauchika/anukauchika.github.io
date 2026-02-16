@@ -1,7 +1,8 @@
-import { statsRepo } from '@app/data/idb-stats-repo'
-import { api } from '../supabase/index.js'
-import type { GroupSessionService } from '@app/api/group-session-service'
-import type { CharAttemptInput, GroupSession, PracticeType, WordAttemptResult } from '@app/api/types'
+import { statsRepo } from '@app/data/kind/chinese/idb-stats-repo'
+import { api } from '@app/data/supabase/index.js'
+import type { GroupSession, PracticeType } from '@app/api/data/kind/chinese/types'
+import type { GroupSessionService } from '@app/api/services/kind/chinese/group-session-service'
+import type { CharAttemptInput, WordAttemptResult } from '@app/api/services/kind/chinese/types'
 
 async function startGroupSession(
   userId: string | null,

@@ -1,4 +1,14 @@
-import type { ListViewStyle, MainFilters } from './types'
+export enum ListViewStyle {
+  Compact = 'compact',
+  Full = 'full',
+}
+
+export interface MainFilters {
+  search: string
+  tags: string[]
+  groups: string[]
+  listViewStyle: ListViewStyle
+}
 
 export interface PrefsRepo {
   // Dataset selection

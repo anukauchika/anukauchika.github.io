@@ -1,6 +1,6 @@
 import { writable, type Writable } from 'svelte/store'
 import { prefsRepo } from '@app/data/idb-prefs-repo'
-import type { ListViewStyle } from '@app/api/types'
+import type { ListViewStyle } from '@app/api/data/prefs-repo'
 
 export const mainSearch: Writable<string> = writable('')
 export const mainTags: Writable<string[]> = writable([])

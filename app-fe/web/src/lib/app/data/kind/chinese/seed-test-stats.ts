@@ -1,16 +1,23 @@
 /**
- * Generates realistic practice stats for the chinese-hskv3-elementary dataset.
+ * Generates realistic practice stats for the chinese-test dataset.
  * Seeds IDB directly via bulk insert — no server sync.
  *
  * Usage (browser console):
- *   import('/src/data/seed-elementary-stats.js').then(m => m.seed())
+ *   import('/src/data/seed-test-stats.js').then(m => m.seed())
  */
 import { statsRepo } from './idb-stats-repo'
-import type { GroupSession, WordAttempt, CharLog } from '@app/api/types'
+import type { GroupSession, WordAttempt, CharLog } from '@app/api/data/kind/chinese/types'
 
-const DATASET_CODE = 'aa'
+const DATASET_CODE = 'ae'
 const PRACTICE_TYPE = 's'
-const WORDS = Array.from({ length: 15 }, (_, i) => i + 1)
+
+const GROUPS = [
+  { group: 1, words: [1, 2, 3] },
+  { group: 2, words: [1, 2, 3] },
+  { group: 3, words: [1, 2, 3] },
+  { group: 4, words: [1, 2, 6] },
+  { group: 5, words: [1, 2, 3] },
+]
 
 function rand(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
@@ -22,49 +29,36 @@ function isoAt(date: Date): string {
 
 export async function seed(): Promise<void> {
   const now = new Date('2026-02-06T12:00:00')
-  const start = new Date('2025-12-06T08:00:00')
-  const totalDays = 62
+  const monthAgo = new Date('2026-01-06T08:00:00')
 
-  let sessionId = 800000
-  let wordId = 800000
+  let sessionId = 900000
+  let wordId = 900000
   const sessions: GroupSession[] = []
   const words: WordAttempt[] = []
   const chars: CharLog[] = []
 
-  let unlockedUpTo = 1
+  for (const g of GROUPS) {
+    const sessionCount =
+      g.group === 1 ? rand(160, 180) :
+      g.group === 2 ? rand(100, 130) :
+      g.group === 3 ? rand(40, 60) :
+      g.group === 4 ? rand(12, 25) :
+      rand(1, 5)
 
-  for (let day = 0; day < totalDays; day++) {
-    const dayDate = new Date(start)
-    dayDate.setDate(dayDate.getDate() + day)
-    dayDate.setHours(0, 0, 0, 0)
-
-    if (dayDate > now) break
-
-    if (Math.random() > 0.6) continue
-
-    if (Math.random() < 0.55 && unlockedUpTo < 55) {
-      unlockedUpTo++
-    }
-
-    const sessionsToday = rand(1, 3)
-
-    for (let s = 0; s < sessionsToday; s++) {
-      let group: number
-      if (Math.random() < 0.4 && unlockedUpTo > 3) {
-        group = rand(1, Math.max(1, unlockedUpTo - 3))
-      } else {
-        group = rand(Math.max(1, unlockedUpTo - 2), unlockedUpTo)
-      }
-
+    for (let s = 0; s < sessionCount; s++) {
+      const dayOffset = rand(0, 30)
       const hourOffset = rand(8, 21)
-      const sessionDate = new Date(dayDate)
+      const sessionDate = new Date(monthAgo)
+      sessionDate.setDate(sessionDate.getDate() + dayOffset)
       sessionDate.setHours(hourOffset, rand(0, 59), rand(0, 59))
+
+      if (sessionDate > now) continue
 
       const sid = sessionId++
       const startedAt = isoAt(sessionDate)
 
       const isFull = Math.random() < 0.85
-      const doneDate = new Date(sessionDate.getTime() + rand(3, 12) * 60000)
+      const doneDate = new Date(sessionDate.getTime() + rand(2, 8) * 60000)
       const doneAt = isFull ? isoAt(doneDate) : null
 
       sessions.push({
@@ -72,13 +66,13 @@ export async function seed(): Promise<void> {
         user_id: null,
         dataset_id: DATASET_CODE,
         practice_type: PRACTICE_TYPE,
-        group_id: String(group),
+        group_id: String(g.group),
         started_at: startedAt,
         done_at: doneAt,
         synced: 1,
       } as GroupSession)
 
-      const wordsToAttempt = isFull ? WORDS : WORDS.slice(0, rand(1, WORDS.length - 1))
+      const wordsToAttempt = isFull ? g.words : g.words.slice(0, rand(1, g.words.length - 1))
       let wordTime = new Date(sessionDate.getTime() + 5000)
 
       for (const wid of wordsToAttempt) {
@@ -97,7 +91,7 @@ export async function seed(): Promise<void> {
         } as WordAttempt)
 
         const charCount = rand(1, 2)
-        const errorChance = group <= 10 ? 0.1 : group <= 25 ? 0.2 : 0.35
+        const errorChance = g.group <= 2 ? 0.1 : g.group <= 4 ? 0.25 : 0.4
         for (let ci = 0; ci < charCount; ci++) {
           const cStarted = new Date(wordTime.getTime() + ci * 2000)
           const errorCount = Math.random() < errorChance ? rand(1, 3) : 0
@@ -121,5 +115,5 @@ export async function seed(): Promise<void> {
   await statsRepo.bulkInsertCharLogs(chars)
 
   console.log(`Seeded: ${sessions.length} sessions, ${words.length} word attempts, ${chars.length} char logs`)
-  console.log('Reload the page and select "HSK V3 2026 Elementary" dataset to see the data.')
+  console.log('Reload the page and select "Chinese Test" dataset to see the data.')
 }

@@ -1,5 +1,5 @@
 import * as supabaseAuth from './supabase-auth.js'
-import * as supabaseStats from './supabase-stats.js'
+import * as supabaseStats from './kind/chinese/stats.js'
 
 export const api = {
   auth: {

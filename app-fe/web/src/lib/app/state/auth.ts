@@ -1,8 +1,8 @@
 import { writable, derived, type Writable, type Readable } from 'svelte/store'
 import type { Session, User } from '@supabase/supabase-js'
-import { api } from '../supabase/index.js'
-import { syncService } from '../services/sync-service'
-import { statsRepo } from '@app/data/idb-stats-repo'
+import { api } from '@app/data/supabase/index.js'
+import { syncService } from '@app/services/sync-service'
+import { statsRepo } from '@app/data/kind/chinese/idb-stats-repo'
 import { prefsRepo } from '@app/data/idb-prefs-repo'
 import { reloadDatasetPref } from './registry.js'
 

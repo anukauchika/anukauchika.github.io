@@ -1,6 +1,7 @@
-import { statsRepo } from '@app/data/idb-stats-repo'
-import type { StatsService } from '@app/api/stats-service'
-import type { DailyActivity, GroupSessionSummary, PracticeType, WordStat } from '@app/api/types'
+import { statsRepo } from '@app/data/kind/chinese/idb-stats-repo'
+import type { PracticeType } from '@app/api/data/kind/chinese/types'
+import type { StatsService } from '@app/api/services/kind/chinese/stats-service'
+import type { DailyActivity, GroupSessionSummary, WordStat } from '@app/api/services/kind/chinese/types'
 
 const MAX_SESSION_MS = 2 * 60 * 60 * 1000 // 2h safety cap
 

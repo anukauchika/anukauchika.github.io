@@ -1,10 +1,11 @@
 import { writable, get, type Writable } from 'svelte/store'
-import { statsService } from '../services/stats-service'
-import { syncService } from '../services/sync-service'
-import { groupSessionService } from '../services/group-session-service'
-import { user } from './auth.js'
-import { getDatasetCode } from './registry.js'
-import type { CharAttemptInput, DailyActivity, GroupSessionSummary, PracticeType, StatEntry, StatsMap, SessionsMap, DailyActivityMap } from '@app/api/types'
+import { statsService } from '@app/services/kind/chinese/stats-service'
+import { syncService } from '@app/services/sync-service'
+import { groupSessionService } from '@app/services/kind/chinese/group-session-service'
+import { user } from '@app/state/auth.js'
+import { getDatasetCode } from '@app/state/registry.js'
+import type { PracticeType } from '@app/api/data/kind/chinese/types'
+import type { CharAttemptInput, DailyActivity, GroupSessionSummary, StatEntry, StatsMap, SessionsMap, DailyActivityMap } from '@app/api/services/kind/chinese/types'
 
 // Code conversion: callers use full IDs ('chinese-hskv3-elementary', 'stroke'),
 // IDB/Supabase use compact codes ('aa', 's')

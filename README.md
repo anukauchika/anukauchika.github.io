@@ -19,7 +19,16 @@ This affects naming patterns, e.g.:
 Only entry points are allowed to import state & services, so all the assembly happens there.
 App should only use anuka framework for css, no custom css is allowed in components both core & app.
 
-## Project structure
+## Project arch & struct
+
+1. page: top level
+2. state: svelte state
+3. service: state only works with service layer
+4. data: service only uses data abstraction to access data
+5. supabase, idb: actual data implementations
+
+src/contract/service - service layer inputs, outputs, interfaces
+src/contract/data - data layer inputs outputs, interfaces
 
 src/lib/std - generic no domain knowledge framework but still tailored specifically to be used by this project
 src/lib/app - app level components & tools that have domain knoowledge

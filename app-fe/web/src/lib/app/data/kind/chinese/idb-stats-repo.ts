@@ -1,6 +1,6 @@
-import { req, tx, createDatabase } from './idb'
-import type { StatsRepo } from '@app/api/stats-repo'
-import type { GroupSession, WordAttempt, CharLog, PracticeType } from '@app/api/types'
+import { req, tx, createDatabase } from '@app/data/idb'
+import type { StatsRepo } from '@app/api/data/kind/chinese/stats-repo'
+import type { GroupSession, WordAttempt, CharLog, PracticeType } from '@app/api/data/kind/chinese/types'
 
 const ST_SESSIONS = 'group_sessions'
 const ST_WORDS = 'word_attempts'

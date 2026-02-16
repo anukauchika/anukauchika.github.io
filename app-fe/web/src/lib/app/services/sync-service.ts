@@ -1,6 +1,6 @@
-import { api } from '../supabase/index.js'
-import { statsRepo } from '@app/data/idb-stats-repo'
-import type { SyncService } from '@app/api/sync-service'
+import { api } from '@app/data/supabase/index.js'
+import { statsRepo } from '@app/data/kind/chinese/idb-stats-repo'
+import type { SyncService } from '@app/api/services/sync-service'
 
 let syncing = false
 let activeSessionId: number | null = null

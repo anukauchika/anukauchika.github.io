@@ -1,4 +1,5 @@
-import type { DailyActivity, GroupSessionSummary, PracticeType, WordStat } from './types'
+import type { PracticeType } from '@app/api/data/kind/chinese/types'
+import type { DailyActivity, GroupSessionSummary, WordStat } from './types'
 
 export interface StatsService {
   getWordStats(datasetId: string, practiceType: PracticeType): Promise<WordStat[]>

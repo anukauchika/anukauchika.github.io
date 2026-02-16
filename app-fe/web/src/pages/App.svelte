@@ -1,10 +1,10 @@
 <script>
   import { datasets, datasetId, currentDataset } from '@app/state/registry.js'
-  import { datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from '@app/state/practice-stats.js'
+  import { datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, dailyActivity, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from '@app/state/kind/chinese/practice-stats.js'
   import { mainSearch, mainTags, mainGroups, mainListViewStyle, loadMainFilters } from '@app/state/filters.js'
   import { user, isAuthenticated, dbVersion, signInWithGoogle, signInWithApple, signInWithEmail, signOut } from '@app/state/auth.js'
   import { formatGroup, toLocalDateKey, timeAgo } from '@std/format.js'
-  import { pickNextPractice } from '../utils/pick-next-practice.js'
+  import { pickNextPractice } from '@std/kind/chinese/pick-next-practice.js'
   import PracticedWords from '@app/ui/PracticedWords.svelte'
   import PracticedChars from '@app/ui/PracticedChars.svelte'
   import PracticedGroups from '@app/ui/chinese/PracticedGroups.svelte'

@@ -1,5 +1,5 @@
-import { statsRepo } from '@app/data/idb-stats-repo'
-import type { MaintenanceService } from '@app/api/maintenance-service'
+import { statsRepo } from '@app/data/kind/chinese/idb-stats-repo'
+import type { MaintenanceService } from '@app/api/services/maintenance-service'
 
 const CLEANUP_KEY = 'uch-stats-last-cleanup'
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000

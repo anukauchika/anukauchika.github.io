@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { datasetId, currentDataset, setDatasetById } from '@app/state/registry.js'
   import { formatGroup } from '@std/format.js'
-  import { loadDatasetGroupSessions, datasetGroupSessions, loadGroupStats, groupStats as groupStatsStore, startGroupSession, endGroupSession, recordWordAttempt } from '@app/state/practice-stats.js'
+  import { loadDatasetGroupSessions, datasetGroupSessions, loadGroupStats, groupStats as groupStatsStore, startGroupSession, endGroupSession, recordWordAttempt } from '@app/state/kind/chinese/practice-stats.js'
   import { isAuthenticated } from '@app/state/auth.js'
   import { get } from 'svelte/store'
   import Island from '@std/ui/Island.svelte'

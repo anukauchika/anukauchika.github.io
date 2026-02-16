@@ -2,7 +2,7 @@ import { mount } from 'svelte'
 import '@std/style/anuka.css'
 import './workbook.css'
 import Workbook from './Workbook.svelte'
-import { initAnalytics } from '../utils/analytics.js'
+import { initAnalytics } from '@app/data/google/analytics.js'
 
 initAnalytics()
 

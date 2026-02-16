@@ -1,4 +1,5 @@
-import type { CharAttemptInput, GroupSession, PracticeType, WordAttemptResult } from './types'
+import type { GroupSession, PracticeType } from '@app/api/data/kind/chinese/types'
+import type { CharAttemptInput, WordAttemptResult } from './types'
 
 export interface GroupSessionService {
   startGroupSession(

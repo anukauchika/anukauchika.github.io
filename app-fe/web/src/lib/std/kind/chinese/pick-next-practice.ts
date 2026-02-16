@@ -1,4 +1,4 @@
-import type { GroupSessionSummary, SessionsMap } from '@app/api/types'
+import type { GroupSessionSummary, SessionsMap } from '@app/api/services/kind/chinese/types'
 
 interface GroupEntry {
   group: number | string
