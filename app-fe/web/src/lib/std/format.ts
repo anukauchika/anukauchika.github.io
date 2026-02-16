@@ -1,17 +1,17 @@
-export const formatGroup = (value) => {
+export const formatGroup = (value: number | string): string => {
   const num = Number(value)
   if (!Number.isFinite(num)) return 'G-000'
   return `G-${String(Math.max(0, Math.trunc(num))).padStart(3, '0')}`
 }
 
-export const toLocalDateKey = (date) => {
+export const toLocalDateKey = (date: Date): string => {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
   return `${year}-${month}-${day}`
 }
 
-export const timeAgo = (ts) => {
+export const timeAgo = (ts: string | number | null | undefined): string => {
   if (!ts) return ''
   const diff = Date.now() - (typeof ts === 'number' ? ts : new Date(ts).getTime())
   const mins = Math.floor(diff / 60000)

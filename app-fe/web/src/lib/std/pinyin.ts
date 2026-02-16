@@ -1,5 +1,5 @@
 // Diacritic → (base vowel, tone number)
-const DIACRITIC_MAP = {
+const DIACRITIC_MAP: Record<string, [string, number]> = {
   'ā': ['a', 1], 'á': ['a', 2], 'ǎ': ['a', 3], 'à': ['a', 4],
   'ē': ['e', 1], 'é': ['e', 2], 'ě': ['e', 3], 'è': ['e', 4],
   'ī': ['i', 1], 'í': ['i', 2], 'ǐ': ['i', 3], 'ì': ['i', 4],
@@ -8,11 +8,16 @@ const DIACRITIC_MAP = {
   'ǖ': ['v', 1], 'ǘ': ['v', 2], 'ǚ': ['v', 3], 'ǜ': ['v', 4], 'ü': ['v', 5],
 }
 
+interface PinyinMapping {
+  pinyin: string | null
+  autoComplete: boolean
+}
+
 /**
  * Convert a single diacritic pinyin syllable to tone-number form.
  * "hǎo" → "hao3", "nǚ" → "nv3", "ba" → "ba5", "nǎr" → "nar3"
  */
-export function diacriticToToneNumber(syllable) {
+export function diacriticToToneNumber(syllable: string): string {
   let tone = 5 // default neutral
   let result = ''
   for (const ch of syllable) {
@@ -27,7 +32,7 @@ export function diacriticToToneNumber(syllable) {
   return result + tone
 }
 
-const isCJK = (ch) => /[\u4e00-\u9fff]/.test(ch)
+const isCJK = (ch: string): boolean => /[\u4e00-\u9fff]/.test(ch)
 
 /**
  * Map space-separated pinyin syllables to CJK characters.
@@ -36,7 +41,7 @@ const isCJK = (ch) => /[\u4e00-\u9fff]/.test(ch)
  * When syllables < chars (erhua: 儿 absorbed), marks extra 儿 as autoComplete.
  * Heuristic: scan from the end — unmatched 儿 gets autoComplete.
  */
-export function splitPinyin(pinyinStr, cjkChars) {
+export function splitPinyin(pinyinStr: string, cjkChars: string): PinyinMapping[] {
   const syllables = pinyinStr.trim().split(/\s+/)
   const chars = [...cjkChars].filter(isCJK)
 
@@ -46,7 +51,7 @@ export function splitPinyin(pinyinStr, cjkChars) {
 
   if (syllables.length < chars.length) {
     // Build result from end to start
-    const result = new Array(chars.length)
+    const result = new Array<PinyinMapping>(chars.length)
     let si = syllables.length - 1
     for (let ci = chars.length - 1; ci >= 0; ci--) {
       if (si < 0) {

@@ -1,6 +1,13 @@
+declare global {
+  interface Window {
+    dataLayer: unknown[]
+    gtag: (...args: unknown[]) => void
+  }
+}
+
 const GA_MEASUREMENT_ID = 'G-ELKSNFMX2R'
 
-export function initAnalytics() {
+export function initAnalytics(): void {
   if (typeof window === 'undefined') return
   if (window.location.hostname === 'localhost') return // skip in dev
 
@@ -12,7 +19,7 @@ export function initAnalytics() {
 
   // Initialize gtag
   window.dataLayer = window.dataLayer || []
-  function gtag() { window.dataLayer.push(arguments) }
+  function gtag(...args: unknown[]) { window.dataLayer.push(args) }
   window.gtag = gtag
   gtag('js', new Date())
   gtag('config', GA_MEASUREMENT_ID)
