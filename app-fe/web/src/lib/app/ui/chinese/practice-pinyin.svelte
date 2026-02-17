@@ -7,7 +7,7 @@
   import BtnIcon from '@std/ui/btn-icon.svelte'
 
   let {
-    group, datasetId, translationField, backUrl,
+    group, datasetId, backUrl,
     groupStats = new Map(),
     isAuthenticated = false,
     onLoadGroupStats = async () => new Map(),
@@ -155,7 +155,7 @@
     charData = []
     if (isAuthenticated && item) {
       if (!sessionIdPromise) {
-        sessionIdPromise = onStartSession(datasetId, practiceType, group.group)
+        sessionIdPromise = onStartSession(datasetId, practiceType, group.id)
       }
       sessionIdPromise.then((sid) => {
         if (sid != null) onRecordAttempt(sid, item.id, wStartedAt, charDoneAt, updatedCharData)
@@ -286,7 +286,7 @@
       inputValue = ''
       if (datasetId) {
         sessionIdPromise = null
-        onLoadGroupStats(datasetId, practiceType, group.group).then((stats) => {
+        onLoadGroupStats(datasetId, practiceType, group.id).then((stats) => {
           items = [...rawItems].sort((a, b) => {
             const ca = stats.get(a.id)?.successCount ?? 0
             const cb = stats.get(b.id)?.successCount ?? 0
@@ -314,7 +314,7 @@
       {/if}
       <div class="anuka-stack anuka-center">
         <div class="anuka-row anuka-center anuka-compact" class:anuka-hidden={!showTranslation}>
-          <span>{currentItem[translationField]}</span>
+          <span>{currentItem.tr}</span>
         </div>
 
         <div class="anuka-row anuka-compact anuka-hanzi anuka-lg" translate="no" lang="zh">
@@ -400,7 +400,7 @@
         class:anuka-succ={completedWords.has(idx)}
         title="{item.word}"
       >
-        {item[translationField]}
+        {item.tr}
         {#if isAuthenticated && stat}
           <span class="anuka-sm">{stat.successCount}{#if stat.errorCount > 0}<span class="anuka-fail">| {stat.errorCount}</span>{/if}</span>
         {/if}

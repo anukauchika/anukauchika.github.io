@@ -1,5 +1,6 @@
-import type { ChineseGroup, ChineseItem, ChineseDatasetStats } from '@app/api/data/kind/chinese/dataset'
+import type { ChineseGroup, ChineseWord, ChineseDatasetStats } from '@app/api/data/kind/chinese/dataset'
 import type { StatsMap, SessionsMap, StatEntry, DailyActivityMap } from '@app/api/services/kind/chinese/types'
+import { compositeKey } from '@app/api/data/dataset'
 import { toLocalDateKey } from '@std/format'
 
 // --- Types ---
@@ -14,7 +15,7 @@ export interface CharStatEntry {
 }
 
 export interface PracticedItem {
-  item: ChineseItem
+  item: ChineseWord
   group: ChineseGroup
   stat: StatEntry
 }
@@ -67,7 +68,7 @@ export function countPracticed(groups: ChineseGroup[], statsMap: StatsMap): numb
   let count = 0
   for (const g of groups) {
     for (const item of g.items) {
-      if (statsMap.has(`${g.group}::${item.id}`)) count++
+      if (statsMap.has(compositeKey(g.id, item.id))) count++
     }
   }
   return count
@@ -77,7 +78,7 @@ export function buildPracticedItems(groups: ChineseGroup[], statsMap: StatsMap):
   const items: PracticedItem[] = []
   for (const g of groups) {
     for (const item of g.items) {
-      const stat = statsMap.get(`${g.group}::${item.id}`)
+      const stat = statsMap.get(compositeKey(g.id, item.id))
       if (stat) items.push({ item, group: g, stat })
     }
   }
@@ -102,7 +103,7 @@ export function buildPracticedCharsData(
 
   for (const g of groups) {
     for (const item of g.items) {
-      const key = `${g.group}::${item.id}`
+      const key = compositeKey(g.id, item.id)
       const sStat = strokeStats.get(key)
       const pStat = pinyinStats.get(key)
       const hasStat = sStat || pStat
@@ -158,7 +159,7 @@ export function calcMastery(groups: ChineseGroup[], statsMap: StatsMap): number 
   let sum = 0
   for (const g of groups) {
     for (const item of g.items) {
-      const stat = statsMap.get(`${g.group}::${item.id}`)
+      const stat = statsMap.get(compositeKey(g.id, item.id))
       sum += Math.min((stat?.successCount ?? 0) / 10, 1)
     }
   }
@@ -167,13 +168,13 @@ export function calcMastery(groups: ChineseGroup[], statsMap: StatsMap): number 
 
 export function calcGroupProgress(group: ChineseGroup, statsMap: StatsMap): number {
   const practiced = group.items.filter(item =>
-    statsMap.has(`${group.group}::${item.id}`)
+    statsMap.has(compositeKey(group.id, item.id))
   ).length
   return group.items.length > 0 ? Math.round((practiced / group.items.length) * 100) : 0
 }
 
 export function calcGroupMastery(group: ChineseGroup, sessionsMap: SessionsMap): number {
-  const fullSessions = sessionsMap.get(group.group)?.full ?? 0
+  const fullSessions = sessionsMap.get(group.id)?.full ?? 0
   return Math.min(Math.round((fullSessions / 10) * 100), 100)
 }
 
@@ -181,8 +182,8 @@ export function calcGroupMastery(group: ChineseGroup, sessionsMap: SessionsMap):
 
 export function sortGroupsByLastPracticed(groups: ChineseGroup[], sessionsMap: SessionsMap): ChineseGroup[] {
   return [...groups].sort((a, b) => {
-    const tA = sessionsMap.get(a.group)?.lastPracticedAt ?? ''
-    const tB = sessionsMap.get(b.group)?.lastPracticedAt ?? ''
+    const tA = sessionsMap.get(a.id)?.lastPracticedAt ?? ''
+    const tB = sessionsMap.get(b.id)?.lastPracticedAt ?? ''
     return tB.localeCompare(tA)
   })
 }

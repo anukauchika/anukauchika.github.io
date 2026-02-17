@@ -8,7 +8,7 @@
     <span class="anuka-badge">{(item.id ?? 0).toString().padStart(2, '0')}</span>
   </div>
   <div class="anuka-main">{item.pinyin}</div>
-  <div class="anuka-mute">{item.english}</div>
+  <div class="anuka-mute">{item.tr}</div>
   <div class="anuka-row">
     {#each item.tags ?? [] as tag}
       <span class="anuka-tag">#{tag}</span>

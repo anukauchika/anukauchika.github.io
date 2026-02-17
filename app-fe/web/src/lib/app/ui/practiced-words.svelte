@@ -26,7 +26,7 @@
     <PracticeChart bars={chartData.bars} line={chartData.cumulativeData} ticks={chartData.ticks} yMax={chartData.yMax} />
   {/if}
   <div class="anuka-grid">
-    {#each items as entry (`${entry.group.group}-${entry.item.id}`)}
+    {#each items as entry (`${entry.group.id}-${entry.item.id}`)}
       <div class="anuka-stack anuka-compact">
         <span class="anuka-mute anuka-sm">{timeAgo(entry.stat.lastPracticedAt)}</span>
         {@render itemSnippet(entry)}

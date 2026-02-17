@@ -1,9 +1,10 @@
+import type { Group } from '@app/api/data/dataset'
+
 interface Taggable {
   tags?: string[]
 }
 
-interface Group extends Taggable {
-  group: number
+export interface GroupWithItems extends Group {
   items: Taggable[]
 }
 
@@ -14,10 +15,18 @@ function normalize(value: string): string {
     .replace(/[\u0300-\u036f]/g, '')
 }
 
-function matchesQuery(item: Record<string, unknown>, query: string, searchFields: string[]): boolean {
+function collectStrings(item: Record<string, unknown>): string[] {
+  const values: string[] = []
+  for (const v of Object.values(item)) {
+    if (typeof v === 'string') values.push(v)
+    if (Array.isArray(v)) for (const el of v) { if (typeof el === 'string') values.push(el) }
+  }
+  return values
+}
+
+function matchesQuery(item: Record<string, unknown>, query: string): boolean {
   if (!query) return true
-  const values = searchFields.map((field) => (item[field] as string) || '').concat((item.tags as string[]) || [])
-  const raw = values.join(' ')
+  const raw = collectStrings(item).join(' ')
   const hayLower = raw.toLowerCase()
   const hayNorm = normalize(raw)
   const qLower = query.toLowerCase()
@@ -37,24 +46,23 @@ function matchesGroupTags(group: Taggable, tags: string[]): boolean {
   return tags.every((t) => groupTags.includes(t))
 }
 
-function matchesGroup(groupId: number, selectedGroups: number[]): boolean {
+function matchesGroup(groupId: string, selectedGroups: string[]): boolean {
   if (selectedGroups.length === 0) return true
   return selectedGroups.includes(groupId)
 }
 
 export function filterGroups(
-  groups: Group[],
+  groups: GroupWithItems[],
   query: string,
   tags: string[],
-  selectedGroups: number[],
-  searchFields: string[],
-): Group[] {
+  selectedGroups: string[],
+): GroupWithItems[] {
   return groups
-    .filter((g) => matchesGroup(g.group, selectedGroups))
+    .filter((g) => matchesGroup(g.id, selectedGroups))
     .map((g) => {
       const groupMatches = matchesGroupTags(g, tags)
       const items = g.items.filter(
-        (item) => matchesQuery(item as Record<string, unknown>, query, searchFields) && (groupMatches || matchesTags(item, tags))
+        (item) => matchesQuery(item as Record<string, unknown>, query) && (groupMatches || matchesTags(item, tags))
       )
       return { ...g, items, _groupMatches: groupMatches }
     })

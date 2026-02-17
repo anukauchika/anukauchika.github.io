@@ -37,7 +37,7 @@
   })
 
   const tagItems = $derived(allTags.map(t => ({ id: t, label: '#' + t })))
-  const groupItems = $derived(groups.map(g => ({ id: g.group, label: formatGroup(g.group) })))
+  const groupItems = $derived(groups.map(g => ({ id: g.id, label: g.displayId ?? formatGroup(g.idx) })))
 </script>
 
 <div class="anuka-stack">

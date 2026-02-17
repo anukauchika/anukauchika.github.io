@@ -10,7 +10,7 @@
     {#each group.items as item}
       <div class="cell filled chinese">{item.word}</div>
       <div class="cell filled pinyin">{item.pinyin}</div>
-      <div class="cell filled english">{item.english}</div>
+      <div class="cell filled english">{item.tr}</div>
 
       {#each Array(exerciseSets) as _}
         <div class="cell blank chinese"></div>

@@ -13,6 +13,7 @@ export default {
     alias: {
       '@std': 'src/lib/std',
       '@app': 'src/lib/app',
+      '@data': '../data',
     },
   },
 }

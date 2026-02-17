@@ -4,7 +4,7 @@
   import { datasetId, currentDataset, setDatasetById } from '@app/state/registry.js'
   import { loadDatasetGroupSessions, datasetGroupSessions, loadGroupStats, groupStats as groupStatsStore, startGroupSession, endGroupSession, recordWordAttempt } from '@app/state/kind/chinese/practice-stats.js'
   import { isAuthenticated } from '@app/state/auth.js'
-  import { formatGroup } from '@std/format.js'
+  import { getChineseContent } from '@app/state/registry.js'
   import { get } from 'svelte/store'
   import Island from '@std/ui/island.svelte'
   import IslandTitle from '@std/ui/island-title.svelte'
@@ -21,18 +21,17 @@
   })
 
   const practiceGroupId = $derived.by(() => {
-    const value = Number($page.url.searchParams.get('group'))
-    return Number.isFinite(value) && value > 0 ? value : 1
+    return $page.url.searchParams.get('group') || '1'
   })
 
-  const groups = $derived.by(() => $currentDataset?.data?.groups ?? [])
+  const groups = $derived.by(() => getChineseContent($currentDataset)?.groups ?? [])
 
   const practiceGroup = $derived.by(() =>
-    groups.find((g) => g.group === practiceGroupId) || groups[0]
+    groups.find((g) => g.id === practiceGroupId) || groups[0]
   )
 
   const practiceGroupSessions = $derived.by(() =>
-    practiceGroup ? $datasetGroupSessions.get(practiceGroup.group) : null
+    practiceGroup ? $datasetGroupSessions.get(practiceGroup.id) : null
   )
 
   const handleLoadGroupStats = async (dsId, pt, gId) => {
@@ -54,7 +53,7 @@
 
 <main class="anuka-page">
   {#if practiceGroup}
-    <PracticePinyin group={practiceGroup} datasetId={$datasetId} translationField={$currentDataset?.data?.to} {backUrl}
+    <PracticePinyin group={practiceGroup} datasetId={$datasetId} {backUrl}
       groupStats={$groupStatsStore} isAuthenticated={$isAuthenticated}
       onLoadGroupStats={handleLoadGroupStats} onStartSession={startGroupSession} onEndSession={endGroupSession} onRecordAttempt={recordWordAttempt} />
   {/if}
@@ -63,7 +62,7 @@
     <IslandTitle level={1}>Pinyin Practice</IslandTitle>
     {#if practiceGroup}
       <div class="anuka-row anuka-center">
-        <span class="anuka-sm anuka-mute">{formatGroup(practiceGroup.group)}</span>
+        <span class="anuka-sm anuka-mute">{practiceGroup.displayId}</span>
         {#if practiceGroup.tags?.length}
           <Tags tags={practiceGroup.tags} />
         {/if}

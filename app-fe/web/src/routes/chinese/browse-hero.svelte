@@ -21,7 +21,7 @@
     if ($isAuthenticated) {
       return pickNextPractice($filteredGroups, $datasetGroupSessions, $datasetGroupSessionsStroke, $datasetGroupSessionsPinyin)
     }
-    return $filteredGroups.length > 0 ? { groupId: $filteredGroups[0].group, type: 'stroke' } : null
+    return $filteredGroups.length > 0 ? { groupId: $filteredGroups[0].id, type: 'stroke' } : null
   })
   const practiceHref = $derived.by(() => {
     const np = nextPractice

@@ -67,7 +67,7 @@
         <span class="anuka-icon anuka-icon-speaker"></span>
       </BtnIcon>
     </div>
-    <div class="anuka-mute">{item.pinyin} · {item.english}</div>
+    <div class="anuka-mute">{item.pinyin} · {item.tr}</div>
     <div class="anuka-grid">
       {#each wordChars as char, idx}
         <Card>

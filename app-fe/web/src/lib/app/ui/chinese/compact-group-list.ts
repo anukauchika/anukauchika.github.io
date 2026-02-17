@@ -1,5 +1,6 @@
-import { formatGroup, timeAgo } from '@std/format'
+import { timeAgo } from '@std/format'
 import { calcGroupProgress, calcGroupMastery } from '@app/std/kind/chinese/stats'
+import type { ChineseGroup } from '@app/api/data/kind/chinese/dataset'
 import type { StatsMap, SessionsMap } from '@app/api/services/kind/chinese/types'
 
 interface Context {
@@ -13,16 +14,16 @@ interface Context {
   statsPinyin: StatsMap
 }
 
-export function buildProps(group: any, ctx: Context, from?: string) {
+export function buildProps(group: ChineseGroup, ctx: Context, from?: string) {
   const fromParam = from ? `&from=${from}` : ''
-  const gsStroke = ctx.groupSessionsStroke.get(group.group)
-  const gsPinyin = ctx.groupSessionsPinyin.get(group.group)
+  const gsStroke = ctx.groupSessionsStroke.get(group.id)
+  const gsPinyin = ctx.groupSessionsPinyin.get(group.id)
   return {
-    groupId: formatGroup(group.group),
-    lastPracticed: ctx.isAuthenticated ? timeAgo(ctx.groupSessions.get(group.group)?.lastPracticedAt) : undefined,
+    groupId: group.displayId,
+    lastPracticed: ctx.isAuthenticated ? timeAgo(ctx.groupSessions.get(group.id)?.lastPracticedAt) : undefined,
     tags: group.tags,
-    strokeHref: `${ctx.basePath}/practice/hanzi?group=${group.group}&dataset=${ctx.datasetId}${fromParam}`,
-    pinyinHref: `${ctx.basePath}/practice/pinyin?group=${group.group}&dataset=${ctx.datasetId}${fromParam}`,
+    strokeHref: `${ctx.basePath}/practice/hanzi?group=${group.id}&dataset=${ctx.datasetId}${fromParam}`,
+    pinyinHref: `${ctx.basePath}/practice/pinyin?group=${group.id}&dataset=${ctx.datasetId}${fromParam}`,
     strokeSessions: gsStroke?.full ?? 0,
     pinyinSessions: gsPinyin?.full ?? 0,
     strokeProgress: ctx.isAuthenticated ? calcGroupProgress(group, ctx.statsStroke) : 0,

@@ -1,45 +1,23 @@
 import { writable, derived, type Writable, type Readable } from 'svelte/store'
-import registry from '../../../../../data/registry.json'
-import { prefsRepo } from '@app/data/idb-prefs-repo'
+import type { DatasetMeta } from '@app/api/data/registry'
+import type { ChineseDataset } from '@app/api/data/kind/chinese/dataset'
+import { registryService } from '@app/services/registry-service'
 
-interface RegistryEntry {
-  id: string
-  code: string
-  name: string
-  appTitle: string
-  path: string
-  description: string
-  tags: string[]
-  kind: string
-}
-
-export interface Dataset extends RegistryEntry {
+export interface Dataset extends DatasetMeta {
   data: Record<string, unknown> | null
 }
 
-// Dynamically import all JSON files from data directory
-const dataModules = import.meta.glob('../../../../../data/**/*.json', { eager: true, import: 'default' }) as Record<string, unknown>
-
-// Build path mapping from glob results
-// Glob paths are relative: '../../../../../data/chinese/sherzod.json'
-// Registry paths are absolute: 'data/chinese/sherzod.json'
-const dataByPath: Record<string, unknown> = {}
-for (const [key, value] of Object.entries(dataModules)) {
-  const normalizedPath = key.replace(/^(\.\.\/)+/, '')
-  dataByPath[normalizedPath] = value
-}
-
-export const datasets: Dataset[] = (registry as RegistryEntry[]).map((entry) => ({
+export const datasets: Dataset[] = registryService.getDatasets().map((entry) => ({
   ...entry,
-  data: (dataByPath[entry.path] as Record<string, unknown>) ?? null,
+  data: registryService.loadDatasetData(entry),
 }))
 
-const defaultDatasetId = datasets[0]?.id ?? ''
+const defaultDatasetId = registryService.getDatasetDefaultId()
 
 export const datasetId: Writable<string> = writable(defaultDatasetId)
 
-// Load saved preference from IDB on startup
-prefsRepo.getDatasetId().then((saved) => {
+// Load saved preference on startup
+registryService.loadPreferredId().then((saved) => {
   if (saved && datasets.some((d) => d.id === saved)) {
     datasetId.set(saved)
   }
@@ -47,7 +25,7 @@ prefsRepo.getDatasetId().then((saved) => {
 
 /** Re-read saved dataset from (switched) prefs DB */
 export async function reloadDatasetPref(): Promise<void> {
-  const saved = await prefsRepo.getDatasetId()
+  const saved = await registryService.loadPreferredId()
   if (saved && datasets.some((d) => d.id === saved)) {
     datasetId.set(saved)
   } else {
@@ -57,7 +35,7 @@ export async function reloadDatasetPref(): Promise<void> {
 
 // Persist whenever datasetId changes
 datasetId.subscribe((id) => {
-  if (id) prefsRepo.setDatasetId(id)
+  if (id) registryService.savePreferredId(id)
 })
 
 export const currentDataset: Readable<Dataset> = derived(datasetId, ($datasetId) => {
@@ -73,6 +51,7 @@ export const setDatasetByKind = (kind: string): void => {
   if (match?.id) datasetId.set(match.id)
 }
 
-const codeById: Record<string, string> = Object.fromEntries(datasets.map((d) => [d.id, d.code]))
-
-export const getDatasetCode = (id: string): string | null => codeById[id] ?? null
+export function getChineseContent(ds: Dataset): ChineseDataset | null {
+  if (ds?.kind !== 'chinese' || !ds.data) return null
+  return ds.data as unknown as ChineseDataset
+}

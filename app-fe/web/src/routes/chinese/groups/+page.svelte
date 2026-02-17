@@ -30,7 +30,7 @@
 <main class="anuka-page">
   <PracticedGroups
     groups={practicedGroupsSorted.map(g => buildCompactProps(g, groupCtx, 'groups'))}
-    practicedCount={practicedGroupsSorted.filter(g => $datasetGroupSessions.has(g.group)).length}
+    practicedCount={practicedGroupsSorted.filter(g => $datasetGroupSessions.has(g.id)).length}
     totalCount={practicedGroupsSorted.length}
     onclose={() => goto('/chinese/')}
   />

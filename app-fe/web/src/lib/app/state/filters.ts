@@ -2,7 +2,7 @@ import { writable, derived, get, type Writable, type Readable } from 'svelte/sto
 import { prefsRepo } from '@app/data/idb-prefs-repo'
 import { datasetId, currentDataset } from '@app/state/registry'
 import { dbVersion } from '@app/state/auth'
-import { filterGroups } from '@app/std/dataset'
+import { filterGroups, type GroupWithItems } from '@app/std/dataset'
 import type { ListViewStyle } from '@app/api/data/prefs-repo'
 
 export const mainSearch: Writable<string> = writable('')
@@ -10,12 +10,15 @@ export const mainTags: Writable<string[]> = writable([])
 export const mainGroups: Writable<string[]> = writable([])
 export const mainListViewStyle: Writable<ListViewStyle> = writable('full' as ListViewStyle)
 
-export const groups: Readable<any[]> = derived(currentDataset, ($cd) => ($cd as any)?.data?.groups ?? [])
-const searchFields: Readable<string[]> = derived(currentDataset, ($cd) => ($cd as any)?.data?.search ?? [])
-export const filteredGroups: Readable<any[]> = derived(
-  [groups, mainSearch, mainTags, mainGroups, searchFields],
-  ([$groups, $search, $tags, $selectedGroups, $fields]) =>
-    filterGroups($groups, $search, $tags, $selectedGroups, $fields)
+function getGroups(data: Record<string, unknown> | null): GroupWithItems[] {
+  return (data as { groups?: GroupWithItems[] } | null)?.groups ?? []
+}
+
+export const groups: Readable<GroupWithItems[]> = derived(currentDataset, ($cd) => getGroups($cd?.data))
+export const filteredGroups: Readable<GroupWithItems[]> = derived(
+  [groups, mainSearch, mainTags, mainGroups],
+  ([$groups, $search, $tags, $selectedGroups]) =>
+    filterGroups($groups, $search, $tags, $selectedGroups)
 )
 
 let mainDatasetId: string | null = null
@@ -41,8 +44,8 @@ groups.subscribe(($groups) => {
   if (!initialized) return
   const current = get(mainGroups)
   if (current.length > 0) {
-    const validIds = new Set($groups.map((g: any) => g.group))
-    const filtered = current.filter((id: any) => validIds.has(id))
+    const validIds = new Set($groups.map((g) => g.id))
+    const filtered = current.filter((id) => validIds.has(id))
     if (filtered.length !== current.length) mainGroups.set(filtered)
   }
 })

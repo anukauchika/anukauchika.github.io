@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation'
   import { datasetStats, datasetStatsStroke, datasetStatsPinyin } from '@app/state/kind/chinese/practice-stats.js'
   import { filteredGroups } from '@app/state/filters.js'
+  import { compositeKey } from '@app/api/data/dataset'
   import { buildPracticedItems, buildChartData } from '@app/std/kind/chinese/stats'
   import PracticedWords from '@app/ui/practiced-words.svelte'
   import GroupItemChinese from '@app/ui/chinese/group-item.svelte'
@@ -32,7 +33,7 @@
     onclose={() => goto('/chinese/')}
   >
     {#snippet itemSnippet(entry)}
-      <GroupItemChinese item={entry.item} strokeStat={$datasetStatsStroke.get(`${entry.group.group}::${entry.item.id}`)} pinyinStat={$datasetStatsPinyin.get(`${entry.group.group}::${entry.item.id}`)} onclick={() => openWord(entry.item)} />
+      <GroupItemChinese item={entry.item} strokeStat={$datasetStatsStroke.get(compositeKey(entry.group.id, entry.item.id))} pinyinStat={$datasetStatsPinyin.get(compositeKey(entry.group.id, entry.item.id))} onclick={() => openWord(entry.item)} />
     {/snippet}
   </PracticedWords>
 

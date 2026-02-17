@@ -3,7 +3,7 @@ import { statsService } from '@app/services/kind/chinese/stats-service'
 import { syncService } from '@app/services/sync-service'
 import { groupSessionService } from '@app/services/kind/chinese/group-session-service'
 import { user } from '@app/state/auth.js'
-import { getDatasetCode } from '@app/state/registry.js'
+import { registryService } from '@app/services/registry-service'
 import type { PracticeType } from '@app/api/data/kind/chinese/types'
 import type { CharAttemptInput, DailyActivity, GroupSessionSummary, StatEntry, StatsMap, SessionsMap, DailyActivityMap } from '@app/api/services/kind/chinese/types'
 
@@ -12,7 +12,7 @@ import type { CharAttemptInput, DailyActivity, GroupSessionSummary, StatEntry, S
 const PT_CODES: Record<string, PracticeType> = { stroke: 's' as PracticeType, pinyin: 'p' as PracticeType }
 
 function dsCode(id: string): string {
-  return getDatasetCode(id) || id
+  return registryService.getDatasetCode(id) || id
 }
 
 function ptCode(type: string): PracticeType {
