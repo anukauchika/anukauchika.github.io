@@ -3,7 +3,7 @@ import { statsService } from '@svc/kind/chinese/stats-service'
 import { syncService } from '@svc/sync-service'
 import { groupSessionService } from '@svc/kind/chinese/group-session-service'
 import { user } from '@stt/auth.js'
-import { registryService } from '@svc/registry-service'
+import { datasetsMeta } from '@stt/dataset'
 import type { PracticeType } from '@dat/kind/chinese/types'
 import type { CharAttemptInput, DailyActivity, GroupSessionSummary, StatEntry, StatsMap, SessionsMap, DailyActivityMap } from '@svc/kind/chinese/types'
 
@@ -12,7 +12,8 @@ import type { CharAttemptInput, DailyActivity, GroupSessionSummary, StatEntry, S
 const PT_CODES: Record<string, PracticeType> = { stroke: 's' as PracticeType, pinyin: 'p' as PracticeType }
 
 function dsCode(id: string): string {
-  return registryService.getDatasetCode(id) || id
+  const meta = get(datasetsMeta).find((m) => m.id === id)
+  return meta?.code ?? id
 }
 
 function ptCode(type: string): PracticeType {

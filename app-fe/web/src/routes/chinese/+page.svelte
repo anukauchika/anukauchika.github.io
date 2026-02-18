@@ -1,5 +1,5 @@
 <script>
-  import { datasetId, currentDataset } from '@stt/registry.js'
+  import { datasetId, currentDataset, search, viewMode, filteredGroups } from '@stt/dataset.js'
   import {
     datasetStatsStroke,
     datasetStatsPinyin,
@@ -10,7 +10,6 @@
     loadDatasetGroupSessionsAll,
     loadDailyActivityAll,
   } from '@stt/kind/chinese/practice-stats.js'
-  import { mainSearch, mainListViewStyle, filteredGroups } from '@stt/filters.js'
   import { isAuthenticated, dbVersion } from '@stt/auth.js'
   import { buildProps as buildCompactProps } from '@uic/kind/chinese/compact-group-list'
   import { buildProps as buildFullProps } from '@uic/kind/chinese/group-item'
@@ -83,8 +82,8 @@
 
   <Groups
     groups={$filteredGroups.map((g) => buildFullProps(g, groupCtx))}
-    viewStyle={$mainListViewStyle}
-    hasSearch={$mainSearch.trim().length > 0}
+    viewStyle={$viewMode}
+    hasSearch={$search.trim().length > 0}
     datasetId={$datasetId}
   >
     {#snippet compact()}

@@ -1,8 +1,7 @@
 <script>
   import { goto } from '$app/navigation'
-  import { datasetId, currentDataset } from '@stt/registry.js'
+  import { datasetId, currentDataset, filteredGroups } from '@stt/dataset.js'
   import { datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin } from '@stt/kind/chinese/practice-stats.js'
-  import { filteredGroups } from '@stt/filters.js'
   import { isAuthenticated } from '@stt/auth.js'
   import { sortGroupsByLastPracticed } from '@std/kind/chinese/stats'
   import { buildProps as buildCompactProps } from '@uic/kind/chinese/compact-group-list'

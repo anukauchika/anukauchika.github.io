@@ -1,6 +1,6 @@
 import { timeAgo } from '@std/format'
 import { calcGroupProgress, calcGroupMastery } from '@std/kind/chinese/stats'
-import type { ChineseGroup } from '@dat/kind/chinese/dataset'
+import type { ChineseGroup } from '@dom/kind/chinese/dataset'
 import type { StatsMap, SessionsMap } from '@svc/kind/chinese/types'
 
 interface Context {

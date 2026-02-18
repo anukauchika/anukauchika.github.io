@@ -1,7 +1,7 @@
 <script>
   import { goto } from '$app/navigation'
   import { datasetStatsStroke, datasetStatsPinyin } from '@stt/kind/chinese/practice-stats.js'
-  import { filteredGroups } from '@stt/filters.js'
+  import { filteredGroups } from '@stt/dataset.js'
   import { calcStats, buildPracticedCharsData } from '@std/kind/chinese/stats'
   import PracticedChars from '@uic/practiced-chars.svelte'
 

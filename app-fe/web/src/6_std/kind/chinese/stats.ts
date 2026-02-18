@@ -1,6 +1,6 @@
-import type { ChineseGroup, ChineseWord, ChineseDatasetStats } from '@dat/kind/chinese/dataset'
+import type { ChineseGroup, ChineseWord, ChineseDatasetStats } from '@dom/kind/chinese/dataset'
 import type { StatsMap, SessionsMap, StatEntry, DailyActivityMap } from '@svc/kind/chinese/types'
-import { compositeKey } from '@dat/dataset'
+import { compositeKey } from '@dom/dataset'
 import { toLocalDateKey } from '@std/format'
 
 // --- Types ---

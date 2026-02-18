@@ -2,7 +2,6 @@
 
 - be concise
 - read @README.md
-- read @docs/README.md
 - read @app-fe/README.md
 - for big things pls follow req-refc-plan approach
   - create @docs/xxxx-req-feature.md discuss / adjust iterate
@@ -14,3 +13,4 @@
 - never run terraform/terragrant/aws/db update commands, ask user to perform that action instead
 - if user makes some obvious mistakes, clarify the intent with the user
   e.g. the user asks to create @docs/0006-new-architecture.md, ask if they want to create req, rfc or plan (dependent on context)
+- don't be guided too much, stand on correctness, good architecture when violated - discuss offer alternatives

@@ -1,6 +1,7 @@
 <script>
   import { goto } from '$app/navigation'
-  import { datasets, datasetId, currentDataset } from '@stt/registry.js'
+  import { datasetsMeta, datasetId, currentDataset, search, tags, selectedGroups, viewMode, groups, filteredGroups } from '@stt/dataset.js'
+  import { datasetService } from '@svc/dataset-service'
   import {
     datasetStatsStroke,
     datasetStatsPinyin,
@@ -9,10 +10,10 @@
     datasetGroupSessionsPinyin,
     dailyActivity,
   } from '@stt/kind/chinese/practice-stats.js'
-  import { mainSearch, mainTags, mainGroups, mainListViewStyle, groups, filteredGroups } from '@stt/filters.js'
   import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@stt/auth.js'
   import { pickNextPractice } from '@std/kind/chinese/pick-next-practice.js'
   import { calcStats, countPracticed, calcProgress, calcMastery } from '@std/kind/chinese/stats'
+  import { GroupViewMode } from '@dom/dataset'
   import Hero from '@uic/hero'
   import Toolbar from '@uic/hero/toolbar.svelte'
   import Filters from '@uic/hero/filters.svelte'
@@ -20,7 +21,7 @@
 
   let showAuthDropdown = $state(false)
 
-  const basePath = $derived.by(() => `/${$currentDataset.kind}`)
+  const basePath = $derived.by(() => `/${$currentDataset?.kind}`)
 
   const nextPractice = $derived.by(() => {
     if ($isAuthenticated) {
@@ -84,33 +85,33 @@
 >
   {#snippet toolbar()}
     <Toolbar
-      {datasets}
+      datasets={$datasetsMeta}
       datasetId={$datasetId}
       appTitle={$currentDataset?.appTitle}
       user={$user}
-      onDatasetChange={(id) => ($datasetId = id)}
+      onDatasetChange={(id) => datasetService.selectDataset(id)}
       onShowAuthDropdown={() => (showAuthDropdown = true)}
     />
   {/snippet}
   {#snippet filters()}
     <Filters
       groups={$groups}
-      search={$mainSearch}
-      tags={$mainTags}
-      selectedGroups={$mainGroups}
-      listViewStyle={$mainListViewStyle}
-      onSearchChange={(v) => ($mainSearch = v)}
+      search={$search}
+      tags={$tags}
+      selectedGroups={$selectedGroups}
+      listViewStyle={$viewMode}
+      onSearchChange={(v) => datasetService.setSearch(v)}
       onTagAdd={(tag) => {
-        if (!$mainTags.includes(tag)) $mainTags = [...$mainTags, tag]
+        if (!$tags.includes(tag)) datasetService.setTags([...$tags, tag])
       }}
-      onTagRemove={(tag) => ($mainTags = $mainTags.filter((t) => t !== tag))}
-      onTagsClear={() => ($mainTags = [])}
+      onTagRemove={(tag) => datasetService.setTags($tags.filter((t) => t !== tag))}
+      onTagsClear={() => datasetService.setTags([])}
       onGroupAdd={(id) => {
-        if (!$mainGroups.includes(id)) $mainGroups = [...$mainGroups, id]
+        if (!$selectedGroups.includes(id)) datasetService.setGroups([...$selectedGroups, id])
       }}
-      onGroupRemove={(id) => ($mainGroups = $mainGroups.filter((g) => g !== id))}
-      onGroupsClear={() => ($mainGroups = [])}
-      onToggleView={() => ($mainListViewStyle = $mainListViewStyle === 'full' ? 'compact' : 'full')}
+      onGroupRemove={(id) => datasetService.setGroups($selectedGroups.filter((g) => g !== id))}
+      onGroupsClear={() => datasetService.setGroups([])}
+      onToggleView={() => datasetService.setViewMode($viewMode === GroupViewMode.Full ? GroupViewMode.Compact : GroupViewMode.Full)}
     />
   {/snippet}
 </Hero>

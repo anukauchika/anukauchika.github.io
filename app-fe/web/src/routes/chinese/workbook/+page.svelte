@@ -2,7 +2,9 @@
   import { page } from '$app/stores'
   import '@uic/workbook.css'
   import { onMount } from 'svelte'
-  import { datasetId, currentDataset, setDatasetById, getChineseContent } from '@stt/registry.js'
+  import { datasetId, currentDataset } from '@stt/dataset.js'
+  import { datasetService } from '@svc/dataset-service'
+  import { asChineseDataset } from '@dom/kind/chinese/dataset'
   import WorkbookChinese from '@uic/kind/chinese/workbook.svelte'
   import WorkbookEnglish from '@uic/kind/english/workbook.svelte'
 
@@ -10,7 +12,7 @@
 
   onMount(() => {
     const requested = $page.url.searchParams.get('dataset')
-    if (requested) setDatasetById(requested)
+    if (requested) datasetService.selectDataset(requested)
   })
 
   const getInitialGroup = () => {
@@ -18,7 +20,7 @@
   }
 
   let groupFilter = $state(getInitialGroup())
-  const groups = $derived.by(() => getChineseContent($currentDataset)?.groups ?? [])
+  const groups = $derived.by(() => asChineseDataset($currentDataset)?.groups ?? [])
 
   const formatPrintDate = () => {
     const now = new Date()

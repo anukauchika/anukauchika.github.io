@@ -1,29 +1,7 @@
-import type { Group, Word } from '@dat/dataset'
+import type { ChineseWord, ChineseGroup } from '@dom/kind/chinese/dataset'
 import { formatGroup } from '@std/format'
 
-export interface ChineseWord extends Word {
-  pinyin: string
-  tr: string
-}
-
-export interface ChineseGroup extends Group {
-  items: ChineseWord[]
-}
-
-export interface ChineseDataset {
-  kind: 'chinese'
-  from: string
-  to: string
-  groups: ChineseGroup[]
-}
-
-export interface ChineseDatasetStats {
-  groups: number
-  words: number
-  chars: number
-}
-
-// --- Raw JSON shapes (before parsing) ---
+// --- Raw JSON shapes ---
 
 interface RawChineseWord {
   id: number
@@ -46,17 +24,24 @@ export interface RawChineseDataset {
   groups: RawChineseGroup[]
 }
 
-export function parseChineseDataset(raw: RawChineseDataset): ChineseDataset {
+export interface ParsedChineseContent {
+  kind: 'chinese'
+  from: string
+  to: string
+  groups: ChineseGroup[]
+}
+
+export function parseChineseDataset(raw: RawChineseDataset): ParsedChineseContent {
   return {
     kind: raw.kind,
     from: raw.from,
     to: raw.to,
-    groups: raw.groups.map((g) => ({
+    groups: raw.groups.map((g): ChineseGroup => ({
       ...g,
       idx: g.group,
       id: g.group,
       displayId: formatGroup(g.group),
-      items: g.items.map((item) => ({
+      items: g.items.map((item): ChineseWord => ({
         ...item,
         idx: item.id,
         id: item.id,

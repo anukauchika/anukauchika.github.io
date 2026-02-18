@@ -1,4 +1,4 @@
-import type { Group } from '@dat/dataset'
+import type { Group } from '@dom/dataset'
 import type { SessionsMap } from '@svc/kind/chinese/types'
 
 interface NextPractice {

@@ -28,6 +28,7 @@ App should only use anuka framework for css, no custom css is allowed in compone
 - low api: lower level apis to supabase, backend & localdb
 
 src/routes - routes, layouts, pages very specific components
+src/0_dom - pure datatypes & functions - domain layer
 src/1_uic - domain & app specific ui svelte components
 src/2_svc - service layer
 src/3_stt - states
@@ -42,8 +43,13 @@ allow: svc <- svc, stt, dat
 allow: dat <- low
 
 no relative imports allowed. all the folders above should have aliases in vite and imports need to be absolute e.g.:
+
 import '@stt/dataset'
 import '@svc/dataset'
+
+## Code style
+
+Prefer object imports for modules with many exports: `import * as state from '@stt/dataset'`
 
 ## Design Book
 

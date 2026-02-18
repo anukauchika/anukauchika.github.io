@@ -11,6 +11,7 @@ export default {
       fallback: 'index.html',
     }),
     alias: {
+      '@dom': 'src/0_dom',
       '@routes': 'src/routes',
       '@uic': 'src/1_uic',
       '@svc': 'src/2_svc',

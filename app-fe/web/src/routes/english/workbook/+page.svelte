@@ -2,8 +2,8 @@
   import { page } from '$app/stores'
   import '@uic/workbook.css'
   import { onMount } from 'svelte'
-  import { datasetId, currentDataset, setDatasetById } from '@stt/registry.js'
-  import { formatGroup } from '@std/format.js'
+  import { datasetId, currentDataset } from '@stt/dataset.js'
+  import { datasetService } from '@svc/dataset-service'
   import WorkbookChinese from '@uic/kind/chinese/workbook.svelte'
   import WorkbookEnglish from '@uic/kind/english/workbook.svelte'
 
@@ -11,7 +11,7 @@
 
   onMount(() => {
     const requested = $page.url.searchParams.get('dataset')
-    if (requested) setDatasetById(requested)
+    if (requested) datasetService.selectDataset(requested)
   })
 
   const getInitialGroup = () => {
@@ -20,7 +20,7 @@
   }
 
   let groupFilter = $state(getInitialGroup())
-  const groups = $derived.by(() => $currentDataset?.data?.groups ?? [])
+  const groups = $derived.by(() => $currentDataset?.groups ?? [])
 
   const formatPrintDate = () => {
     const now = new Date()
@@ -43,7 +43,7 @@
   $effect(() => { updateUrl() })
 
   const activeGroup = $derived.by(() =>
-    groups.find((g) => g.group === Number(groupFilter)) || groups[0]
+    groups.find((g) => g.id === Number(groupFilter)) || groups[0]
   )
 
   const handlePrint = () => { window.print() }
@@ -64,9 +64,9 @@
 <main class="workbook-page">
   <header class="sheet-header">
     <div class="group-line">
-      <span class="group-title">{formatGroup(activeGroup.group)}</span>
+      <span class="group-title">{activeGroup?.displayId}</span>
       <span class="group-tags">
-        {#each activeGroup.tags as tag}
+        {#each activeGroup?.tags ?? [] as tag}
           <span>#{tag}</span>
         {/each}
       </span>
@@ -77,7 +77,7 @@
         Group
         <select bind:value={groupFilter}>
           {#each groups as g}
-            <option value={g.group}>{formatGroup(g.group)}</option>
+            <option value={g.id}>{g.displayId}</option>
           {/each}
         </select>
       </label>

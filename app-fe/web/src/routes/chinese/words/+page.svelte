@@ -1,8 +1,8 @@
 <script>
   import { goto } from '$app/navigation'
   import { datasetStats, datasetStatsStroke, datasetStatsPinyin } from '@stt/kind/chinese/practice-stats.js'
-  import { filteredGroups } from '@stt/filters.js'
-  import { compositeKey } from '@dat/dataset'
+  import { filteredGroups } from '@stt/dataset.js'
+  import { compositeKey } from '@dom/dataset'
   import { buildPracticedItems, buildChartData } from '@std/kind/chinese/stats'
   import PracticedWords from '@uic/practiced-words.svelte'
   import GroupItemChinese from '@uic/kind/chinese/group-item.svelte'

@@ -119,27 +119,6 @@ When a new learning approach is needed:
 2. Implement kind-specific features in components (conditionally rendered based on `$currentDataset.kind`)
 3. Add feature set as needed - **avoid premature abstractions**
 
-## Tech Stack
-
-- **Framework**: Svelte 5 (with runes)
-- **Build**: Vite 7
-- **Styling**: Plain CSS with shared design tokens
-- **State**: Svelte stores (writable/derived)
-- **Chinese Features**: hanzi-writer (stroke animations)
-
-## Development
-
-```bash
-cd web
-npm install
-npm run dev              # Development server
-npm run build            # Production build
-npm run build:inline     # Build + inline assets for standalone HTML
-```
-
 ## Architecture Principles
 
-- **No premature design** - Add abstractions only when patterns emerge
 - **Feature sets per `kind`** - Each methodology gets features that make sense for it
-- **Dynamic data loading** - Datasets auto-discovered via glob patterns
-- **Shared design tokens** - Centralized CSS variables for consistency

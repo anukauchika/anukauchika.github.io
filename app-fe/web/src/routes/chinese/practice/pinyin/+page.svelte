@@ -1,10 +1,11 @@
 <script>
   import { page } from '$app/stores'
   import { onMount } from 'svelte'
-  import { datasetId, currentDataset, setDatasetById } from '@stt/registry.js'
+  import { datasetId, currentDataset } from '@stt/dataset.js'
+  import { datasetService } from '@svc/dataset-service'
   import { loadDatasetGroupSessions, datasetGroupSessions, loadGroupStats, groupStats as groupStatsStore, startGroupSession, endGroupSession, recordWordAttempt } from '@stt/kind/chinese/practice-stats.js'
   import { isAuthenticated } from '@stt/auth.js'
-  import { getChineseContent } from '@stt/registry.js'
+  import { asChineseDataset } from '@dom/kind/chinese/dataset'
   import { get } from 'svelte/store'
   import Island from '@std/ui/island.svelte'
   import IslandTitle from '@std/ui/island-title.svelte'
@@ -13,7 +14,7 @@
 
   onMount(() => {
     const requested = $page.url.searchParams.get('dataset')
-    if (requested) setDatasetById(requested)
+    if (requested) datasetService.selectDataset(requested)
   })
 
   $effect(() => {
@@ -24,7 +25,7 @@
     return Number($page.url.searchParams.get('group')) || 1
   })
 
-  const groups = $derived.by(() => getChineseContent($currentDataset)?.groups ?? [])
+  const groups = $derived.by(() => asChineseDataset($currentDataset)?.groups ?? [])
 
   const practiceGroup = $derived.by(() =>
     groups.find((g) => g.id === practiceGroupId) || groups[0]

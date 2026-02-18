@@ -1,9 +1,10 @@
 <script>
   import { onMount } from 'svelte'
-  import { datasets, datasetId, currentDataset, setDatasetByKind } from '@stt/registry.js'
-  import { mainSearch, mainTags, mainGroups, mainListViewStyle, groups, filteredGroups } from '@stt/filters.js'
+  import { datasetsMeta, datasetId, currentDataset, search, tags, selectedGroups, viewMode, groups, filteredGroups } from '@stt/dataset.js'
+  import { datasetService } from '@svc/dataset-service'
   import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@stt/auth.js'
   import { formatGroup } from '@std/format.js'
+  import { GroupViewMode } from '@dom/dataset'
   import WordCardEnglish from '@uic/kind/english/word-card.svelte'
   import Hero from '@uic/hero'
   import Toolbar from '@uic/hero/toolbar.svelte'
@@ -12,7 +13,10 @@
   import Modal from '@std/ui/modal.svelte'
   import AuthModal from '@uic/auth-modal.svelte'
 
-  onMount(() => { setDatasetByKind('english') })
+  onMount(() => {
+    const m = $datasetsMeta.find((m) => m.kind === 'english')
+    if (m) datasetService.selectDataset(m.id)
+  })
 
   const basePath = $derived.by(() => `/${$currentDataset?.kind ?? 'english'}`)
 
@@ -24,11 +28,11 @@
   const closeModal = () => { modalOpen = false; activeWord = null }
 
   const fullGroupProps = (group) => ({
-    groupId: formatGroup(group.group),
+    groupId: formatGroup(group.id),
     tags: group.tags,
     kind: $currentDataset?.kind,
-    workbookHref: `${basePath}/workbook?group=${group.group}&dataset=${$datasetId}`,
-    printHref: `${basePath}/workbook?group=${group.group}&dataset=${$datasetId}&autoprint=1`,
+    workbookHref: `${basePath}/workbook?group=${group.id}&dataset=${$datasetId}`,
+    printHref: `${basePath}/workbook?group=${group.id}&dataset=${$datasetId}&autoprint=1`,
     strokeSessions: 0,
     pinyinSessions: 0,
     strokeProgress: 0,
@@ -68,37 +72,37 @@
   >
     {#snippet toolbar()}
       <Toolbar
-        {datasets}
+        datasets={$datasetsMeta}
         datasetId={$datasetId}
         appTitle={$currentDataset?.appTitle}
         user={$user}
-        onDatasetChange={(id) => $datasetId = id}
+        onDatasetChange={(id) => datasetService.selectDataset(id)}
         onShowAuthDropdown={() => showAuthDropdown = true}
       />
     {/snippet}
     {#snippet filters()}
       <Filters
         groups={$groups}
-        search={$mainSearch}
-        tags={$mainTags}
-        selectedGroups={$mainGroups}
-        listViewStyle={$mainListViewStyle}
-        onSearchChange={(v) => $mainSearch = v}
-        onTagAdd={(tag) => { if (!$mainTags.includes(tag)) $mainTags = [...$mainTags, tag] }}
-        onTagRemove={(tag) => $mainTags = $mainTags.filter(t => t !== tag)}
-        onTagsClear={() => $mainTags = []}
-        onGroupAdd={(id) => { if (!$mainGroups.includes(id)) $mainGroups = [...$mainGroups, id] }}
-        onGroupRemove={(id) => $mainGroups = $mainGroups.filter(g => g !== id)}
-        onGroupsClear={() => $mainGroups = []}
-        onToggleView={() => $mainListViewStyle = $mainListViewStyle === 'full' ? 'compact' : 'full'}
+        search={$search}
+        tags={$tags}
+        selectedGroups={$selectedGroups}
+        listViewStyle={$viewMode}
+        onSearchChange={(v) => datasetService.setSearch(v)}
+        onTagAdd={(tag) => { if (!$tags.includes(tag)) datasetService.setTags([...$tags, tag]) }}
+        onTagRemove={(tag) => datasetService.setTags($tags.filter(t => t !== tag))}
+        onTagsClear={() => datasetService.setTags([])}
+        onGroupAdd={(id) => { if (!$selectedGroups.includes(id)) datasetService.setGroups([...$selectedGroups, id]) }}
+        onGroupRemove={(id) => datasetService.setGroups($selectedGroups.filter(g => g !== id))}
+        onGroupsClear={() => datasetService.setGroups([])}
+        onToggleView={() => datasetService.setViewMode($viewMode === GroupViewMode.Full ? GroupViewMode.Compact : GroupViewMode.Full)}
       />
     {/snippet}
   </Hero>
 
   <Groups
     groups={$filteredGroups.map(g => fullGroupProps(g))}
-    viewStyle={$mainListViewStyle}
-    hasSearch={$mainSearch.trim().length > 0}
+    viewStyle={$viewMode}
+    hasSearch={$search.trim().length > 0}
     datasetId={$datasetId}
   />
 

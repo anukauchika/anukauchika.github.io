@@ -3,8 +3,6 @@ import type { Session, User } from '@supabase/supabase-js'
 import { api } from '@low/supabase/index.js'
 import { syncService } from '@svc/sync-service'
 import { statsRepo } from '@low/kind/chinese/idb-stats-repo'
-import { prefsRepo } from '@low/idb-prefs-repo'
-import { reloadDatasetPref } from '@stt/registry.js'
 
 export const session: Writable<Session | null> = writable(null)
 
@@ -15,10 +13,13 @@ export const isAuthenticated: Readable<boolean> = derived(user, ($user) => $user
 /** Incremented after DB switch + restore completes — triggers stats reload */
 export const dbVersion: Writable<number> = writable(0)
 
+/** Set by +layout.svelte to reload dataset prefs after user switch */
+let _datasetReloadHook: (() => Promise<void>) | null = null
+export function setDatasetReloadHook(fn: () => Promise<void>) { _datasetReloadHook = fn }
+
 async function onUserChanged(userId: string | null): Promise<void> {
   await statsRepo.switchDatabase(userId)
-  await prefsRepo.switchDatabase(userId)
-  await reloadDatasetPref()
+  await _datasetReloadHook?.()
   if (userId) {
     await syncService.syncPending()
     await syncService.restoreFromServer()
