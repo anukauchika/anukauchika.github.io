@@ -4,10 +4,10 @@
   import Tags from '@std/ui/tags.svelte'
   import ProgressLine from '@std/ui/progress-line.svelte'
   import Modal from '@std/ui/modal.svelte'
-  import GroupItemChinese from '../chinese/group-item.svelte'
-  import GroupItemEnglish from '../english/group-item.svelte'
-  import WordCardChinese from '../chinese/word-card.svelte'
-  import WordCardEnglish from '../english/word-card.svelte'
+  import GroupItemChinese from '@app/ui/kind/chinese/group-item.svelte'
+  import GroupItemEnglish from '@app/ui/kind/english/group-item.svelte'
+  import WordCardChinese from '@app/ui/kind/chinese/word-card.svelte'
+  import WordCardEnglish from '@app/ui/kind/english/word-card.svelte'
 
   interface Props {
     groupId: string

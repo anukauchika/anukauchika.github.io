@@ -4,7 +4,7 @@
   import { datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, dailyActivity } from '@app/state/kind/chinese/practice-stats.js'
   import { mainSearch, mainTags, mainGroups, mainListViewStyle, groups, filteredGroups } from '@app/state/filters.js'
   import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@app/state/auth.js'
-  import { pickNextPractice } from '@std/kind/chinese/pick-next-practice.js'
+  import { pickNextPractice } from '@app/std/kind/chinese/pick-next-practice.js'
   import { calcStats, countPracticed, calcProgress, calcMastery } from '@app/std/kind/chinese/stats'
   import Hero from '@app/ui/hero'
   import Toolbar from '@app/ui/hero/toolbar.svelte'

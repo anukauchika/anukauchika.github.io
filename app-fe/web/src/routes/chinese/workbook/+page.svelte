@@ -1,10 +1,10 @@
 <script>
   import { page } from '$app/stores'
-  import '$lib/app/ui/workbook.css'
+  import '@app/ui/workbook.css'
   import { onMount } from 'svelte'
   import { datasetId, currentDataset, setDatasetById, getChineseContent } from '@app/state/registry.js'
-  import WorkbookChinese from '@app/ui/chinese/workbook.svelte'
-  import WorkbookEnglish from '@app/ui/english/workbook.svelte'
+  import WorkbookChinese from '@app/ui/kind/chinese/workbook.svelte'
+  import WorkbookEnglish from '@app/ui/kind/english/workbook.svelte'
 
   const exerciseSets = 2
 

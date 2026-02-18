@@ -5,8 +5,8 @@
   import { filteredGroups } from '@app/state/filters.js'
   import { isAuthenticated } from '@app/state/auth.js'
   import { sortGroupsByLastPracticed } from '@app/std/kind/chinese/stats'
-  import { buildProps as buildCompactProps } from '@app/ui/chinese/compact-group-list'
-  import PracticedGroups from '@app/ui/chinese/practiced-groups.svelte'
+  import { buildProps as buildCompactProps } from '@app/ui/kind/chinese/compact-group-list'
+  import PracticedGroups from '@app/ui/kind/chinese/practiced-groups.svelte'
 
   const basePath = $derived.by(() => `/${$currentDataset?.kind ?? 'chinese'}`)
   const practicedGroupsSorted = $derived(sortGroupsByLastPracticed($filteredGroups, $datasetGroupSessions))

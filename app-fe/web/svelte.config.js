@@ -11,8 +11,8 @@ export default {
       fallback: 'index.html',
     }),
     alias: {
-      '@std': 'src/lib/std',
-      '@app': 'src/lib/app',
+      '@std': 'src/std',
+      '@app': 'src/app',
       '@data': '../data',
     },
   },

@@ -5,8 +5,8 @@
   import { compositeKey } from '@app/api/data/dataset'
   import { buildPracticedItems, buildChartData } from '@app/std/kind/chinese/stats'
   import PracticedWords from '@app/ui/practiced-words.svelte'
-  import GroupItemChinese from '@app/ui/chinese/group-item.svelte'
-  import WordCardChinese from '@app/ui/chinese/word-card.svelte'
+  import GroupItemChinese from '@app/ui/kind/chinese/group-item.svelte'
+  import WordCardChinese from '@app/ui/kind/chinese/word-card.svelte'
   import Modal from '@std/ui/modal.svelte'
 
   const practicedItems = $derived(buildPracticedItems($filteredGroups, $datasetStats))

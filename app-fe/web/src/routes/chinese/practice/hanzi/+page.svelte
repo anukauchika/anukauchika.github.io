@@ -9,7 +9,7 @@
   import Island from '@std/ui/island.svelte'
   import IslandTitle from '@std/ui/island-title.svelte'
   import Tags from '@std/ui/tags.svelte'
-  import PracticeStroke from '$lib/app/ui/chinese/practice-stroke.svelte'
+  import PracticeStroke from '@app/ui/kind/chinese/practice-stroke.svelte'
 
   onMount(() => {
     const requested = $page.url.searchParams.get('dataset')

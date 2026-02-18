@@ -1,4 +1,4 @@
-import type { Group, Word } from '../../dataset'
+import type { Group, Word } from '@app/api/data/dataset'
 import { formatGroup } from '@std/format'
 
 export interface ChineseWord extends Word {

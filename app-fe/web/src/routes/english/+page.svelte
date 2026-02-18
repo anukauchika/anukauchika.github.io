@@ -4,7 +4,7 @@
   import { mainSearch, mainTags, mainGroups, mainListViewStyle, groups, filteredGroups } from '@app/state/filters.js'
   import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@app/state/auth.js'
   import { formatGroup } from '@std/format.js'
-  import WordCardEnglish from '@app/ui/english/word-card.svelte'
+  import WordCardEnglish from '@app/ui/kind/english/word-card.svelte'
   import Hero from '@app/ui/hero'
   import Toolbar from '@app/ui/hero/toolbar.svelte'
   import Filters from '@app/ui/hero/filters.svelte'

@@ -2,7 +2,7 @@ import type { RegistryService } from '@app/api/services/registry-service'
 import type { DatasetMeta } from '@app/api/data/registry'
 import { prefsRepo } from '@app/data/idb-prefs-repo'
 import { jsonDatasetRepo } from '@app/data/json-dataset-repo'
-import registry from '../../../../../data/registry.json'
+import registry from '@data/registry.json'
 
 const datasets: DatasetMeta[] = registry as DatasetMeta[]
 const defaultId = datasets[0]?.id ?? ''
