@@ -2,7 +2,7 @@ import type { Group } from '@app/api/data/dataset'
 import type { SessionsMap } from '@app/api/services/kind/chinese/types'
 
 interface NextPractice {
-  groupId: string
+  groupId: number
   type: 'stroke' | 'pinyin'
 }
 

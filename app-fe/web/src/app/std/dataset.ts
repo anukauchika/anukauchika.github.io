@@ -46,7 +46,7 @@ function matchesGroupTags(group: Taggable, tags: string[]): boolean {
   return tags.every((t) => groupTags.includes(t))
 }
 
-function matchesGroup(groupId: string, selectedGroups: string[]): boolean {
+function matchesGroup(groupId: number, selectedGroups: number[]): boolean {
   if (selectedGroups.length === 0) return true
   return selectedGroups.includes(groupId)
 }
@@ -55,7 +55,7 @@ export function filterGroups(
   groups: GroupWithItems[],
   query: string,
   tags: string[],
-  selectedGroups: string[],
+  selectedGroups: number[],
 ): GroupWithItems[] {
   return groups
     .filter((g) => matchesGroup(g.id, selectedGroups))

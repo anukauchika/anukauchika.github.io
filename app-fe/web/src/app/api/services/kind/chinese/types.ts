@@ -12,8 +12,8 @@ export interface CharAttemptInput {
 // --- Service outputs ---
 
 export interface WordAttemptResult {
-  wordId: string
-  groupId: string
+  wordId: number
+  groupId: number
   practiceType: PracticeType
   errorCount: number
 }
@@ -23,8 +23,8 @@ export interface WordAttemptResult {
 export interface WordStat {
   datasetId: string
   practiceType: PracticeType
-  groupId: string
-  wordId: string
+  groupId: number
+  wordId: number
   successCount: number
   errorCount: number
   lastPracticedAt: string | null
@@ -38,7 +38,7 @@ export interface StatEntry {
 }
 
 export type StatsMap = Map<string, StatEntry>
-export type SessionsMap = Map<string, GroupSessionSummary>
+export type SessionsMap = Map<number, GroupSessionSummary>
 export type DailyActivityMap = Map<string, DailyActivity>
 
 export interface GroupSessionSummary {

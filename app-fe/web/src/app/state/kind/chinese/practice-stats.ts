@@ -21,7 +21,7 @@ function ptCode(type: string): PracticeType {
 
 // --- Stores ---
 
-export const groupStats: Writable<Map<string, StatEntry>> = writable(new Map())
+export const groupStats: Writable<Map<number, StatEntry>> = writable(new Map())
 
 /** Merged stats across all practice types */
 export const datasetStats: Writable<StatsMap> = writable(new Map())
@@ -46,9 +46,9 @@ const PT_SESSION_STORES: Record<string, Writable<SessionsMap>> = { s: datasetGro
 
 // --- Load functions ---
 
-export async function loadGroupStats(datasetId: string, practiceType: string, groupId: string): Promise<void> {
+export async function loadGroupStats(datasetId: string, practiceType: string, groupId: number): Promise<void> {
   const stats = await statsService.getWordStats(dsCode(datasetId), ptCode(practiceType))
-  const map = new Map<string, StatEntry>()
+  const map = new Map<number, StatEntry>()
   for (const s of stats) {
     if (s.groupId === groupId) map.set(s.wordId, s)
   }
@@ -92,7 +92,7 @@ export async function loadDatasetStatsAll(datasetId: string): Promise<void> {
 }
 
 export async function loadDatasetGroupSessionsAll(datasetId: string): Promise<void> {
-  const merged = new Map<string, GroupSessionSummary>()
+  const merged = new Map<number, GroupSessionSummary>()
   const perType: Record<string, SessionsMap> = { s: new Map(), p: new Map() }
   for (const pt of ALL_PT) {
     const code = ptCode(pt)
@@ -150,7 +150,7 @@ export async function loadDailyActivityAll(datasetId: string): Promise<void> {
 
 // --- Session lifecycle ---
 
-export async function startGroupSession(datasetId: string, practiceType: string, groupId: string): Promise<number> {
+export async function startGroupSession(datasetId: string, practiceType: string, groupId: number): Promise<number> {
   syncService.setActiveSessionId(null)
   const userId = get(user)?.id ?? null
   const id = await groupSessionService.startGroupSession(userId, dsCode(datasetId), ptCode(practiceType), groupId)
@@ -188,7 +188,7 @@ export async function endGroupSession(sessionId: number): Promise<void> {
 
 export async function recordWordAttempt(
   sessionId: number,
-  wordId: string,
+  wordId: number,
   startedAt: string,
   doneAt: string,
   chars: CharAttemptInput[],

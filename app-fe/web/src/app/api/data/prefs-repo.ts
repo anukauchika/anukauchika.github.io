@@ -6,7 +6,7 @@ export enum ListViewStyle {
 export interface MainFilters {
   search: string
   tags: string[]
-  groups: string[]
+  groups: number[]
   listViewStyle: ListViewStyle
 }
 
@@ -19,7 +19,7 @@ export interface PrefsRepo {
   getMainFilters(datasetId: string): Promise<MainFilters>
   setMainSearch(datasetId: string, value: string): Promise<void>
   setMainTags(datasetId: string, value: string[]): Promise<void>
-  setMainGroups(datasetId: string, value: string[]): Promise<void>
+  setMainGroups(datasetId: string, value: number[]): Promise<void>
   setMainListViewStyle(datasetId: string, value: ListViewStyle): Promise<void>
 
   // Lifecycle

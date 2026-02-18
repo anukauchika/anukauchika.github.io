@@ -8,7 +8,7 @@ async function startGroupSession(
   userId: string | null,
   datasetId: string,
   practiceType: PracticeType,
-  groupId: string,
+  groupId: number,
 ): Promise<number> {
   const now = new Date().toISOString()
 
@@ -55,7 +55,7 @@ async function endGroupSession(sessionId: number): Promise<GroupSession | null> 
 
 async function recordWordAttempt(
   sessionId: number,
-  wordId: string,
+  wordId: number,
   startedAt: string,
   doneAt: string,
   chars: CharAttemptInput[],
@@ -63,7 +63,7 @@ async function recordWordAttempt(
   const session = await statsRepo.getGroupSessionById(sessionId)
   if (!session) {
     console.error('recordWordAttempt: session not found', sessionId)
-    return { wordId, groupId: '', practiceType: '' as PracticeType, errorCount: 0 }
+    return { wordId, groupId: 0, practiceType: '' as PracticeType, errorCount: 0 }
   }
 
   const wordTempId = await statsRepo.nextTempId()

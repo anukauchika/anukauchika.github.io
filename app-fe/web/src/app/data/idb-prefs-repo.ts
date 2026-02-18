@@ -63,7 +63,7 @@ async function setMainTags(datasetId: string, value: string[]): Promise<void> {
   return set(`main:tags:${datasetId}`, value)
 }
 
-async function setMainGroups(datasetId: string, value: string[]): Promise<void> {
+async function setMainGroups(datasetId: string, value: number[]): Promise<void> {
   return set(`main:group:${datasetId}`, value)
 }
 

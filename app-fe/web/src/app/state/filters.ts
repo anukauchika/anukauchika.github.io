@@ -7,7 +7,7 @@ import type { ListViewStyle } from '@app/api/data/prefs-repo'
 
 export const mainSearch: Writable<string> = writable('')
 export const mainTags: Writable<string[]> = writable([])
-export const mainGroups: Writable<string[]> = writable([])
+export const mainGroups: Writable<number[]> = writable([])
 export const mainListViewStyle: Writable<ListViewStyle> = writable('full' as ListViewStyle)
 
 function getGroups(data: Record<string, unknown> | null): GroupWithItems[] {

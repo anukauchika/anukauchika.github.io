@@ -72,7 +72,7 @@ export async function seed(): Promise<void> {
         user_id: null,
         dataset_id: DATASET_CODE,
         practice_type: PRACTICE_TYPE,
-        group_id: String(group),
+        group_id: group,
         started_at: startedAt,
         done_at: doneAt,
         synced: 1,
@@ -90,7 +90,7 @@ export async function seed(): Promise<void> {
         words.push({
           id: wTempId,
           group_session_id: sid,
-          word_id: String(wid),
+          word_id: wid,
           started_at: wStarted,
           done_at: wDone,
           synced: 1,

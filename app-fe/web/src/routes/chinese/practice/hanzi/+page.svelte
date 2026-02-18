@@ -21,7 +21,7 @@
   })
 
   const practiceGroupId = $derived.by(() => {
-    return $page.url.searchParams.get('group') || '1'
+    return Number($page.url.searchParams.get('group')) || 1
   })
 
   const groups = $derived.by(() => getChineseContent($currentDataset)?.groups ?? [])

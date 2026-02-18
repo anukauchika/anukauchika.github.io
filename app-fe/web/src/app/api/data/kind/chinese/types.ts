@@ -17,7 +17,7 @@ export interface GroupSession {
   user_id: string | null
   dataset_id: string
   practice_type: PracticeType
-  group_id: string
+  group_id: number
   started_at: string
   done_at: string | null
   synced: SyncStatus
@@ -26,7 +26,7 @@ export interface GroupSession {
 export interface WordAttempt {
   id: number
   group_session_id: number
-  word_id: string
+  word_id: number
   started_at: string
   done_at: string
   synced: SyncStatus

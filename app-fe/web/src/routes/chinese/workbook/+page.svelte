@@ -14,7 +14,7 @@
   })
 
   const getInitialGroup = () => {
-    return $page.url.searchParams.get('group') || '1'
+    return Number($page.url.searchParams.get('group')) || 1
   }
 
   let groupFilter = $state(getInitialGroup())

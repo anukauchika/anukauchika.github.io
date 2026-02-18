@@ -54,12 +54,12 @@ export function parseChineseDataset(raw: RawChineseDataset): ChineseDataset {
     groups: raw.groups.map((g) => ({
       ...g,
       idx: g.group,
-      id: String(g.group),
+      id: g.group,
       displayId: formatGroup(g.group),
       items: g.items.map((item) => ({
         ...item,
         idx: item.id,
-        id: String(item.id),
+        id: item.id,
         displayId: String(item.id),
         tr: item.english,
       })),

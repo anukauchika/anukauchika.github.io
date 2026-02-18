@@ -6,14 +6,14 @@ export interface GroupSessionService {
     userId: string | null,
     datasetId: string,
     practiceType: PracticeType,
-    groupId: string,
+    groupId: number,
   ): Promise<number>
 
   endGroupSession(sessionId: number): Promise<GroupSession | null>
 
   recordWordAttempt(
     sessionId: number,
-    wordId: string,
+    wordId: number,
     startedAt: string,
     doneAt: string,
     chars: CharAttemptInput[],
