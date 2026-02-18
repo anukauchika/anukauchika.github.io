@@ -30,7 +30,6 @@
     onShowPracticedList,
     onShowPracticedChars,
     onShowHowItWorks,
-    onShowStatInfo,
     toolbar,
     filters,
   } = $props()
@@ -129,7 +128,6 @@
         {onShowPracticedGroups}
         {onShowPracticedList}
         {onShowPracticedChars}
-        {onShowStatInfo}
       />
     </div>
 

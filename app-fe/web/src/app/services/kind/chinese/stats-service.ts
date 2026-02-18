@@ -19,7 +19,7 @@ async function getWordStats(datasetId: string, practiceType: PracticeType): Prom
   const allWords = []
   for (const s of sessions) {
     const words = await statsRepo.getWordAttempts(s.id)
-    for (const w of words) allWords.push({ ...w, groupId: s.group_id })
+    for (const w of words) allWords.push({ ...w, groupId: String(s.group_id) })
   }
 
   // Load char logs for error counts
@@ -39,7 +39,7 @@ async function getWordStats(datasetId: string, practiceType: PracticeType): Prom
       datasetId,
       practiceType,
       groupId: w.groupId,
-      wordId: w.word_id,
+      wordId: String(w.word_id),
       successCount: 0,
       errorCount: 0,
       lastPracticedAt: null,
@@ -61,7 +61,8 @@ async function getGroupSessionSummaries(
   const sessions = await statsRepo.getGroupSessions(datasetId, practiceType)
   const map = new Map<string, GroupSessionSummary>()
   for (const s of sessions) {
-    const existing = map.get(s.group_id)
+    const gid = String(s.group_id)
+    const existing = map.get(gid)
     const isFull = s.done_at != null
     const ts = s.done_at || s.started_at
     if (existing) {
@@ -76,7 +77,7 @@ async function getGroupSessionSummaries(
         existing.lastPracticedAt = ts
       }
     } else {
-      map.set(s.group_id, {
+      map.set(gid, {
         total: 1,
         full: isFull ? 1 : 0,
         lastPracticedAt: ts,

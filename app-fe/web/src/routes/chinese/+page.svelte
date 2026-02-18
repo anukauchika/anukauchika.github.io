@@ -1,6 +1,15 @@
 <script>
   import { datasetId, currentDataset } from '@app/state/registry.js'
-  import { datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from '@app/state/kind/chinese/practice-stats.js'
+  import {
+    datasetStatsStroke,
+    datasetStatsPinyin,
+    datasetGroupSessions,
+    datasetGroupSessionsStroke,
+    datasetGroupSessionsPinyin,
+    loadDatasetStatsAll,
+    loadDatasetGroupSessionsAll,
+    loadDailyActivityAll,
+  } from '@app/state/kind/chinese/practice-stats.js'
   import { mainSearch, mainListViewStyle, filteredGroups } from '@app/state/filters.js'
   import { isAuthenticated, dbVersion } from '@app/state/auth.js'
   import { buildProps as buildCompactProps } from '@app/ui/kind/chinese/compact-group-list'
@@ -63,27 +72,28 @@
 
 <svelte:head>
   <title>Anuka Uchika - Chinese</title>
-  <meta name="description" content="HSK Chinese characters with stroke & pinyin practice, focused word groups, stats-driven repetition and progress tracking" />
+  <meta
+    name="description"
+    content="HSK Chinese characters with stroke & pinyin practice, focused word groups, stats-driven repetition and progress tracking"
+  />
 </svelte:head>
 
 <main class="anuka-page">
-  <BrowseHero
-    onShowStatInfo={(stat) => activeStat = stat}
-  />
+  <BrowseHero />
 
   <Groups
-    groups={$filteredGroups.map(g => buildFullProps(g, groupCtx))}
+    groups={$filteredGroups.map((g) => buildFullProps(g, groupCtx))}
     viewStyle={$mainListViewStyle}
     hasSearch={$mainSearch.trim().length > 0}
     datasetId={$datasetId}
   >
     {#snippet compact()}
-      <CompactGroupList groups={$filteredGroups.map(g => buildCompactProps(g, groupCtx))} />
+      <CompactGroupList groups={$filteredGroups.map((g) => buildCompactProps(g, groupCtx))} />
     {/snippet}
   </Groups>
 
   {#if activeStat}
-    <Modal onclose={() => activeStat = null}>
+    <Modal onclose={() => (activeStat = null)}>
       <Island>
         <div class="anuka-stack anuka-center" role="dialog" aria-modal="true">
           {#if activeStat === 'words'}
@@ -99,5 +109,4 @@
       <WordCardChinese item={activeWord} onClose={closeModal} />
     </Modal>
   {/if}
-
 </main>
