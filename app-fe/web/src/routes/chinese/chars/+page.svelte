@@ -1,9 +1,9 @@
 <script>
   import { goto } from '$app/navigation'
-  import { datasetStatsStroke, datasetStatsPinyin } from '@app/state/kind/chinese/practice-stats.js'
-  import { filteredGroups } from '@app/state/filters.js'
-  import { calcStats, buildPracticedCharsData } from '@app/std/kind/chinese/stats'
-  import PracticedChars from '@app/ui/practiced-chars.svelte'
+  import { datasetStatsStroke, datasetStatsPinyin } from '@stt/kind/chinese/practice-stats.js'
+  import { filteredGroups } from '@stt/filters.js'
+  import { calcStats, buildPracticedCharsData } from '@std/kind/chinese/stats'
+  import PracticedChars from '@uic/practiced-chars.svelte'
 
   const stats = $derived(calcStats($filteredGroups))
   const uniqueChars = $derived(stats.chars)

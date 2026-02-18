@@ -1,16 +1,16 @@
 <script>
   import { onMount } from 'svelte'
-  import { datasets, datasetId, currentDataset, setDatasetByKind } from '@app/state/registry.js'
-  import { mainSearch, mainTags, mainGroups, mainListViewStyle, groups, filteredGroups } from '@app/state/filters.js'
-  import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@app/state/auth.js'
+  import { datasets, datasetId, currentDataset, setDatasetByKind } from '@stt/registry.js'
+  import { mainSearch, mainTags, mainGroups, mainListViewStyle, groups, filteredGroups } from '@stt/filters.js'
+  import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@stt/auth.js'
   import { formatGroup } from '@std/format.js'
-  import WordCardEnglish from '@app/ui/kind/english/word-card.svelte'
-  import Hero from '@app/ui/hero'
-  import Toolbar from '@app/ui/hero/toolbar.svelte'
-  import Filters from '@app/ui/hero/filters.svelte'
-  import Groups from '@app/ui/groups'
+  import WordCardEnglish from '@uic/kind/english/word-card.svelte'
+  import Hero from '@uic/hero'
+  import Toolbar from '@uic/hero/toolbar.svelte'
+  import Filters from '@uic/hero/filters.svelte'
+  import Groups from '@uic/groups'
   import Modal from '@std/ui/modal.svelte'
-  import AuthModal from '@app/ui/auth-modal.svelte'
+  import AuthModal from '@uic/auth-modal.svelte'
 
   onMount(() => { setDatasetByKind('english') })
 

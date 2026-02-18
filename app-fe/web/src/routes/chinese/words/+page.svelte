@@ -1,12 +1,12 @@
 <script>
   import { goto } from '$app/navigation'
-  import { datasetStats, datasetStatsStroke, datasetStatsPinyin } from '@app/state/kind/chinese/practice-stats.js'
-  import { filteredGroups } from '@app/state/filters.js'
-  import { compositeKey } from '@app/api/data/dataset'
-  import { buildPracticedItems, buildChartData } from '@app/std/kind/chinese/stats'
-  import PracticedWords from '@app/ui/practiced-words.svelte'
-  import GroupItemChinese from '@app/ui/kind/chinese/group-item.svelte'
-  import WordCardChinese from '@app/ui/kind/chinese/word-card.svelte'
+  import { datasetStats, datasetStatsStroke, datasetStatsPinyin } from '@stt/kind/chinese/practice-stats.js'
+  import { filteredGroups } from '@stt/filters.js'
+  import { compositeKey } from '@dat/dataset'
+  import { buildPracticedItems, buildChartData } from '@std/kind/chinese/stats'
+  import PracticedWords from '@uic/practiced-words.svelte'
+  import GroupItemChinese from '@uic/kind/chinese/group-item.svelte'
+  import WordCardChinese from '@uic/kind/chinese/word-card.svelte'
   import Modal from '@std/ui/modal.svelte'
 
   const practicedItems = $derived(buildPracticedItems($filteredGroups, $datasetStats))

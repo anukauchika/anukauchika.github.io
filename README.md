@@ -19,21 +19,31 @@ This affects naming patterns, e.g.:
 Only entry points are allowed to import state & services, so all the assembly happens there.
 App should only use anuka framework for css, no custom css is allowed in components both core & app.
 
-## Project arch & struct
+## Project Layers & Structure
 
-1. page: top level
-2. state: svelte state
-3. service: state only works with service layer
-4. data: service only uses data abstraction to access data
-5. supabase, idb: actual data implementations
+- routes & pages: reads (reactive on) state, calls services
+- state: svelte state, pure reactive state no other deps allowed (no services, no apis)
+- service: sets state, calls repo layer
+- repo: abstraction over all external & internal access to data (json loaders, localdb, supabase, backend)
+- low api: lower level apis to supabase, backend & localdb
 
-src/contract/service - service layer inputs, outputs, interfaces
-src/contract/data - data layer inputs outputs, interfaces
+src/routes - routes, layouts, pages very specific components
+src/1_uic - domain & app specific ui svelte components
+src/2_svc - service layer
+src/3_stt - states
+src/4_dat - repositories : abstractions over external apis
+src/5_low - external & local apis (json loaders, idb, localstorage, supabase etc.)
+src/6_std - core library that has no app specifics but still tailored specifically for the project
 
-src/lib/std - generic no domain knowledge framework but still tailored specifically to be used by this project
-src/lib/app - app level components & tools that have domain knoowledge
-src/lib should not have components that directly import state or services, only pure parametric ones
-all state & services wiring happeps in pages
+allowed imports & deps
+
+deny: all <- all
+allow: svc <- svc, stt, dat
+allow: dat <- low
+
+no relative imports allowed. all the folders above should have aliases in vite and imports need to be absolute e.g.:
+import '@stt/dataset'
+import '@svc/dataset'
 
 ## Design Book
 

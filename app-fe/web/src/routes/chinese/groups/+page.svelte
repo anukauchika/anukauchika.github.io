@@ -1,12 +1,12 @@
 <script>
   import { goto } from '$app/navigation'
-  import { datasetId, currentDataset } from '@app/state/registry.js'
-  import { datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin } from '@app/state/kind/chinese/practice-stats.js'
-  import { filteredGroups } from '@app/state/filters.js'
-  import { isAuthenticated } from '@app/state/auth.js'
-  import { sortGroupsByLastPracticed } from '@app/std/kind/chinese/stats'
-  import { buildProps as buildCompactProps } from '@app/ui/kind/chinese/compact-group-list'
-  import PracticedGroups from '@app/ui/kind/chinese/practiced-groups.svelte'
+  import { datasetId, currentDataset } from '@stt/registry.js'
+  import { datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin } from '@stt/kind/chinese/practice-stats.js'
+  import { filteredGroups } from '@stt/filters.js'
+  import { isAuthenticated } from '@stt/auth.js'
+  import { sortGroupsByLastPracticed } from '@std/kind/chinese/stats'
+  import { buildProps as buildCompactProps } from '@uic/kind/chinese/compact-group-list'
+  import PracticedGroups from '@uic/kind/chinese/practiced-groups.svelte'
 
   const basePath = $derived.by(() => `/${$currentDataset?.kind ?? 'chinese'}`)
   const practicedGroupsSorted = $derived(sortGroupsByLastPracticed($filteredGroups, $datasetGroupSessions))

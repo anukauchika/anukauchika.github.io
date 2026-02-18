@@ -1,8 +1,8 @@
 <script>
   import '@std/style/anuka.css'
-  import { initAnalytics } from '@app/data/google/analytics'
-  import { initAuth } from '@app/state/auth'
-  import { maintenanceService } from '@app/services/maintenance-service'
+  import { initAnalytics } from '@low/google/analytics'
+  import { initAuth } from '@stt/auth'
+  import { maintenanceService } from '@svc/maintenance-service'
 
   let { children } = $props()
 

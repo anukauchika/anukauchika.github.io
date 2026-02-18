@@ -1,15 +1,15 @@
 <script>
   import { page } from '$app/stores'
   import { onMount } from 'svelte'
-  import { datasetId, currentDataset, setDatasetById } from '@app/state/registry.js'
-  import { loadDatasetGroupSessions, datasetGroupSessions, loadGroupStats, groupStats as groupStatsStore, startGroupSession, endGroupSession, recordWordAttempt } from '@app/state/kind/chinese/practice-stats.js'
-  import { isAuthenticated } from '@app/state/auth.js'
-  import { getChineseContent } from '@app/state/registry.js'
+  import { datasetId, currentDataset, setDatasetById } from '@stt/registry.js'
+  import { loadDatasetGroupSessions, datasetGroupSessions, loadGroupStats, groupStats as groupStatsStore, startGroupSession, endGroupSession, recordWordAttempt } from '@stt/kind/chinese/practice-stats.js'
+  import { isAuthenticated } from '@stt/auth.js'
+  import { getChineseContent } from '@stt/registry.js'
   import { get } from 'svelte/store'
   import Island from '@std/ui/island.svelte'
   import IslandTitle from '@std/ui/island-title.svelte'
   import Tags from '@std/ui/tags.svelte'
-  import PracticeStroke from '@app/ui/kind/chinese/practice-stroke.svelte'
+  import PracticeStroke from '@uic/kind/chinese/practice-stroke.svelte'
 
   onMount(() => {
     const requested = $page.url.searchParams.get('dataset')

@@ -1,6 +1,6 @@
 <script>
   import { goto } from '$app/navigation'
-  import { datasets, datasetId, currentDataset } from '@app/state/registry.js'
+  import { datasets, datasetId, currentDataset } from '@stt/registry.js'
   import {
     datasetStatsStroke,
     datasetStatsPinyin,
@@ -8,15 +8,15 @@
     datasetGroupSessionsStroke,
     datasetGroupSessionsPinyin,
     dailyActivity,
-  } from '@app/state/kind/chinese/practice-stats.js'
-  import { mainSearch, mainTags, mainGroups, mainListViewStyle, groups, filteredGroups } from '@app/state/filters.js'
-  import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@app/state/auth.js'
-  import { pickNextPractice } from '@app/std/kind/chinese/pick-next-practice.js'
-  import { calcStats, countPracticed, calcProgress, calcMastery } from '@app/std/kind/chinese/stats'
-  import Hero from '@app/ui/hero'
-  import Toolbar from '@app/ui/hero/toolbar.svelte'
-  import Filters from '@app/ui/hero/filters.svelte'
-  import AuthModal from '@app/ui/auth-modal.svelte'
+  } from '@stt/kind/chinese/practice-stats.js'
+  import { mainSearch, mainTags, mainGroups, mainListViewStyle, groups, filteredGroups } from '@stt/filters.js'
+  import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@stt/auth.js'
+  import { pickNextPractice } from '@std/kind/chinese/pick-next-practice.js'
+  import { calcStats, countPracticed, calcProgress, calcMastery } from '@std/kind/chinese/stats'
+  import Hero from '@uic/hero'
+  import Toolbar from '@uic/hero/toolbar.svelte'
+  import Filters from '@uic/hero/filters.svelte'
+  import AuthModal from '@uic/auth-modal.svelte'
 
   let showAuthDropdown = $state(false)
 

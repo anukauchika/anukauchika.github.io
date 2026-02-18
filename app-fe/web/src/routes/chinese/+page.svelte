@@ -1,5 +1,5 @@
 <script>
-  import { datasetId, currentDataset } from '@app/state/registry.js'
+  import { datasetId, currentDataset } from '@stt/registry.js'
   import {
     datasetStatsStroke,
     datasetStatsPinyin,
@@ -9,17 +9,17 @@
     loadDatasetStatsAll,
     loadDatasetGroupSessionsAll,
     loadDailyActivityAll,
-  } from '@app/state/kind/chinese/practice-stats.js'
-  import { mainSearch, mainListViewStyle, filteredGroups } from '@app/state/filters.js'
-  import { isAuthenticated, dbVersion } from '@app/state/auth.js'
-  import { buildProps as buildCompactProps } from '@app/ui/kind/chinese/compact-group-list'
-  import { buildProps as buildFullProps } from '@app/ui/kind/chinese/group-item'
-  import CompactGroupList from '@app/ui/kind/chinese/compact-group-list.svelte'
-  import WordCardChinese from '@app/ui/kind/chinese/word-card.svelte'
-  import Groups from '@app/ui/groups'
+  } from '@stt/kind/chinese/practice-stats.js'
+  import { mainSearch, mainListViewStyle, filteredGroups } from '@stt/filters.js'
+  import { isAuthenticated, dbVersion } from '@stt/auth.js'
+  import { buildProps as buildCompactProps } from '@uic/kind/chinese/compact-group-list'
+  import { buildProps as buildFullProps } from '@uic/kind/chinese/group-item'
+  import CompactGroupList from '@uic/kind/chinese/compact-group-list.svelte'
+  import WordCardChinese from '@uic/kind/chinese/word-card.svelte'
+  import Groups from '@uic/groups'
   import Modal from '@std/ui/modal.svelte'
   import Island from '@std/ui/island.svelte'
-  import BrowseHero from './browse-hero.svelte'
+  import BrowseHero from '@routes/chinese/browse-hero.svelte'
 
   const basePath = $derived.by(() => `/${$currentDataset.kind}`)
 

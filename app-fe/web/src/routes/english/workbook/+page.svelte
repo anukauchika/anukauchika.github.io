@@ -1,11 +1,11 @@
 <script>
   import { page } from '$app/stores'
-  import '@app/ui/workbook.css'
+  import '@uic/workbook.css'
   import { onMount } from 'svelte'
-  import { datasetId, currentDataset, setDatasetById } from '@app/state/registry.js'
+  import { datasetId, currentDataset, setDatasetById } from '@stt/registry.js'
   import { formatGroup } from '@std/format.js'
-  import WorkbookChinese from '@app/ui/kind/chinese/workbook.svelte'
-  import WorkbookEnglish from '@app/ui/kind/english/workbook.svelte'
+  import WorkbookChinese from '@uic/kind/chinese/workbook.svelte'
+  import WorkbookEnglish from '@uic/kind/english/workbook.svelte'
 
   const exerciseSets = 2
 
