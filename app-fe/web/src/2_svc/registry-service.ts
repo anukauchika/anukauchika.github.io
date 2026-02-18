@@ -1,6 +1,16 @@
-import type { RegistryService } from '@svc/api/registry-service'
 import type { DatasetMeta } from '@dat/registry'
 import { prefsRepo } from '@low/idb-prefs-repo'
+
+export interface RegistryService {
+  getDatasets(): DatasetMeta[]
+  getDatasetById(id: string): DatasetMeta | null
+  getDatasetByKind(kind: string): DatasetMeta | null
+  getDatasetCode(id: string): string | null
+  getDatasetDefaultId(): string
+  loadDatasetData(meta: DatasetMeta): Record<string, unknown> | null
+  loadPreferredId(): Promise<string>
+  savePreferredId(id: string): Promise<void>
+}
 import { jsonDatasetRepo } from '@low/json-dataset-repo'
 import registry from '@data/registry.json'
 

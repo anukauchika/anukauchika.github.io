@@ -1,5 +1,9 @@
 import { statsRepo } from '@low/kind/chinese/idb-stats-repo'
-import type { MaintenanceService } from '@svc/api/maintenance-service'
+
+export interface MaintenanceService {
+  runStartupTasks(): void
+  runCleanup(): Promise<void>
+}
 
 const CLEANUP_KEY = 'uch-stats-last-cleanup'
 const CLEANUP_INTERVAL_MS = 24 * 60 * 60 * 1000

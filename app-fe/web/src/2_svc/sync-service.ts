@@ -1,6 +1,11 @@
 import { api } from '@low/supabase/index.js'
 import { statsRepo } from '@low/kind/chinese/idb-stats-repo'
-import type { SyncService } from '@svc/api/sync-service'
+
+export interface SyncService {
+  setActiveSessionId(id: number | null): void
+  syncPending(): Promise<void>
+  restoreFromServer(): Promise<void>
+}
 
 let syncing = false
 let activeSessionId: number | null = null

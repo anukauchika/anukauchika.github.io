@@ -1,7 +1,7 @@
 import { calcGroupProgress, calcGroupMastery } from '@std/kind/chinese/stats'
 import { compositeKey } from '@dat/dataset'
 import type { ChineseGroup } from '@dat/kind/chinese/dataset'
-import type { StatsMap, SessionsMap } from '@svc/api/kind/chinese/types'
+import type { StatsMap, SessionsMap } from '@svc/kind/chinese/types'
 
 interface Context {
   basePath: string

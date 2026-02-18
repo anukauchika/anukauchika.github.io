@@ -5,7 +5,7 @@ import { groupSessionService } from '@svc/kind/chinese/group-session-service'
 import { user } from '@stt/auth.js'
 import { registryService } from '@svc/registry-service'
 import type { PracticeType } from '@dat/kind/chinese/types'
-import type { CharAttemptInput, DailyActivity, GroupSessionSummary, StatEntry, StatsMap, SessionsMap, DailyActivityMap } from '@svc/api/kind/chinese/types'
+import type { CharAttemptInput, DailyActivity, GroupSessionSummary, StatEntry, StatsMap, SessionsMap, DailyActivityMap } from '@svc/kind/chinese/types'
 
 // Code conversion: callers use full IDs ('chinese-hskv3-elementary', 'stroke'),
 // IDB/Supabase use compact codes ('aa', 's')

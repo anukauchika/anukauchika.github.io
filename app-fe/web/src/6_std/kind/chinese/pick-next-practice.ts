@@ -1,5 +1,5 @@
 import type { Group } from '@dat/dataset'
-import type { SessionsMap } from '@svc/api/kind/chinese/types'
+import type { SessionsMap } from '@svc/kind/chinese/types'
 
 interface NextPractice {
   groupId: number
