@@ -85,7 +85,7 @@ export interface DatasetApi {
   switchDatabase(userId: string | null): Promise<void>
 }
 
-export const datasetApi: DatasetApi = {
+export const lowDataset: DatasetApi = {
   async loadRegistry() {
     return registry as DatasetMeta[]
   },

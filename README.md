@@ -49,7 +49,39 @@ import '@svc/dataset'
 
 ## Code style
 
-Prefer object imports for modules with many exports: `import * as state from '@stt/dataset'`
+Use Svelte runes for states e.g.
+```typescript
+class DatasetState {
+  meta: DatasetMeta[] = $state([])
+  id: string = $state('')
+  current: Dataset | null = $state(null)
+  groups: Group[] = $state([])
+  filtered: Group[] = $state([])
+  prefSearch: string = $state('')
+  prefTags: string[] = $state([])
+  prefGroups: number[] = $state([])
+  prefViewMode: GroupViewMode = $state(GroupViewMode.Full)
+}
+
+export const sttDataset = new DatasetState()
+```
+
+strictly use this naming pattern for all singleton objects:
+
+```
+svcDataset: DatasetService
+sttDataset: DatasetState
+datDataset: DatasetRepo
+lowDataset: DatasetApi
+...
+```
+
+and files (no postfixes)
+
+```
+src/2_svc/dataset.ts
+src/5_low/dataset.ts
+```
 
 ## Design Book
 

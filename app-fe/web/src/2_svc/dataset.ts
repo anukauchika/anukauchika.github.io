@@ -1,7 +1,7 @@
 import { get } from 'svelte/store'
-import { datasetRepo } from '@dat/dataset-repo'
+import { datDataset } from '@dat/dataset'
 import type { DatasetMeta, Dataset, Group, GroupViewMode } from '@dom/dataset'
-import * as state from '@stt/dataset'
+import { sttDataset } from '@stt/dataset.svelte.js'
 
 // --- Filter logic (moved from @std/dataset.ts) ---
 
@@ -85,32 +85,29 @@ function debounce(key: string, fn: () => void, ms = 300) {
 }
 
 function recomputeFiltered() {
-  const gs = get(state.groups)
-  const s = get(state.search)
-  const t = get(state.tags)
-  const sg = get(state.selectedGroups)
+  const sg = sttDataset.prefGroups
   // Clean up invalid group selections
   if (sg.length > 0) {
-    const validIds = new Set(gs.map((g) => g.id))
+    const validIds = new Set(sttDataset.groups.map((g) => g.id))
     const cleaned = sg.filter((id) => validIds.has(id))
     if (cleaned.length !== sg.length) {
-      state.selectedGroups.set(cleaned)
+      sttDataset.prefGroups = cleaned
     }
   }
-  state.filteredGroups.set(filterGroups(gs, s, t, get(state.selectedGroups)))
+  sttDataset.filtered = filterGroups(sttDataset.groups, sttDataset.prefSearch, sttDataset.prefTags, sttDataset.prefGroups)
 }
 
-function applyDataset(ds: Dataset) {
-  state.currentDataset.set(ds)
-  state.groups.set(ds.groups)
+function applyDataset(dataset: Dataset) {
+  sttDataset.current = dataset
+  sttDataset.groups = dataset.groups
 }
 
-async function applyPrefs(repo: Awaited<typeof datasetRepo>, dsId: string) {
+async function applyPrefs(repo: Awaited<typeof datDataset>, dsId: string) {
   const prefs = await repo.getPrefs(dsId)
-  state.search.set(prefs.search)
-  state.tags.set(prefs.tags)
-  state.selectedGroups.set(prefs.groups)
-  state.viewMode.set(prefs.viewMode)
+  sttDataset.prefSearch = prefs.search
+  sttDataset.prefTags = prefs.tags
+  sttDataset.prefGroups = prefs.groups
+  sttDataset.prefViewMode = prefs.viewMode
 }
 
 // --- Public service ---
@@ -125,98 +122,95 @@ export interface DatasetService {
   setViewMode(v: GroupViewMode): void
 }
 
-export const datasetService: DatasetService = {
+export const svcDataset: DatasetService = {
   async init() {
-    const repo = await datasetRepo
+    const repo = await datDataset
     const allMeta = repo.getAllMeta()
-    state.datasetsMeta.set(allMeta)
+    sttDataset.meta = allMeta
 
     const defaultId = allMeta[0]?.id ?? ''
     const prefs = await repo.getPrefs(defaultId)
     const preferredId = allMeta.some((m) => m.id === prefs.datasetId) ? prefs.datasetId : defaultId
 
-    state.datasetId.set(preferredId)
-    const ds = await repo.loadData(preferredId)
-    if (ds) applyDataset(ds)
+    sttDataset.id = preferredId
+    const dataset = await repo.loadData(preferredId)
+    if (dataset) applyDataset(dataset)
 
     await applyPrefs(repo, preferredId)
     recomputeFiltered()
     initialized = true
   },
 
-  async selectDataset(id) {
-    const repo = await datasetRepo
-    const meta = repo.getMetaById(id)
-    if (!meta) return
+  async selectDataset(dsId) {
+    const repo = await datDataset
+    const m = repo.getMetaById(dsId)
+    if (!m) return
 
     initialized = false
-    state.datasetId.set(id)
-    const ds = await repo.loadData(id)
-    if (ds) applyDataset(ds)
+    sttDataset.id = dsId
+    const dataset = await repo.loadData(dsId)
+    if (dataset) applyDataset(dataset)
 
-    await applyPrefs(repo, id)
+    await applyPrefs(repo, dsId)
     recomputeFiltered()
     initialized = true
 
-    repo.setPrefId(id)
+    repo.setPrefId(dsId)
   },
 
   async reloadPrefs() {
-    const repo = await datasetRepo
-    // Switch IDB to current user
-    // userId is passed in by auth via the hook — we import user from @stt/auth
+    const repo = await datDataset
     const { user } = await import('@stt/auth')
     const userId = get(user)?.id ?? null
     await repo.switchDatabase(userId)
 
-    const id = get(state.datasetId)
-    if (!id) return
+    if (!sttDataset.id) return
 
     initialized = false
-    await applyPrefs(repo, id)
+    await applyPrefs(repo, sttDataset.id)
     recomputeFiltered()
     initialized = true
   },
 
   setSearch(v) {
-    state.search.set(v)
+    sttDataset.prefSearch = v
     recomputeFiltered()
     if (initialized) {
       debounce('search', async () => {
-        const repo = await datasetRepo
-        repo.setPrefSearch(get(state.datasetId), v)
+        const repo = await datDataset
+        repo.setPrefSearch(sttDataset.id, v)
       })
     }
   },
 
   setTags(v) {
-    state.tags.set(v)
+    sttDataset.prefTags = v
     recomputeFiltered()
     if (initialized) {
       debounce('tags', async () => {
-        const repo = await datasetRepo
-        repo.setPrefTags(get(state.datasetId), v)
+        const repo = await datDataset
+        repo.setPrefTags(sttDataset.id, v)
       })
     }
   },
 
   setGroups(v) {
-    state.selectedGroups.set(v)
+    sttDataset.prefGroups = v
     recomputeFiltered()
     if (initialized) {
       debounce('groups', async () => {
-        const repo = await datasetRepo
-        repo.setPrefGroups(get(state.datasetId), v)
+        const repo = await datDataset
+        repo.setPrefGroups(sttDataset.id, v)
       })
     }
   },
 
   setViewMode(v) {
-    state.viewMode.set(v)
+    sttDataset.prefViewMode = v
     if (initialized) {
       debounce('viewMode', async () => {
-        const repo = await datasetRepo
-        repo.setPrefViewMode(get(state.datasetId), v)
+        const repo = await datDataset
+        repo.setPrefViewMode(sttDataset.id, v)
       })
     }
   },

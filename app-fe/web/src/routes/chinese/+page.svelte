@@ -1,15 +1,6 @@
 <script>
-  import { datasetId, currentDataset, search, viewMode, filteredGroups } from '@stt/dataset.js'
-  import {
-    datasetStatsStroke,
-    datasetStatsPinyin,
-    datasetGroupSessions,
-    datasetGroupSessionsStroke,
-    datasetGroupSessionsPinyin,
-    loadDatasetStatsAll,
-    loadDatasetGroupSessionsAll,
-    loadDailyActivityAll,
-  } from '@stt/kind/chinese/practice-stats.js'
+  import { sttDataset } from '@stt/dataset.svelte.js'
+  import { ps, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from '@stt/kind/chinese/practice-stats.js'
   import { isAuthenticated, dbVersion } from '@stt/auth.js'
   import { buildProps as buildCompactProps } from '@uic/kind/chinese/compact-group-list'
   import { buildProps as buildFullProps } from '@uic/kind/chinese/group-item'
@@ -20,19 +11,19 @@
   import Island from '@std/ui/island.svelte'
   import BrowseHero from '@routes/chinese/browse-hero.svelte'
 
-  const basePath = $derived.by(() => `/${$currentDataset.kind}`)
+  const basePath = $derived.by(() => `/${sttDataset.current.kind}`)
 
   const reloadStats = () => {
-    if ($datasetId) {
-      loadDatasetStatsAll($datasetId)
-      loadDatasetGroupSessionsAll($datasetId)
-      loadDailyActivityAll($datasetId)
+    if (sttDataset.id) {
+      loadDatasetStatsAll(sttDataset.id)
+      loadDatasetGroupSessionsAll(sttDataset.id)
+      loadDailyActivityAll(sttDataset.id)
     }
   }
 
   $effect(() => {
     $dbVersion
-    if ($datasetId) reloadStats()
+    if (sttDataset.id) reloadStats()
   })
 
   $effect(() => {
@@ -59,13 +50,13 @@
 
   const groupCtx = $derived({
     basePath,
-    datasetId: $datasetId,
+    datasetId: sttDataset.id,
     isAuthenticated: $isAuthenticated,
-    groupSessions: $datasetGroupSessions,
-    groupSessionsStroke: $datasetGroupSessionsStroke,
-    groupSessionsPinyin: $datasetGroupSessionsPinyin,
-    statsStroke: $datasetStatsStroke,
-    statsPinyin: $datasetStatsPinyin,
+    groupSessions: $ps.datasetGroupSessions,
+    groupSessionsStroke: $ps.datasetGroupSessionsStroke,
+    groupSessionsPinyin: $ps.datasetGroupSessionsPinyin,
+    statsStroke: $ps.datasetStatsStroke,
+    statsPinyin: $ps.datasetStatsPinyin,
   })
 </script>
 
@@ -81,13 +72,13 @@
   <BrowseHero />
 
   <Groups
-    groups={$filteredGroups.map((g) => buildFullProps(g, groupCtx))}
-    viewStyle={$viewMode}
-    hasSearch={$search.trim().length > 0}
-    datasetId={$datasetId}
+    groups={sttDataset.filtered.map((g) => buildFullProps(g, groupCtx))}
+    viewStyle={sttDataset.prefViewMode}
+    hasSearch={sttDataset.prefSearch.trim().length > 0}
+    datasetId={sttDataset.id}
   >
     {#snippet compact()}
-      <CompactGroupList groups={$filteredGroups.map((g) => buildCompactProps(g, groupCtx))} />
+      <CompactGroupList groups={sttDataset.filtered.map((g) => buildCompactProps(g, groupCtx))} />
     {/snippet}
   </Groups>
 

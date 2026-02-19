@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte'
-  import { datasetsMeta, datasetId, currentDataset, search, tags, selectedGroups, viewMode, groups, filteredGroups } from '@stt/dataset.js'
-  import { datasetService } from '@svc/dataset-service'
+  import { sttDataset } from '@stt/dataset.svelte.js'
+  import { svcDataset } from '@svc/dataset'
   import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@stt/auth.js'
   import { formatGroup } from '@std/format.js'
   import { GroupViewMode } from '@dom/dataset'
@@ -14,11 +14,11 @@
   import AuthModal from '@uic/auth-modal.svelte'
 
   onMount(() => {
-    const m = $datasetsMeta.find((m) => m.kind === 'english')
-    if (m) datasetService.selectDataset(m.id)
+    const m = sttDataset.meta.find((m) => m.kind === 'english')
+    if (m) svcDataset.selectDataset(m.id)
   })
 
-  const basePath = $derived.by(() => `/${$currentDataset?.kind ?? 'english'}`)
+  const basePath = $derived.by(() => `/${sttDataset.current?.kind ?? 'english'}`)
 
   let activeWord = $state(null)
   let modalOpen = $state(false)
@@ -30,9 +30,9 @@
   const fullGroupProps = (group) => ({
     groupId: formatGroup(group.id),
     tags: group.tags,
-    kind: $currentDataset?.kind,
-    workbookHref: `${basePath}/workbook?group=${group.id}&dataset=${$datasetId}`,
-    printHref: `${basePath}/workbook?group=${group.id}&dataset=${$datasetId}&autoprint=1`,
+    kind: sttDataset.current?.kind,
+    workbookHref: `${basePath}/workbook?group=${group.id}&dataset=${sttDataset.id}`,
+    printHref: `${basePath}/workbook?group=${group.id}&dataset=${sttDataset.id}&autoprint=1`,
     strokeSessions: 0,
     pinyinSessions: 0,
     strokeProgress: 0,
@@ -51,14 +51,14 @@
 
 <main class="anuka-page">
   <Hero
-    datasetName={$currentDataset?.name}
-    datasetDescription={$currentDataset?.description}
-    datasetTags={$currentDataset?.tags}
-    datasetId={$datasetId}
+    datasetName={sttDataset.current?.name}
+    datasetDescription={sttDataset.current?.description}
+    datasetTags={sttDataset.current?.tags}
+    datasetId={sttDataset.id}
     dailyActivity={new Map()}
     isAuthenticated={$isAuthenticated}
-    groupCount={$filteredGroups.length}
-    totalCount={$filteredGroups.reduce((s, g) => s + g.items.length, 0)}
+    groupCount={sttDataset.filtered.length}
+    totalCount={sttDataset.filtered.reduce((s, g) => s + g.items.length, 0)}
     uniqueChars={0}
     strokePracticedCount={0}
     strokeProgress={0} strokeMastery={0} pinyinProgress={0} pinyinMastery={0}
@@ -72,38 +72,38 @@
   >
     {#snippet toolbar()}
       <Toolbar
-        datasets={$datasetsMeta}
-        datasetId={$datasetId}
-        appTitle={$currentDataset?.appTitle}
+        datasets={sttDataset.meta}
+        datasetId={sttDataset.id}
+        appTitle={sttDataset.current?.appTitle}
         user={$user}
-        onDatasetChange={(id) => datasetService.selectDataset(id)}
+        onDatasetChange={(id) => svcDataset.selectDataset(id)}
         onShowAuthDropdown={() => showAuthDropdown = true}
       />
     {/snippet}
     {#snippet filters()}
       <Filters
-        groups={$groups}
-        search={$search}
-        tags={$tags}
-        selectedGroups={$selectedGroups}
-        listViewStyle={$viewMode}
-        onSearchChange={(v) => datasetService.setSearch(v)}
-        onTagAdd={(tag) => { if (!$tags.includes(tag)) datasetService.setTags([...$tags, tag]) }}
-        onTagRemove={(tag) => datasetService.setTags($tags.filter(t => t !== tag))}
-        onTagsClear={() => datasetService.setTags([])}
-        onGroupAdd={(id) => { if (!$selectedGroups.includes(id)) datasetService.setGroups([...$selectedGroups, id]) }}
-        onGroupRemove={(id) => datasetService.setGroups($selectedGroups.filter(g => g !== id))}
-        onGroupsClear={() => datasetService.setGroups([])}
-        onToggleView={() => datasetService.setViewMode($viewMode === GroupViewMode.Full ? GroupViewMode.Compact : GroupViewMode.Full)}
+        groups={sttDataset.groups}
+        search={sttDataset.prefSearch}
+        tags={sttDataset.prefTags}
+        selectedGroups={sttDataset.prefGroups}
+        listViewStyle={sttDataset.prefViewMode}
+        onSearchChange={(v) => svcDataset.setSearch(v)}
+        onTagAdd={(tag) => { if (!sttDataset.prefTags.includes(tag)) svcDataset.setTags([...sttDataset.prefTags, tag]) }}
+        onTagRemove={(tag) => svcDataset.setTags(sttDataset.prefTags.filter(t => t !== tag))}
+        onTagsClear={() => svcDataset.setTags([])}
+        onGroupAdd={(id) => { if (!sttDataset.prefGroups.includes(id)) svcDataset.setGroups([...sttDataset.prefGroups, id]) }}
+        onGroupRemove={(id) => svcDataset.setGroups(sttDataset.prefGroups.filter(g => g !== id))}
+        onGroupsClear={() => svcDataset.setGroups([])}
+        onToggleView={() => svcDataset.setViewMode(sttDataset.prefViewMode === GroupViewMode.Full ? GroupViewMode.Compact : GroupViewMode.Full)}
       />
     {/snippet}
   </Hero>
 
   <Groups
-    groups={$filteredGroups.map(g => fullGroupProps(g))}
-    viewStyle={$viewMode}
-    hasSearch={$search.trim().length > 0}
-    datasetId={$datasetId}
+    groups={sttDataset.filtered.map(g => fullGroupProps(g))}
+    viewStyle={sttDataset.prefViewMode}
+    hasSearch={sttDataset.prefSearch.trim().length > 0}
+    datasetId={sttDataset.id}
   />
 
   {#if modalOpen && activeWord}

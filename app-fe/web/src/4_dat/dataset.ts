@@ -1,5 +1,5 @@
 import type { DatasetMeta, Dataset, DatasetPrefs, GroupViewMode } from '@dom/dataset'
-import { datasetApi } from '@low/dataset-api'
+import { lowDataset } from '@low/dataset'
 
 export interface DatasetRepo {
   getAllMeta(): DatasetMeta[]
@@ -15,7 +15,7 @@ export interface DatasetRepo {
 }
 
 async function create(): Promise<DatasetRepo> {
-  const allMeta = await datasetApi.loadRegistry()
+  const allMeta = await lowDataset.loadRegistry()
   const byId = new Map(allMeta.map((m) => [m.id, m]))
 
   return {
@@ -25,17 +25,17 @@ async function create(): Promise<DatasetRepo> {
     async loadData(id) {
       const meta = byId.get(id)
       if (!meta) return null
-      return datasetApi.loadData(meta)
+      return lowDataset.loadData(meta)
     },
 
-    getPrefs: (dsId) => datasetApi.getPrefs(dsId),
-    setPrefId: (id) => datasetApi.setPrefId(id),
-    setPrefSearch: (dsId, v) => datasetApi.setPrefSearch(dsId, v),
-    setPrefTags: (dsId, v) => datasetApi.setPrefTags(dsId, v),
-    setPrefGroups: (dsId, v) => datasetApi.setPrefGroups(dsId, v),
-    setPrefViewMode: (dsId, v) => datasetApi.setPrefViewMode(dsId, v),
-    switchDatabase: (userId) => datasetApi.switchDatabase(userId),
+    getPrefs: (dsId) => lowDataset.getPrefs(dsId),
+    setPrefId: (id) => lowDataset.setPrefId(id),
+    setPrefSearch: (dsId, v) => lowDataset.setPrefSearch(dsId, v),
+    setPrefTags: (dsId, v) => lowDataset.setPrefTags(dsId, v),
+    setPrefGroups: (dsId, v) => lowDataset.setPrefGroups(dsId, v),
+    setPrefViewMode: (dsId, v) => lowDataset.setPrefViewMode(dsId, v),
+    switchDatabase: (userId) => lowDataset.switchDatabase(userId),
   }
 }
 
-export const datasetRepo: Promise<DatasetRepo> = create()
+export const datDataset: Promise<DatasetRepo> = create()

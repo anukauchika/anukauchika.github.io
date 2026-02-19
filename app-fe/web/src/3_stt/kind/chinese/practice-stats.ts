@@ -1,9 +1,9 @@
-import { writable, get, type Writable } from 'svelte/store'
+import { writable, derived, get, type Writable } from 'svelte/store'
 import { statsService } from '@svc/kind/chinese/stats-service'
 import { syncService } from '@svc/sync-service'
 import { groupSessionService } from '@svc/kind/chinese/group-session-service'
 import { user } from '@stt/auth.js'
-import { datasetsMeta } from '@stt/dataset'
+import { sttDataset } from '@stt/dataset.svelte.js'
 import type { PracticeType } from '@dat/kind/chinese/types'
 import type { CharAttemptInput, DailyActivity, GroupSessionSummary, StatEntry, StatsMap, SessionsMap, DailyActivityMap } from '@svc/kind/chinese/types'
 
@@ -12,7 +12,7 @@ import type { CharAttemptInput, DailyActivity, GroupSessionSummary, StatEntry, S
 const PT_CODES: Record<string, PracticeType> = { stroke: 's' as PracticeType, pinyin: 'p' as PracticeType }
 
 function dsCode(id: string): string {
-  const meta = get(datasetsMeta).find((m) => m.id === id)
+  const meta = sttDataset.meta.find((m) => m.id === id)
   return meta?.code ?? id
 }
 
@@ -44,6 +44,21 @@ export const dailyActivity: Writable<DailyActivityMap> = writable(new Map())
 /** Map practice_type code to per-type stores */
 const PT_STATS_STORES: Record<string, Writable<StatsMap>> = { s: datasetStatsStroke, p: datasetStatsPinyin }
 const PT_SESSION_STORES: Record<string, Writable<SessionsMap>> = { s: datasetGroupSessionsStroke, p: datasetGroupSessionsPinyin }
+
+/** Combined read-only store for route consumption via $ps.field */
+export const ps = derived(
+  [groupStats, datasetStats, datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin, dailyActivity],
+  ([$groupStats, $datasetStats, $datasetStatsStroke, $datasetStatsPinyin, $datasetGroupSessions, $datasetGroupSessionsStroke, $datasetGroupSessionsPinyin, $dailyActivity]) => ({
+    groupStats: $groupStats,
+    datasetStats: $datasetStats,
+    datasetStatsStroke: $datasetStatsStroke,
+    datasetStatsPinyin: $datasetStatsPinyin,
+    datasetGroupSessions: $datasetGroupSessions,
+    datasetGroupSessionsStroke: $datasetGroupSessionsStroke,
+    datasetGroupSessionsPinyin: $datasetGroupSessionsPinyin,
+    dailyActivity: $dailyActivity,
+  }),
+)
 
 // --- Load functions ---
 

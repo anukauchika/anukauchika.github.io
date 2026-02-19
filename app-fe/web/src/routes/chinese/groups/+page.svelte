@@ -1,24 +1,24 @@
 <script>
   import { goto } from '$app/navigation'
-  import { datasetId, currentDataset, filteredGroups } from '@stt/dataset.js'
-  import { datasetStatsStroke, datasetStatsPinyin, datasetGroupSessions, datasetGroupSessionsStroke, datasetGroupSessionsPinyin } from '@stt/kind/chinese/practice-stats.js'
+  import { sttDataset } from '@stt/dataset.svelte.js'
+  import { ps } from '@stt/kind/chinese/practice-stats.js'
   import { isAuthenticated } from '@stt/auth.js'
   import { sortGroupsByLastPracticed } from '@std/kind/chinese/stats'
   import { buildProps as buildCompactProps } from '@uic/kind/chinese/compact-group-list'
   import PracticedGroups from '@uic/kind/chinese/practiced-groups.svelte'
 
-  const basePath = $derived.by(() => `/${$currentDataset?.kind ?? 'chinese'}`)
-  const practicedGroupsSorted = $derived(sortGroupsByLastPracticed($filteredGroups, $datasetGroupSessions))
+  const basePath = $derived.by(() => `/${sttDataset.current?.kind ?? 'chinese'}`)
+  const practicedGroupsSorted = $derived(sortGroupsByLastPracticed(sttDataset.filtered, $ps.datasetGroupSessions))
 
   const groupCtx = $derived({
     basePath,
-    datasetId: $datasetId,
+    datasetId: sttDataset.id,
     isAuthenticated: $isAuthenticated,
-    groupSessions: $datasetGroupSessions,
-    groupSessionsStroke: $datasetGroupSessionsStroke,
-    groupSessionsPinyin: $datasetGroupSessionsPinyin,
-    statsStroke: $datasetStatsStroke,
-    statsPinyin: $datasetStatsPinyin,
+    groupSessions: $ps.datasetGroupSessions,
+    groupSessionsStroke: $ps.datasetGroupSessionsStroke,
+    groupSessionsPinyin: $ps.datasetGroupSessionsPinyin,
+    statsStroke: $ps.datasetStatsStroke,
+    statsPinyin: $ps.datasetStatsPinyin,
   })
 </script>
 
@@ -29,7 +29,7 @@
 <main class="anuka-page">
   <PracticedGroups
     groups={practicedGroupsSorted.map(g => buildCompactProps(g, groupCtx, 'groups'))}
-    practicedCount={practicedGroupsSorted.filter(g => $datasetGroupSessions.has(g.id)).length}
+    practicedCount={practicedGroupsSorted.filter(g => $ps.datasetGroupSessions.has(g.id)).length}
     totalCount={practicedGroupsSorted.length}
     onclose={() => goto('/chinese/')}
   />

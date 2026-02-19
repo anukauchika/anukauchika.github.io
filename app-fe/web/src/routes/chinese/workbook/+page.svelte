@@ -2,8 +2,8 @@
   import { page } from '$app/stores'
   import '@uic/workbook.css'
   import { onMount } from 'svelte'
-  import { datasetId, currentDataset } from '@stt/dataset.js'
-  import { datasetService } from '@svc/dataset-service'
+  import { sttDataset } from '@stt/dataset.svelte.js'
+  import { svcDataset } from '@svc/dataset'
   import { asChineseDataset } from '@dom/kind/chinese/dataset'
   import WorkbookChinese from '@uic/kind/chinese/workbook.svelte'
   import WorkbookEnglish from '@uic/kind/english/workbook.svelte'
@@ -12,7 +12,7 @@
 
   onMount(() => {
     const requested = $page.url.searchParams.get('dataset')
-    if (requested) datasetService.selectDataset(requested)
+    if (requested) svcDataset.selectDataset(requested)
   })
 
   const getInitialGroup = () => {
@@ -20,7 +20,7 @@
   }
 
   let groupFilter = $state(getInitialGroup())
-  const groups = $derived.by(() => asChineseDataset($currentDataset)?.groups ?? [])
+  const groups = $derived.by(() => asChineseDataset(sttDataset.current)?.groups ?? [])
 
   const formatPrintDate = () => {
     const now = new Date()
@@ -36,7 +36,7 @@
   const updateUrl = () => {
     const url = new URL(window.location.href)
     url.searchParams.set('group', String(groupFilter))
-    if ($datasetId) url.searchParams.set('dataset', $datasetId)
+    if (sttDataset.id) url.searchParams.set('dataset', sttDataset.id)
     window.history.replaceState({}, '', url)
   }
 
@@ -85,9 +85,9 @@
     </div>
   </header>
 
-  {#if $currentDataset?.kind === 'chinese'}
+  {#if sttDataset.current?.kind === 'chinese'}
     <WorkbookChinese group={activeGroup} {exerciseSets} />
-  {:else if $currentDataset?.kind === 'english'}
+  {:else if sttDataset.current?.kind === 'english'}
     <WorkbookEnglish group={activeGroup} {exerciseSets} />
   {/if}
 </main>
