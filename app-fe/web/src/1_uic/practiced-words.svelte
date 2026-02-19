@@ -28,7 +28,7 @@
   <div class="anuka-grid">
     {#each items as entry (`${entry.group.id}-${entry.item.id}`)}
       <div class="anuka-stack anuka-compact">
-        <span class="anuka-mute anuka-sm">{timeAgo(entry.stat.lastPracticedAt)}</span>
+        <span class="anuka-mute anuka-sm">{timeAgo(entry.stat.lastDrilledAt)}</span>
         {@render itemSnippet(entry)}
       </div>
     {/each}

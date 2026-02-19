@@ -1,5 +1,5 @@
-import type { Group } from '@dom/dataset'
-import type { SessionsMap } from '@svc/kind/chinese/types'
+import type { Group, GroupId } from '@dom/dataset'
+import type { GroupProgress } from '@dom/stats'
 
 interface NextPractice {
   groupId: number
@@ -8,9 +8,9 @@ interface NextPractice {
 
 export function pickNextPractice(
   groups: Group[],
-  groupSessions: SessionsMap,
-  strokeSessions: SessionsMap,
-  pinyinSessions: SessionsMap,
+  groupSessions: Map<GroupId, GroupProgress>,
+  strokeSessions: Map<GroupId, GroupProgress>,
+  pinyinSessions: Map<GroupId, GroupProgress>,
 ): NextPractice | null {
   // Step 1: filter to groups with at least 1 completed session
   const eligible = groups.filter((g) => {
@@ -20,10 +20,10 @@ export function pickNextPractice(
 
   if (eligible.length === 0) return null
 
-  // Step 2: sort by lastPracticedAt ascending (least recent first)
+  // Step 2: sort by lastDrilledAt ascending (least recent first)
   eligible.sort((a, b) => {
-    const aTime = groupSessions.get(a.id)!.lastPracticedAt || ''
-    const bTime = groupSessions.get(b.id)!.lastPracticedAt || ''
+    const aTime = groupSessions.get(a.id)!.lastDrilledAt || ''
+    const bTime = groupSessions.get(b.id)!.lastDrilledAt || ''
     return aTime < bTime ? -1 : aTime > bTime ? 1 : 0
   })
 

@@ -1,6 +1,5 @@
 import type { AuthUser } from '@dom/auth'
 import { lowAuth } from '@low/auth'
-import { statsRepo } from '@low/kind/chinese/idb-stats-repo'
 
 export interface AuthRepo {
   getUser(): Promise<AuthUser | null>
@@ -10,7 +9,6 @@ export interface AuthRepo {
   signInWithApple(): Promise<void>
   signInWithEmail(email: string): Promise<void>
   signOut(): Promise<void>
-  switchStatsDatabase(userId: string | null): Promise<void>
 }
 
 export const datAuth: AuthRepo = {
@@ -21,5 +19,4 @@ export const datAuth: AuthRepo = {
   signInWithApple: () => lowAuth.signInWithApple(),
   signInWithEmail: (email) => lowAuth.signInWithEmail(email),
   signOut: () => lowAuth.signOut(),
-  switchStatsDatabase: (userId) => statsRepo.switchDatabase(userId),
 }

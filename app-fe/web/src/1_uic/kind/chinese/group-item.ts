@@ -1,16 +1,17 @@
 import { calcGroupProgress, calcGroupMastery } from '@std/kind/chinese/stats'
-import { compositeKey } from '@dom/dataset'
+import { mkWordKey } from '@dom/dataset'
+import type { GroupId, WordKey } from '@dom/dataset'
 import type { ChineseGroup } from '@dom/kind/chinese/dataset'
-import type { StatsMap, SessionsMap } from '@svc/kind/chinese/types'
+import type { WordProgress, GroupProgress } from '@dom/stats'
 
 interface Context {
   basePath: string
   datasetId: string
   isAuthenticated: boolean
-  groupSessionsStroke: SessionsMap
-  groupSessionsPinyin: SessionsMap
-  statsStroke: StatsMap
-  statsPinyin: StatsMap
+  groupSessionsStroke: Map<GroupId, GroupProgress>
+  groupSessionsPinyin: Map<GroupId, GroupProgress>
+  statsStroke: Map<WordKey, WordProgress>
+  statsPinyin: Map<WordKey, WordProgress>
 }
 
 export function buildProps(group: ChineseGroup, ctx: Context) {
@@ -33,8 +34,8 @@ export function buildProps(group: ChineseGroup, ctx: Context) {
     showProgress: ctx.isAuthenticated,
     items: group.items.map((item) => ({
       item,
-      strokeStat: ctx.isAuthenticated ? ctx.statsStroke.get(compositeKey(group.id, item.id)) : null,
-      pinyinStat: ctx.isAuthenticated ? ctx.statsPinyin.get(compositeKey(group.id, item.id)) : null,
+      strokeStat: ctx.isAuthenticated ? ctx.statsStroke.get(mkWordKey(group.id, item.id)) : null,
+      pinyinStat: ctx.isAuthenticated ? ctx.statsPinyin.get(mkWordKey(group.id, item.id)) : null,
     })),
   }
 }

@@ -1,6 +1,5 @@
 import { req, tx, createDatabase } from '@low/idb'
-import type { StatsRepo } from '@dat/kind/chinese/stats-repo'
-import type { GroupSession, WordAttempt, CharLog, PracticeType } from '@dat/kind/chinese/types'
+import type { StorageDrill, StorageAttempt, StorageCharLog } from '@dat/kind/chinese/types'
 
 const ST_SESSIONS = 'group_sessions'
 const ST_WORDS = 'word_attempts'
@@ -36,27 +35,27 @@ async function getMinId(): Promise<number> {
   return min
 }
 
-async function saveGroupSession(session: GroupSession): Promise<void> {
+async function saveGroupSession(session: StorageDrill): Promise<void> {
   const db = await statsDb.db()
   const t = db.transaction(ST_SESSIONS, 'readwrite')
   t.objectStore(ST_SESSIONS).put(session)
   await tx(t)
 }
 
-async function getGroupSessionById(id: number): Promise<GroupSession | null> {
+async function getGroupSessionById(id: number): Promise<StorageDrill | null> {
   const db = await statsDb.db()
   const store = db.transaction(ST_SESSIONS, 'readonly').objectStore(ST_SESSIONS)
   return (await req(store.get(id))) || null
 }
 
-async function saveWordAttempt(attempt: WordAttempt): Promise<void> {
+async function saveWordAttempt(attempt: StorageAttempt): Promise<void> {
   const db = await statsDb.db()
   const t = db.transaction(ST_WORDS, 'readwrite')
   t.objectStore(ST_WORDS).put(attempt)
   await tx(t)
 }
 
-async function saveCharLogs(chars: CharLog[]): Promise<void> {
+async function saveCharLogs(chars: StorageCharLog[]): Promise<void> {
   const db = await statsDb.db()
   const t = db.transaction(ST_CHARS, 'readwrite')
   const store = t.objectStore(ST_CHARS)
@@ -64,38 +63,38 @@ async function saveCharLogs(chars: CharLog[]): Promise<void> {
   await tx(t)
 }
 
-async function getGroupSessions(datasetId: string, practiceType: PracticeType): Promise<GroupSession[]> {
+async function getGroupSessions(datasetId: string, practiceType: string): Promise<StorageDrill[]> {
   const db = await statsDb.db()
   const store = db.transaction(ST_SESSIONS, 'readonly').objectStore(ST_SESSIONS)
   return req(store.index('dataset_practice').getAll([datasetId, practiceType]))
 }
 
-async function getWordAttempts(groupSessionId: number): Promise<WordAttempt[]> {
+async function getWordAttempts(groupSessionId: number): Promise<StorageAttempt[]> {
   const db = await statsDb.db()
   const store = db.transaction(ST_WORDS, 'readonly').objectStore(ST_WORDS)
   return req(store.index('group_session_id').getAll(groupSessionId))
 }
 
-async function getCharLogs(wordAttemptId: number): Promise<CharLog[]> {
+async function getCharLogs(wordAttemptId: number): Promise<StorageCharLog[]> {
   const db = await statsDb.db()
   const store = db.transaction(ST_CHARS, 'readonly').objectStore(ST_CHARS)
   const range = IDBKeyRange.bound([wordAttemptId], [wordAttemptId, Infinity])
   return req(store.getAll(range))
 }
 
-async function getPendingGroupSessions(): Promise<GroupSession[]> {
+async function getPendingGroupSessions(): Promise<StorageDrill[]> {
   const db = await statsDb.db()
   const store = db.transaction(ST_SESSIONS, 'readonly').objectStore(ST_SESSIONS)
   return req(store.index('synced').getAll(0))
 }
 
-async function getPendingWordAttempts(): Promise<WordAttempt[]> {
+async function getPendingWordAttempts(): Promise<StorageAttempt[]> {
   const db = await statsDb.db()
   const store = db.transaction(ST_WORDS, 'readonly').objectStore(ST_WORDS)
   return req(store.index('synced').getAll(0))
 }
 
-async function getPendingCharLogs(): Promise<CharLog[]> {
+async function getPendingCharLogs(): Promise<StorageCharLog[]> {
   const db = await statsDb.db()
   const store = db.transaction(ST_CHARS, 'readonly').objectStore(ST_CHARS)
   return req(store.index('synced').getAll(0))
@@ -150,7 +149,7 @@ async function markWordAttemptSynced(tempId: number, realId: number): Promise<vo
   await tx(t)
 }
 
-async function bulkInsertGroupSessions(sessions: GroupSession[]): Promise<void> {
+async function bulkInsertGroupSessions(sessions: StorageDrill[]): Promise<void> {
   const db = await statsDb.db()
   const t = db.transaction(ST_SESSIONS, 'readwrite')
   const store = t.objectStore(ST_SESSIONS)
@@ -158,7 +157,7 @@ async function bulkInsertGroupSessions(sessions: GroupSession[]): Promise<void> 
   await tx(t)
 }
 
-async function bulkInsertWordAttempts(attempts: WordAttempt[]): Promise<void> {
+async function bulkInsertWordAttempts(attempts: StorageAttempt[]): Promise<void> {
   const db = await statsDb.db()
   const t = db.transaction(ST_WORDS, 'readwrite')
   const store = t.objectStore(ST_WORDS)
@@ -166,7 +165,7 @@ async function bulkInsertWordAttempts(attempts: WordAttempt[]): Promise<void> {
   await tx(t)
 }
 
-async function bulkInsertCharLogs(chars: CharLog[]): Promise<void> {
+async function bulkInsertCharLogs(chars: StorageCharLog[]): Promise<void> {
   const db = await statsDb.db()
   const t = db.transaction(ST_CHARS, 'readwrite')
   const store = t.objectStore(ST_CHARS)
@@ -188,14 +187,14 @@ async function deleteOldSyncedRecords(cutoffDate: string): Promise<void> {
   const allSessions = await req(
     db.transaction(ST_SESSIONS, 'readonly').objectStore(ST_SESSIONS).index('synced').getAll(1),
   )
-  const old = allSessions.filter((s: GroupSession) => (s.done_at || s.started_at) < cutoffDate)
+  const old = allSessions.filter((s: StorageDrill) => (s.done_at || s.started_at) < cutoffDate)
   if (old.length === 0) return
 
-  const oldSessionIds = new Set(old.map((s: GroupSession) => s.id))
+  const oldSessionIds = new Set(old.map((s: StorageDrill) => s.id))
 
   // Find word attempts belonging to old sessions
   const allWords = await req(db.transaction(ST_WORDS, 'readonly').objectStore(ST_WORDS).getAll())
-  const oldWords = allWords.filter((w: WordAttempt) => w.synced && oldSessionIds.has(w.group_session_id))
+  const oldWords = allWords.filter((w: StorageAttempt) => w.synced && oldSessionIds.has(w.group_session_id))
 
   // Delete in one transaction
   const t = db.transaction([ST_SESSIONS, ST_WORDS, ST_CHARS], 'readwrite')
@@ -226,9 +225,32 @@ async function nextTempId(): Promise<number> {
   return nextId--
 }
 
-// --- StatsRepo object ---
+// --- lowStatsIdb object ---
 
-export const statsRepo: StatsRepo = {
+export interface LowStatsIdb {
+  saveGroupSession(session: StorageDrill): Promise<void>
+  getGroupSessionById(id: number): Promise<StorageDrill | null>
+  getGroupSessions(datasetId: string, practiceType: string): Promise<StorageDrill[]>
+  saveWordAttempt(attempt: StorageAttempt): Promise<void>
+  getWordAttempts(groupSessionId: number): Promise<StorageAttempt[]>
+  saveCharLogs(chars: StorageCharLog[]): Promise<void>
+  getCharLogs(wordAttemptId: number): Promise<StorageCharLog[]>
+  getPendingGroupSessions(): Promise<StorageDrill[]>
+  getPendingWordAttempts(): Promise<StorageAttempt[]>
+  getPendingCharLogs(): Promise<StorageCharLog[]>
+  markGroupSessionSynced(tempId: number, realId: number): Promise<void>
+  markWordAttemptSynced(tempId: number, realId: number): Promise<void>
+  bulkInsertGroupSessions(sessions: StorageDrill[]): Promise<void>
+  bulkInsertWordAttempts(attempts: StorageAttempt[]): Promise<void>
+  bulkInsertCharLogs(chars: StorageCharLog[]): Promise<void>
+  isEmpty(): Promise<boolean>
+  getMinId(): Promise<number>
+  nextTempId(): Promise<number>
+  deleteOldSyncedRecords(cutoffDate: string): Promise<void>
+  switchDatabase(userId: string | null): Promise<void>
+}
+
+export const lowStatsIdb: LowStatsIdb = {
   saveGroupSession,
   getGroupSessionById,
   getGroupSessions,

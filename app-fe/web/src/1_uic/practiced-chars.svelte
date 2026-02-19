@@ -30,7 +30,7 @@
           {#if c.pinyin.successCount > 0}
             <span class="anuka-sm anuka-main">{c.pinyin.successCount}{#if c.pinyin.errorCount > 0}<span class="anuka-fail">| {c.pinyin.errorCount}</span>{/if}</span>
           {/if}
-          <span class="anuka-sm anuka-mute">{timeAgo(c.lastPracticedAt)}</span>
+          <span class="anuka-sm anuka-mute">{timeAgo(c.lastDrilledAt)}</span>
         {/if}
       </div>
     {/each}

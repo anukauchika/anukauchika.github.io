@@ -5,8 +5,8 @@
  * Usage (browser console):
  *   import('/src/data/seed-test-stats.js').then(m => m.seed())
  */
-import { statsRepo } from '@low/kind/chinese/idb-stats-repo'
-import type { GroupSession, WordAttempt, CharLog } from '@dat/kind/chinese/types'
+import { lowStatsIdb } from '@low/kind/chinese/idb-stats-repo'
+import type { StorageDrill, StorageAttempt, StorageStorageCharLog } from '@dat/kind/chinese/types'
 
 const DATASET_CODE = 'ae'
 const PRACTICE_TYPE = 's'
@@ -33,9 +33,9 @@ export async function seed(): Promise<void> {
 
   let sessionId = 900000
   let wordId = 900000
-  const sessions: GroupSession[] = []
-  const words: WordAttempt[] = []
-  const chars: CharLog[] = []
+  const sessions: StorageDrill[] = []
+  const words: StorageAttempt[] = []
+  const chars: StorageCharLog[] = []
 
   for (const g of GROUPS) {
     const sessionCount =
@@ -70,7 +70,7 @@ export async function seed(): Promise<void> {
         started_at: startedAt,
         done_at: doneAt,
         synced: 1,
-      } as GroupSession)
+      } as StorageDrill)
 
       const wordsToAttempt = isFull ? g.words : g.words.slice(0, rand(1, g.words.length - 1))
       let wordTime = new Date(sessionDate.getTime() + 5000)
@@ -88,7 +88,7 @@ export async function seed(): Promise<void> {
           started_at: wStarted,
           done_at: wDone,
           synced: 1,
-        } as WordAttempt)
+        } as StorageAttempt)
 
         const charCount = rand(1, 2)
         const errorChance = g.group <= 2 ? 0.1 : g.group <= 4 ? 0.25 : 0.4
@@ -102,7 +102,7 @@ export async function seed(): Promise<void> {
             done_at: isoAt(new Date(cStarted.getTime() + rand(1, 4) * 1000)),
             error_count: errorCount,
             synced: 1,
-          } as CharLog)
+          } as StorageCharLog)
         }
 
         wordTime = new Date(wordTime.getTime() + wDuration + 1500)
@@ -110,9 +110,9 @@ export async function seed(): Promise<void> {
     }
   }
 
-  await statsRepo.bulkInsertGroupSessions(sessions)
-  await statsRepo.bulkInsertWordAttempts(words)
-  await statsRepo.bulkInsertCharLogs(chars)
+  await lowStatsIdb.bulkInsertStorageDrills(sessions)
+  await lowStatsIdb.bulkInsertStorageAttempts(words)
+  await lowStatsIdb.bulkInsertStorageCharLogs(chars)
 
   console.log(`Seeded: ${sessions.length} sessions, ${words.length} word attempts, ${chars.length} char logs`)
   console.log('Reload the page and select "Chinese Test" dataset to see the data.')

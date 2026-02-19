@@ -25,6 +25,11 @@ export interface ChineseDatasetStats {
   chars: number
 }
 
+export enum ChineseDrillType {
+  Stroke = 'stroke',
+  Pinyin = 'pinyin',
+}
+
 export function asChineseDataset(ds: Dataset | null): ChineseDataset | null {
   if (!ds || ds.kind !== 'chinese') return null
   return ds as unknown as ChineseDataset

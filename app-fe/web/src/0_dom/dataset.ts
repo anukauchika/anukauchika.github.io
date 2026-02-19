@@ -1,5 +1,10 @@
+export type WordId = number
+export type GroupId = number
+export type DatasetId = string
+export type WordKey = string // mkWordKey(groupId, wordId)
+
 export interface DatasetMeta {
-  readonly id: string
+  readonly id: DatasetId
   readonly code: string
   readonly kind: string
   readonly name: string
@@ -16,7 +21,7 @@ export interface Dataset extends DatasetMeta {
 
 export interface Group {
   readonly idx: number
-  readonly id: number
+  readonly id: GroupId
   readonly displayId: string
   readonly tags?: string[]
   readonly items: Word[]
@@ -24,13 +29,13 @@ export interface Group {
 
 export interface Word {
   readonly idx: number
-  readonly id: number
+  readonly id: WordId
   readonly displayId: string
   readonly word: string
   readonly tags?: string[]
 }
 
-export function compositeKey(groupId: number, wordId: number): string {
+export function mkWordKey(groupId: GroupId, wordId: WordId): WordKey {
   return `${groupId}::${wordId}`
 }
 

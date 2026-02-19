@@ -1,4 +1,4 @@
-import { statsRepo } from '@low/kind/chinese/idb-stats-repo'
+import { datDrillSync } from '@dat/kind/chinese/drill'
 
 export interface MaintenanceService {
   runStartupTasks(): void
@@ -23,11 +23,11 @@ async function runCleanup(): Promise<void> {
   if (last && Date.now() - Number(last) < CLEANUP_INTERVAL_MS) return
 
   const cutoff = new Date(Date.now() - RETENTION_MS).toISOString()
-  await statsRepo.deleteOldSyncedRecords(cutoff)
+  await datDrillSync.deleteOldSyncedRecords(cutoff)
   localStorage.setItem(CLEANUP_KEY, String(Date.now()))
 }
 
-export const maintenanceService: MaintenanceService = {
+export const svcMaintenance: MaintenanceService = {
   runStartupTasks,
   runCleanup,
 }

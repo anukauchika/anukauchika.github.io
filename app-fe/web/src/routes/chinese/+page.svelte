@@ -1,6 +1,7 @@
 <script>
   import { sttDataset } from '@stt/dataset.svelte.js'
-  import { ps, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from '@stt/kind/chinese/practice-stats.js'
+  import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
+  import { svcStats } from '@svc/kind/chinese/stats'
   import { sttAuth } from '@stt/auth.svelte.js'
   import { buildProps as buildCompactProps } from '@uic/kind/chinese/compact-group-list'
   import { buildProps as buildFullProps } from '@uic/kind/chinese/group-item'
@@ -15,9 +16,9 @@
 
   const reloadStats = () => {
     if (sttDataset.id) {
-      loadDatasetStatsAll(sttDataset.id)
-      loadDatasetGroupSessionsAll(sttDataset.id)
-      loadDailyActivityAll(sttDataset.id)
+      svcStats.loadWordProgressAll(sttDataset.id)
+      svcStats.loadGroupProgressAll(sttDataset.id)
+      svcStats.loadDayProgressAll(sttDataset.id)
     }
   }
 
@@ -52,11 +53,11 @@
     basePath,
     datasetId: sttDataset.id,
     isAuthenticated: sttAuth.isAuthenticated,
-    groupSessions: $ps.datasetGroupSessions,
-    groupSessionsStroke: $ps.datasetGroupSessionsStroke,
-    groupSessionsPinyin: $ps.datasetGroupSessionsPinyin,
-    statsStroke: $ps.datasetStatsStroke,
-    statsPinyin: $ps.datasetStatsPinyin,
+    groupSessions: sttStats.groupProgress,
+    groupSessionsStroke: sttStats.groupProgressStroke,
+    groupSessionsPinyin: sttStats.groupProgressPinyin,
+    statsStroke: sttStats.wordProgressStroke,
+    statsPinyin: sttStats.wordProgressPinyin,
   })
 </script>
 

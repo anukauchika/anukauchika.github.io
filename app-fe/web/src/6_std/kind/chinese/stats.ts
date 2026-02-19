@@ -1,6 +1,7 @@
 import type { ChineseGroup, ChineseWord, ChineseDatasetStats } from '@dom/kind/chinese/dataset'
-import type { StatsMap, SessionsMap, StatEntry, DailyActivityMap } from '@svc/kind/chinese/types'
-import { compositeKey } from '@dom/dataset'
+import type { GroupId, WordKey } from '@dom/dataset'
+import { mkWordKey } from '@dom/dataset'
+import type { WordProgress, GroupProgress, DayKey, DayProgress } from '@dom/stats'
 import { toLocalDateKey } from '@std/format'
 
 // --- Types ---
@@ -10,14 +11,14 @@ export interface CharStatEntry {
   wordCount: number
   stroke: { successCount: number; errorCount: number }
   pinyin: { successCount: number; errorCount: number }
-  lastPracticedAt: string | null
+  lastDrilledAt: string | null
   practiced: boolean
 }
 
 export interface PracticedItem {
   item: ChineseWord
   group: ChineseGroup
-  stat: StatEntry
+  stat: WordProgress
 }
 
 export interface ChartBar {
@@ -64,25 +65,25 @@ export function calcStats(groups: ChineseGroup[]): ChineseDatasetStats {
 
 // --- Practice counts ---
 
-export function countPracticed(groups: ChineseGroup[], statsMap: StatsMap): number {
+export function countPracticed(groups: ChineseGroup[], statsMap: Map<WordKey, WordProgress>): number {
   let count = 0
   for (const g of groups) {
     for (const item of g.items) {
-      if (statsMap.has(compositeKey(g.id, item.id))) count++
+      if (statsMap.has(mkWordKey(g.id, item.id))) count++
     }
   }
   return count
 }
 
-export function buildPracticedItems(groups: ChineseGroup[], statsMap: StatsMap): PracticedItem[] {
+export function buildPracticedItems(groups: ChineseGroup[], statsMap: Map<WordKey, WordProgress>): PracticedItem[] {
   const items: PracticedItem[] = []
   for (const g of groups) {
     for (const item of g.items) {
-      const stat = statsMap.get(compositeKey(g.id, item.id))
+      const stat = statsMap.get(mkWordKey(g.id, item.id))
       if (stat) items.push({ item, group: g, stat })
     }
   }
-  items.sort((a, b) => (b.stat.lastPracticedAt ?? '').localeCompare(a.stat.lastPracticedAt ?? ''))
+  items.sort((a, b) => (b.stat.lastDrilledAt ?? '').localeCompare(a.stat.lastDrilledAt ?? ''))
   return items
 }
 
@@ -90,10 +91,10 @@ export function buildPracticedItems(groups: ChineseGroup[], statsMap: StatsMap):
 
 export function buildPracticedCharsData(
   groups: ChineseGroup[],
-  strokeStats: StatsMap,
-  pinyinStats: StatsMap,
+  strokeStats: Map<WordKey, WordProgress>,
+  pinyinStats: Map<WordKey, WordProgress>,
 ): CharStatEntry[] {
-  const addStat = (obj: { successCount: number; errorCount: number }, stat: StatEntry | undefined) => {
+  const addStat = (obj: { successCount: number; errorCount: number }, stat: WordProgress | undefined) => {
     if (!stat) return
     obj.successCount += stat.successCount ?? 0
     obj.errorCount += stat.errorCount ?? 0
@@ -103,7 +104,7 @@ export function buildPracticedCharsData(
 
   for (const g of groups) {
     for (const item of g.items) {
-      const key = compositeKey(g.id, item.id)
+      const key = mkWordKey(g.id, item.id)
       const sStat = strokeStats.get(key)
       const pStat = pinyinStats.get(key)
       const hasStat = sStat || pStat
@@ -116,9 +117,9 @@ export function buildPracticedCharsData(
             existing.practiced = true
             addStat(existing.stroke, sStat)
             addStat(existing.pinyin, pStat)
-            const lp = (sStat?.lastPracticedAt ?? '') > (pStat?.lastPracticedAt ?? '') ? sStat?.lastPracticedAt : pStat?.lastPracticedAt
-            if (lp && (!existing.lastPracticedAt || lp > existing.lastPracticedAt)) {
-              existing.lastPracticedAt = lp
+            const lp = (sStat?.lastDrilledAt ?? '') > (pStat?.lastDrilledAt ?? '') ? sStat?.lastDrilledAt : pStat?.lastDrilledAt
+            if (lp && (!existing.lastDrilledAt || lp > existing.lastDrilledAt)) {
+              existing.lastDrilledAt = lp
             }
           }
         } else {
@@ -126,13 +127,13 @@ export function buildPracticedCharsData(
           const pinyin = emptyStat()
           addStat(stroke, sStat)
           addStat(pinyin, pStat)
-          const lp = (sStat?.lastPracticedAt ?? '') > (pStat?.lastPracticedAt ?? '') ? sStat?.lastPracticedAt : pStat?.lastPracticedAt
+          const lp = (sStat?.lastDrilledAt ?? '') > (pStat?.lastDrilledAt ?? '') ? sStat?.lastDrilledAt : pStat?.lastDrilledAt
           charMap.set(char, {
             char,
             wordCount: 1,
             stroke,
             pinyin,
-            lastPracticedAt: lp ?? null,
+            lastDrilledAt: lp ?? null,
             practiced: !!hasStat,
           })
         }
@@ -141,56 +142,56 @@ export function buildPracticedCharsData(
   }
 
   const chars = Array.from(charMap.values())
-  chars.sort((a, b) => (b.lastPracticedAt ?? '').localeCompare(a.lastPracticedAt ?? ''))
+  chars.sort((a, b) => (b.lastDrilledAt ?? '').localeCompare(a.lastDrilledAt ?? ''))
   return chars
 }
 
 // --- Progress / Mastery ---
 
-export function calcProgress(groups: ChineseGroup[], statsMap: StatsMap): number {
+export function calcProgress(groups: ChineseGroup[], statsMap: Map<WordKey, WordProgress>): number {
   const total = groups.reduce((sum, g) => sum + g.items.length, 0)
   if (total === 0) return 0
   return Math.round((countPracticed(groups, statsMap) / total) * 100)
 }
 
-export function calcMastery(groups: ChineseGroup[], statsMap: StatsMap): number {
+export function calcMastery(groups: ChineseGroup[], statsMap: Map<WordKey, WordProgress>): number {
   const total = groups.reduce((sum, g) => sum + g.items.length, 0)
   if (total === 0) return 0
   let sum = 0
   for (const g of groups) {
     for (const item of g.items) {
-      const stat = statsMap.get(compositeKey(g.id, item.id))
+      const stat = statsMap.get(mkWordKey(g.id, item.id))
       sum += Math.min((stat?.successCount ?? 0) / 10, 1)
     }
   }
   return Math.round((sum / total) * 100)
 }
 
-export function calcGroupProgress(group: ChineseGroup, statsMap: StatsMap): number {
+export function calcGroupProgress(group: ChineseGroup, statsMap: Map<WordKey, WordProgress>): number {
   const practiced = group.items.filter(item =>
-    statsMap.has(compositeKey(group.id, item.id))
+    statsMap.has(mkWordKey(group.id, item.id))
   ).length
   return group.items.length > 0 ? Math.round((practiced / group.items.length) * 100) : 0
 }
 
-export function calcGroupMastery(group: ChineseGroup, sessionsMap: SessionsMap): number {
+export function calcGroupMastery(group: ChineseGroup, sessionsMap: Map<GroupId, GroupProgress>): number {
   const fullSessions = sessionsMap.get(group.id)?.full ?? 0
   return Math.min(Math.round((fullSessions / 10) * 100), 100)
 }
 
 // --- Sorting ---
 
-export function sortGroupsByLastPracticed(groups: ChineseGroup[], sessionsMap: SessionsMap): ChineseGroup[] {
+export function sortGroupsByLastDrilled(groups: ChineseGroup[], sessionsMap: Map<GroupId, GroupProgress>): ChineseGroup[] {
   return [...groups].sort((a, b) => {
-    const tA = sessionsMap.get(a.id)?.lastPracticedAt ?? ''
-    const tB = sessionsMap.get(b.id)?.lastPracticedAt ?? ''
+    const tA = sessionsMap.get(a.id)?.lastDrilledAt ?? ''
+    const tB = sessionsMap.get(b.id)?.lastDrilledAt ?? ''
     return tB.localeCompare(tA)
   })
 }
 
 // --- Chart ---
 
-export function buildChartData(practicedItems: PracticedItem[], dayCounts: DailyActivityMap): ChartData | null {
+export function buildChartData(practicedItems: PracticedItem[], dayCounts: Map<DayKey, DayProgress>): ChartData | null {
   if (practicedItems.length === 0) return null
   const today = new Date()
   today.setHours(0, 0, 0, 0)
@@ -220,7 +221,7 @@ export function buildChartData(practicedItems: PracticedItem[], dayCounts: Daily
   for (const bar of bars) {
     let cum = 0
     for (const { stat } of practicedItems) {
-      if (stat.lastPracticedAt && toLocalDateKey(new Date(stat.lastPracticedAt)) <= bar.date) cum++
+      if (stat.lastDrilledAt && toLocalDateKey(new Date(stat.lastDrilledAt)) <= bar.date) cum++
     }
     cumulativeData.push(cum)
     if (cum > maxCumulative) maxCumulative = cum

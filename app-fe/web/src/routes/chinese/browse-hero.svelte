@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { svcDataset } from '@svc/dataset'
-  import { ps } from '@stt/kind/chinese/practice-stats.js'
+  import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
   import { sttAuth } from '@stt/auth.svelte.js'
   import { svcAuth } from '@svc/auth'
   import { pickNextPractice } from '@std/kind/chinese/pick-next-practice.js'
@@ -21,9 +21,9 @@
     if (sttAuth.isAuthenticated) {
       return pickNextPractice(
         sttDataset.filtered,
-        $ps.datasetGroupSessions,
-        $ps.datasetGroupSessionsStroke,
-        $ps.datasetGroupSessionsPinyin,
+        sttStats.groupProgress,
+        sttStats.groupProgressStroke,
+        sttStats.groupProgressPinyin,
       )
     }
     return sttDataset.filtered.length > 0 ? { groupId: sttDataset.filtered[0].id, type: 'stroke' } : null
@@ -40,13 +40,13 @@
   const groupCount = $derived(stats.groups)
   const totalCount = $derived(stats.words)
   const uniqueChars = $derived(stats.chars)
-  const strokePracticedCount = $derived(countPracticed(sttDataset.filtered, $ps.datasetStatsStroke))
-  const strokeProgress = $derived(calcProgress(sttDataset.filtered, $ps.datasetStatsStroke))
-  const strokeMastery = $derived(calcMastery(sttDataset.filtered, $ps.datasetStatsStroke))
-  const pinyinProgress = $derived(calcProgress(sttDataset.filtered, $ps.datasetStatsPinyin))
-  const pinyinMastery = $derived(calcMastery(sttDataset.filtered, $ps.datasetStatsPinyin))
+  const strokePracticedCount = $derived(countPracticed(sttDataset.filtered, sttStats.wordProgressStroke))
+  const strokeProgress = $derived(calcProgress(sttDataset.filtered, sttStats.wordProgressStroke))
+  const strokeMastery = $derived(calcMastery(sttDataset.filtered, sttStats.wordProgressStroke))
+  const pinyinProgress = $derived(calcProgress(sttDataset.filtered, sttStats.wordProgressPinyin))
+  const pinyinMastery = $derived(calcMastery(sttDataset.filtered, sttStats.wordProgressPinyin))
 
-  const dayCounts = $derived($ps.dailyActivity)
+  const dayCounts = $derived(sttStats.dayProgress)
 </script>
 
 <Hero

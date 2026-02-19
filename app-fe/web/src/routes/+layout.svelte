@@ -3,14 +3,14 @@
   import { initAnalytics } from '@low/google/analytics'
   import { svcAuth } from '@svc/auth'
   import { svcDataset } from '@svc/dataset'
-  import { maintenanceService } from '@svc/maintenance-service'
+  import { svcMaintenance } from '@svc/maintenance'
 
   let { children } = $props()
 
   let ready = $state(false)
 
   initAnalytics()
-  maintenanceService.runStartupTasks()
+  svcMaintenance.runStartupTasks()
   svcAuth.init().then(() => svcDataset.init()).then(() => { ready = true })
 </script>
 

@@ -1,10 +1,5 @@
 // --- Enums ---
 
-export enum PracticeType {
-  ChineseStroke = 's',
-  ChinesePinyin = 'p',
-}
-
 export enum SyncStatus {
   Pending = 0,
   Synced = 1,
@@ -12,18 +7,18 @@ export enum SyncStatus {
 
 // --- Storage records (IDB + Supabase shape) ---
 
-export interface GroupSession {
+export interface StorageDrill {
   id: number
   user_id: string | null
   dataset_id: string
-  practice_type: PracticeType
+  practice_type: string
   group_id: number
   started_at: string
   done_at: string | null
   synced: SyncStatus
 }
 
-export interface WordAttempt {
+export interface StorageAttempt {
   id: number
   group_session_id: number
   word_id: number
@@ -32,7 +27,7 @@ export interface WordAttempt {
   synced: SyncStatus
 }
 
-export interface CharLog {
+export interface StorageCharLog {
   word_attempt_id: number
   char_index: number
   started_at: string

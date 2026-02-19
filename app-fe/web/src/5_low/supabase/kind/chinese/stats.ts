@@ -1,11 +1,11 @@
 import { supabase } from '@low/supabase/supabase-client.js'
-import type { GroupSession, WordAttempt, CharLog } from '@dat/kind/chinese/types'
+import type { StorageDrill, StorageAttempt, StorageCharLog } from '@dat/kind/chinese/types'
 
-type SessionRecord = Omit<GroupSession, 'id' | 'synced' | 'done_at'> & { done_at?: string | null }
-type WordAttemptRecord = Omit<WordAttempt, 'id' | 'synced'>
-type CharLogRecord = Omit<CharLog, 'synced'>
+type DrillRecord = Omit<StorageDrill, 'id' | 'synced' | 'done_at'> & { done_at?: string | null }
+type AttemptRecord = Omit<StorageAttempt, 'id' | 'synced'>
+type CharLogRecord = Omit<StorageCharLog, 'synced'>
 
-export async function createGroupSession(record: SessionRecord): Promise<{ id: number }> {
+async function createGroupSession(record: DrillRecord): Promise<{ id: number }> {
   const { data, error } = await supabase
     .from('group_session')
     .upsert(record, {
@@ -30,7 +30,7 @@ export async function createGroupSession(record: SessionRecord): Promise<{ id: n
   return existing
 }
 
-export async function updateGroupSessionDone(id: number, doneAt: string): Promise<void> {
+async function updateGroupSessionDone(id: number, doneAt: string): Promise<void> {
   const { error } = await supabase
     .from('group_session')
     .update({ done_at: doneAt })
@@ -38,7 +38,7 @@ export async function updateGroupSessionDone(id: number, doneAt: string): Promis
   if (error) throw error
 }
 
-export async function insertWordAttempt(record: WordAttemptRecord): Promise<{ id: number }> {
+async function insertWordAttempt(record: AttemptRecord): Promise<{ id: number }> {
   const { data, error } = await supabase
     .from('word_attempt')
     .upsert(record, {
@@ -61,7 +61,7 @@ export async function insertWordAttempt(record: WordAttemptRecord): Promise<{ id
   return existing
 }
 
-export async function insertCharLogs(chars: CharLogRecord[]): Promise<void> {
+async function insertCharLogs(chars: CharLogRecord[]): Promise<void> {
   const { error } = await supabase
     .from('char_log')
     .upsert(chars, {
@@ -71,7 +71,7 @@ export async function insertCharLogs(chars: CharLogRecord[]): Promise<void> {
   if (error) throw error
 }
 
-export async function fetchAllUserSessions(): Promise<GroupSession[]> {
+async function fetchAllUserSessions(): Promise<StorageDrill[]> {
   const { data, error } = await supabase
     .from('group_session')
     .select('*')
@@ -80,7 +80,7 @@ export async function fetchAllUserSessions(): Promise<GroupSession[]> {
   return data
 }
 
-export async function fetchWordAttempts(sessionIds: number[]): Promise<WordAttempt[]> {
+async function fetchWordAttempts(sessionIds: number[]): Promise<StorageAttempt[]> {
   if (sessionIds.length === 0) return []
   const { data, error } = await supabase
     .from('word_attempt')
@@ -90,7 +90,7 @@ export async function fetchWordAttempts(sessionIds: number[]): Promise<WordAttem
   return data
 }
 
-export async function fetchCharLogs(wordAttemptIds: number[]): Promise<CharLog[]> {
+async function fetchCharLogs(wordAttemptIds: number[]): Promise<StorageCharLog[]> {
   if (wordAttemptIds.length === 0) return []
   const { data, error } = await supabase
     .from('char_log')
@@ -98,4 +98,24 @@ export async function fetchCharLogs(wordAttemptIds: number[]): Promise<CharLog[]
     .in('word_attempt_id', wordAttemptIds)
   if (error) throw error
   return data
+}
+
+export interface LowStatsSupabase {
+  createGroupSession(record: DrillRecord): Promise<{ id: number }>
+  updateGroupSessionDone(id: number, doneAt: string): Promise<void>
+  insertWordAttempt(record: AttemptRecord): Promise<{ id: number }>
+  insertCharLogs(chars: CharLogRecord[]): Promise<void>
+  fetchAllUserSessions(): Promise<StorageDrill[]>
+  fetchWordAttempts(sessionIds: number[]): Promise<StorageAttempt[]>
+  fetchCharLogs(wordAttemptIds: number[]): Promise<StorageCharLog[]>
+}
+
+export const lowStatsSupabase: LowStatsSupabase = {
+  createGroupSession,
+  updateGroupSessionDone,
+  insertWordAttempt,
+  insertCharLogs,
+  fetchAllUserSessions,
+  fetchWordAttempts,
+  fetchCharLogs,
 }
