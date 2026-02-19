@@ -6,10 +6,10 @@
   import { buildProps as buildCompactProps } from '@uic/kind/chinese/compact-group-list'
   import { buildProps as buildFullProps } from '@uic/kind/chinese/group-item'
   import CompactGroupList from '@uic/kind/chinese/compact-group-list.svelte'
+  import FullGroup from '@uic/kind/chinese/full-group.svelte'
   import WordCardChinese from '@uic/kind/chinese/word-card.svelte'
   import Groups from '@uic/groups'
   import Modal from '@std/ui/modal.svelte'
-  import Island from '@std/ui/island.svelte'
   import Dataset from '@routes/chinese/dataset.svelte'
 
   const basePath = $derived.by(() => `/${sttDataset.current.kind}`)
@@ -36,18 +36,6 @@
   })
 
   let activeWord = $state(null)
-  let modalOpen = $state(false)
-  let activeStat = $state(null)
-
-  const openWord = (item) => {
-    activeWord = item
-    modalOpen = true
-  }
-
-  const closeModal = () => {
-    modalOpen = false
-    activeWord = null
-  }
 
   const groupCtx = $derived({
     basePath,
@@ -65,7 +53,7 @@
   <title>Anuka Uchika - Chinese</title>
   <meta
     name="description"
-    content="HSK Chinese characters with stroke & pinyin drill, focused word groups, stats-driven repetition and progress tracking"
+    content="HSK Chinese characters with stroke & pinyin drills, focused word groups, stats-driven repetition and progress tracking"
   />
 </svelte:head>
 
@@ -78,26 +66,19 @@
     hasSearch={sttDataset.prefSearch.trim().length > 0}
     datasetId={sttDataset.id}
   >
+    {#snippet full(visibleGroups)}
+      {#each visibleGroups as group (group.groupId)}
+        <FullGroup {...group} onItemClick={(item) => (activeWord = item)} />
+      {/each}
+    {/snippet}
     {#snippet compact()}
       <CompactGroupList groups={sttDataset.filtered.map((g) => buildCompactProps(g, groupCtx))} />
     {/snippet}
   </Groups>
 
-  {#if activeStat}
-    <Modal onclose={() => (activeStat = null)}>
-      <Island>
-        <div class="anuka-stack anuka-center" role="dialog" aria-modal="true">
-          {#if activeStat === 'words'}
-            <div>Total number of words in the filtered dataset.</div>
-          {/if}
-        </div>
-      </Island>
-    </Modal>
-  {/if}
-
-  {#if modalOpen && activeWord}
-    <Modal onclose={closeModal}>
-      <WordCardChinese item={activeWord} onClose={closeModal} />
+  {#if activeWord}
+    <Modal onclose={() => (activeWord = null)}>
+      <WordCardChinese item={activeWord} onClose={() => (activeWord = null)} />
     </Modal>
   {/if}
 </main>

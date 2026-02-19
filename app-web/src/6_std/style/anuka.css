@@ -3,8 +3,7 @@
 
 /* ── Base reset ── */
 
-*, *::before, *::after { box-sizing: border-box; }
-body { margin: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; }
 
 /* ── Semantic tokens (light) ── */
 
@@ -91,7 +90,6 @@ body { margin: 0; }
 /* ── Page: gradient bg + vertical flow ── */
 
 .anuka-page {
-  margin: 0;
   min-height: 100vh;
   background:
     radial-gradient(circle at 10% 20%, var(--anuka-color-glow-warm), transparent 40%),
@@ -127,8 +125,6 @@ body { margin: 0; }
   gap: 1rem;
 }
 
-.anuka-island > * { margin-top: 0; margin-bottom: 0; }
-
 /* ── App title: brand label, auto-delimited spans ── */
 
 .anuka-app-title {
@@ -140,14 +136,12 @@ body { margin: 0; }
   text-align: center;
   color: var(--anuka-color-text);
   opacity: 0.55;
-  margin: 0;
 }
 
 /* ── Island title: serif heading, auto-delimited spans ── */
 
 .anuka-island-title {
   font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
-  margin: 0;
 }
 
 .anuka-island-title:not(:first-child) {
@@ -164,7 +158,7 @@ h4.anuka-island-title { font-size: 1.2rem; }
 .anuka-app-title span + span::before,
 .anuka-island-title span + span::before {
   content: "·";
-  margin: 0 0.3em;
+  padding: 0 0.3em;
 }
 
 /* ── Tags: pill list inside island ── */
@@ -267,6 +261,7 @@ button.anuka-stat:hover {
 
 .anuka-hanzi { font-family: var(--font-chinese-hw); }
 .anuka-hidden { visibility: hidden; }
+.anuka-placeholder { visibility: hidden; height: 1lh; }
 .anuka-divider {
   display: flex;
   align-items: center;
@@ -285,7 +280,8 @@ button.anuka-stat:hover {
 /* ── Size modifiers ── */
 
 .anuka-sm { font-size: 0.75rem; }
-.anuka-lg { font-size: 1.1rem; }
+.anuka-lg { font-size: 3.5rem; }
+.anuka-sm > *, .anuka-lg > * { font-size: 1rem; }
 
 /* ── Grid: responsive auto-fit presets ── */
 
@@ -316,6 +312,7 @@ button.anuka-stat:hover {
 /* ── Card: raised surface inside island ── */
 
 .anuka-card {
+  position: relative;
   background: var(--anuka-color-surface-raised);
   border-radius: 1rem;
   padding: 1rem 1.2rem;
@@ -415,7 +412,6 @@ button.anuka-activity-heatmap-cell {
   text-align: center;
   font-size: 0.75rem;
   color: var(--anuka-color-muted);
-  margin-top: 0.25rem;
 }
 
 .anuka-activity-heatmap-cell[data-level="1"] { background: rgba(31, 111, 92, 0.25); }
@@ -443,6 +439,7 @@ button.anuka-activity-heatmap-cell {
 }
 
 .anuka-btn:hover { border-color: var(--anuka-color-primary); }
+.anuka-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
 
 .anuka-btn.anuka-main {
   background: var(--anuka-color-primary);
@@ -528,6 +525,7 @@ button.anuka-activity-heatmap-cell {
   box-shadow: 0 0 0 3px var(--anuka-color-accent);
 }
 
+.anuka-input:disabled { opacity: 0.35; cursor: default; }
 .anuka-input.anuka-main { border-color: var(--anuka-color-primary); }
 .anuka-input.anuka-succ { border-color: var(--anuka-color-success); }
 .anuka-input.anuka-fail { border-color: var(--anuka-color-fail); }
@@ -607,7 +605,6 @@ button.anuka-activity-heatmap-cell {
   left: 0;
   right: 0;
   z-index: 20;
-  margin-top: 0.25rem;
   background: var(--anuka-color-surface-raised);
   border: 1px solid var(--anuka-color-border);
   border-radius: 10px;
@@ -643,6 +640,9 @@ button.anuka-activity-heatmap-cell {
   position: absolute;
   top: 1rem;
   right: 1rem;
+}
+
+button.anuka-quick {
   width: 40px;
   height: 40px;
   display: flex;
@@ -729,7 +729,6 @@ button.anuka-activity-heatmap-cell {
   inset: 0;
   border: none;
   padding: 0;
-  margin: 0;
   background: transparent;
   cursor: pointer;
 }

@@ -6,6 +6,7 @@
   import { svcAuth } from '@svc/auth'
   import { formatGroup } from '@std/format.js'
   import { GroupViewMode } from '@dom/dataset'
+  import FullGroup from '@uic/kind/english/full-group.svelte'
   import WordCardEnglish from '@uic/kind/english/word-card.svelte'
   import Hero from '@uic/hero'
   import Toolbar from '@uic/hero/toolbar.svelte'
@@ -22,26 +23,14 @@
   const basePath = $derived.by(() => `/${sttDataset.current?.kind ?? 'english'}`)
 
   let activeWord = $state(null)
-  let modalOpen = $state(false)
   let showAuthDropdown = $state(false)
-
-  const openWord = (item) => { activeWord = item; modalOpen = true }
-  const closeModal = () => { modalOpen = false; activeWord = null }
 
   const fullGroupProps = (group) => ({
     groupId: formatGroup(group.id),
     tags: group.tags,
-    kind: sttDataset.current?.kind,
     workbookHref: `${basePath}/workbook?group=${group.id}&dataset=${sttDataset.id}`,
     printHref: `${basePath}/workbook?group=${group.id}&dataset=${sttDataset.id}&autoprint=1`,
-    strokeSessions: 0,
-    pinyinSessions: 0,
-    strokeProgress: 0,
-    strokeMastery: 0,
-    pinyinProgress: 0,
-    pinyinMastery: 0,
-    showProgress: false,
-    items: group.items.map(item => ({ item, strokeStat: null, pinyinStat: null })),
+    items: group.items.map(item => ({ item })),
   })
 </script>
 
@@ -105,11 +94,17 @@
     viewStyle={sttDataset.prefViewMode}
     hasSearch={sttDataset.prefSearch.trim().length > 0}
     datasetId={sttDataset.id}
-  />
+  >
+    {#snippet full(visibleGroups)}
+      {#each visibleGroups as group (group.groupId)}
+        <FullGroup {...group} onItemClick={(item) => (activeWord = item)} />
+      {/each}
+    {/snippet}
+  </Groups>
 
-  {#if modalOpen && activeWord}
-    <Modal onclose={closeModal}>
-      <WordCardEnglish item={activeWord} onClose={closeModal} />
+  {#if activeWord}
+    <Modal onclose={() => (activeWord = null)}>
+      <WordCardEnglish item={activeWord} onClose={() => (activeWord = null)} />
     </Modal>
   {/if}
 

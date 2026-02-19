@@ -6,6 +6,7 @@
   import { sttDrill } from '@stt/kind/chinese/drill.svelte.js'
   import { sttAuth } from '@stt/auth.svelte.js'
   import { svcAuth } from '@svc/auth'
+  import AppTitle from '@std/ui/app-title.svelte'
   import { GroupViewMode } from '@dom/dataset'
   import Hero from '@uic/hero'
   import Toolbar from '@uic/hero/toolbar.svelte'
@@ -23,6 +24,9 @@
       ? `${basePath}/drill/${typeToPath[nd.type] || 'hanzi'}?group=${nd.groupId}&dataset=${sttDataset.id}`
       : null
   })
+
+  const datasetTitle = $derived.by(() => sttDataset.current?.appTitle)
+  const appTitle = $derived.by(() => (datasetTitle ? ['Anuka Uchika', datasetTitle] : ['Anuka Uchika']))
 </script>
 
 <Hero
@@ -47,14 +51,19 @@
   onShowProgressChars={() => goto('/chinese/chars')}
   onShowHowItWorks={() => goto('/chinese/how-it-works')}
 >
+  <AppTitle parts={appTitle} />
+
   {#snippet toolbar()}
     <Toolbar
       datasets={sttDataset.meta}
       datasetId={sttDataset.id}
-      appTitle={sttDataset.current?.appTitle}
       user={sttAuth.user}
+      showAvatar={sttAuth.showAvatar}
+      avatarUrl={sttAuth.avatarUrl}
+      userInitials={sttAuth.userInitials}
       onDatasetChange={(id) => svcDataset.selectDataset(id)}
       onShowAuthDropdown={() => (showAuthDropdown = true)}
+      onAvatarError={() => (sttAuth.avatarError = true)}
     />
   {/snippet}
   {#snippet filters()}
@@ -75,7 +84,10 @@
       }}
       onGroupRemove={(id) => svcDataset.setGroups(sttDataset.prefGroups.filter((g) => g !== id))}
       onGroupsClear={() => svcDataset.setGroups([])}
-      onToggleView={() => svcDataset.setViewMode(sttDataset.prefViewMode === GroupViewMode.Full ? GroupViewMode.Compact : GroupViewMode.Full)}
+      onToggleView={() =>
+        svcDataset.setViewMode(
+          sttDataset.prefViewMode === GroupViewMode.Full ? GroupViewMode.Compact : GroupViewMode.Full,
+        )}
     />
   {/snippet}
 </Hero>

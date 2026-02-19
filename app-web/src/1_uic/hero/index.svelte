@@ -29,9 +29,9 @@
     onShowProgressGroups,
     onShowProgressWords,
     onShowProgressChars,
-    onShowHowItWorks,
     toolbar,
     filters,
+    children,
   } = $props()
 
   // Activity heatmap
@@ -108,7 +108,8 @@
 </script>
 
 <Island>
-  <div class="anuka-stack anuka-compact">
+  <div class="anuka-stack">
+    {#if children}{@render children()}{/if}
     {@render toolbar()}
 
     <div class="anuka-row anuka-justify">
@@ -132,10 +133,9 @@
     </div>
 
     {#if isAuthenticated}
-      <div class="anuka-stack anuka-compact">
+      <div class="anuka-stack">
         <ProgressLine fill={strokeProgress} fillStrong={strokeMastery} />
         <ProgressLine fill={pinyinProgress} fillStrong={pinyinMastery} />
-
         <div bind:this={activityContainer}>
           <DailyActivityHeatmap
             days={activityDays}
@@ -148,10 +148,6 @@
     {:else}
       <p><BtnLink onclick={onShowAuthDropdown}>Log in</BtnLink> to track your learning progress</p>
     {/if}
-
-    <div class="anuka-row anuka-center">
-      <p><BtnLink onclick={onShowHowItWorks}>How it works?</BtnLink></p>
-    </div>
 
     {#if drillHref}
       <div class="anuka-row anuka-center">

@@ -1,13 +1,13 @@
 <script>
   import Island from '@std/ui/island.svelte'
   import BtnLink from '@std/ui/btn-link.svelte'
-  import FullGroup from '@uic/groups/full-group.svelte'
 
   let {
     groups,
     viewStyle = 'full',
     hasSearch = false,
     datasetId,
+    full,
     compact,
   } = $props()
 
@@ -30,9 +30,7 @@
   {:else if viewStyle === 'compact'}
     {@render compact()}
   {:else}
-    {#each visibleGroups as group (group.groupId)}
-      <FullGroup {...group} />
-    {/each}
+    {@render full(visibleGroups)}
     {#if isLimited}
       <div class="anuka-row anuka-center">
         <BtnLink onclick={() => showAllGroups = true}>Show all {groups.length} groups</BtnLink>

@@ -20,7 +20,6 @@ export function buildProps(group: ChineseGroup, ctx: Context) {
   return {
     groupId: group.displayId,
     tags: group.tags,
-    kind: 'chinese',
     strokeHref: `${ctx.basePath}/drill/hanzi?group=${group.id}&dataset=${ctx.datasetId}`,
     pinyinHref: `${ctx.basePath}/drill/pinyin?group=${group.id}&dataset=${ctx.datasetId}`,
     workbookHref: `${ctx.basePath}/workbook?group=${group.id}&dataset=${ctx.datasetId}`,

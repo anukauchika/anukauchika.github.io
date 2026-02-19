@@ -7,7 +7,9 @@
   import BtnIcon from '@std/ui/btn-icon.svelte'
 
   let {
-    group, datasetId, backUrl,
+    group,
+    datasetId,
+    backUrl,
     groupStats = new Map(),
     isAuthenticated = false,
     onLoadGroupStats = async () => new Map(),
@@ -46,17 +48,11 @@
 
   const isHanChar = (ch) => /[\u4e00-\u9fff]/.test(ch)
   const currentItem = $derived.by(() => items[currentIndex] ?? null)
-  const currentStat = $derived.by(() => currentItem ? groupStats.get(currentItem.id) : null)
-  const hanChars = $derived.by(() =>
-    currentItem ? currentItem.word.split('').filter(isHanChar) : []
-  )
-  const pinyinSlots = $derived.by(() =>
-    currentItem ? splitPinyin(currentItem.pinyin, currentItem.word) : []
-  )
+  const currentStat = $derived.by(() => (currentItem ? groupStats.get(currentItem.id) : null))
+  const hanChars = $derived.by(() => (currentItem ? currentItem.word.split('').filter(isHanChar) : []))
+  const pinyinSlots = $derived.by(() => (currentItem ? splitPinyin(currentItem.pinyin, currentItem.word) : []))
   const currentChar = $derived.by(() => hanChars[charIndex] ?? null)
-  const progress = $derived.by(() =>
-    items.length > 0 ? Math.round((completedWords.size / items.length) * 100) : 0
-  )
+  const progress = $derived.by(() => (items.length > 0 ? Math.round((completedWords.size / items.length) * 100) : 0))
 
   const speak = (text) => {
     if (!('speechSynthesis' in window)) return
@@ -96,8 +92,14 @@
   }
 
   const clearDelay = () => {
-    if (delayTimerId) { clearTimeout(delayTimerId); delayTimerId = null }
-    if (delayAnimationId) { cancelAnimationFrame(delayAnimationId); delayAnimationId = null }
+    if (delayTimerId) {
+      clearTimeout(delayTimerId)
+      delayTimerId = null
+    }
+    if (delayAnimationId) {
+      cancelAnimationFrame(delayAnimationId)
+      delayAnimationId = null
+    }
     delayCallback = null
     wordDelay = null
     wordDelayProgress = 100
@@ -124,12 +126,15 @@
     // Skip auto-complete slots (erhua 儿)
     while (next < pinyinSlots.length && pinyinSlots[next].autoComplete) {
       charDoneMap = new Map([...charDoneMap, [next, '']])
-      charData = [...charData, {
-        charIndex: next,
-        startedAt: now,
-        doneAt: now,
-        errorCount: 0,
-      }]
+      charData = [
+        ...charData,
+        {
+          charIndex: next,
+          startedAt: now,
+          doneAt: now,
+          errorCount: 0,
+        },
+      ]
       next++
     }
 
@@ -157,9 +162,11 @@
       if (!sessionIdPromise) {
         sessionIdPromise = onStartSession(datasetId, drillType, group.id)
       }
-      sessionIdPromise.then((sid) => {
-        if (sid != null) onRecordAttempt(sid, item.id, wStartedAt, charDoneAt, updatedCharData)
-      }).catch((e) => console.error('recordWordAttempt failed', e))
+      sessionIdPromise
+        .then((sid) => {
+          if (sid != null) onRecordAttempt(sid, item.id, wStartedAt, charDoneAt, updatedCharData)
+        })
+        .catch((e) => console.error('recordWordAttempt failed', e))
     }
     if (currentIndex < items.length - 1) {
       startDelay(hanChars.length * 1000, () => {
@@ -187,18 +194,23 @@
       // Correct
       const charDoneAt = new Date().toISOString()
       charDoneMap = new Map([...charDoneMap, [charIndex, slot.pinyin]])
-      charData = [...charData, {
-        charIndex: charIndex,
-        startedAt: charStartedAt,
-        doneAt: charDoneAt,
-        errorCount: charErrorCount,
-      }]
+      charData = [
+        ...charData,
+        {
+          charIndex: charIndex,
+          startedAt: charStartedAt,
+          doneAt: charDoneAt,
+          errorCount: charErrorCount,
+        },
+      ]
       advanceChar()
     } else {
       // Wrong
       charErrorCount += 1
       feedback = 'fail'
-      setTimeout(() => { feedback = null }, 400)
+      setTimeout(() => {
+        feedback = null
+      }, 400)
       inputValue = ''
       focusInput()
     }
@@ -208,9 +220,11 @@
     if (completedWords.size >= items.length) {
       sessionDone = true
       if (isAuthenticated && sessionIdPromise) {
-        sessionIdPromise.then((sid) => {
-          if (sid != null) onEndSession(sid)
-        }).catch((e) => console.error('endGroupSession failed', e))
+        sessionIdPromise
+          .then((sid) => {
+            if (sid != null) onEndSession(sid)
+          })
+          .catch((e) => console.error('endGroupSession failed', e))
       }
     }
   }
@@ -301,7 +315,15 @@
   })
 </script>
 
-<svelte:window onkeydown={(e) => { if (e.key === 'F1') { e.preventDefault(); hintManuallySet = true; showHint = !showHint }}} />
+<svelte:window
+  onkeydown={(e) => {
+    if (e.key === 'F1') {
+      e.preventDefault()
+      hintManuallySet = true
+      showHint = !showHint
+    }
+  }}
+/>
 
 <div class="anuka-stack">
   {#if currentItem && !sessionDone}
@@ -309,69 +331,86 @@
       <a class="anuka-quick" href={backUrl} title="Back">
         <span class="anuka-icon anuka-icon-close"></span>
       </a>
-      {#if isAuthenticated && currentStat}
-        <span class="anuka-badge anuka-main">{currentStat.successCount}{#if currentStat.errorCount > 0}<span class="anuka-fail">| {currentStat.errorCount}</span>{/if}</span>
-      {/if}
-      <div class="anuka-stack anuka-center">
+      <div class="anuka-row">
+        {#if isAuthenticated && currentStat}
+          <span class="anuka-badge anuka-main">
+            {currentStat.successCount}
+            {#if currentStat.errorCount > 0}
+              <span class="anuka-fail">| {currentStat.errorCount}</span>
+            {/if}
+          </span>
+        {:else}
+          <div class="anuka-placeholder"></div>
+        {/if}
+      </div>
+
+      <div class="anuka-stack">
         <div class="anuka-row anuka-center anuka-compact" class:anuka-hidden={!showTranslation}>
           <span>{currentItem.tr}</span>
         </div>
 
-        <div class="anuka-row anuka-compact anuka-hanzi anuka-lg" translate="no" lang="zh">
+        <div class="anuka-row anuka-center anuka-compact" translate="no" lang="zh">
           {#each hanChars as char, idx}
             {@const done = charDoneMap.has(idx) || (completedWords.has(currentIndex) && wordDelay)}
             {@const active = idx === charIndex && !wordDelay}
             <div class="anuka-stack anuka-center anuka-compact">
-              <span class="anuka-tile anuka-lg" class:anuka-main={done} class:anuka-mute={!done && !active}>
+              <span class="anuka-hanzi anuka-tile anuka-lg" class:anuka-main={done} class:anuka-mute={!done && !active}>
                 {char}
               </span>
               {#if charDoneMap.has(idx)}
-                <span class="anuka-main anuka-lg">{charDoneMap.get(idx)}</span>
+                <span class="anuka-main">{charDoneMap.get(idx)}</span>
               {:else if active}
-                <span class="anuka-main anuka-lg">
+                <span class="anuka-main">
                   {#if showHint}{pinyinSlots[charIndex]?.pinyin ?? ''}{:else}?{/if}
                 </span>
               {:else}
-                <span class="anuka-lg anuka-hidden">&nbsp;</span>
+                <span class="anuka-hidden">&nbsp;</span>
               {/if}
             </div>
           {/each}
         </div>
 
-        {#if wordDelay}
-          <ProgressLine class="anuka-sm" fill={wordDelayProgress}>
-            {#snippet top()}<div class="anuka-row anuka-center"><button class="anuka-btn-link anuka-sm" type="button" onclick={skipDelay}>Next</button></div>{/snippet}
-          </ProgressLine>
-        {:else}
-          <input
-            bind:this={inputEl}
-            bind:value={inputValue}
-            oninput={handleInput}
-            type="text"
-            class="anuka-input" class:anuka-fail={feedback === 'fail'}
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-            placeholder="pinyin (ex: lao3, shi1)"
-          />
-        {/if}
+        <div class="anuka-row anuka-center anuka-compact">
+          {#if wordDelay}
+            <ProgressLine class="anuka-sm" fill={wordDelayProgress}>
+              {#snippet top()}<div class="anuka-row anuka-center">
+                  <button class="anuka-btn-link anuka-sm" type="button" onclick={skipDelay}>Next</button>
+                </div>{/snippet}
+            </ProgressLine>
+          {:else}
+            <input
+              bind:this={inputEl}
+              bind:value={inputValue}
+              oninput={handleInput}
+              type="text"
+              class="anuka-input anuka-lg"
+              class:anuka-fail={feedback === 'fail'}
+              disabled={!!wordDelay}
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              placeholder="pinyin (ex: lao3, shi1)"
+            />
+          {/if}
+        </div>
 
-        {#if !wordDelay}
-          <div class="anuka-row anuka-center">
-            <BtnIcon onclick={() => speak(currentItem.word)} label="Play audio">
-              <span class="anuka-icon anuka-icon-speaker"></span>
-            </BtnIcon>
-            <Btn main={showTranslation} onclick={() => showTranslation = !showTranslation}>Tr</Btn>
-            <Btn main={showHint} onclick={() => { hintManuallySet = true; showHint = !showHint }}>Hint</Btn>
-            <Btn onclick={skipWord}>Skip</Btn>
-          </div>
-        {:else}
-          <div class="anuka-row anuka-center">
-            <BtnIcon onclick={() => speak(currentItem.word)} label="Play audio">
-              <span class="anuka-icon anuka-icon-speaker"></span>
-            </BtnIcon>
-          </div>
-        {/if}
+        <div class="anuka-row anuka-center">
+          <BtnIcon onclick={() => speak(currentItem.word)} label="Play audio">
+            <span class="anuka-icon anuka-icon-speaker"></span>
+          </BtnIcon>
+          <Btn disabled={!!wordDelay} main={showTranslation} onclick={() => (showTranslation = !showTranslation)}
+            >Tr</Btn
+          >
+          <Btn
+            disabled={!!wordDelay}
+            main={showHint}
+            onclick={() => {
+              hintManuallySet = true
+              showHint = !showHint
+            }}>Hint</Btn
+          >
+          <Btn disabled={!!wordDelay} onclick={skipWord}>Skip</Btn>
+        </div>
       </div>
     </Island>
   {/if}
@@ -382,30 +421,32 @@
         <div class="anuka-main anuka-lg">Session complete</div>
         <div class="anuka-mute anuka-sm">{drilledCount} drilled &middot; {skippedCount} skipped</div>
         <Btn main onclick={restartSession}>Restart</Btn>
-        <Btn onclick={() => window.location.href = backUrl}>Groups</Btn>
+        <Btn onclick={() => (window.location.href = backUrl)}>Groups</Btn>
       </div>
     </Island>
   {/if}
 
   <ProgressLine fill={progress}>
-    {#snippet bottom()}<div class="anuka-row anuka-center"><span class="anuka-mute anuka-sm">{currentIndex + 1} / {items.length}</span></div>{/snippet}
+    {#snippet bottom()}<div class="anuka-row anuka-center">
+        <span class="anuka-mute anuka-sm">{currentIndex + 1} / {items.length}</span>
+      </div>{/snippet}
   </ProgressLine>
 
   <div class="anuka-tags anuka-center">
     {#each items as item, idx}
       {@const stat = groupStats.get(item.id)}
-      <span
-        class="anuka-tag"
-        class:anuka-main={idx === currentIndex}
-        class:anuka-succ={completedWords.has(idx)}
-        title="{item.word}"
-      >
+      <span class="anuka-tag" class:anuka-main={idx === currentIndex} title={item.word}>
         {item.tr}
         {#if isAuthenticated && stat}
-          <span class="anuka-sm">{stat.successCount}{#if stat.errorCount > 0}<span class="anuka-fail">| {stat.errorCount}</span>{/if}</span>
+          <span class="anuka-succ">
+            {stat.successCount}
+          </span>
+          {#if stat.errorCount > 0}
+            <span> | </span>
+            <span class="anuka-fail">{stat.errorCount}</span>
+          {/if}
         {/if}
       </span>
     {/each}
   </div>
 </div>
-

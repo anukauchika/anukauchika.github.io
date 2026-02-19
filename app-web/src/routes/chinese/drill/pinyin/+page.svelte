@@ -29,13 +29,9 @@
 
   const groups = $derived.by(() => asChineseDataset(sttDataset.current)?.groups ?? [])
 
-  const drillGroup = $derived.by(() =>
-    groups.find((g) => g.id === drillGroupId) || groups[0]
-  )
+  const drillGroup = $derived.by(() => groups.find((g) => g.id === drillGroupId) || groups[0])
 
-  const drillGroupSessions = $derived.by(() =>
-    drillGroup ? sttStats.groupProgress.get(drillGroup.id) : null
-  )
+  const drillGroupSessions = $derived.by(() => (drillGroup ? sttStats.groupProgress.get(drillGroup.id) : null))
 
   const handleLoadGroupStats = async (dsId, pt, gId) => {
     await svcDrill.loadProgress(dsId, pt, gId)
@@ -59,13 +55,23 @@
 
 <main class="anuka-page">
   {#if drillGroup}
-    <DrillPinyin group={drillGroup} datasetId={sttDataset.id} {backUrl}
-      groupStats={sttDrill.progress} isAuthenticated={sttAuth.isAuthenticated}
-      onLoadGroupStats={handleLoadGroupStats} onStartSession={svcDrill.startDrill} onEndSession={svcDrill.endDrill} onRecordAttempt={handleRecordAttempt} />
+    <DrillPinyin
+      group={drillGroup}
+      datasetId={sttDataset.id}
+      {backUrl}
+      groupStats={sttDrill.progress}
+      isAuthenticated={sttAuth.isAuthenticated}
+      onLoadGroupStats={handleLoadGroupStats}
+      onStartSession={svcDrill.startDrill}
+      onEndSession={svcDrill.endDrill}
+      onRecordAttempt={handleRecordAttempt}
+    />
   {/if}
 
   <Island>
-    <IslandTitle level={1}>Pinyin Drill</IslandTitle>
+    <div class="anuka-row anuka-center">
+      <IslandTitle level={1} class="anuka-center">Pinyin Drill</IslandTitle>
+    </div>
     {#if drillGroup}
       <div class="anuka-row anuka-center">
         <span class="anuka-sm anuka-mute">{drillGroup.displayId}</span>

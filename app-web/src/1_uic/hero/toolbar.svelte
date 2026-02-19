@@ -1,34 +1,11 @@
 <script>
-  import AppTitle from '@std/ui/app-title.svelte'
   import BtnIcon from '@std/ui/btn-icon.svelte'
 
   let {
-    datasets,
-    datasetId,
-    appTitle,
-    user,
-    onDatasetChange,
-    onShowAuthDropdown,
+    datasets, datasetId, user,
+    showAvatar, avatarUrl, userInitials,
+    onDatasetChange, onShowAuthDropdown, onAvatarError,
   } = $props()
-
-  let avatarError = $state(false)
-
-  const avatarUrl = $derived(user?.avatarUrl)
-  const userInitials = $derived.by(() => {
-    if (user?.name) {
-      const parts = user.name.trim().split(/\s+/)
-      if (parts.length >= 2) {
-        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-      }
-      return parts[0][0].toUpperCase()
-    }
-    return user?.email ? user.email[0].toUpperCase() : '?'
-  })
-
-  $effect(() => {
-    user
-    avatarError = false
-  })
 </script>
 
 <div class="anuka-row anuka-justify">
@@ -38,7 +15,6 @@
       <span>Want to add vocabulary? Contributions welcome</span>
     </a>
   </div>
-  <AppTitle parts={appTitle ? ['Anuka Uchika', appTitle] : ['Anuka Uchika']} />
 
   <select class="anuka-input" value={datasetId} onchange={(e) => onDatasetChange(e.target.value)}>
     {#each datasets as dataset}
@@ -49,8 +25,8 @@
   <div>
     {#if user}
       <BtnIcon onclick={onShowAuthDropdown} label="Account">
-        {#if avatarUrl && !avatarError}
-          <img class="anuka-avatar" src={avatarUrl} alt="Avatar" onerror={() => avatarError = true} />
+        {#if showAvatar}
+          <img class="anuka-avatar" src={avatarUrl} alt="Avatar" onerror={onAvatarError} />
         {:else}
           <span>{userInitials}</span>
         {/if}
