@@ -13,19 +13,16 @@
 
   let avatarError = $state(false)
 
-  const avatarUrl = $derived(user?.user_metadata?.avatar_url)
+  const avatarUrl = $derived(user?.avatarUrl)
   const userInitials = $derived.by(() => {
-    const meta = user?.user_metadata
-    const fullName = meta?.full_name || meta?.name
-    if (fullName) {
-      const parts = fullName.trim().split(/\s+/)
+    if (user?.name) {
+      const parts = user.name.trim().split(/\s+/)
       if (parts.length >= 2) {
         return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
       }
       return parts[0][0].toUpperCase()
     }
-    const email = user?.email
-    return email ? email[0].toUpperCase() : '?'
+    return user?.email ? user.email[0].toUpperCase() : '?'
   })
 
   $effect(() => {

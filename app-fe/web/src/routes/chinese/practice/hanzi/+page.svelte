@@ -4,7 +4,7 @@
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { svcDataset } from '@svc/dataset'
   import { ps, loadDatasetGroupSessions, loadGroupStats, groupStats, startGroupSession, endGroupSession, recordWordAttempt } from '@stt/kind/chinese/practice-stats.js'
-  import { isAuthenticated } from '@stt/auth.js'
+  import { sttAuth } from '@stt/auth.svelte.js'
   import { asChineseDataset } from '@dom/kind/chinese/dataset'
   import { get } from 'svelte/store'
   import Island from '@std/ui/island.svelte'
@@ -55,7 +55,7 @@
 <main class="anuka-page">
   {#if practiceGroup}
     <PracticeStroke group={practiceGroup} datasetId={sttDataset.id} {backUrl}
-      groupStats={$ps.groupStats} isAuthenticated={$isAuthenticated}
+      groupStats={$ps.groupStats} isAuthenticated={sttAuth.isAuthenticated}
       onLoadGroupStats={handleLoadGroupStats} onStartSession={startGroupSession} onEndSession={endGroupSession} onRecordAttempt={recordWordAttempt} />
   {/if}
 
@@ -68,7 +68,7 @@
           <Tags tags={practiceGroup.tags} />
         {/if}
         <span class="anuka-sm anuka-mute">{practiceGroup.items.length} words</span>
-        {#if $isAuthenticated && practiceGroupSessions}
+        {#if sttAuth.isAuthenticated && practiceGroupSessions}
           <span class="anuka-sm anuka-main">{practiceGroupSessions.total} passes ({practiceGroupSessions.full} full)</span>
         {/if}
       </div>

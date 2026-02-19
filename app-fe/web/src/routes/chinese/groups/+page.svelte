@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { ps } from '@stt/kind/chinese/practice-stats.js'
-  import { isAuthenticated } from '@stt/auth.js'
+  import { sttAuth } from '@stt/auth.svelte.js'
   import { sortGroupsByLastPracticed } from '@std/kind/chinese/stats'
   import { buildProps as buildCompactProps } from '@uic/kind/chinese/compact-group-list'
   import PracticedGroups from '@uic/kind/chinese/practiced-groups.svelte'
@@ -13,7 +13,7 @@
   const groupCtx = $derived({
     basePath,
     datasetId: sttDataset.id,
-    isAuthenticated: $isAuthenticated,
+    isAuthenticated: sttAuth.isAuthenticated,
     groupSessions: $ps.datasetGroupSessions,
     groupSessionsStroke: $ps.datasetGroupSessionsStroke,
     groupSessionsPinyin: $ps.datasetGroupSessionsPinyin,

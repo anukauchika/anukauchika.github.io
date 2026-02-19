@@ -1,7 +1,7 @@
 <script>
   import '@std/style/anuka.css'
   import { initAnalytics } from '@low/google/analytics'
-  import { initAuth, setDatasetReloadHook } from '@stt/auth'
+  import { svcAuth } from '@svc/auth'
   import { svcDataset } from '@svc/dataset'
   import { maintenanceService } from '@svc/maintenance-service'
 
@@ -9,10 +9,9 @@
 
   let ready = $state(false)
 
-  setDatasetReloadHook(() => svcDataset.reloadPrefs())
   initAnalytics()
   maintenanceService.runStartupTasks()
-  initAuth().then(() => svcDataset.init()).then(() => { ready = true })
+  svcAuth.init().then(() => svcDataset.init()).then(() => { ready = true })
 </script>
 
 {#if ready}

@@ -2,7 +2,7 @@ import { writable, derived, get, type Writable } from 'svelte/store'
 import { statsService } from '@svc/kind/chinese/stats-service'
 import { syncService } from '@svc/sync-service'
 import { groupSessionService } from '@svc/kind/chinese/group-session-service'
-import { user } from '@stt/auth.js'
+import { sttAuth } from '@stt/auth.svelte.js'
 import { sttDataset } from '@stt/dataset.svelte.js'
 import type { PracticeType } from '@dat/kind/chinese/types'
 import type { CharAttemptInput, DailyActivity, GroupSessionSummary, StatEntry, StatsMap, SessionsMap, DailyActivityMap } from '@svc/kind/chinese/types'
@@ -168,7 +168,7 @@ export async function loadDailyActivityAll(datasetId: string): Promise<void> {
 
 export async function startGroupSession(datasetId: string, practiceType: string, groupId: number): Promise<number> {
   syncService.setActiveSessionId(null)
-  const userId = get(user)?.id ?? null
+  const userId = sttAuth.user?.id ?? null
   const id = await groupSessionService.startGroupSession(userId, dsCode(datasetId), ptCode(practiceType), groupId)
   syncService.setActiveSessionId(id < 0 ? id : null)
   return id

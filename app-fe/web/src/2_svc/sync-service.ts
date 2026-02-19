@@ -1,4 +1,4 @@
-import { api } from '@low/supabase/index.js'
+import * as supabaseStats from '@low/supabase/kind/chinese/stats.js'
 import { statsRepo } from '@low/kind/chinese/idb-stats-repo'
 
 export interface SyncService {
@@ -22,7 +22,7 @@ async function syncPending(): Promise<void> {
     const allPendingSessions = await statsRepo.getPendingGroupSessions()
     const newSessions = allPendingSessions.filter((s) => s.id < 0 && s.id !== activeSessionId)
     for (const s of newSessions) {
-      const { id: realId } = await api.stats.createGroupSession({
+      const { id: realId } = await supabaseStats.createGroupSession({
         user_id: s.user_id,
         dataset_id: s.dataset_id,
         practice_type: s.practice_type,
@@ -36,7 +36,7 @@ async function syncPending(): Promise<void> {
     // 1b. Updated sessions (real ID, need done_at push)
     const updatedSessions = allPendingSessions.filter((s) => s.id > 0)
     for (const s of updatedSessions) {
-      await api.stats.updateGroupSessionDone(s.id, s.done_at)
+      await supabaseStats.updateGroupSessionDone(s.id, s.done_at)
       await statsRepo.saveGroupSession({ ...s, synced: 1 })
     }
 
@@ -44,7 +44,7 @@ async function syncPending(): Promise<void> {
     const allPendingWords = await statsRepo.getPendingWordAttempts()
     const words = allPendingWords.filter((w) => w.group_session_id > 0)
     for (const w of words) {
-      const { id: realId } = await api.stats.insertWordAttempt({
+      const { id: realId } = await supabaseStats.insertWordAttempt({
         group_session_id: w.group_session_id,
         word_id: w.word_id,
         started_at: w.started_at,
@@ -57,7 +57,7 @@ async function syncPending(): Promise<void> {
     const allPendingChars = await statsRepo.getPendingCharLogs()
     const chars = allPendingChars.filter((c) => c.word_attempt_id > 0)
     if (chars.length > 0) {
-      await api.stats.insertCharLogs(
+      await supabaseStats.insertCharLogs(
         chars.map((c) => ({
           word_attempt_id: c.word_attempt_id,
           char_index: c.char_index,
@@ -74,17 +74,17 @@ async function syncPending(): Promise<void> {
 }
 
 async function restoreFromServer(): Promise<void> {
-  const sessions = await api.stats.fetchAllUserSessions()
+  const sessions = await supabaseStats.fetchAllUserSessions()
   if (sessions.length === 0) return
 
   await statsRepo.bulkInsertGroupSessions(sessions.map((s) => ({ ...s, synced: 1 })))
 
   const sessionIds = sessions.map((s) => s.id)
-  const words = await api.stats.fetchWordAttempts(sessionIds)
+  const words = await supabaseStats.fetchWordAttempts(sessionIds)
   await statsRepo.bulkInsertWordAttempts(words.map((w) => ({ ...w, synced: 1 })))
 
   const wordIds = words.map((w) => w.id)
-  const chars = await api.stats.fetchCharLogs(wordIds)
+  const chars = await supabaseStats.fetchCharLogs(wordIds)
   await statsRepo.bulkInsertCharLogs(chars.map((c) => ({ ...c, synced: 1 })))
 }
 

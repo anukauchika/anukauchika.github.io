@@ -1,5 +1,5 @@
 import { statsRepo } from '@low/kind/chinese/idb-stats-repo'
-import { api } from '@low/supabase/index.js'
+import * as supabaseStats from '@low/supabase/kind/chinese/stats.js'
 import type { GroupSession, PracticeType } from '@dat/kind/chinese/types'
 import type { CharAttemptInput, WordAttemptResult } from '@svc/kind/chinese/types'
 
@@ -31,7 +31,7 @@ async function startGroupSession(
   let id: number
   let synced: number
   try {
-    const result = await api.stats.createGroupSession({
+    const result = await supabaseStats.createGroupSession({
       user_id: userId,
       dataset_id: datasetId,
       practice_type: practiceType,

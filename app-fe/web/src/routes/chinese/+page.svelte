@@ -1,7 +1,7 @@
 <script>
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { ps, loadDatasetStatsAll, loadDatasetGroupSessionsAll, loadDailyActivityAll } from '@stt/kind/chinese/practice-stats.js'
-  import { isAuthenticated, dbVersion } from '@stt/auth.js'
+  import { sttAuth } from '@stt/auth.svelte.js'
   import { buildProps as buildCompactProps } from '@uic/kind/chinese/compact-group-list'
   import { buildProps as buildFullProps } from '@uic/kind/chinese/group-item'
   import CompactGroupList from '@uic/kind/chinese/compact-group-list.svelte'
@@ -22,7 +22,7 @@
   }
 
   $effect(() => {
-    $dbVersion
+    sttAuth.dbVersion
     if (sttDataset.id) reloadStats()
   })
 
@@ -51,7 +51,7 @@
   const groupCtx = $derived({
     basePath,
     datasetId: sttDataset.id,
-    isAuthenticated: $isAuthenticated,
+    isAuthenticated: sttAuth.isAuthenticated,
     groupSessions: $ps.datasetGroupSessions,
     groupSessionsStroke: $ps.datasetGroupSessionsStroke,
     groupSessionsPinyin: $ps.datasetGroupSessionsPinyin,

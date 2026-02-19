@@ -2,7 +2,8 @@
   import { onMount } from 'svelte'
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { svcDataset } from '@svc/dataset'
-  import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@stt/auth.js'
+  import { sttAuth } from '@stt/auth.svelte.js'
+  import { svcAuth } from '@svc/auth'
   import { formatGroup } from '@std/format.js'
   import { GroupViewMode } from '@dom/dataset'
   import WordCardEnglish from '@uic/kind/english/word-card.svelte'
@@ -56,7 +57,7 @@
     datasetTags={sttDataset.current?.tags}
     datasetId={sttDataset.id}
     dailyActivity={new Map()}
-    isAuthenticated={$isAuthenticated}
+    isAuthenticated={sttAuth.isAuthenticated}
     groupCount={sttDataset.filtered.length}
     totalCount={sttDataset.filtered.reduce((s, g) => s + g.items.length, 0)}
     uniqueChars={0}
@@ -75,7 +76,7 @@
         datasets={sttDataset.meta}
         datasetId={sttDataset.id}
         appTitle={sttDataset.current?.appTitle}
-        user={$user}
+        user={sttAuth.user}
         onDatasetChange={(id) => svcDataset.selectDataset(id)}
         onShowAuthDropdown={() => showAuthDropdown = true}
       />
@@ -114,11 +115,11 @@
 
   {#if showAuthDropdown}
     <AuthModal
-      user={$user}
+      user={sttAuth.user}
       onclose={() => showAuthDropdown = false}
-      onSignInWithGoogle={signInWithGoogle}
-      onSignInWithEmail={signInWithEmail}
-      onSignOut={signOut}
+      onSignInWithGoogle={svcAuth.signInWithGoogle}
+      onSignInWithEmail={svcAuth.signInWithEmail}
+      onSignOut={svcAuth.signOut}
     />
   {/if}
 </main>

@@ -1,7 +1,7 @@
-import { get } from 'svelte/store'
 import { datDataset } from '@dat/dataset'
 import type { DatasetMeta, Dataset, Group, GroupViewMode } from '@dom/dataset'
 import { sttDataset } from '@stt/dataset.svelte.js'
+import { sttAuth } from '@stt/auth.svelte.js'
 
 // --- Filter logic (moved from @std/dataset.ts) ---
 
@@ -160,9 +160,7 @@ export const svcDataset: DatasetService = {
 
   async reloadPrefs() {
     const repo = await datDataset
-    const { user } = await import('@stt/auth')
-    const userId = get(user)?.id ?? null
-    await repo.switchDatabase(userId)
+    await repo.switchDatabase(sttAuth.user?.id ?? null)
 
     if (!sttDataset.id) return
 

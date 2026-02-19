@@ -47,6 +47,9 @@ no relative imports allowed. all the folders above should have aliases in vite a
 import '@stt/dataset'
 import '@svc/dataset'
 
+On top of these layers the verticals are built. Verticals (by shape these are more like pyramids) are domain grouped functionality.
+E.g. Dataset Vertical goes: Dataset, DatasetService, DatasetState, DatasetRepo, DatasetApi. Each lower layer may use other different horizontals.
+
 ## Code style
 
 Use Svelte runes for states e.g.

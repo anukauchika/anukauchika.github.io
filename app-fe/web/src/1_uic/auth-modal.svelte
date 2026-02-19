@@ -23,7 +23,7 @@
     <Island>
       <div class="anuka-stack anuka-center" role="dialog" aria-modal="true">
         <div class="anuka-stack anuka-compact anuka-center">
-          <strong>{user.user_metadata?.full_name || user.email}</strong>
+          <strong>{user.name || user.email}</strong>
           <small class="anuka-mute">{user.email}</small>
         </div>
         <button type="button" class="anuka-btn" onclick={() => { onSignOut(); handleClose() }}>

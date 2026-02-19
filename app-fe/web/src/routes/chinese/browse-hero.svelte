@@ -3,7 +3,8 @@
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { svcDataset } from '@svc/dataset'
   import { ps } from '@stt/kind/chinese/practice-stats.js'
-  import { user, isAuthenticated, signInWithGoogle, signInWithEmail, signOut } from '@stt/auth.js'
+  import { sttAuth } from '@stt/auth.svelte.js'
+  import { svcAuth } from '@svc/auth'
   import { pickNextPractice } from '@std/kind/chinese/pick-next-practice.js'
   import { calcStats, countPracticed, calcProgress, calcMastery } from '@std/kind/chinese/stats'
   import { GroupViewMode } from '@dom/dataset'
@@ -17,7 +18,7 @@
   const basePath = $derived.by(() => `/${sttDataset.current?.kind}`)
 
   const nextPractice = $derived.by(() => {
-    if ($isAuthenticated) {
+    if (sttAuth.isAuthenticated) {
       return pickNextPractice(
         sttDataset.filtered,
         $ps.datasetGroupSessions,
@@ -54,7 +55,7 @@
   datasetTags={sttDataset.current?.tags}
   datasetId={sttDataset.id}
   dailyActivity={dayCounts}
-  isAuthenticated={$isAuthenticated}
+  isAuthenticated={sttAuth.isAuthenticated}
   {groupCount}
   {totalCount}
   {uniqueChars}
@@ -75,7 +76,7 @@
       datasets={sttDataset.meta}
       datasetId={sttDataset.id}
       appTitle={sttDataset.current?.appTitle}
-      user={$user}
+      user={sttAuth.user}
       onDatasetChange={(id) => svcDataset.selectDataset(id)}
       onShowAuthDropdown={() => (showAuthDropdown = true)}
     />
@@ -105,10 +106,10 @@
 
 {#if showAuthDropdown}
   <AuthModal
-    user={$user}
+    user={sttAuth.user}
     onclose={() => (showAuthDropdown = false)}
-    onSignInWithGoogle={signInWithGoogle}
-    onSignInWithEmail={signInWithEmail}
-    onSignOut={signOut}
+    onSignInWithGoogle={svcAuth.signInWithGoogle}
+    onSignInWithEmail={svcAuth.signInWithEmail}
+    onSignOut={svcAuth.signOut}
   />
 {/if}
