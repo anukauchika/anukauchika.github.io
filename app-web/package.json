@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "app-web",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,8 +11,8 @@
     "format": "prettier --write 'src/**/*.{js,ts,svelte}'",
     "format:check": "prettier --check 'src/**/*.{js,ts,svelte}'",
     "check": "tsc --noEmit",
-    "db:link": "supabase link --project-ref $SUPABASE_PROJECT_REF --workdir ../../",
-    "db:push": "supabase db push --workdir ../../"
+    "db:link": "supabase link --project-ref $SUPABASE_PROJECT_REF --workdir ../",
+    "db:push": "supabase db push --workdir ../"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

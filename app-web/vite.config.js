@@ -53,7 +53,7 @@ export default defineConfig({
     fs: {
       allow: [
         path.resolve('.'),
-        path.resolve('..', 'data'),
+        path.resolve('data'),
       ],
     },
   },

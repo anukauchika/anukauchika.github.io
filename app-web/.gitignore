@@ -1,0 +1,54 @@
+# Data files
+cedict_1_0_ts_utf-8_mdbg.txt.gz
+hskv3-official-full.pdf
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+build
+out
+*.local
+.env
+.env.*
+
+# Caches & build tools
+.cache/
+.parcel-cache/
+.vite/
+.turbo/
+.svelte-kit/
+.eslintcache
+.stylelintcache
+.tsbuildinfo
+
+# Test & reports
+coverage/
+reports/
+
+# Deploy
+.vercel/
+.netlify/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+.tmp/
+.temp/

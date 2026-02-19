@@ -11,7 +11,7 @@ const dataModules = import.meta.glob('@data/**/*.json', { eager: true, import: '
 
 const dataByPath: Record<string, unknown> = {}
 for (const [key, value] of Object.entries(dataModules)) {
-  const normalizedPath = key.replace(/^(\.\.\/)+/, '')
+  const normalizedPath = key.replace(/^(\.\.\/|\.\/|\/)+/, '')
   dataByPath[normalizedPath] = value
 }
 

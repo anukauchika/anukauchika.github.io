@@ -2,12 +2,12 @@
 
 ## Architecture requirements
 
-- app-fe: frontend, svelte, vite.
+- app-web: frontend, svelte, vite.
 - docs: reqs, rfcs, plans.
 
 `anuka` framework is easy to use css toolkit tailored specifically for this project.
 Do not edit it freely, any changes discuss with a user. All the additions & changes should be
-reflected in the Design Book: app-fe/web/src/app/DesignBook.svelte which is a showroom for those tools.
+reflected in the Design Book: app-web/src/app/DesignBook.svelte which is a showroom for those tools.
 
 Core components tend to be generic, do not carry any domain semantics. They are pure, stateless & parametric.
 App components pure & stateless as well, no state & service imports allowed. But they carry domain semantics.

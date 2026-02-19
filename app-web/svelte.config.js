@@ -19,7 +19,7 @@ export default {
       '@dat': 'src/4_dat',
       '@low': 'src/5_low',
       '@std': 'src/6_std',
-      '@data': '../data',
+      '@data': 'data',
     },
   },
 }

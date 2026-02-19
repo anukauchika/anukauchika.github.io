@@ -2,7 +2,7 @@
 
 - be concise
 - read @README.md
-- read @app-fe/README.md
+- read @app-web/README.md
 - for big things pls follow req-refc-plan approach
   - create @docs/xxxx-req-feature.md discuss / adjust iterate
   - create @docs/xxxx-rfc-feature.md discuss / adjust iterate
