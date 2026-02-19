@@ -3,7 +3,7 @@
 
   interface Props {
     groupId: string
-    lastPracticed?: string
+    lastDrilled?: string
     tags?: string[]
     strokeHref?: string
     pinyinHref?: string
@@ -17,7 +17,7 @@
 
   let {
     groupId,
-    lastPracticed,
+    lastDrilled,
     tags,
     strokeHref,
     pinyinHref,
@@ -35,17 +35,17 @@
 <article class="anuka-stack anuka-compact">
   <div class="anuka-row anuka-justify">
     <span>{groupId}</span>
-    <span>{lastPracticed ?? ''}</span>
+    <span>{lastDrilled ?? ''}</span>
     <span class="anuka-row">
       {#if strokeHref}
         {#if strokeSessions}<span>{strokeSessions}</span>{/if}
-        <a class="anuka-btn anuka-btn-icon" href={strokeHref} title="Stroke practice">
+        <a class="anuka-btn anuka-btn-icon" href={strokeHref} title="Stroke drill">
           <span class="anuka-icon anuka-icon-stroke"></span>
         </a>
       {/if}
       {#if pinyinHref}
         {#if pinyinSessions}<span>{pinyinSessions}</span>{/if}
-        <a class="anuka-btn anuka-btn-icon" href={pinyinHref} title="Pinyin practice">
+        <a class="anuka-btn anuka-btn-icon" href={pinyinHref} title="Pinyin drill">
           <span class="anuka-icon anuka-icon-pinyin"></span>
         </a>
       {/if}

@@ -5,7 +5,7 @@
 
   interface GroupProps {
     groupId: string
-    lastPracticed?: string
+    lastDrilled?: string
     tags?: string[]
     strokeHref?: string
     pinyinHref?: string
@@ -19,17 +19,17 @@
 
   interface Props {
     groups: GroupProps[]
-    practicedCount: number
+    drilledCount: number
     totalCount: number
     onclose: () => void
   }
 
-  let { groups, practicedCount, totalCount, onclose }: Props = $props()
+  let { groups, drilledCount, totalCount, onclose }: Props = $props()
 </script>
 
 <Island sticky>
   <div class="anuka-row anuka-justify">
-    <h3>Groups Practiced {practicedCount} | {totalCount}</h3>
+    <h3>Groups Drilled {drilledCount} | {totalCount}</h3>
     <BtnIcon icon="close" label="Close" onclick={onclose} />
   </div>
 </Island>

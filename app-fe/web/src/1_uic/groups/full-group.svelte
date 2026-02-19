@@ -62,11 +62,11 @@
       <div class="anuka-row">
         {#if kind === 'chinese'}
           {#if strokeSessions}<span>{strokeSessions}</span>{/if}
-          <a class="anuka-btn anuka-btn-icon" href={strokeHref} title="Stroke practice">
+          <a class="anuka-btn anuka-btn-icon" href={strokeHref} title="Stroke drill">
             <span class="anuka-icon anuka-icon-stroke"></span>
           </a>
           {#if pinyinSessions}<span>{pinyinSessions}</span>{/if}
-          <a class="anuka-btn anuka-btn-icon" href={pinyinHref} title="Pinyin practice">
+          <a class="anuka-btn anuka-btn-icon" href={pinyinHref} title="Pinyin drill">
             <span class="anuka-icon anuka-icon-pinyin"></span>
           </a>
         {/if}

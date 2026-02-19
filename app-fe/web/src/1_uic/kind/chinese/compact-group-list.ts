@@ -21,10 +21,10 @@ export function buildProps(group: ChineseGroup, ctx: Context, from?: string) {
   const gsPinyin = ctx.groupSessionsPinyin.get(group.id)
   return {
     groupId: group.displayId,
-    lastPracticed: ctx.isAuthenticated ? timeAgo(ctx.groupSessions.get(group.id)?.lastDrilledAt) : undefined,
+    lastDrilled: ctx.isAuthenticated ? timeAgo(ctx.groupSessions.get(group.id)?.lastDrilledAt) : undefined,
     tags: group.tags,
-    strokeHref: `${ctx.basePath}/practice/hanzi?group=${group.id}&dataset=${ctx.datasetId}${fromParam}`,
-    pinyinHref: `${ctx.basePath}/practice/pinyin?group=${group.id}&dataset=${ctx.datasetId}${fromParam}`,
+    strokeHref: `${ctx.basePath}/drill/hanzi?group=${group.id}&dataset=${ctx.datasetId}${fromParam}`,
+    pinyinHref: `${ctx.basePath}/drill/pinyin?group=${group.id}&dataset=${ctx.datasetId}${fromParam}`,
     strokeSessions: gsStroke?.full ?? 0,
     pinyinSessions: gsPinyin?.full ?? 0,
     strokeProgress: ctx.isAuthenticated ? calcGroupProgress(group, ctx.statsStroke) : 0,

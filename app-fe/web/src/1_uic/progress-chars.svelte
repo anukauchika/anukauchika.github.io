@@ -6,7 +6,7 @@
 
   let {
     chars,
-    practicedCount,
+    drilledCount,
     uniqueChars,
     onclose,
   } = $props()
@@ -14,16 +14,16 @@
 
 <Island sticky>
   <div class="anuka-row anuka-justify">
-    <IslandTitle level={3}>Chars Practiced <span class="anuka-main">{practicedCount}</span> | {uniqueChars}</IslandTitle>
+    <IslandTitle level={3}>Chars Drilled <span class="anuka-main">{drilledCount}</span> | {uniqueChars}</IslandTitle>
     <BtnIcon icon="close" label="Close" onclick={onclose} />
   </div>
 </Island>
 <section class="anuka-stack">
   <div class="anuka-grid anuka-sm">
     {#each chars as c (c.char)}
-      <div class="anuka-card anuka-stack anuka-center anuka-compact" class:anuka-mute={!c.practiced}>
+      <div class="anuka-card anuka-stack anuka-center anuka-compact" class:anuka-mute={!c.drilled}>
         <span class="anuka-lg" lang="zh" translate="no">{c.char}</span>
-        {#if c.practiced}
+        {#if c.drilled}
           {#if c.stroke.successCount > 0}
             <span class="anuka-sm anuka-main">{c.stroke.successCount}{#if c.stroke.errorCount > 0}<span class="anuka-fail">| {c.stroke.errorCount}</span>{/if}</span>
           {/if}

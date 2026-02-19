@@ -12,10 +12,10 @@ export interface CharStatEntry {
   stroke: { successCount: number; errorCount: number }
   pinyin: { successCount: number; errorCount: number }
   lastDrilledAt: string | null
-  practiced: boolean
+  drilled: boolean
 }
 
-export interface PracticedItem {
+export interface DrilledItem {
   item: ChineseWord
   group: ChineseGroup
   stat: WordProgress
@@ -55,7 +55,7 @@ export function uniqueChars(groups: ChineseGroup[]): Set<string> {
   return chars
 }
 
-export function calcStats(groups: ChineseGroup[]): ChineseDatasetStats {
+export function calcDatasetStats(groups: ChineseGroup[]): ChineseDatasetStats {
   return {
     groups: groups.length,
     words: groups.reduce((sum, g) => sum + g.items.length, 0),
@@ -63,9 +63,9 @@ export function calcStats(groups: ChineseGroup[]): ChineseDatasetStats {
   }
 }
 
-// --- Practice counts ---
+// --- Drill counts ---
 
-export function countPracticed(groups: ChineseGroup[], statsMap: Map<WordKey, WordProgress>): number {
+export function countDrilled(groups: ChineseGroup[], statsMap: Map<WordKey, WordProgress>): number {
   let count = 0
   for (const g of groups) {
     for (const item of g.items) {
@@ -75,8 +75,8 @@ export function countPracticed(groups: ChineseGroup[], statsMap: Map<WordKey, Wo
   return count
 }
 
-export function buildPracticedItems(groups: ChineseGroup[], statsMap: Map<WordKey, WordProgress>): PracticedItem[] {
-  const items: PracticedItem[] = []
+export function buildDrilledItems(groups: ChineseGroup[], statsMap: Map<WordKey, WordProgress>): DrilledItem[] {
+  const items: DrilledItem[] = []
   for (const g of groups) {
     for (const item of g.items) {
       const stat = statsMap.get(mkWordKey(g.id, item.id))
@@ -89,7 +89,7 @@ export function buildPracticedItems(groups: ChineseGroup[], statsMap: Map<WordKe
 
 // --- Char-level stats ---
 
-export function buildPracticedCharsData(
+export function buildDrilledCharsData(
   groups: ChineseGroup[],
   strokeStats: Map<WordKey, WordProgress>,
   pinyinStats: Map<WordKey, WordProgress>,
@@ -114,7 +114,7 @@ export function buildPracticedCharsData(
         if (existing) {
           existing.wordCount++
           if (hasStat) {
-            existing.practiced = true
+            existing.drilled = true
             addStat(existing.stroke, sStat)
             addStat(existing.pinyin, pStat)
             const lp = (sStat?.lastDrilledAt ?? '') > (pStat?.lastDrilledAt ?? '') ? sStat?.lastDrilledAt : pStat?.lastDrilledAt
@@ -134,7 +134,7 @@ export function buildPracticedCharsData(
             stroke,
             pinyin,
             lastDrilledAt: lp ?? null,
-            practiced: !!hasStat,
+            drilled: !!hasStat,
           })
         }
       }
@@ -151,7 +151,7 @@ export function buildPracticedCharsData(
 export function calcProgress(groups: ChineseGroup[], statsMap: Map<WordKey, WordProgress>): number {
   const total = groups.reduce((sum, g) => sum + g.items.length, 0)
   if (total === 0) return 0
-  return Math.round((countPracticed(groups, statsMap) / total) * 100)
+  return Math.round((countDrilled(groups, statsMap) / total) * 100)
 }
 
 export function calcMastery(groups: ChineseGroup[], statsMap: Map<WordKey, WordProgress>): number {
@@ -168,10 +168,10 @@ export function calcMastery(groups: ChineseGroup[], statsMap: Map<WordKey, WordP
 }
 
 export function calcGroupProgress(group: ChineseGroup, statsMap: Map<WordKey, WordProgress>): number {
-  const practiced = group.items.filter(item =>
+  const drilled = group.items.filter(item =>
     statsMap.has(mkWordKey(group.id, item.id))
   ).length
-  return group.items.length > 0 ? Math.round((practiced / group.items.length) * 100) : 0
+  return group.items.length > 0 ? Math.round((drilled / group.items.length) * 100) : 0
 }
 
 export function calcGroupMastery(group: ChineseGroup, sessionsMap: Map<GroupId, GroupProgress>): number {
@@ -191,8 +191,8 @@ export function sortGroupsByLastDrilled(groups: ChineseGroup[], sessionsMap: Map
 
 // --- Chart ---
 
-export function buildChartData(practicedItems: PracticedItem[], dayCounts: Map<DayKey, DayProgress>): ChartData | null {
-  if (practicedItems.length === 0) return null
+export function buildChartData(drilledItems: DrilledItem[], dayCounts: Map<DayKey, DayProgress>): ChartData | null {
+  if (drilledItems.length === 0) return null
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const DAYS = 30
@@ -220,7 +220,7 @@ export function buildChartData(practicedItems: PracticedItem[], dayCounts: Map<D
   let maxCumulative = 0
   for (const bar of bars) {
     let cum = 0
-    for (const { stat } of practicedItems) {
+    for (const { stat } of drilledItems) {
       if (stat.lastDrilledAt && toLocalDateKey(new Date(stat.lastDrilledAt)) <= bar.date) cum++
     }
     cumulativeData.push(cum)

@@ -4,7 +4,7 @@
 
   interface GroupProps {
     groupId: string
-    lastPracticed?: string
+    lastDrilled?: string
     tags?: string[]
     strokeHref?: string
     pinyinHref?: string

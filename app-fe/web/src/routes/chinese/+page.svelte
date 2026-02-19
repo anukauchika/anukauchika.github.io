@@ -10,7 +10,7 @@
   import Groups from '@uic/groups'
   import Modal from '@std/ui/modal.svelte'
   import Island from '@std/ui/island.svelte'
-  import BrowseHero from '@routes/chinese/browse-hero.svelte'
+  import Dataset from '@routes/chinese/dataset.svelte'
 
   const basePath = $derived.by(() => `/${sttDataset.current.kind}`)
 
@@ -65,12 +65,12 @@
   <title>Anuka Uchika - Chinese</title>
   <meta
     name="description"
-    content="HSK Chinese characters with stroke & pinyin practice, focused word groups, stats-driven repetition and progress tracking"
+    content="HSK Chinese characters with stroke & pinyin drill, focused word groups, stats-driven repetition and progress tracking"
   />
 </svelte:head>
 
 <main class="anuka-page">
-  <BrowseHero />
+  <Dataset />
 
   <Groups
     groups={sttDataset.filtered.map((g) => buildFullProps(g, groupCtx))}

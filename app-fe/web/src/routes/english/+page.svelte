@@ -61,13 +61,13 @@
     groupCount={sttDataset.filtered.length}
     totalCount={sttDataset.filtered.reduce((s, g) => s + g.items.length, 0)}
     uniqueChars={0}
-    strokePracticedCount={0}
+    strokeDrilledCount={0}
     strokeProgress={0} strokeMastery={0} pinyinProgress={0} pinyinMastery={0}
-    practiceHref={null}
+    drillHref={null}
     onShowAuthDropdown={() => showAuthDropdown = true}
-    onShowPracticedGroups={() => {}}
-    onShowPracticedList={() => {}}
-    onShowPracticedChars={() => {}}
+    onShowProgressGroups={() => {}}
+    onShowProgressWords={() => {}}
+    onShowProgressChars={() => {}}
     onShowHowItWorks={() => {}}
     onShowStatInfo={() => {}}
   >

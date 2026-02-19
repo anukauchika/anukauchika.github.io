@@ -3,12 +3,12 @@
   import Island from '@std/ui/island.svelte'
   import IslandTitle from '@std/ui/island-title.svelte'
   import BtnIcon from '@std/ui/btn-icon.svelte'
-  import PracticeChart from '@uic/practice-chart.svelte'
+  import ProgressChart from '@uic/progress-chart.svelte'
 
   let {
     items,
     chartData,
-    practicedCount,
+    drilledCount,
     totalCount,
     onclose,
     itemSnippet,
@@ -17,13 +17,13 @@
 
 <Island sticky>
   <div class="anuka-row anuka-justify">
-    <IslandTitle level={3}>Unique Words Practiced <span class="anuka-main">{practicedCount}</span> | {totalCount}</IslandTitle>
+    <IslandTitle level={3}>Unique Words Drilled <span class="anuka-main">{drilledCount}</span> | {totalCount}</IslandTitle>
     <BtnIcon icon="close" label="Close" onclick={onclose} />
   </div>
 </Island>
 <section class="anuka-stack">
   {#if chartData}
-    <PracticeChart bars={chartData.bars} line={chartData.cumulativeData} ticks={chartData.ticks} yMax={chartData.yMax} />
+    <ProgressChart bars={chartData.bars} line={chartData.cumulativeData} ticks={chartData.ticks} yMax={chartData.yMax} />
   {/if}
   <div class="anuka-grid">
     {#each items as entry (`${entry.group.id}-${entry.item.id}`)}

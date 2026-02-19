@@ -3,10 +3,9 @@
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { svcDataset } from '@svc/dataset'
   import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
+  import { sttDrill } from '@stt/kind/chinese/drill.svelte.js'
   import { sttAuth } from '@stt/auth.svelte.js'
   import { svcAuth } from '@svc/auth'
-  import { pickNextPractice } from '@std/kind/chinese/pick-next-practice.js'
-  import { calcStats, countPracticed, calcProgress, calcMastery } from '@std/kind/chinese/stats'
   import { GroupViewMode } from '@dom/dataset'
   import Hero from '@uic/hero'
   import Toolbar from '@uic/hero/toolbar.svelte'
@@ -17,36 +16,13 @@
 
   const basePath = $derived.by(() => `/${sttDataset.current?.kind}`)
 
-  const nextPractice = $derived.by(() => {
-    if (sttAuth.isAuthenticated) {
-      return pickNextPractice(
-        sttDataset.filtered,
-        sttStats.groupProgress,
-        sttStats.groupProgressStroke,
-        sttStats.groupProgressPinyin,
-      )
-    }
-    return sttDataset.filtered.length > 0 ? { groupId: sttDataset.filtered[0].id, type: 'stroke' } : null
-  })
-  const practiceHref = $derived.by(() => {
-    const np = nextPractice
+  const drillHref = $derived.by(() => {
+    const nd = sttDrill.nextDrill
     const typeToPath = { stroke: 'hanzi', pinyin: 'pinyin' }
-    return np
-      ? `${basePath}/practice/${typeToPath[np.type] || 'hanzi'}?group=${np.groupId}&dataset=${sttDataset.id}`
+    return nd
+      ? `${basePath}/drill/${typeToPath[nd.type] || 'hanzi'}?group=${nd.groupId}&dataset=${sttDataset.id}`
       : null
   })
-
-  const stats = $derived(calcStats(sttDataset.filtered))
-  const groupCount = $derived(stats.groups)
-  const totalCount = $derived(stats.words)
-  const uniqueChars = $derived(stats.chars)
-  const strokePracticedCount = $derived(countPracticed(sttDataset.filtered, sttStats.wordProgressStroke))
-  const strokeProgress = $derived(calcProgress(sttDataset.filtered, sttStats.wordProgressStroke))
-  const strokeMastery = $derived(calcMastery(sttDataset.filtered, sttStats.wordProgressStroke))
-  const pinyinProgress = $derived(calcProgress(sttDataset.filtered, sttStats.wordProgressPinyin))
-  const pinyinMastery = $derived(calcMastery(sttDataset.filtered, sttStats.wordProgressPinyin))
-
-  const dayCounts = $derived(sttStats.dayProgress)
 </script>
 
 <Hero
@@ -54,21 +30,21 @@
   datasetDescription={sttDataset.current?.description}
   datasetTags={sttDataset.current?.tags}
   datasetId={sttDataset.id}
-  dailyActivity={dayCounts}
+  dailyActivity={sttStats.dayProgress}
   isAuthenticated={sttAuth.isAuthenticated}
-  {groupCount}
-  {totalCount}
-  {uniqueChars}
-  {strokePracticedCount}
-  {strokeProgress}
-  {strokeMastery}
-  {pinyinProgress}
-  {pinyinMastery}
-  {practiceHref}
+  groupCount={sttStats.datasetStats.groups}
+  totalCount={sttStats.datasetStats.words}
+  uniqueChars={sttStats.datasetStats.chars}
+  strokeDrilledCount={sttStats.strokeDrilledCount}
+  strokeProgress={sttStats.strokeProgress}
+  strokeMastery={sttStats.strokeMastery}
+  pinyinProgress={sttStats.pinyinProgress}
+  pinyinMastery={sttStats.pinyinMastery}
+  {drillHref}
   onShowAuthDropdown={() => (showAuthDropdown = true)}
-  onShowPracticedGroups={() => goto('/chinese/groups')}
-  onShowPracticedList={() => goto('/chinese/words')}
-  onShowPracticedChars={() => goto('/chinese/chars')}
+  onShowProgressGroups={() => goto('/chinese/groups')}
+  onShowProgressWords={() => goto('/chinese/words')}
+  onShowProgressChars={() => goto('/chinese/chars')}
   onShowHowItWorks={() => goto('/chinese/how-it-works')}
 >
   {#snippet toolbar()}

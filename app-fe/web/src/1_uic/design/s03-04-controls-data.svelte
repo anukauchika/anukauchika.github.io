@@ -22,7 +22,7 @@
     <Stat value={42} label="Groups" />
     <Stat value={156} label="Words" />
     <Stat value={89} label="Chars" />
-    <Stat value={37} label="Practiced" onclick={() => {}} />
+    <Stat value={37} label="Drilled" onclick={() => {}} />
   </div>
   <div class="anuka-row anuka-center">
     <Stat class="anuka-main" value={42} label="main" />

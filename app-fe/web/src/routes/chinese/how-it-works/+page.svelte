@@ -19,15 +19,15 @@
     <Island>
       <IslandTitle level={4}>What is this</IslandTitle>
       <p class="anuka-mute">
-        A vocabulary learning app with interactive practice sessions and printable
-        workbooks. Browse words, practice writing, and track your progress over
+        A vocabulary learning app with interactive drill sessions and printable
+        workbooks. Browse words, drill writing, and track your progress over
         time.
       </p>
     </Island>
     <Island>
       <IslandTitle level={4}>Chinese</IslandTitle>
       <p class="anuka-mute">
-        Vocabulary for all HSK levels (1-9). Two practice modes: stroke writing
+        Vocabulary for all HSK levels (1-9). Two drill modes: stroke writing
         (trace characters stroke by stroke) and pinyin (type the pronunciation).
       </p>
     </Island>
@@ -40,10 +40,10 @@
       </p>
     </Island>
     <Island>
-      <IslandTitle level={4}>Practice</IslandTitle>
+      <IslandTitle level={4}>Drill</IslandTitle>
       <p class="anuka-mute">
-        Words are ordered by how much you've practiced them - least practiced come
-        first. The Practice button automatically picks the best next group to
+        Words are ordered by how much you've drilled them - least drilled come
+        first. The Drill button automatically picks the best next group to
         study.
       </p>
     </Island>

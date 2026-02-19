@@ -5,18 +5,18 @@
     groupCount,
     totalCount,
     uniqueChars,
-    strokePracticedCount,
+    strokeDrilledCount,
     isAuthenticated,
-    onShowPracticedGroups,
-    onShowPracticedList,
-    onShowPracticedChars,
+    onShowProgressGroups,
+    onShowProgressWords,
+    onShowProgressChars,
   } = $props()
 
   const handleGroups = () => {
-    if (isAuthenticated) onShowPracticedGroups()
+    if (isAuthenticated) onShowProgressGroups()
   }
   const handleChars = () => {
-    if (isAuthenticated) onShowPracticedChars()
+    if (isAuthenticated) onShowProgressChars()
   }
 </script>
 
@@ -25,6 +25,6 @@
   <Stat value={totalCount} label="Words" />
   <Stat value={uniqueChars} label="Chars" onclick={handleChars} />
   {#if isAuthenticated}
-    <Stat value={strokePracticedCount} label="Practiced" onclick={onShowPracticedList} />
+    <Stat value={strokeDrilledCount} label="Drilled" onclick={onShowProgressWords} />
   {/if}
 </div>

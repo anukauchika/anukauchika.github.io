@@ -19,16 +19,16 @@
     groupCount,
     totalCount,
     uniqueChars,
-    strokePracticedCount,
+    strokeDrilledCount,
     strokeProgress,
     strokeMastery,
     pinyinProgress,
     pinyinMastery,
-    practiceHref,
+    drillHref,
     onShowAuthDropdown,
-    onShowPracticedGroups,
-    onShowPracticedList,
-    onShowPracticedChars,
+    onShowProgressGroups,
+    onShowProgressWords,
+    onShowProgressChars,
     onShowHowItWorks,
     toolbar,
     filters,
@@ -123,11 +123,11 @@
         {groupCount}
         {totalCount}
         {uniqueChars}
-        {strokePracticedCount}
+        {strokeDrilledCount}
         {isAuthenticated}
-        {onShowPracticedGroups}
-        {onShowPracticedList}
-        {onShowPracticedChars}
+        {onShowProgressGroups}
+        {onShowProgressWords}
+        {onShowProgressChars}
       />
     </div>
 
@@ -153,9 +153,9 @@
       <p><BtnLink onclick={onShowHowItWorks}>How it works?</BtnLink></p>
     </div>
 
-    {#if practiceHref}
+    {#if drillHref}
       <div class="anuka-row anuka-center">
-        <Btn main onclick={() => (window.location.href = practiceHref)}>Practice</Btn>
+        <Btn main onclick={() => (window.location.href = drillHref)}>Drill</Btn>
       </div>
     {/if}
 

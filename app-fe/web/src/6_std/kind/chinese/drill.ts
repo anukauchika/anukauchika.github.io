@@ -1,17 +1,17 @@
 import type { Group, GroupId } from '@dom/dataset'
 import type { GroupProgress } from '@dom/stats'
 
-interface NextPractice {
+interface NextDrill {
   groupId: number
   type: 'stroke' | 'pinyin'
 }
 
-export function pickNextPractice(
+export function pickNextDrill(
   groups: Group[],
   groupSessions: Map<GroupId, GroupProgress>,
   strokeSessions: Map<GroupId, GroupProgress>,
   pinyinSessions: Map<GroupId, GroupProgress>,
-): NextPractice | null {
+): NextDrill | null {
   // Step 1: filter to groups with at least 1 completed session
   const eligible = groups.filter((g) => {
     const gs = groupSessions.get(g.id)
@@ -29,7 +29,7 @@ export function pickNextPractice(
 
   const groupId = eligible[0].id
 
-  // Step 3: pick practice type with fewer full sessions (tie-break: stroke)
+  // Step 3: pick drill type with fewer full sessions (tie-break: stroke)
   const strokeFull = strokeSessions.get(groupId)?.full ?? 0
   const pinyinFull = pinyinSessions.get(groupId)?.full ?? 0
   const type = pinyinFull < strokeFull ? 'pinyin' : 'stroke'
