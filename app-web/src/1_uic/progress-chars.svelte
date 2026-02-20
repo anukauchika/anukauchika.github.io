@@ -25,10 +25,10 @@
         <span class="anuka-lg" lang="zh" translate="no">{c.char}</span>
         {#if c.drilled}
           {#if c.stroke.successCount > 0}
-            <span class="anuka-sm anuka-main">{c.stroke.successCount}{#if c.stroke.errorCount > 0}<span class="anuka-fail">| {c.stroke.errorCount}</span>{/if}</span>
+            <span class="anuka-sm anuka-main">{c.stroke.successCount}{#if c.stroke.errorCount > 0}<span class="anuka-fail">| {c.stroke.errorCount}</span>{/if}{#if c.stroke.hintCount > 0}<span class="anuka-warn">| {c.stroke.hintCount}</span>{/if}</span>
           {/if}
           {#if c.pinyin.successCount > 0}
-            <span class="anuka-sm anuka-main">{c.pinyin.successCount}{#if c.pinyin.errorCount > 0}<span class="anuka-fail">| {c.pinyin.errorCount}</span>{/if}</span>
+            <span class="anuka-sm anuka-main">{c.pinyin.successCount}{#if c.pinyin.errorCount > 0}<span class="anuka-fail">| {c.pinyin.errorCount}</span>{/if}{#if c.pinyin.hintCount > 0}<span class="anuka-warn">| {c.pinyin.hintCount}</span>{/if}</span>
           {/if}
           <span class="anuka-sm anuka-mute">{timeAgo(c.lastDrilledAt)}</span>
         {/if}

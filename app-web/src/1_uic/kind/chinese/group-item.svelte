@@ -9,11 +9,17 @@
       {#if strokeStat.errorCount > 0}
         <span class="anuka-sm anuka-fail">| {strokeStat.errorCount}</span>
       {/if}
+      {#if strokeStat.hintCount > 0}
+        <span class="anuka-sm anuka-warn">| {strokeStat.hintCount}</span>
+      {/if}
     {/if}
     {#if pinyinStat}
       <span class="anuka-sm anuka-main">P {pinyinStat.successCount}</span>
       {#if pinyinStat.errorCount > 0}
         <span class="anuka-sm anuka-fail">| {pinyinStat.errorCount}</span>
+      {/if}
+      {#if pinyinStat.hintCount > 0}
+        <span class="anuka-sm anuka-warn">| {pinyinStat.hintCount}</span>
       {/if}
     {/if}
     <span class="anuka-badge">{(item.id ?? 0).toString().padStart(2, '0')}</span>

@@ -41,6 +41,9 @@
         {#if session.currentStat.errorCount > 0}
           <span class="anuka-fail">| {session.currentStat.errorCount}</span>
         {/if}
+        {#if session.currentStat.hintCount > 0}
+          <span class="anuka-warn">| {session.currentStat.hintCount}</span>
+        {/if}
       </span>
     {/if}
 
@@ -138,8 +141,10 @@
       {#if authenticated && stat}
         <span class="anuka-sm">{stat.successCount}</span>
         {#if stat.errorCount > 0}
-          <span class="anuka-sm anuka-warn">|</span>
-          <span class="anuka-sm anuka-fail">{stat.errorCount}</span>
+          <span class="anuka-sm anuka-fail">| {stat.errorCount}</span>
+        {/if}
+        {#if stat.hintCount > 0}
+          <span class="anuka-sm anuka-warn">| {stat.hintCount}</span>
         {/if}
       {/if}
     </span>
