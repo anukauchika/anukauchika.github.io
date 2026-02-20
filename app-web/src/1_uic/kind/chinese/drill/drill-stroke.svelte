@@ -91,7 +91,7 @@
       <span class="anuka-icon anuka-icon-close"></span>
     </a>
     <div class="anuka-stack anuka-center anuka-compact">
-      <div class="anuka-main anuka-lg">Session complete</div>
+      <h2 class="anuka-island-title anuka-main">Session complete</h2>
       <div class="anuka-mute anuka-sm">{session.drilledCount} drilled &middot; {session.skippedCount} skipped</div>
       <Btn main onclick={() => session.restart()}>Restart</Btn>
       <Btn onclick={() => window.location.href = backUrl}>Groups</Btn>

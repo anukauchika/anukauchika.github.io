@@ -86,9 +86,9 @@ export class DrillStrokeSession {
     import('hanzi-writer').then(({ default: HanziWriter }) => {
       if (!this.currentChar) return
       const styles = getComputedStyle(document.documentElement)
-      const strokeColor = styles.getPropertyValue('--anuka-color-text').trim() || '#1d1a15'
-      const outlineColor = styles.getPropertyValue('--anuka-color-muted').trim() || '#5a5147'
-      const radicalColor = styles.getPropertyValue('--anuka-color-primary').trim() || '#1f6f5c'
+      const strokeColor = styles.getPropertyValue('--anuka-color-text').trim()
+      const outlineColor = styles.getPropertyValue('--anuka-color-bg-accent').trim()
+      const radicalColor = styles.getPropertyValue('--anuka-color-primary').trim()
       this.writer = HanziWriter.create(target, this.currentChar, {
         width: 280, height: 280, padding: 20,
         showCharacter: false, showOutline: this.showHint,
@@ -223,11 +223,7 @@ export class DrillStrokeSession {
     const attempt: WordAttempt = { wordId: item.id, startedAt: wordStartedAt, doneAt: wordDoneAt }
     this.onWordDone(attempt, chars)
 
-    if (this.currentIndex < this.items.length - 1) {
-      this.startDelay(5000)
-    } else {
-      this.finishSession()
-    }
+    this.startDelay(this.hanChars.length * 1000)
   }
 
   private finishSession(): void {
@@ -248,7 +244,6 @@ export class DrillStrokeSession {
     this.charErrorCount = 0
     this.charData = []
     this.strokeQuizResult = null
-    this.hintManuallySet = false
   }
 
   private resetSessionState(): void {
@@ -260,6 +255,7 @@ export class DrillStrokeSession {
     this.wordDelay = false
     this.wordDelayProgress = 100
     this.showHint = false
+    this.hintManuallySet = false
     this.resetCharState()
   }
 
@@ -296,8 +292,12 @@ export class DrillStrokeSession {
 
   private advanceToNext(): void {
     this.clearDelay()
-    this.currentIndex += 1
-    this.resetCharState()
-    this.applyAutoHint()
+    if (this.currentIndex >= this.items.length - 1) {
+      this.finishSession()
+    } else {
+      this.currentIndex += 1
+      this.resetCharState()
+      this.applyAutoHint()
+    }
   }
 }

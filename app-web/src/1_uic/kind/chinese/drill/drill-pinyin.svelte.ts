@@ -188,12 +188,7 @@ export class DrillPinyinSession {
     const attempt: WordAttempt = { wordId: item.id, startedAt: wordStartedAt, doneAt: wordDoneAt }
     this.onWordDone(attempt, chars)
 
-    if (this.currentIndex < this.items.length - 1) {
-      const delayMs = this.hanChars.length * 1000
-      this.startDelay(delayMs)
-    } else {
-      this.finishSession()
-    }
+    this.startDelay(this.hanChars.length * 1000)
   }
 
   private finishSession(): void {
@@ -253,7 +248,11 @@ export class DrillPinyinSession {
 
   private advanceToNext(): void {
     this.clearDelay()
-    this.currentIndex += 1
-    this.resetCharState()
+    if (this.currentIndex >= this.items.length - 1) {
+      this.finishSession()
+    } else {
+      this.currentIndex += 1
+      this.resetCharState()
+    }
   }
 }

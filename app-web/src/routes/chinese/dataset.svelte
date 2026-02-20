@@ -62,7 +62,7 @@
       showAvatar={sttAuth.showAvatar}
       avatarUrl={sttAuth.avatarUrl}
       userInitials={sttAuth.userInitials}
-      onDatasetChange={(id) => svcDataset.selectDataset(id)}
+      onDatasetChange={(id) => goto(`/chinese/?dataset=${id}`)}
       onShowAuthDropdown={() => (showAuthDropdown = true)}
       onAvatarError={() => (sttAuth.avatarError = true)}
       onToggleTheme={() => svcUserPrefs.toggleTheme()}

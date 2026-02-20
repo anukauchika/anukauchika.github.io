@@ -1,16 +1,23 @@
 <script>
   import { page } from '$app/stores'
+  import { goto } from '$app/navigation'
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { svcDataset } from '@svc/dataset'
   import { svcStats } from '@svc/kind/chinese/stats'
 
   let { children } = $props()
 
-  const requestedDataset = $derived($page.url.searchParams.get('dataset') || sttDataset.id)
-  const datasetReady = $derived(sttDataset.current?.id === requestedDataset)
+  const urlDataset = $derived($page.url.searchParams.get('dataset'))
+  const datasetReady = $derived(sttDataset.current?.id === sttDataset.id)
 
   $effect(() => {
-    if (requestedDataset && requestedDataset !== sttDataset.id) svcDataset.selectDataset(requestedDataset)
+    if (urlDataset && urlDataset !== sttDataset.id) {
+      svcDataset.selectDataset(urlDataset)
+    } else if (!urlDataset && sttDataset.id) {
+      const url = new URL($page.url)
+      url.searchParams.set('dataset', sttDataset.id)
+      goto(`${url.pathname}${url.search}`, { replaceState: true, keepFocus: true })
+    }
   })
 
   $effect(() => {
