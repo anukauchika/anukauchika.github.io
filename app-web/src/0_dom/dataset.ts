@@ -45,7 +45,6 @@ export enum GroupViewMode {
 }
 
 export interface DatasetPrefs {
-  datasetId: string
   search: string
   tags: string[]
   groups: number[]

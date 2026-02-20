@@ -4,6 +4,7 @@
   import { svcDataset } from '@svc/dataset'
   import { sttAuth } from '@stt/auth.svelte.js'
   import { svcAuth } from '@svc/auth'
+  import { svcUserPrefs } from '@svc/user-prefs'
   import { formatGroup } from '@std/format.js'
   import { GroupViewMode } from '@dom/dataset'
   import FullGroup from '@uic/kind/english/full-group.svelte'
@@ -68,6 +69,7 @@
         user={sttAuth.user}
         onDatasetChange={(id) => svcDataset.selectDataset(id)}
         onShowAuthDropdown={() => showAuthDropdown = true}
+        onToggleTheme={() => svcUserPrefs.toggleTheme()}
       />
     {/snippet}
     {#snippet filters()}

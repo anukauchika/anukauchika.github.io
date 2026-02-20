@@ -1,6 +1,6 @@
 import type { DatasetMeta, Dataset, DatasetPrefs, Group, Word } from '@dom/dataset'
 import { GroupViewMode } from '@dom/dataset'
-import { req, createDatabase } from '@low/idb'
+import { prefsGet, prefsSet, prefsSwitchUser } from '@low/prefs-db'
 import { parseChineseDataset, type RawChineseDataset } from '@low/kind/chinese/parse-dataset'
 import { formatGroup } from '@std/format'
 import registry from '@data/registry.json'
@@ -46,30 +46,8 @@ function parse(raw: unknown, meta: DatasetMeta): Dataset | null {
   return { ...meta, ...(raw as Record<string, unknown>), groups } as unknown as Dataset
 }
 
-// --- IDB prefs ---
-
-const PREFS_STORE = 'prefs'
-
-const prefsDb = createDatabase('uch-prefs', 1, (db) => {
-  if (!db.objectStoreNames.contains(PREFS_STORE)) {
-    db.createObjectStore(PREFS_STORE, { keyPath: 'key' })
-  }
-})
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function get(key: string): Promise<any> {
-  const db = await prefsDb.db()
-  const store = db.transaction(PREFS_STORE, 'readonly').objectStore(PREFS_STORE)
-  const result = await req(store.get(key))
-  return result?.value ?? null
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function set(key: string, value: any): Promise<void> {
-  const db = await prefsDb.db()
-  const store = db.transaction(PREFS_STORE, 'readwrite').objectStore(PREFS_STORE)
-  await req(store.put({ key, value }))
-}
+const get = prefsGet
+const set = prefsSet
 
 // --- DatasetApi ---
 
@@ -77,7 +55,6 @@ export interface DatasetApi {
   loadRegistry(): Promise<DatasetMeta[]>
   loadData(meta: DatasetMeta): Promise<Dataset | null>
   getPrefs(datasetId: string): Promise<DatasetPrefs>
-  setPrefId(id: string): Promise<void>
   setPrefSearch(datasetId: string, v: string): Promise<void>
   setPrefTags(datasetId: string, v: string[]): Promise<void>
   setPrefGroups(datasetId: string, v: number[]): Promise<void>
@@ -95,24 +72,18 @@ export const lowDataset: DatasetApi = {
   },
 
   async getPrefs(datasetId) {
-    const [id, search, tags, groups, viewMode] = await Promise.all([
-      get('datasetId'),
+    const [search, tags, groups, viewMode] = await Promise.all([
       get(`main:search:${datasetId}`),
       get(`main:tags:${datasetId}`),
       get(`main:group:${datasetId}`),
       get(`main:compact:${datasetId}`),
     ])
     return {
-      datasetId: id ?? datasetId,
-      search: search ?? '',
-      tags: tags ?? [],
+      search: (search as string) ?? '',
+      tags: (tags as string[]) ?? [],
       groups: Array.isArray(groups) ? groups : [],
       viewMode: viewMode === true || viewMode === 'compact' ? GroupViewMode.Compact : GroupViewMode.Full,
     }
-  },
-
-  async setPrefId(id) {
-    return set('datasetId', id)
   },
 
   async setPrefSearch(datasetId, v) {
@@ -132,6 +103,6 @@ export const lowDataset: DatasetApi = {
   },
 
   async switchDatabase(userId) {
-    await prefsDb.switchUser(userId)
+    await prefsSwitchUser(userId)
   },
 }

@@ -6,7 +6,6 @@ export interface DatasetRepo {
   getMetaById(id: string): DatasetMeta | null
   loadData(id: string): Promise<Dataset | null>
   getPrefs(datasetId: string): Promise<DatasetPrefs>
-  setPrefId(id: string): Promise<void>
   setPrefSearch(datasetId: string, v: string): Promise<void>
   setPrefTags(datasetId: string, v: string[]): Promise<void>
   setPrefGroups(datasetId: string, v: number[]): Promise<void>
@@ -29,7 +28,6 @@ async function create(): Promise<DatasetRepo> {
     },
 
     getPrefs: (dsId) => lowDataset.getPrefs(dsId),
-    setPrefId: (id) => lowDataset.setPrefId(id),
     setPrefSearch: (dsId, v) => lowDataset.setPrefSearch(dsId, v),
     setPrefTags: (dsId, v) => lowDataset.setPrefTags(dsId, v),
     setPrefGroups: (dsId, v) => lowDataset.setPrefGroups(dsId, v),

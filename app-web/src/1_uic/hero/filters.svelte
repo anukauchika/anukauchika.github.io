@@ -21,12 +21,6 @@
 
   const viewIcon = $derived(listViewStyle === 'full' ? 'grid' : 'list')
 
-  const toggleTheme = () => {
-    const current = document.documentElement.dataset.theme
-      ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-    document.documentElement.dataset.theme = current === 'dark' ? 'light' : 'dark'
-  }
-
   const allTags = $derived.by(() => {
     const tagSet = new Set()
     groups.forEach((g) => {
@@ -50,7 +44,6 @@
       oninput={(e) => onSearchChange(e.target.value)}
     />
     <BtnIcon onclick={onToggleView} label="Toggle view" icon={viewIcon} />
-    <BtnIcon onclick={toggleTheme} label="Toggle theme" icon="moon" />
   </div>
 
   {#if allTags.length > 0}

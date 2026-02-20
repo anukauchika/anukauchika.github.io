@@ -32,7 +32,12 @@
       <span class="anuka-icon anuka-icon-close"></span>
     </a>
     {#if authenticated && session.currentStat}
-      <span class="anuka-badge anuka-main">{session.currentStat.successCount}{#if session.currentStat.errorCount > 0}<span class="anuka-fail">| {session.currentStat.errorCount}</span>{/if}</span>
+      <span class="anuka-quick anuka-left anuka-badge anuka-main">
+        {session.currentStat.successCount}
+        {#if session.currentStat.errorCount > 0}
+          <span class="anuka-fail">| {session.currentStat.errorCount}</span>
+        {/if}
+      </span>
     {/if}
 
     <div class="anuka-stack anuka-center">
@@ -106,14 +111,20 @@
     >
       {item.tr}
       {#if authenticated && stat}
-        <span class="anuka-sm">{stat.successCount}{#if stat.errorCount > 0}<span class="anuka-fail">| {stat.errorCount}</span>{/if}</span>
+        <span class="anuka-sm">{stat.successCount}</span>
+        {#if stat.errorCount > 0}
+          <span class="anuka-sm anuka-warn">|</span>
+          <span class="anuka-sm anuka-fail">{stat.errorCount}</span>
+        {/if}
       {/if}
     </span>
   {/each}
 </div>
 
 <Island>
-  <span class="anuka-lg">Stroke Drill</span>
+  <div class="anuka-row anuka-center">
+    <h1>Practice Writing</h1>
+  </div>
   {#if group}
     <div class="anuka-row anuka-center">
       <span class="anuka-sm anuka-mute">{group.displayId}</span>

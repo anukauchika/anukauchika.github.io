@@ -112,25 +112,23 @@
     {#if children}{@render children()}{/if}
     {@render toolbar()}
 
-    <div class="anuka-row anuka-justify">
-      <div>
-        <IslandTitle level={1}>{datasetName ?? 'Vocabulary'}</IslandTitle>
-        <p>{datasetDescription ?? ''}</p>
-        {#if datasetTags?.length}
-          <Tags tags={datasetTags} />
-        {/if}
-      </div>
-      <Stats
-        {groupCount}
-        {totalCount}
-        {uniqueChars}
-        {strokeDrilledCount}
-        {isAuthenticated}
-        {onShowProgressGroups}
-        {onShowProgressWords}
-        {onShowProgressChars}
-      />
+    <div>
+      <IslandTitle level={1}>{datasetName ?? 'Vocabulary'}</IslandTitle>
+      <p>{datasetDescription ?? ''}</p>
+      {#if datasetTags?.length}
+        <Tags tags={datasetTags} />
+      {/if}
     </div>
+    <Stats
+      {groupCount}
+      {totalCount}
+      {uniqueChars}
+      {strokeDrilledCount}
+      {isAuthenticated}
+      {onShowProgressGroups}
+      {onShowProgressWords}
+      {onShowProgressChars}
+    />
 
     {#if isAuthenticated}
       <div class="anuka-stack">

@@ -6,6 +6,7 @@
   import { svcDrill } from '@svc/kind/chinese/drill'
   import { sttAuth } from '@stt/auth.svelte.js'
   import { svcAuth } from '@svc/auth'
+  import { svcUserPrefs } from '@svc/user-prefs'
   import AppTitle from '@std/ui/app-title.svelte'
   import { GroupViewMode } from '@dom/dataset'
   import Hero from '@uic/hero'
@@ -64,6 +65,7 @@
       onDatasetChange={(id) => svcDataset.selectDataset(id)}
       onShowAuthDropdown={() => (showAuthDropdown = true)}
       onAvatarError={() => (sttAuth.avatarError = true)}
+      onToggleTheme={() => svcUserPrefs.toggleTheme()}
     />
   {/snippet}
   {#snippet filters()}

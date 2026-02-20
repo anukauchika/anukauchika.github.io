@@ -178,6 +178,7 @@ h4.anuka-island-title { font-size: 1.2rem; }
   color: var(--anuka-color-muted);
 }
 
+.anuka-tag.anuka-main { background: var(--anuka-color-primary); color: var(--anuka-color-on-primary); }
 .anuka-tag.anuka-sm { font-size: 0.65rem; padding: 0.15rem 0.45rem; }
 .anuka-tag.anuka-lg { font-size: 0.85rem; padding: 0.3rem 0.8rem; }
 
@@ -297,7 +298,7 @@ button.anuka-stat:hover {
 .anuka-center { justify-content: center; align-items: center; }
 .anuka-right { justify-content: flex-end; }
 .anuka-justify { justify-content: space-between; }
-.anuka-grow { flex: 1; }
+.anuka-grow { flex: 1; min-width: 0; }
 .anuka-compact { gap: 0.25rem; }
 
 
@@ -634,13 +635,15 @@ button.anuka-activity-heatmap-cell {
   background: var(--anuka-color-border);
 }
 
-/* ── Quick: icon button, top-right of island ── */
+/* ── Quick: icon button, positioned in island ── */
 
 .anuka-quick {
   position: absolute;
   top: 1rem;
   right: 1rem;
 }
+.anuka-quick.anuka-left { right: auto; left: 1rem; }
+.anuka-quick.anuka-center { right: auto; left: 50%; transform: translateX(-50%); }
 
 button.anuka-quick {
   width: 40px;

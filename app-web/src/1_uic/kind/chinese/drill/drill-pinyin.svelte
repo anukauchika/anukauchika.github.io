@@ -35,18 +35,14 @@
     <a class="anuka-quick" href={backUrl} title="Back">
       <span class="anuka-icon anuka-icon-close"></span>
     </a>
-    <div class="anuka-row">
-      {#if authenticated && session.currentStat}
-        <span class="anuka-badge anuka-main">
-          {session.currentStat.successCount}
-          {#if session.currentStat.errorCount > 0}
-            <span class="anuka-fail">| {session.currentStat.errorCount}</span>
-          {/if}
-        </span>
-      {:else}
-        <div class="anuka-placeholder"></div>
-      {/if}
-    </div>
+    {#if authenticated && session.currentStat}
+      <span class="anuka-quick anuka-left anuka-badge anuka-main">
+        {session.currentStat.successCount}
+        {#if session.currentStat.errorCount > 0}
+          <span class="anuka-fail">| {session.currentStat.errorCount}</span>
+        {/if}
+      </span>
+    {/if}
 
     <div class="anuka-stack">
       <div class="anuka-row anuka-center anuka-compact" class:anuka-hidden={!session.showTranslation}>
@@ -130,13 +126,18 @@
 <div class="anuka-tags anuka-center">
   {#each session.items as item, idx}
     {@const stat = session.wordProgress.get(item.id)}
-    <span class="anuka-tag" class:anuka-main={idx === session.currentIndex} title={item.word}>
+    <span
+      class="anuka-tag"
+      class:anuka-main={idx === session.currentIndex}
+      class:anuka-succ={session.completedWords.has(idx)}
+      title={item.word}
+    >
       {item.tr}
       {#if authenticated && stat}
-        <span class="anuka-succ">{stat.successCount}</span>
+        <span class="anuka-sm">{stat.successCount}</span>
         {#if stat.errorCount > 0}
-          <span> | </span>
-          <span class="anuka-fail">{stat.errorCount}</span>
+          <span class="anuka-sm anuka-warn">|</span>
+          <span class="anuka-sm anuka-fail">{stat.errorCount}</span>
         {/if}
       {/if}
     </span>
@@ -145,7 +146,7 @@
 
 <Island>
   <div class="anuka-row anuka-center">
-    <span class="anuka-lg anuka-center">Pinyin Drill</span>
+    <h1>Practice Pinyin</h1>
   </div>
   {#if group}
     <div class="anuka-row anuka-center">

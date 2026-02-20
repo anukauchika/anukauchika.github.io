@@ -2,6 +2,7 @@ import { datDataset } from '@dat/dataset'
 import type { DatasetMeta, Dataset, Group, GroupViewMode } from '@dom/dataset'
 import { sttDataset } from '@stt/dataset.svelte.js'
 import { sttAuth } from '@stt/auth.svelte.js'
+import { datUserPrefs } from '@dat/user-prefs'
 
 // --- Filter logic (moved from @std/dataset.ts) ---
 
@@ -129,8 +130,8 @@ export const svcDataset: DatasetService = {
     sttDataset.meta = allMeta
 
     const defaultId = allMeta[0]?.id ?? ''
-    const prefs = await repo.getPrefs(defaultId)
-    const preferredId = allMeta.some((m) => m.id === prefs.datasetId) ? prefs.datasetId : defaultId
+    const savedId = await datUserPrefs.getDatasetId()
+    const preferredId = (savedId && allMeta.some((m) => m.id === savedId)) ? savedId : defaultId
 
     sttDataset.id = preferredId
     const dataset = await repo.loadData(preferredId)
@@ -155,7 +156,7 @@ export const svcDataset: DatasetService = {
     recomputeFiltered()
     initialized = true
 
-    repo.setPrefId(dsId)
+    datUserPrefs.setDatasetId(dsId)
   },
 
   async reloadPrefs() {

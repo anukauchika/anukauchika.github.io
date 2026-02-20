@@ -20,7 +20,7 @@
   }
 </script>
 
-<div class="anuka-row anuka-justify">
+<div class="anuka-row anuka-center">
   <Stat value={groupCount} label="Groups" onclick={handleGroups} />
   <Stat value={totalCount} label="Words" />
   <Stat value={uniqueChars} label="Chars" onclick={handleChars} />

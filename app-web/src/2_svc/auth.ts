@@ -2,10 +2,12 @@ import { datAuth } from '@dat/auth'
 import { datDrillSync } from '@dat/kind/chinese/drill'
 import { sttAuth } from '@stt/auth.svelte.js'
 import { svcDataset } from '@svc/dataset'
+import { svcUserPrefs } from '@svc/user-prefs'
 import { svcSync } from '@svc/sync'
 
 async function onUserChanged(userId: string | null): Promise<void> {
   await datDrillSync.switchDatabase(userId)
+  await svcUserPrefs.switchDatabase(userId)
   await svcDataset.reloadPrefs()
   if (userId) {
     await svcSync.syncPending()
@@ -28,7 +30,7 @@ export const svcAuth: AuthService = {
     sttAuth.user = user
 
     if (user) {
-      onUserChanged(user.id).catch((e) => console.error('sync failed', e))
+      await onUserChanged(user.id)
     }
 
     datAuth.onAuthChange((newUser) => {
