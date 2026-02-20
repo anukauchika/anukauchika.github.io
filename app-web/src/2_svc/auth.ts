@@ -32,12 +32,14 @@ export const svcAuth: AuthService = {
     sttAuth.user = user
 
     if (user) {
-      await onUserChanged(user.id)
+      await switchDatabases(user.id)
+      syncInBackground()
     }
 
-    datAuth.onAuthChange((newUser) => {
+    datAuth.onAuthChange(async (newUser) => {
       sttAuth.user = newUser
-      onUserChanged(newUser?.id ?? null).catch((e) => console.error('sync failed', e))
+      await switchDatabases(newUser?.id ?? null).catch((e) => console.error('db switch failed', e))
+      if (newUser) syncInBackground()
     })
 
     // Refresh token when tab becomes visible (timers are throttled in background)
