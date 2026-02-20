@@ -15,6 +15,7 @@ async function switchDatabases(userId: string | null): Promise<void> {
 function syncInBackground(): void {
   svcSync.syncPending()
     .then(() => svcSync.restoreFromServer())
+    .then(() => { sttAuth.dbVersion++ })
     .catch((e) => console.error('sync failed', e))
 }
 
