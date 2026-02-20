@@ -2,8 +2,14 @@ import { sveltekit } from '@sveltejs/kit/vite'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'node:path'
+import { execSync } from 'node:child_process'
+
+const gitHash = execSync('git rev-parse --short HEAD').toString().trim()
 
 export default defineConfig({
+  define: {
+    __APP_HASH__: JSON.stringify(gitHash),
+  },
   plugins: [
     sveltekit(),
     VitePWA({

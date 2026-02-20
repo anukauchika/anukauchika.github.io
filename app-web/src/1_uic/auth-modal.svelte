@@ -29,6 +29,7 @@
         <button type="button" class="anuka-btn" onclick={() => { onSignOut(); handleClose() }}>
           Sign out
         </button>
+        <span class="anuka-mute anuka-sm">App Version: {__APP_HASH__}</span>
       </div>
     </Island>
   {:else}
@@ -55,6 +56,7 @@
             <button type="submit" class="anuka-btn">Send Sign In Link</button>
           </form>
         {/if}
+        <span class="anuka-mute anuka-sm">App Version: {__APP_HASH__}</span>
       </div>
     </Island>
   {/if}

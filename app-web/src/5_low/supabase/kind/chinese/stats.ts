@@ -71,36 +71,39 @@ async function insertCharLogs(chars: CharLogRecord[]): Promise<void> {
   if (error) throw error
 }
 
+const PAGE_SIZE = 1000
+
+async function fetchAllPages<T>(query: () => ReturnType<ReturnType<typeof supabase.from>['select']>): Promise<T[]> {
+  const all: T[] = []
+  let offset = 0
+  while (true) {
+    const { data, error } = await query().range(offset, offset + PAGE_SIZE - 1)
+    if (error) throw error
+    all.push(...(data as T[]))
+    if (data.length < PAGE_SIZE) break
+    offset += PAGE_SIZE
+  }
+  return all
+}
+
 async function fetchAllUserSessions(): Promise<StorageDrill[]> {
-  const { data, error } = await supabase
-    .from('group_session')
-    .select('*')
-    .order('started_at', { ascending: true })
-    .limit(5000)
-  if (error) throw error
-  return data
+  return fetchAllPages<StorageDrill>(() =>
+    supabase.from('group_session').select('*').order('started_at', { ascending: true }),
+  )
 }
 
 async function fetchWordAttempts(sessionIds: number[]): Promise<StorageAttempt[]> {
   if (sessionIds.length === 0) return []
-  const { data, error } = await supabase
-    .from('word_attempt')
-    .select('*')
-    .in('group_session_id', sessionIds)
-    .limit(5000)
-  if (error) throw error
-  return data
+  return fetchAllPages<StorageAttempt>(() =>
+    supabase.from('word_attempt').select('*').in('group_session_id', sessionIds),
+  )
 }
 
 async function fetchCharLogs(wordAttemptIds: number[]): Promise<StorageCharLog[]> {
   if (wordAttemptIds.length === 0) return []
-  const { data, error } = await supabase
-    .from('char_log')
-    .select('*')
-    .in('word_attempt_id', wordAttemptIds)
-    .limit(5000)
-  if (error) throw error
-  return data
+  return fetchAllPages<StorageCharLog>(() =>
+    supabase.from('char_log').select('*').in('word_attempt_id', wordAttemptIds),
+  )
 }
 
 export interface LowStatsSupabase {
