@@ -1,19 +1,12 @@
 <script>
   import { page } from '$app/stores'
   import '@uic/workbook.css'
-  import { onMount } from 'svelte'
   import { sttDataset } from '@stt/dataset.svelte.js'
-  import { svcDataset } from '@svc/dataset'
   import { asChineseDataset } from '@dom/kind/chinese/dataset'
   import WorkbookChinese from '@uic/kind/chinese/workbook.svelte'
   import WorkbookEnglish from '@uic/kind/english/workbook.svelte'
 
   const exerciseSets = 2
-
-  onMount(() => {
-    const requested = $page.url.searchParams.get('dataset')
-    if (requested) svcDataset.selectDataset(requested)
-  })
 
   const getInitialGroup = () => {
     return Number($page.url.searchParams.get('group')) || 1

@@ -17,7 +17,6 @@
   const reloadStats = () => {
     if (sttDataset.id) {
       svcStats.loadWordProgressAll(sttDataset.id)
-      svcStats.loadGroupProgressAll(sttDataset.id)
       svcStats.loadDayProgressAll(sttDataset.id)
     }
   }

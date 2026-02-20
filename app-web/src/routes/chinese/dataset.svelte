@@ -3,7 +3,7 @@
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { svcDataset } from '@svc/dataset'
   import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
-  import { sttDrill } from '@stt/kind/chinese/drill.svelte.js'
+  import { svcDrill } from '@svc/kind/chinese/drill'
   import { sttAuth } from '@stt/auth.svelte.js'
   import { svcAuth } from '@svc/auth'
   import AppTitle from '@std/ui/app-title.svelte'
@@ -18,7 +18,7 @@
   const basePath = $derived.by(() => `/${sttDataset.current?.kind}`)
 
   const drillHref = $derived.by(() => {
-    const nd = sttDrill.nextDrill
+    const nd = svcDrill.pickNextDrill()
     const typeToPath = { stroke: 'hanzi', pinyin: 'pinyin' }
     return nd
       ? `${basePath}/drill/${typeToPath[nd.type] || 'hanzi'}?group=${nd.groupId}&dataset=${sttDataset.id}`

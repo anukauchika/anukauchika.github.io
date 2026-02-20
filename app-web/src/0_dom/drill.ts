@@ -7,3 +7,8 @@ export interface WordAttempt {
   startedAt: string
   doneAt: string
 }
+
+export interface GroupAttempt {
+  drilledCount: number
+  skippedCount: number
+}
