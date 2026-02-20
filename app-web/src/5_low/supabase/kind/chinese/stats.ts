@@ -76,6 +76,7 @@ async function fetchAllUserSessions(): Promise<StorageDrill[]> {
     .from('group_session')
     .select('*')
     .order('started_at', { ascending: true })
+    .limit(5000)
   if (error) throw error
   return data
 }
@@ -86,6 +87,7 @@ async function fetchWordAttempts(sessionIds: number[]): Promise<StorageAttempt[]
     .from('word_attempt')
     .select('*')
     .in('group_session_id', sessionIds)
+    .limit(5000)
   if (error) throw error
   return data
 }
@@ -96,6 +98,7 @@ async function fetchCharLogs(wordAttemptIds: number[]): Promise<StorageCharLog[]
     .from('char_log')
     .select('*')
     .in('word_attempt_id', wordAttemptIds)
+    .limit(5000)
   if (error) throw error
   return data
 }
