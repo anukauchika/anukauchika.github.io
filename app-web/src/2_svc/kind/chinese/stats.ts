@@ -1,21 +1,8 @@
 import type { DatasetId, WordKey } from '@dom/dataset'
 import type { WordProgress, GroupProgress, DayProgress } from '@dom/stats'
-import { ChineseDrillType } from '@dom/kind/chinese/dataset'
 import { datStats } from '@dat/kind/chinese/stats'
 import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
-import { sttDataset } from '@stt/dataset.svelte.js'
-
-const DT_CODES: Record<string, string> = { stroke: 's', pinyin: 'p' }
-const ALL_DT = Object.values(ChineseDrillType)
-
-function dsCode(id: DatasetId): string {
-  const meta = sttDataset.meta.find((m) => m.id === id)
-  return meta?.code ?? id
-}
-
-function dtCode(drillType: ChineseDrillType): string {
-  return DT_CODES[drillType] || drillType
-}
+import { dsCode, dtCode, ALL_DT } from '@svc/kind/chinese/codes'
 
 export interface StatsService {
   loadWordProgressAll(datasetId: DatasetId): Promise<void>

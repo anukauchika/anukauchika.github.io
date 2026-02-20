@@ -284,8 +284,8 @@
         {"word": "说", "pinyin": "shuō", "english": "to speak", "id": 1, "tags": ["L1", "verb"]},
         {"word": "说话", "pinyin": "shuō huà", "english": "to speak", "id": 2, "tags": ["L1", "verb"]},
         {"word": "四", "pinyin": "sì", "english": "four", "id": 3, "tags": ["L1", "number"]},
-        {"word": "岁", "pinyin": "suì", "english": "measure word for years of age", "id": 4, "tags": ["L1", "measure word", "time", "grammar"]},
-        {"word": "他", "pinyin": "tā", "english": "third-person singular since the early 20th century, usu. male he", "id": 5, "tags": ["L1", "pronoun", "family"]},
+        {"word": "岁", "pinyin": "suì", "english": "years old", "id": 4, "tags": ["L1", "measure word", "time", "grammar"]},
+        {"word": "他", "pinyin": "tā", "english": "he", "id": 5, "tags": ["L1", "pronoun", "family"]},
         {"word": "它", "pinyin": "tā", "english": "it", "id": 6, "tags": ["L1", "pronoun"]},
         {"word": "她", "pinyin": "tā", "english": "she", "id": 7, "tags": ["L1", "pronoun"]},
         {"word": "他们", "pinyin": "tā men", "english": "they", "id": 8, "tags": ["L1", "pronoun"]},
@@ -336,7 +336,7 @@
         {"word": "小时", "pinyin": "xiǎo shí", "english": "hour", "id": 11, "tags": ["L1", "noun", "time"]},
         {"word": "小学", "pinyin": "xiǎo xué", "english": "elementary school", "id": 12, "tags": ["L1", "noun", "education"]},
         {"word": "小学生", "pinyin": "xiǎo xué shēng", "english": "primary school student", "id": 13, "tags": ["L1", "noun", "education"]},
-        {"word": "些", "pinyin": "xiē", "english": "classifier indicating a small amount or small number greater than 1: some, a few, several", "id": 14, "tags": ["L1", "measure word", "food", "grammar"]},
+        {"word": "些", "pinyin": "xiē", "english": "some, a few, several", "id": 14, "tags": ["L1", "measure word", "food", "grammar"]},
         {"word": "写", "pinyin": "xiě", "english": "to write", "id": 15, "tags": ["L1", "verb"]}
       ]
     },
@@ -460,7 +460,7 @@
         {"word": "从", "pinyin": "cóng", "english": "from", "id": 9, "tags": ["L2", "preposition", "grammar"]},
         {"word": "从小", "pinyin": "cóng xiǎo", "english": "from childhood", "id": 10, "tags": ["L2", "adverb", "family"]},
         {"word": "错", "pinyin": "cuò", "english": "mistake", "id": 11, "tags": ["L2", "adjective"]},
-        {"word": "打", "pinyin": "dǎ", "english": "a semantically light, transitive verb that is combined with various grammatical objects to form compound verbs and verb-object phrases with a diverse range of meanings e.g. 打傘|打伞 \"to hold an umbrella\", 打電話|打电话 \"to make a phone call\", 打針|打针 \"to get an injection\", 打手套 \"to knit gloves\", 打氣|打气 \"to inflate\"", "id": 12, "tags": ["L2", "verb", "emotion"]},
+        {"word": "打", "pinyin": "dǎ", "english": "helper verb", "id": 12, "tags": ["L2", "verb", "emotion"]},
         {"word": "打车", "pinyin": "dǎ chē", "english": "to take a taxi in town", "id": 13, "tags": ["L2", "verb", "travel"]},
         {"word": "打开", "pinyin": "dǎ kāi", "english": "to open", "id": 14, "tags": ["L2", "verb", "object"]},
         {"word": "但", "pinyin": "dàn", "english": "but", "id": 15, "tags": ["L2", "conjunction", "grammar"]}

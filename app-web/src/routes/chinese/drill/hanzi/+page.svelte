@@ -11,7 +11,9 @@
   import { asChineseDataset } from '@dom/kind/chinese/dataset'
   import Island from '@std/ui/island.svelte'
   import IslandTitle from '@std/ui/island-title.svelte'
+  import ProgressLine from '@std/ui/progress-line.svelte'
   import Tags from '@std/ui/tags.svelte'
+  import Btn from '@std/ui/btn.svelte'
   import DrillStroke from '@uic/kind/chinese/drill-stroke.svelte'
 
   onMount(() => {
@@ -23,33 +25,22 @@
     if (sttDataset.id) svcStats.loadGroupProgressAll(sttDataset.id)
   })
 
-  const drillGroupId = $derived.by(() => {
-    return Number($page.url.searchParams.get('group')) || 1
-  })
-
+  const drillGroupId = $derived.by(() => Number($page.url.searchParams.get('group')) || 1)
   const groups = $derived.by(() => asChineseDataset(sttDataset.current)?.groups ?? [])
-
-  const drillGroup = $derived.by(() =>
-    groups.find((g) => g.id === drillGroupId) || groups[0]
-  )
-
-  const drillGroupSessions = $derived.by(() =>
-    drillGroup ? sttStats.groupProgress.get(drillGroup.id) : null
-  )
-
-  const handleLoadGroupStats = async (dsId, pt, gId) => {
-    await svcDrill.loadProgress(dsId, pt, gId)
-    return sttDrill.progress
-  }
-
-  const handleRecordAttempt = (drillId, wordId, startedAt, doneAt, chars) =>
-    svcDrill.recordAttempt(drillId, { wordId, startedAt, doneAt }, chars)
+  const drillGroup = $derived.by(() => groups.find((g) => g.id === drillGroupId) || groups[0])
+  const drillGroupSessions = $derived.by(() => (drillGroup ? sttStats.groupProgress.get(drillGroup.id) : null))
 
   const backUrl = $derived.by(() => {
     const from = $page.url.searchParams.get('from')
     const base = `/${sttDataset.current?.kind ?? 'chinese'}`
     if (from) return `${base}/${from}?dataset=${sttDataset.id}`
     return `${base}/?dataset=${sttDataset.id}`
+  })
+
+  $effect(() => {
+    if (sttDataset.id && drillGroup) {
+      svcDrill.initSession(sttDataset.id, 'stroke', drillGroup.id, drillGroup.items)
+    }
   })
 </script>
 
@@ -58,11 +49,49 @@
 </svelte:head>
 
 <main class="anuka-page">
-  {#if drillGroup}
-    <DrillStroke group={drillGroup} datasetId={sttDataset.id} {backUrl}
-      groupStats={sttDrill.progress} isAuthenticated={sttAuth.isAuthenticated}
-      onLoadGroupStats={handleLoadGroupStats} onStartSession={svcDrill.startDrill} onEndSession={svcDrill.endDrill} onRecordAttempt={handleRecordAttempt} />
+  {#if sttDrill.currentItem && !sttDrill.sessionDone}
+    <Island>
+      <a class="anuka-quick" href={backUrl} title="Back">
+        <span class="anuka-icon anuka-icon-close"></span>
+      </a>
+      {#if sttAuth.isAuthenticated && sttDrill.currentStat}
+        <span class="anuka-badge anuka-main">{sttDrill.currentStat.successCount}{#if sttDrill.currentStat.errorCount > 0}<span class="anuka-fail">| {sttDrill.currentStat.errorCount}</span>{/if}</span>
+      {/if}
+      <DrillStroke />
+    </Island>
   {/if}
+
+  {#if sttDrill.sessionDone}
+    <Island>
+      <div class="anuka-stack anuka-center anuka-compact">
+        <div class="anuka-main anuka-lg">Session complete</div>
+        <div class="anuka-mute anuka-sm">{sttDrill.drilledCount} drilled &middot; {sttDrill.skippedCount} skipped</div>
+        <Btn main onclick={() => svcDrill.restart()}>Restart</Btn>
+        <Btn onclick={() => window.location.href = backUrl}>Groups</Btn>
+      </div>
+    </Island>
+  {/if}
+
+  <ProgressLine fill={sttDrill.progress}>
+    {#snippet bottom()}<div class="anuka-row anuka-center"><span class="anuka-mute anuka-sm">{sttDrill.currentIndex + 1} / {sttDrill.items.length}</span></div>{/snippet}
+  </ProgressLine>
+
+  <div class="anuka-tags anuka-center">
+    {#each sttDrill.items as item, idx}
+      {@const stat = sttDrill.wordProgress.get(item.id)}
+      <span
+        class="anuka-tag"
+        class:anuka-main={idx === sttDrill.currentIndex}
+        class:anuka-succ={sttDrill.completedWords.has(idx)}
+        title={item.word}
+      >
+        {item.tr}
+        {#if sttAuth.isAuthenticated && stat}
+          <span class="anuka-sm">{stat.successCount}{#if stat.errorCount > 0}<span class="anuka-fail">| {stat.errorCount}</span>{/if}</span>
+        {/if}
+      </span>
+    {/each}
+  </div>
 
   <Island>
     <IslandTitle level={1}>Stroke Drill</IslandTitle>
