@@ -29,7 +29,8 @@
         <button type="button" class="anuka-btn" onclick={() => { onSignOut(); handleClose() }}>
           Sign out
         </button>
-        <span class="anuka-mute anuka-sm">App Version: {__APP_HASH__}</span>
+        <a class="anuka-btn-link anuka-sm" href="https://github.com/anukauchika/anukauchika.github.io/issues" target="_blank" rel="noopener">Report an Issue</a>
+        <a class="anuka-mute anuka-sm" href={__APP_COMMIT_URL__} target="_blank" rel="noopener">{__APP_HASH__}</a>
       </div>
     </Island>
   {:else}
@@ -56,7 +57,9 @@
             <button type="submit" class="anuka-btn">Send Sign In Link</button>
           </form>
         {/if}
-        <span class="anuka-mute anuka-sm">App Version: {__APP_HASH__}</span>
+        <div class="anuka-divider"></div>
+        <a class="anuka-btn-link anuka-sm" href="https://github.com/anukauchika/anukauchika.github.io/issues" target="_blank" rel="noopener">Report an Issue</a>
+        <a class="anuka-mute anuka-sm" href={__APP_COMMIT_URL__} target="_blank" rel="noopener">{__APP_HASH__}</a>
       </div>
     </Island>
   {/if}

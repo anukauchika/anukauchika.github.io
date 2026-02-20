@@ -646,7 +646,7 @@ button.anuka-activity-heatmap-cell {
 .anuka-quick.anuka-left { right: auto; left: 1rem; }
 .anuka-quick.anuka-center { right: auto; left: 50%; transform: translateX(-50%); }
 
-button.anuka-quick {
+button.anuka-quick, a.anuka-quick {
   width: 40px;
   height: 40px;
   display: flex;
@@ -656,6 +656,7 @@ button.anuka-quick {
   border: none;
   color: var(--anuka-color-text);
   cursor: pointer;
+  text-decoration: none;
 }
 
 /* ── Frame: bordered container for images, canvases, media ── */

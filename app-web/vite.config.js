@@ -5,10 +5,12 @@ import path from 'node:path'
 import { execSync } from 'node:child_process'
 
 const gitHash = execSync('git rev-parse --short HEAD').toString().trim()
+const gitHashFull = execSync('git rev-parse HEAD').toString().trim()
 
 export default defineConfig({
   define: {
     __APP_HASH__: JSON.stringify(gitHash),
+    __APP_COMMIT_URL__: JSON.stringify(`https://github.com/anukauchika/anukauchika.github.io/commit/${gitHashFull}`),
   },
   plugins: [
     sveltekit(),
