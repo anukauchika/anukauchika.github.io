@@ -144,7 +144,7 @@
         </div>
       </div>
     {:else}
-      <p><BtnLink onclick={onShowAuthDropdown}>Log in</BtnLink> to track your learning progress</p>
+      <p class="anuka-row anuka-center anuka-compact"><BtnLink onclick={onShowAuthDropdown}>Log in</BtnLink> to track your learning progress</p>
     {/if}
 
     {#if drillHref}
