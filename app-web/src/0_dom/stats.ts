@@ -3,6 +3,7 @@ export type DayKey = string // "YYYY-MM-DD"
 export interface WordProgress {
   successCount: number
   errorCount: number
+  hintCount: number
   lastDrilledAt: string | null
 }
 

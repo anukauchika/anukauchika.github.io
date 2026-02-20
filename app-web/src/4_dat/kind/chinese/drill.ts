@@ -34,17 +34,19 @@ async function getGroupWordsProgress(datasetCode: string, drillCode: string, gro
     for (const w of words) {
       const chars = await lowStatsIdb.getCharLogs(w.id)
       let errors = 0
-      for (const c of chars) errors += c.error_count || 0
+      let hints = 0
+      for (const c of chars) { errors += c.error_count || 0; hints += c.hint_count || 0 }
 
       const existing = map.get(w.word_id)
       if (existing) {
         existing.successCount += 1
         existing.errorCount += errors
+        existing.hintCount += hints
         if (w.done_at && (!existing.lastDrilledAt || w.done_at > existing.lastDrilledAt)) {
           existing.lastDrilledAt = w.done_at
         }
       } else {
-        map.set(w.word_id, { successCount: 1, errorCount: errors, lastDrilledAt: w.done_at || null })
+        map.set(w.word_id, { successCount: 1, errorCount: errors, hintCount: hints, lastDrilledAt: w.done_at || null })
       }
     }
   }
@@ -121,6 +123,7 @@ async function recordAttempt(drillId: DrillId, attempt: WordAttempt, chars: Char
         started_at: c.startedAt,
         done_at: c.doneAt,
         error_count: c.errorCount,
+        hint_count: c.hintCount,
         synced: 0,
       })),
     )
@@ -191,6 +194,7 @@ export const datDrillSync: DrillSyncRepo = {
         started_at: c.started_at,
         done_at: c.done_at,
         error_count: c.error_count,
+        hint_count: c.hint_count,
       })),
     )
   },

@@ -33,5 +33,6 @@ export interface StorageCharLog {
   started_at: string
   done_at: string
   error_count: number
+  hint_count: number
   synced: SyncStatus
 }

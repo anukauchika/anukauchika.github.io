@@ -28,17 +28,19 @@ async function getWordProgress(datasetCode: string, drillCode: string): Promise<
       const key = mkWordKey(s.group_id, w.word_id)
       const chars = await lowStatsIdb.getCharLogs(w.id)
       let errors = 0
-      for (const c of chars) errors += c.error_count || 0
+      let hints = 0
+      for (const c of chars) { errors += c.error_count || 0; hints += c.hint_count || 0 }
 
       const existing = map.get(key)
       if (existing) {
         existing.successCount += 1
         existing.errorCount += errors
+        existing.hintCount += hints
         if (w.done_at && (!existing.lastDrilledAt || w.done_at > existing.lastDrilledAt)) {
           existing.lastDrilledAt = w.done_at
         }
       } else {
-        map.set(key, { successCount: 1, errorCount: errors, lastDrilledAt: w.done_at || null })
+        map.set(key, { successCount: 1, errorCount: errors, hintCount: hints, lastDrilledAt: w.done_at || null })
       }
     }
   }

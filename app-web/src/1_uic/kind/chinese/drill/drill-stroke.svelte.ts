@@ -29,6 +29,7 @@ export class DrillStrokeSession {
   wordStartedAt: string | null = $state(null)
   charStartedAt: string | null = $state(null)
   charErrorCount: number = $state(0)
+  charHintCount: number = $state(0)
   charData: CharAttempt[] = $state([])
 
   // --- UI ---
@@ -123,6 +124,7 @@ export class DrillStrokeSession {
 
   toggleHint(): void {
     this.hintManuallySet = true
+    if (!this.showHint) this.charHintCount += 1
     this.showHint = !this.showHint
     if (this.writer) this.showHint ? this.writer.showOutline() : this.writer.hideOutline()
   }
@@ -182,7 +184,7 @@ export class DrillStrokeSession {
     const charDoneAt = new Date().toISOString()
     this.charData = [...this.charData, {
       charIndex: this.charIndex, startedAt: this.charStartedAt!,
-      doneAt: charDoneAt, errorCount: this.charErrorCount,
+      doneAt: charDoneAt, errorCount: this.charErrorCount, hintCount: this.charHintCount,
     }]
 
     if (this.charIndex < this.hanChars.length - 1) {
@@ -190,6 +192,7 @@ export class DrillStrokeSession {
         this.charIndex += 1
         this.charStartedAt = new Date().toISOString()
         this.charErrorCount = 0
+        this.charHintCount = 0
       }, 1500)
     } else {
       this.strokeQuizResult = 'correct'
@@ -213,9 +216,11 @@ export class DrillStrokeSession {
     const drillMap = new Map(this.wordProgress)
     const existing = drillMap.get(item.id)
     const attemptErrors = chars.reduce((sum, c) => sum + (c.errorCount || 0), 0)
+    const attemptHints = chars.reduce((sum, c) => sum + (c.hintCount || 0), 0)
     drillMap.set(item.id, {
       successCount: (existing?.successCount ?? 0) + 1,
       errorCount: (existing?.errorCount ?? 0) + attemptErrors,
+      hintCount: (existing?.hintCount ?? 0) + attemptHints,
       lastDrilledAt: wordDoneAt,
     })
     this.wordProgress = drillMap
@@ -242,6 +247,7 @@ export class DrillStrokeSession {
     this.wordStartedAt = new Date().toISOString()
     this.charStartedAt = new Date().toISOString()
     this.charErrorCount = 0
+    this.charHintCount = 0
     this.charData = []
     this.strokeQuizResult = null
   }

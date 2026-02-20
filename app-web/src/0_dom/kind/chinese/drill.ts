@@ -3,4 +3,5 @@ export interface CharAttempt {
   startedAt: string
   doneAt: string
   errorCount: number
+  hintCount: number
 }

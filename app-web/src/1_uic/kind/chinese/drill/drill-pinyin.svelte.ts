@@ -30,6 +30,7 @@ export class DrillPinyinSession {
   wordStartedAt: string | null = $state(null)
   charStartedAt: string | null = $state(null)
   charErrorCount: number = $state(0)
+  charHintCount: number = $state(0)
   charData: CharAttempt[] = $state([])
 
   // --- UI ---
@@ -94,13 +95,13 @@ export class DrillPinyinSession {
     this.charDoneMap = new Map([...this.charDoneMap, [this.charIndex, slot.pinyin!]])
     this.charData = [
       ...this.charData,
-      { charIndex: this.charIndex, startedAt: this.charStartedAt!, doneAt: now, errorCount: this.charErrorCount },
+      { charIndex: this.charIndex, startedAt: this.charStartedAt!, doneAt: now, errorCount: this.charErrorCount, hintCount: this.charHintCount },
     ]
 
     let next = this.charIndex + 1
     while (next < this.pinyinSlots.length && this.pinyinSlots[next].autoComplete) {
       this.charDoneMap = new Map([...this.charDoneMap, [next, '']])
-      this.charData = [...this.charData, { charIndex: next, startedAt: now, doneAt: now, errorCount: 0 }]
+      this.charData = [...this.charData, { charIndex: next, startedAt: now, doneAt: now, errorCount: 0, hintCount: 0 }]
       next++
     }
 
@@ -108,6 +109,7 @@ export class DrillPinyinSession {
     if (next < this.hanChars.length) {
       this.charIndex = next
       this.charErrorCount = 0
+      this.charHintCount = 0
       this.charStartedAt = now
     } else {
       this.completeWord()
@@ -115,6 +117,7 @@ export class DrillPinyinSession {
   }
 
   toggleHint(): void {
+    if (!this.showHint) this.charHintCount += 1
     this.showHint = !this.showHint
   }
 
@@ -178,9 +181,11 @@ export class DrillPinyinSession {
     const drillMap = new Map(this.wordProgress)
     const existing = drillMap.get(item.id)
     const attemptErrors = chars.reduce((sum, c) => sum + (c.errorCount || 0), 0)
+    const attemptHints = chars.reduce((sum, c) => sum + (c.hintCount || 0), 0)
     drillMap.set(item.id, {
       successCount: (existing?.successCount ?? 0) + 1,
       errorCount: (existing?.errorCount ?? 0) + attemptErrors,
+      hintCount: (existing?.hintCount ?? 0) + attemptHints,
       lastDrilledAt: wordDoneAt,
     })
     this.wordProgress = drillMap
@@ -201,6 +206,7 @@ export class DrillPinyinSession {
     this.wordStartedAt = new Date().toISOString()
     this.charStartedAt = new Date().toISOString()
     this.charErrorCount = 0
+    this.charHintCount = 0
     this.charData = []
     this.charDoneMap = new Map()
     this.pinyinFeedback = null
