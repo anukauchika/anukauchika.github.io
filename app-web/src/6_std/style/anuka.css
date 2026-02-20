@@ -401,7 +401,7 @@ button.anuka-activity-heatmap-cell {
 }
 
 .anuka-activity-heatmap-cell[data-muted] {
-  background: rgba(31, 111, 92, 0.04);
+  background: var(--anuka-color-border);
 }
 
 .anuka-activity-heatmap-cell[data-selected] {
@@ -415,9 +415,9 @@ button.anuka-activity-heatmap-cell {
   color: var(--anuka-color-muted);
 }
 
-.anuka-activity-heatmap-cell[data-level="1"] { background: rgba(31, 111, 92, 0.25); }
-.anuka-activity-heatmap-cell[data-level="2"] { background: rgba(31, 111, 92, 0.45); }
-.anuka-activity-heatmap-cell[data-level="3"] { background: rgba(31, 111, 92, 0.7); }
+.anuka-activity-heatmap-cell[data-level="1"] { background: var(--anuka-color-accent); }
+.anuka-activity-heatmap-cell[data-level="2"] { background: var(--anuka-color-accent-strong); }
+.anuka-activity-heatmap-cell[data-level="3"] { background: color-mix(in srgb, var(--anuka-color-primary) 70%, transparent); }
 .anuka-activity-heatmap-cell[data-level="4"] { background: var(--anuka-color-primary); }
 
 /* ── Button: outline by default, filled with anuka-main ── */

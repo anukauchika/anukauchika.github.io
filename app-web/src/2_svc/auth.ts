@@ -5,15 +5,17 @@ import { svcDataset } from '@svc/dataset'
 import { svcUserPrefs } from '@svc/user-prefs'
 import { svcSync } from '@svc/sync'
 
-async function onUserChanged(userId: string | null): Promise<void> {
+async function switchDatabases(userId: string | null): Promise<void> {
   await datDrillSync.switchDatabase(userId)
   await svcUserPrefs.switchDatabase(userId)
   await svcDataset.reloadPrefs()
-  if (userId) {
-    await svcSync.syncPending()
-    await svcSync.restoreFromServer()
-  }
   sttAuth.dbVersion++
+}
+
+function syncInBackground(): void {
+  svcSync.syncPending()
+    .then(() => svcSync.restoreFromServer())
+    .catch((e) => console.error('sync failed', e))
 }
 
 export interface AuthService {

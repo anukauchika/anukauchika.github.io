@@ -35,7 +35,7 @@
   } = $props()
 
   // Activity heatmap
-  const ACTIVITY_MAX = 50
+  const ACTIVITY_MAX = 200
   const CELL_SIZE = 10
   const CELL_GAP = 3
   const FUTURE_DAYS_DESKTOP = 10
