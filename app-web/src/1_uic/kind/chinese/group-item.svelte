@@ -5,20 +5,16 @@
 <button class="anuka-card anuka-stack" type="button" {onclick}>
   <div class="anuka-row anuka-right anuka-compact">
     {#if strokeStat}
-      <span class="anuka-sm anuka-main">
-        W {strokeStat.successCount}
-        {#if strokeStat.errorCount > 0}
-          <span class="anuka-fail">| {strokeStat.errorCount}</span>
-        {/if}
-      </span>
+      <span class="anuka-sm anuka-main">W {strokeStat.successCount}</span>
+      {#if strokeStat.errorCount > 0}
+        <span class="anuka-sm anuka-fail">| {strokeStat.errorCount}</span>
+      {/if}
     {/if}
     {#if pinyinStat}
-      <span class="anuka-sm anuka-main">
-        P {pinyinStat.successCount}
-        {#if pinyinStat.errorCount > 0}
-          <span class="anuka-fail">| {pinyinStat.errorCount} </span>
-        {/if}
-      </span>
+      <span class="anuka-sm anuka-main">P {pinyinStat.successCount}</span>
+      {#if pinyinStat.errorCount > 0}
+        <span class="anuka-sm anuka-fail">| {pinyinStat.errorCount}</span>
+      {/if}
     {/if}
     <span class="anuka-badge">{(item.id ?? 0).toString().padStart(2, '0')}</span>
   </div>
