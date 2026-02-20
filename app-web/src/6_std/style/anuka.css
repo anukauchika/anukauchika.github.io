@@ -527,6 +527,7 @@ button.anuka-activity-heatmap-cell {
 }
 
 .anuka-input:disabled { opacity: 0.35; cursor: default; }
+.anuka-input.anuka-center { text-align: center; }
 .anuka-input.anuka-main { border-color: var(--anuka-color-primary); }
 .anuka-input.anuka-succ { border-color: var(--anuka-color-success); }
 .anuka-input.anuka-fail { border-color: var(--anuka-color-fail); }
@@ -677,6 +678,12 @@ button.anuka-quick {
 
 .anuka-frame > .anuka-progress-line,
 .anuka-frame > .anuka-progress-line-group { position: absolute; bottom: 0.75rem; left: 0.75rem; right: 0.75rem; border-radius: 4px; }
+
+/* ── Attach: lightweight positioning context for attached progress lines ── */
+
+.anuka-attach { position: relative; }
+.anuka-attach > .anuka-progress-line,
+.anuka-attach > .anuka-progress-line-group { position: absolute; bottom: 0; left: 0; right: 0; }
 
 .anuka-frame.anuka-main { border-color: var(--anuka-color-primary); }
 .anuka-frame.anuka-succ { border-color: var(--anuka-color-success); }

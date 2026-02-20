@@ -90,6 +90,33 @@
 </Island>
 
 <Island>
+  <IslandTitle level={3}>Attach + Progress Line</IslandTitle>
+  <p>Lightweight positioning context. Progress line overlays the bottom of any content without layout shift.</p>
+  <div class="anuka-row">
+    <div class="anuka-stack anuka-compact anuka-center anuka-grow">
+      <div class="anuka-attach">
+        <input class="anuka-input anuka-grow" type="text" disabled placeholder="Idle input" />
+      </div>
+      <span class="anuka-mute anuka-sm">no progress</span>
+    </div>
+    <div class="anuka-stack anuka-compact anuka-center anuka-grow">
+      <div class="anuka-attach">
+        <input class="anuka-input anuka-grow" type="text" disabled placeholder="Loading..." />
+        <ProgressLine class="anuka-sm" fill={65} />
+      </div>
+      <span class="anuka-mute anuka-sm">with progress</span>
+    </div>
+    <div class="anuka-stack anuka-compact anuka-center anuka-grow">
+      <div class="anuka-attach">
+        <input class="anuka-input anuka-grow" type="text" disabled placeholder="Almost done..." />
+        <ProgressLine class="anuka-sm anuka-main" fill={90} />
+      </div>
+      <span class="anuka-mute anuka-sm">main</span>
+    </div>
+  </div>
+</Island>
+
+<Island>
   <IslandTitle level={3}>Tile + Progress Line</IslandTitle>
   <p>Progress lines flush to the bottom edge of tiles. Best with <code>anuka-sm</code> size.</p>
   <div class="anuka-row">

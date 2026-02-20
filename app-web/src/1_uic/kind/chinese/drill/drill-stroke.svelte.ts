@@ -85,12 +85,17 @@ export class DrillStrokeSession {
 
     import('hanzi-writer').then(({ default: HanziWriter }) => {
       if (!this.currentChar) return
+      const styles = getComputedStyle(document.documentElement)
+      const strokeColor = styles.getPropertyValue('--anuka-color-text').trim() || '#1d1a15'
+      const outlineColor = styles.getPropertyValue('--anuka-color-muted').trim() || '#5a5147'
+      const radicalColor = styles.getPropertyValue('--anuka-color-primary').trim() || '#1f6f5c'
       this.writer = HanziWriter.create(target, this.currentChar, {
         width: 280, height: 280, padding: 20,
         showCharacter: false, showOutline: this.showHint,
         strokeAnimationSpeed: 1, delayBetweenStrokes: 100,
         highlightOnComplete: false, drawingWidth: 20,
-        leniency: 1.4, showHintAfterMisses: 2, radicalColor: '#1f6f5c',
+        leniency: 1.4, showHintAfterMisses: 2,
+        strokeColor, drawingColor: strokeColor, outlineColor, radicalColor,
       })
       this.writer.quiz({
         onMistake: () => { this.charErrorCount += 1 },

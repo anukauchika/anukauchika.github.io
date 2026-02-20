@@ -70,27 +70,26 @@
         {/each}
       </div>
 
-      <div class="anuka-row anuka-center anuka-compact">
+      <div class="anuka-attach anuka-row anuka-center">
+        <input
+          bind:this={inputEl}
+          bind:value={session.pinyinInputValue}
+          oninput={() => session.submitInput()}
+          type="text"
+          class="anuka-input anuka-lg"
+          class:anuka-fail={session.pinyinFeedback === 'fail'}
+          class:anuka-hidden={session.wordDelay}
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+          placeholder="pinyin (ex: lao3, shi1)"
+        />
         {#if session.wordDelay}
           <ProgressLine class="anuka-sm" fill={session.wordDelayProgress}>
             {#snippet top()}<div class="anuka-row anuka-center">
                 <button class="anuka-btn-link anuka-sm" type="button" onclick={() => session.skipDelay()}>Next</button>
               </div>{/snippet}
           </ProgressLine>
-        {:else}
-          <input
-            bind:this={inputEl}
-            bind:value={session.pinyinInputValue}
-            oninput={() => session.submitInput()}
-            type="text"
-            class="anuka-input anuka-lg"
-            class:anuka-fail={session.pinyinFeedback === 'fail'}
-            disabled={session.wordDelay}
-            autocomplete="off"
-            autocapitalize="off"
-            spellcheck="false"
-            placeholder="pinyin (ex: lao3, shi1)"
-          />
         {/if}
       </div>
 
