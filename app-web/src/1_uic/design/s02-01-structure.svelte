@@ -89,16 +89,16 @@
   <IslandTitle level={3}>Tile</IslandTitle>
   <p>Compact square cell for labels, characters, and icons. Centers content automatically.</p>
   <div class="anuka-row anuka-center">
-    <span class="anuka-tile anuka-sm">SM</span>
-    <span class="anuka-tile">Def</span>
-    <span class="anuka-tile anuka-lg">LG</span>
+    <span class="anuka-tile anuka-sm">小</span>
+    <span class="anuka-tile">中</span>
+    <span class="anuka-tile anuka-lg">大</span>
   </div>
   <div class="anuka-row anuka-center">
-    <span class="anuka-tile anuka-main">main</span>
-    <span class="anuka-tile anuka-succ">succ</span>
-    <span class="anuka-tile anuka-fail">fail</span>
-    <span class="anuka-tile anuka-warn">warn</span>
-    <span class="anuka-tile anuka-mute">mute</span>
+    <span class="anuka-tile anuka-main">好</span>
+    <span class="anuka-tile anuka-succ">对</span>
+    <span class="anuka-tile anuka-fail">错</span>
+    <span class="anuka-tile anuka-warn">慢</span>
+    <span class="anuka-tile anuka-mute">灰</span>
   </div>
 </Island>
 

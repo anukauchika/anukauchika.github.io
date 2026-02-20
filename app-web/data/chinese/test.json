@@ -75,6 +75,24 @@
         {"word":"中华人民共","pinyin":"zhōng huá rén mín gòng","english":"Chinese people's republic","id":2,"tags":[]},
         {"word":"对不起大家","pinyin":"duì bu qǐ dà jiā","english":"sorry everyone","id":3,"tags":[]}
       ]
+    },
+    {
+      "group": 9,
+      "tags": ["test-capital-pinyin"],
+      "items": [
+        {"word":"北京","pinyin":"Běi jīng","english":"Beijing","id":1,"tags":[]},
+        {"word":"上海","pinyin":"Shàng hǎi","english":"Shanghai","id":2,"tags":[]},
+        {"word":"中国","pinyin":"Zhōng guó","english":"China","id":3,"tags":[]}
+      ]
+    },
+    {
+      "group": 10,
+      "tags": ["test-erhua"],
+      "items": [
+        {"word":"花儿","pinyin":"huār","english":"flower","id":1,"tags":[]},
+        {"word":"鸟儿","pinyin":"niǎor","english":"bird","id":2,"tags":[]},
+        {"word":"玩儿","pinyin":"wánr","english":"to play","id":3,"tags":[]}
+      ]
     }
   ]
 }

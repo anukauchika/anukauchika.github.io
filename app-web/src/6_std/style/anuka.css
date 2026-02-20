@@ -705,13 +705,14 @@ button.anuka-quick, a.anuka-quick {
   border-radius: 0.6rem;
   background: var(--anuka-color-border);
   color: var(--anuka-color-muted);
+  font-size: 2rem;
   line-height: 1;
   overflow: hidden;
   transition: all 0.2s ease;
 }
 
-.anuka-tile.anuka-sm { width: 2.5rem; }
-.anuka-tile.anuka-lg { width: 4.5rem; }
+.anuka-tile.anuka-sm { width: 2.5rem; font-size: 1.4rem; }
+.anuka-tile.anuka-lg { width: 4.5rem; font-size: 2.8rem; }
 
 .anuka-tile.anuka-main { background: var(--anuka-color-primary); color: var(--anuka-color-on-primary); }
 .anuka-tile.anuka-succ { background: var(--anuka-color-success); color: var(--anuka-color-on-primary); }

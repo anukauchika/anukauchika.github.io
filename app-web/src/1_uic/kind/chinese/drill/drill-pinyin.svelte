@@ -58,7 +58,7 @@
               {char}
             </span>
             {#if session.charDoneMap.has(idx)}
-              <span class="anuka-main">{session.charDoneMap.get(idx)}</span>
+              <span class="anuka-main">{session.charDoneMap.get(idx) || '\u00A0'}</span>
             {:else if active}
               <span class="anuka-main">
                 {#if session.showHint}{session.pinyinSlots[session.charIndex]?.pinyin ?? ''}{:else}?{/if}
@@ -107,6 +107,9 @@
 
 {#if session.sessionDone}
   <Island>
+    <a class="anuka-quick" href={backUrl} title="Back">
+      <span class="anuka-icon anuka-icon-close"></span>
+    </a>
     <div class="anuka-stack anuka-center anuka-compact">
       <div class="anuka-main anuka-lg">Session complete</div>
       <div class="anuka-mute anuka-sm">{session.drilledCount} drilled &middot; {session.skippedCount} skipped</div>

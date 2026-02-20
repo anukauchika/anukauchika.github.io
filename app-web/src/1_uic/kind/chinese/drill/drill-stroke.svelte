@@ -52,7 +52,7 @@
       <div class="anuka-row anuka-compact anuka-hanzi anuka-lg" translate="no" lang="zh">
         {#each session.hanChars as char, idx}
           {@const done = idx < session.charIndex || (idx === session.charIndex && session.wordDelay) || session.strokeQuizResult === 'correct'}
-          <span class="anuka-tile" class:anuka-main={idx === session.charIndex || done}>
+          <span class="anuka-tile anuka-lg" class:anuka-main={idx === session.charIndex || done}>
             {#if done}{char}{:else}&nbsp;{/if}
           </span>
         {/each}
@@ -87,6 +87,9 @@
 
 {#if session.sessionDone}
   <Island>
+    <a class="anuka-quick" href={backUrl} title="Back">
+      <span class="anuka-icon anuka-icon-close"></span>
+    </a>
     <div class="anuka-stack anuka-center anuka-compact">
       <div class="anuka-main anuka-lg">Session complete</div>
       <div class="anuka-mute anuka-sm">{session.drilledCount} drilled &middot; {session.skippedCount} skipped</div>

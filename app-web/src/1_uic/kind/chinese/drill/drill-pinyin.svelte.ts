@@ -82,7 +82,7 @@ export class DrillPinyinSession {
     const slot = this.pinyinSlots[this.charIndex]
     if (!slot || slot.autoComplete) return
 
-    if (val !== diacriticToToneNumber(slot.pinyin!)) {
+    if (val !== diacriticToToneNumber(slot.pinyin!).toLowerCase()) {
       this.charErrorCount += 1
       this.pinyinFeedback = 'fail'
       this.pinyinInputValue = ''
