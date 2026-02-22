@@ -55,12 +55,28 @@ export function uniqueChars(groups: ChineseGroup[]): Set<string> {
   return chars
 }
 
+export function uniqueWords(groups: ChineseGroup[]): number {
+  const words = new Set<string>()
+  for (const g of groups) {
+    for (const item of g.items) words.add(item.word)
+  }
+  return words.size
+}
+
 export function calcDatasetStats(groups: ChineseGroup[]): ChineseDatasetStats {
   return {
     groups: groups.length,
     words: groups.reduce((sum, g) => sum + g.items.length, 0),
+    uniqueWords: uniqueWords(groups),
     chars: uniqueChars(groups).size,
   }
+}
+
+export function calcAvgDailyTime(dayProgress: Map<DayKey, DayProgress>): number {
+  if (dayProgress.size === 0) return 0
+  let totalMs = 0
+  for (const dp of dayProgress.values()) totalMs += dp.durationMs
+  return Math.round(totalMs / dayProgress.size)
 }
 
 // --- Drill counts ---

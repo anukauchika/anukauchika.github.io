@@ -2,7 +2,7 @@ import type { GroupId, WordKey } from '@dom/dataset'
 import type { DayKey, WordProgress, GroupProgress, DayProgress } from '@dom/stats'
 import type { ChineseGroup } from '@dom/kind/chinese/dataset'
 import { sttDataset } from '@stt/dataset.svelte.js'
-import { calcDatasetStats, countDrilled, calcProgress, calcMastery } from '@std/kind/chinese/stats'
+import { calcDatasetStats, calcAvgDailyTime, countDrilled, calcProgress, calcMastery } from '@std/kind/chinese/stats'
 
 class StatsState {
   // raw data (written by service)
@@ -25,6 +25,7 @@ class StatsState {
   readonly strokeMastery = $derived(calcMastery(this.filtered, this.wordProgressStroke))
   readonly pinyinProgress = $derived(calcProgress(this.filtered, this.wordProgressPinyin))
   readonly pinyinMastery = $derived(calcMastery(this.filtered, this.wordProgressPinyin))
+  readonly avgDailyTime = $derived(calcAvgDailyTime(this.dayProgress))
 }
 
 export const sttStats = new StatsState()

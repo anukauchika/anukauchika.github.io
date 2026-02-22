@@ -18,7 +18,9 @@
     isAuthenticated,
     groupCount,
     totalCount,
+    uniqueWordCount,
     uniqueChars,
+    avgDailyTime,
     strokeDrilledCount,
     strokeProgress,
     strokeMastery,
@@ -122,7 +124,9 @@
     <Stats
       {groupCount}
       {totalCount}
+      {uniqueWordCount}
       {uniqueChars}
+      {avgDailyTime}
       {strokeDrilledCount}
       {isAuthenticated}
       {onShowProgressGroups}
@@ -144,14 +148,15 @@
         </div>
       </div>
     {:else}
-      <p class="anuka-row anuka-center anuka-compact"><BtnLink onclick={onShowAuthDropdown}>Log in</BtnLink> to track your learning progress. Read the <a href="/chinese/blog">blog</a></p>
+      <p class="anuka-row anuka-center anuka-compact"><BtnLink onclick={onShowAuthDropdown}>Log in</BtnLink> to track your learning progress</p>
     {/if}
 
-    {#if drillHref}
-      <div class="anuka-row anuka-center">
+    <div class="anuka-row anuka-center">
+      <Btn onclick={() => (window.location.href = '/chinese/blog')}>Blog</Btn>
+      {#if drillHref}
         <Btn main onclick={() => (window.location.href = drillHref)}>Drill</Btn>
-      </div>
-    {/if}
+      {/if}
+    </div>
 
     {@render filters()}
   </div>

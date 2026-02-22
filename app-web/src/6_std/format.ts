@@ -11,6 +11,15 @@ export const toLocalDateKey = (date: Date): string => {
   return `${year}-${month}-${day}`
 }
 
+export const formatDuration = (ms: number): string => {
+  if (ms <= 0) return '0m'
+  const totalMin = Math.round(ms / 60000)
+  if (totalMin < 60) return `${totalMin}m`
+  const h = Math.floor(totalMin / 60)
+  const m = totalMin % 60
+  return m > 0 ? `${h}h ${m}m` : `${h}h`
+}
+
 export const timeAgo = (ts: string | number | null | undefined): string => {
   if (!ts) return ''
   const diff = Date.now() - (typeof ts === 'number' ? ts : new Date(ts).getTime())

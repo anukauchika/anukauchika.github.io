@@ -58,7 +58,6 @@
     onShowProgressGroups={() => {}}
     onShowProgressWords={() => {}}
     onShowProgressChars={() => {}}
-    onShowHowItWorks={() => {}}
     onShowStatInfo={() => {}}
   >
     {#snippet toolbar()}

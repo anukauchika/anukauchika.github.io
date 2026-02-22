@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://anukauchika.github.io/sitemap.xml
+Sitemap: https://anukauchika.com/sitemap.xml

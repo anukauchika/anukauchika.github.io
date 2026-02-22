@@ -39,7 +39,9 @@
   isAuthenticated={sttAuth.isAuthenticated}
   groupCount={sttStats.datasetStats.groups}
   totalCount={sttStats.datasetStats.words}
+  uniqueWordCount={sttStats.datasetStats.uniqueWords}
   uniqueChars={sttStats.datasetStats.chars}
+  avgDailyTime={sttStats.avgDailyTime}
   strokeDrilledCount={sttStats.strokeDrilledCount}
   strokeProgress={sttStats.strokeProgress}
   strokeMastery={sttStats.strokeMastery}
@@ -50,7 +52,6 @@
   onShowProgressGroups={() => goto('/chinese/groups')}
   onShowProgressWords={() => goto('/chinese/words')}
   onShowProgressChars={() => goto('/chinese/chars')}
-  onShowHowItWorks={() => goto('/chinese/how-it-works')}
 >
   <AppTitle parts={appTitle} />
 

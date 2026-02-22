@@ -22,6 +22,7 @@ export interface ChineseDataset extends ChineseDatasetMeta {
 export interface ChineseDatasetStats {
   groups: number
   words: number
+  uniqueWords: number
   chars: number
 }
 
