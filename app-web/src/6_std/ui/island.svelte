@@ -3,12 +3,13 @@
 
   interface Props {
     sticky?: boolean
+    prose?: boolean
     children: Snippet
   }
 
-  let { sticky = false, children }: Props = $props()
+  let { sticky = false, prose = false, children }: Props = $props()
 </script>
 
-<section class="anuka-island" class:anuka-island-sticky={sticky}>
+<section class="anuka-island" class:anuka-island-sticky={sticky} class:anuka-prose={prose}>
   {@render children()}
 </section>

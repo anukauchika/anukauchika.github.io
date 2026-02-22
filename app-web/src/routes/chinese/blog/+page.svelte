@@ -20,7 +20,7 @@
       <BtnIcon icon="close" label="Close" onclick={() => goto('/chinese/')} />
     </div>
   </Island>
-  <Island sticky>
+  <Island sticky prose>
     <IslandTitle level={3}>"A lesson a day!" is the wrong focus</IslandTitle>
     <p>I'm a software engineer learning Chinese. I started learning two years ago.
       First streak was 300+ days. My current attempt is 250+ daily lessons and counting.

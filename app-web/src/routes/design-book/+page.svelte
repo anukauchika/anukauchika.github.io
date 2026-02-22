@@ -31,7 +31,7 @@
     <Quick label="Toggle theme" icon="moon" onclick={toggleTheme} />
   </Island>
 
-  <Island>
+  <Island prose>
     <IslandTitle level={1}>Design Book</IslandTitle>
     <p>Visual reference for all design tokens and UI elements used in Anuka Uchika. Every component on this page is built from the same reusable classes it documents. Absolute minimum CSS — only what the app actually uses.</p>
     <p><strong>Principles:</strong> All core components support semantic modifiers (<code>anuka-main</code>, <code>anuka-succ</code>, <code>anuka-fail</code>, <code>anuka-warn</code>, <code>anuka-mute</code>) and size modifiers (<code>anuka-sm</code>, <code>anuka-lg</code>). This ensures consistent theming and sizing across the entire UI without custom CSS.</p>

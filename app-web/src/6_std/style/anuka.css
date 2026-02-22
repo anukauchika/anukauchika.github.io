@@ -125,41 +125,43 @@
   gap: 1rem;
 }
 
-.anuka-island p {
+/* ── Prose: rich text styling for blog / article content ── */
+
+.anuka-prose p {
   font-family: var(--font-serif);
   font-size: clamp(1.1rem, 1.8vw, 1.3rem);
   line-height: 2;
   color: var(--anuka-color-muted);
 }
-.anuka-island b,
-.anuka-island strong { color: var(--anuka-color-text); font-family: var(--font-serif); font-size: clamp(1.1rem, 1.8vw, 1.3rem); font-weight: 600; }
-.anuka-island em,
-.anuka-island i { font-style: italic; }
-.anuka-island a { color: var(--anuka-color-primary); text-decoration: underline; text-underline-offset: 0.15em; }
-.anuka-island a.anuka-btn { text-decoration: none; }
-.anuka-island a:hover { opacity: 0.8; }
-.anuka-island blockquote {
+.anuka-prose b,
+.anuka-prose strong { color: var(--anuka-color-text); font-family: var(--font-serif); font-size: clamp(1.1rem, 1.8vw, 1.3rem); font-weight: 600; }
+.anuka-prose em,
+.anuka-prose i { font-style: italic; }
+.anuka-prose a { color: var(--anuka-color-primary); text-decoration: underline; text-underline-offset: 0.15em; }
+.anuka-prose a.anuka-btn { text-decoration: none; }
+.anuka-prose a:hover { opacity: 0.8; }
+.anuka-prose blockquote {
   border-left: 3px solid var(--anuka-color-primary);
   padding: 0.5rem 1rem;
   font-style: italic;
   color: var(--anuka-color-muted);
 }
-.anuka-island code {
+.anuka-prose code {
   font-family: monospace;
   font-size: 0.9em;
   background: var(--anuka-color-bg-accent);
   padding: 0.15em 0.4em;
   border-radius: 0.3rem;
 }
-.anuka-island pre {
+.anuka-prose pre {
   background: var(--anuka-color-bg-accent);
   padding: 1rem;
   border-radius: 0.75rem;
   overflow-x: auto;
 }
-.anuka-island pre code { background: none; padding: 0; }
-.anuka-island ul,
-.anuka-island ol {
+.anuka-prose pre code { background: none; padding: 0; }
+.anuka-prose ul,
+.anuka-prose ol {
   padding-left: 1.5em;
   color: var(--anuka-color-muted);
   font-family: var(--font-serif);
@@ -169,24 +171,24 @@
   flex-direction: column;
   gap: 0.3em;
 }
-.anuka-island ul { list-style: disc; }
-.anuka-island ol { list-style: decimal; }
-.anuka-island li::marker { color: var(--anuka-color-primary); }
-.anuka-island hr {
+.anuka-prose ul { list-style: disc; }
+.anuka-prose ol { list-style: decimal; }
+.anuka-prose li::marker { color: var(--anuka-color-primary); }
+.anuka-prose hr {
   border: none;
   border-top: 1px solid var(--anuka-color-border);
 }
-.anuka-island mark {
+.anuka-prose mark {
   background: var(--anuka-color-glow-warm);
   color: inherit;
   padding: 0.1em 0.3em;
   border-radius: 0.2rem;
 }
-.anuka-island small {
+.anuka-prose small {
   font-size: 0.85em;
   color: var(--anuka-color-muted);
 }
-.anuka-island abbr {
+.anuka-prose abbr {
   text-decoration: underline dotted;
   text-underline-offset: 0.15em;
   cursor: help;

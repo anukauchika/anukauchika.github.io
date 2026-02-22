@@ -55,7 +55,7 @@
     </div>
   </Island>
   <div class="anuka-stack">
-    <Island>
+    <Island prose>
       <p>I’m a software engineer learning Chinese. I started learning two years ago.
         First streak was 300+ days. My current attempt is 250+ daily lessons and counting.
         It’s a comforting illusion.
@@ -72,7 +72,7 @@
       </p>
     </Island>
     <AppTitle parts={['System', 'Vocabulary']} />
-    <Island>
+    <Island prose>
       <ul>
         <li>Target specific vocabulary. HSK 2026 levels 1-3: 1000 words in total.</li>
         <li>Break vocabulary into fixed groups of 15 words each. Brain loves structure.</li>
@@ -89,7 +89,7 @@
       </div>
     </Island>
     <AppTitle parts={['Current Progress']} />
-    <Island>
+    <Island prose>
       <p>I started with the new system two weeks ago. At the time of writing this blog post, as I already have some basic knowledge, I quickly drilled through the first 20 groups. You can see my daily activity in the heatmap below, it's clickable.</p>
       <ActivityHeatmap
         items={dayData}
@@ -112,7 +112,7 @@
         {#snippet bottom()}<div class="anuka-row anuka-justify"><span class="anuka-mute anuka-sm">Pinyin</span><span class="anuka-mute anuka-sm">29% · mastery 6%</span></div>{/snippet}
       </ProgressLine>
     </Island>
-    <Island>
+    <Island prose>
       <p>System cannot be static. It should evolve with the learning progress itself. To make the system work for me, instead of me struggling with it I have created this web app.</p>
       <p>It helps me pick a set of groups to drill, practice both writing and pinyin, and track learning statistics automatically.</p>
       <p>Hopefully I will not be too carried away with the system itself, and use it wisely to accelerate my learning progress.</p>
