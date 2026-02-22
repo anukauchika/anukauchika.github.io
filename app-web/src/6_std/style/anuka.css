@@ -125,6 +125,73 @@
   gap: 1rem;
 }
 
+.anuka-island p {
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  line-height: 2;
+  color: var(--anuka-color-muted);
+}
+.anuka-island b,
+.anuka-island strong { color: var(--anuka-color-text); font-family: var(--font-serif); font-size: clamp(1.1rem, 1.8vw, 1.3rem); font-weight: 600; }
+.anuka-island em,
+.anuka-island i { font-style: italic; }
+.anuka-island a { color: var(--anuka-color-primary); text-decoration: underline; text-underline-offset: 0.15em; }
+.anuka-island a.anuka-btn { text-decoration: none; }
+.anuka-island a:hover { opacity: 0.8; }
+.anuka-island blockquote {
+  border-left: 3px solid var(--anuka-color-primary);
+  padding: 0.5rem 1rem;
+  font-style: italic;
+  color: var(--anuka-color-muted);
+}
+.anuka-island code {
+  font-family: monospace;
+  font-size: 0.9em;
+  background: var(--anuka-color-bg-accent);
+  padding: 0.15em 0.4em;
+  border-radius: 0.3rem;
+}
+.anuka-island pre {
+  background: var(--anuka-color-bg-accent);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+}
+.anuka-island pre code { background: none; padding: 0; }
+.anuka-island ul,
+.anuka-island ol {
+  padding-left: 1.5em;
+  color: var(--anuka-color-muted);
+  font-family: var(--font-serif);
+  font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+  line-height: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+.anuka-island ul { list-style: disc; }
+.anuka-island ol { list-style: decimal; }
+.anuka-island li::marker { color: var(--anuka-color-primary); }
+.anuka-island hr {
+  border: none;
+  border-top: 1px solid var(--anuka-color-border);
+}
+.anuka-island mark {
+  background: var(--anuka-color-glow-warm);
+  color: inherit;
+  padding: 0.1em 0.3em;
+  border-radius: 0.2rem;
+}
+.anuka-island small {
+  font-size: 0.85em;
+  color: var(--anuka-color-muted);
+}
+.anuka-island abbr {
+  text-decoration: underline dotted;
+  text-underline-offset: 0.15em;
+  cursor: help;
+}
+
 /* ── App title: brand label, auto-delimited spans ── */
 
 .anuka-app-title {
