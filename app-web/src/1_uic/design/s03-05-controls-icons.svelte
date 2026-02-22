@@ -28,6 +28,10 @@
       <span class="anuka-mute anuka-sm">moon</span>
     </div>
     <div class="anuka-stack anuka-center anuka-compact">
+      <span class="anuka-icon anuka-icon-share"></span>
+      <span class="anuka-mute anuka-sm">share</span>
+    </div>
+    <div class="anuka-stack anuka-center anuka-compact">
       <span class="anuka-icon anuka-icon-github"></span>
       <span class="anuka-mute anuka-sm">github</span>
     </div>

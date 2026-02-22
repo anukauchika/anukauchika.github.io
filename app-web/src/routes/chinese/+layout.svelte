@@ -10,6 +10,23 @@
   const urlDataset = $derived($page.url.searchParams.get('dataset'))
   const datasetReady = $derived(sttDataset.current?.id === sttDataset.id)
 
+  // Store URL filter overrides so the service can re-apply them after any prefs reload
+  $effect(() => {
+    const params = $page.url.searchParams
+    const tags = params.get('tags')
+    const groups = params.get('groups')
+    const search = params.get('search')
+    if (tags || groups || search) {
+      sttDataset.urlFilters = {
+        search: search || undefined,
+        tags: tags ? tags.split(',').filter(Boolean) : undefined,
+        groups: groups ? groups.split(',').map(Number).filter(n => !isNaN(n)) : undefined,
+      }
+    } else {
+      sttDataset.urlFilters = null
+    }
+  })
+
   $effect(() => {
     if (urlDataset && urlDataset !== sttDataset.id) {
       svcDataset.selectDataset(urlDataset)

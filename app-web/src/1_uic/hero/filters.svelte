@@ -17,6 +17,7 @@
     onGroupRemove,
     onGroupsClear,
     onToggleView,
+    onShare,
   } = $props()
 
   const viewIcon = $derived(listViewStyle === 'full' ? 'grid' : 'list')
@@ -44,6 +45,7 @@
       oninput={(e) => onSearchChange(e.target.value)}
     />
     <BtnIcon onclick={onToggleView} label="Toggle view" icon={viewIcon} />
+    <BtnIcon onclick={onShare} label="Share" icon="share" />
   </div>
 
   {#if allTags.length > 0}

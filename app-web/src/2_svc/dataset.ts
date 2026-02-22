@@ -103,6 +103,14 @@ function applyDataset(dataset: Dataset) {
   sttDataset.groups = dataset.groups
 }
 
+function applyUrlFilterOverrides() {
+  const f = sttDataset.urlFilters
+  if (!f) return
+  if (f.search) sttDataset.prefSearch = f.search
+  if (f.tags) sttDataset.prefTags = f.tags
+  if (f.groups) sttDataset.prefGroups = f.groups
+}
+
 async function applyPrefs(repo: Awaited<typeof datDataset>, dsId: string) {
   const prefs = await repo.getPrefs(dsId)
   sttDataset.prefSearch = prefs.search
@@ -138,8 +146,10 @@ export const svcDataset: DatasetService = {
     if (dataset) applyDataset(dataset)
 
     await applyPrefs(repo, preferredId)
+    applyUrlFilterOverrides()
     recomputeFiltered()
     initialized = true
+    sttDataset.ready = true
   },
 
   async selectDataset(dsId) {
@@ -148,13 +158,16 @@ export const svcDataset: DatasetService = {
     if (!m) return
 
     initialized = false
+    sttDataset.ready = false
     sttDataset.id = dsId
     const dataset = await repo.loadData(dsId)
     if (dataset) applyDataset(dataset)
 
     await applyPrefs(repo, dsId)
+    applyUrlFilterOverrides()
     recomputeFiltered()
     initialized = true
+    sttDataset.ready = true
 
     datUserPrefs.setDatasetId(dsId)
   },
@@ -166,9 +179,12 @@ export const svcDataset: DatasetService = {
     if (!sttDataset.id) return
 
     initialized = false
+    sttDataset.ready = false
     await applyPrefs(repo, sttDataset.id)
+    applyUrlFilterOverrides()
     recomputeFiltered()
     initialized = true
+    sttDataset.ready = true
   },
 
   setSearch(v) {

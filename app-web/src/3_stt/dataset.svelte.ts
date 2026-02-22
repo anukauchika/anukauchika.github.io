@@ -11,6 +11,8 @@ class DatasetState {
   prefTags: string[] = $state([])
   prefGroups: number[] = $state([])
   prefViewMode: GroupViewMode = $state(GroupViewMode.Full)
+  ready: boolean = $state(false)
+  urlFilters: { search?: string, tags?: string[], groups?: number[] } | null = $state(null)
 }
 
 export const sttDataset = new DatasetState()

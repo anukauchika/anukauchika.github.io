@@ -91,6 +91,17 @@
         svcDataset.setViewMode(
           sttDataset.prefViewMode === GroupViewMode.Full ? GroupViewMode.Compact : GroupViewMode.Full,
         )}
+      onShare={() => {
+        const url = new URL(window.location.href)
+        url.searchParams.set('dataset', sttDataset.id)
+        if (sttDataset.prefTags.length) url.searchParams.set('tags', sttDataset.prefTags.join(','))
+        else url.searchParams.delete('tags')
+        if (sttDataset.prefGroups.length) url.searchParams.set('groups', sttDataset.prefGroups.join(','))
+        else url.searchParams.delete('groups')
+        if (sttDataset.prefSearch) url.searchParams.set('search', sttDataset.prefSearch)
+        else url.searchParams.delete('search')
+        navigator.clipboard.writeText(url.toString())
+      }}
     />
   {/snippet}
 </Hero>
