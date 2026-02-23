@@ -91,7 +91,7 @@
         svcDataset.setViewMode(
           sttDataset.prefViewMode === GroupViewMode.Full ? GroupViewMode.Compact : GroupViewMode.Full,
         )}
-      onShare={() => {
+      onShare={async () => {
         const url = new URL(window.location.href)
         url.searchParams.set('dataset', sttDataset.id)
         if (sttDataset.prefTags.length) url.searchParams.set('tags', sttDataset.prefTags.join(','))
@@ -100,7 +100,12 @@
         else url.searchParams.delete('groups')
         if (sttDataset.prefSearch) url.searchParams.set('search', sttDataset.prefSearch)
         else url.searchParams.delete('search')
-        navigator.clipboard.writeText(url.toString())
+        const shareUrl = url.toString()
+        if (navigator.share) {
+          await navigator.share({ title: sttDataset.current?.name ?? 'Anuka Uchika', url: shareUrl })
+        } else {
+          navigator.clipboard.writeText(shareUrl)
+        }
       }}
     />
   {/snippet}
