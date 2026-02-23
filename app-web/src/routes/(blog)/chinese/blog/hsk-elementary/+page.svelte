@@ -9,8 +9,24 @@
 </script>
 
 <svelte:head>
-  <title>HSK Elementary (Levels 1-3) — What You're Actually Learning - Anuka Uchika</title>
-  <meta name="description" content="A data-driven breakdown of HSK 3.0 Elementary band: 1000 words, 655 characters, 67 groups. What HSK is, what changed, and what the numbers really mean." />
+  <title>HSK Elementary</title>
+  <meta name="description" content="HSK 3.0 2026 Elementary: 1000 words, 655 characters. What HSK 2026 is and what changed" />
+  <link rel="canonical" href="https://anukauchika.com/chinese/blog/hsk-elementary" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="HSK Elementary: The Numbers" />
+  <meta property="og:description" content="HSK 3.0 2026 Elementary: 1000 words, 655 characters" />
+  <meta property="og:url" content="https://anukauchika.com/chinese/blog/hsk-elementary" />
+  <meta property="og:site_name" content="Anuka Uchika" />
+  {@html `<script type="application/ld+json">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "HSK Elementary: The Numbers",
+    "description": "HSK 3.0 2026 Elementary: 1000 words, 655 characters",
+    "datePublished": "2026-02-23",
+    "author": { "@type": "Person", "name": "Anuka" },
+    "publisher": { "@type": "Organization", "name": "Anuka Uchika" },
+    "url": "https://anukauchika.com/chinese/blog/hsk-elementary"
+  })}</script>`}
 </svelte:head>
 
 <main class="anuka-page">

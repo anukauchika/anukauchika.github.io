@@ -2,8 +2,11 @@ import { datUserPrefs } from '@dat/user-prefs'
 
 export type Theme = 'light' | 'dark'
 
+const THEME_KEY = 'uch-theme'
+
 function applyTheme(theme: Theme): void {
   document.documentElement.dataset.theme = theme
+  localStorage.setItem(THEME_KEY, theme)
 }
 
 function detectSystemTheme(): Theme {

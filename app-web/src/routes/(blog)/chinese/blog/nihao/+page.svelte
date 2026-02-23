@@ -43,8 +43,24 @@
 </script>
 
 <svelte:head>
-  <title>你好 Nihao — Learn Chinese - Anuka Uchika</title>
-  <meta name="description" content="Learn about 你好 (nǐ hǎo) — the most common Chinese greeting, its characters, tones, and usage." />
+  <title>Chinese learning system</title>
+  <meta name="description" content="Building a system for Chinese learning" />
+  <link rel="canonical" href="https://anukauchika.com/chinese/blog/nihao" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="&quot;A lesson a day!&quot; is the wrong focus" />
+  <meta property="og:description" content="Breaking out of the comforting bubble — building a system for Chinese learning" />
+  <meta property="og:url" content="https://anukauchika.com/chinese/blog/nihao" />
+  <meta property="og:site_name" content="Anuka Uchika" />
+  {@html `<script type="application/ld+json">${JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "\"A lesson a day!\" is the wrong focus",
+    "description": "Breaking out of the comforting bubble — building a system for Chinese learning",
+    "datePublished": "2026-02-23",
+    "author": { "@type": "Person", "name": "Anuka" },
+    "publisher": { "@type": "Organization", "name": "Anuka Uchika" },
+    "url": "https://anukauchika.com/chinese/blog/nihao"
+  })}</script>`}
 </svelte:head>
 
 <main class="anuka-page">

@@ -31,13 +31,14 @@ export function createDatabase(prefix: string, version: number, onUpgrade: (db: 
   }
 
   let current: IDBDatabase | null = null
-  let promise = open(null)
-  promise.then((db) => {
-    current = db
-  })
+  let promise: Promise<IDBDatabase> | null = null
 
   return {
     db() {
+      if (!promise) {
+        promise = open(null)
+        promise.then((db) => { current = db })
+      }
       return promise
     },
     async switchUser(userId: string | null) {

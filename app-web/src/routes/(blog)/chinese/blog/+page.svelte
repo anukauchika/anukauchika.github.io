@@ -7,8 +7,14 @@
 </script>
 
 <svelte:head>
-  <title>Blog - Learn Chinese - Anuka Uchika</title>
-  <meta name="description" content="Articles about learning Chinese — characters, pronunciation, grammar, and culture." />
+  <title>Blog - Learn Chinese</title>
+  <meta name="description" content="Articles about learning Chinese — characters, pronunciation, grammar, and system." />
+  <link rel="canonical" href="https://anukauchika.com/chinese/blog" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Learning Chinese — Blog" />
+  <meta property="og:description" content="Articles about learning Chinese — characters, pronunciation, grammar, and system" />
+  <meta property="og:url" content="https://anukauchika.com/chinese/blog" />
+  <meta property="og:site_name" content="Anuka Uchika" />
 </svelte:head>
 
 <main class="anuka-page">

@@ -12,7 +12,7 @@ export default {
     }),
     alias: {
       '@dom': 'src/0_dom',
-      '@routes': 'src/routes',
+      '@routes': 'src/routes/(app)',
       '@uic': 'src/1_uic',
       '@svc': 'src/2_svc',
       '@stt': 'src/3_stt',
