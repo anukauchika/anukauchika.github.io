@@ -20,7 +20,7 @@
       <BtnIcon icon="close" label="Close" onclick={() => goto('/chinese/')} />
     </div>
   </Island>
-  <Island sticky prose>
+  <Island prose>
     <IslandTitle level={3}>"A lesson a day!" is the wrong focus</IslandTitle>
     <p>I'm a software engineer learning Chinese. I started learning two years ago.
       First streak was 300+ days. My current attempt is 250+ daily lessons and counting.
@@ -35,6 +35,20 @@
     <div class="anuka-row anuka-justify">
       <Tags tags={['chinese/system']} />
       <a href="/chinese/blog/nihao" class="anuka-btn anuka-main">Read ~10 min</a>
+    </div>
+  </Island>
+  <Island sticky prose>
+    <IslandTitle level={3}>HSK Elementary: The Numbers</IslandTitle>
+    <p>
+      If you're learning Chinese, you've heard of HSK.
+      <strong>HSK</strong> (Hànyǔ Shuǐpíng Kǎoshì, <span>&#27721;&#35821;&#27700;&#24179;&#32771;&#35797;</span>, "Chinese Proficiency Test") is the only official standardized test
+      for Mandarin Chinese proficiency, administered by the Chinese Ministry of Education.
+      It's the Chinese equivalent of TOEFL/IELTS for English.
+    </p>
+    <p>You need HSK for:</p>
+    <div class="anuka-row anuka-justify">
+      <Tags tags={['chinese/hsk']} />
+      <a href="/chinese/blog/hsk-elementary" class="anuka-btn anuka-main">Read ~10 min</a>
     </div>
   </Island>
 </main>

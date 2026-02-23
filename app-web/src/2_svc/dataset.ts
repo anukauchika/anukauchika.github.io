@@ -125,6 +125,7 @@ export interface DatasetService {
   init(): Promise<void>
   selectDataset(id: string): Promise<void>
   reloadPrefs(): Promise<void>
+  applyUrlFilters(): void
   setSearch(v: string): void
   setTags(v: string[]): void
   setGroups(v: number[]): void
@@ -185,6 +186,12 @@ export const svcDataset: DatasetService = {
     recomputeFiltered()
     initialized = true
     sttDataset.ready = true
+  },
+
+  applyUrlFilters() {
+    applyUrlFilterOverrides()
+    sttDataset.urlFilters = null
+    recomputeFiltered()
   },
 
   setSearch(v) {

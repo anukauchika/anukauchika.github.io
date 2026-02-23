@@ -30,6 +30,8 @@
   $effect(() => {
     if (urlDataset && urlDataset !== sttDataset.id) {
       svcDataset.selectDataset(urlDataset)
+    } else if (urlDataset && urlDataset === sttDataset.id && sttDataset.urlFilters) {
+      svcDataset.applyUrlFilters()
     } else if (!urlDataset && sttDataset.id) {
       const url = new URL($page.url)
       url.searchParams.set('dataset', sttDataset.id)
