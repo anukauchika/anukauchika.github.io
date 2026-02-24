@@ -193,7 +193,7 @@ export class DrillStrokeSession {
         this.charStartedAt = new Date().toISOString()
         this.charErrorCount = 0
         this.charHintCount = 0
-      }, 1500)
+      }, 800)
     } else {
       this.strokeQuizResult = 'correct'
       this.completeWord()
