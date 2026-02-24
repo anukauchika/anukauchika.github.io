@@ -35,7 +35,8 @@ export interface DrillHandle {
   group: ChineseGroup
   items: ChineseWord[]
   wordProgress: Map<WordId, WordProgress>
-  groupProgress: GroupProgress | null
+  groupProgressStroke: GroupProgress | null
+  groupProgressPinyin: GroupProgress | null
   authenticated: boolean
   recordAttempt(attempt: WordAttempt, chars: CharAttempt[]): Promise<void>
   endSession(result: GroupAttempt): Promise<void>
@@ -57,7 +58,8 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
   const drillCode = dtCode(drillType)
   const wp = await datDrill.getGroupWordsProgress(datasetCode, drillCode, groupId)
   const items = sortByProgress(group.items, wp)
-  const groupProgress = sttStats.groupProgress.get(groupId) ?? null
+  const groupProgressStroke = sttStats.groupProgressStroke.get(groupId) ?? null
+  const groupProgressPinyin = sttStats.groupProgressPinyin.get(groupId) ?? null
   const authenticated = sttAuth.isAuthenticated
 
   let sessionIdPromise: Promise<DrillId> | null = null
@@ -67,7 +69,8 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
     group,
     items,
     wordProgress: wp,
-    groupProgress,
+    groupProgressStroke,
+    groupProgressPinyin,
     authenticated,
 
     async recordAttempt(attempt: WordAttempt, chars: CharAttempt[]): Promise<void> {

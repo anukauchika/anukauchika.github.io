@@ -40,7 +40,10 @@
   })
 
   $effect(() => {
-    if (sttDataset.id) svcStats.loadGroupProgressAll(sttDataset.id)
+    if (sttDataset.id) {
+      svcStats.loadGroupProgressAll(sttDataset.id)
+      svcStats.loadWordProgressAll(sttDataset.id)
+    }
   })
 </script>
 

@@ -7,8 +7,17 @@
   import Btn from '@std/ui/btn.svelte'
   import BtnIcon from '@std/ui/btn-icon.svelte'
 
-  let { group, items, wordProgress, groupProgress, backUrl,
-        authenticated, onWordDone, onDrillDone } = $props()
+  let {
+    group,
+    items,
+    wordProgress,
+    groupProgressStroke,
+    groupProgressPinyin,
+    backUrl,
+    authenticated,
+    onWordDone,
+    onDrillDone,
+  } = $props()
 
   // svelte-ignore state_referenced_locally
   const session = new DrillPinyinSession({ items, wordProgress, onWordDone, onDrillDone })
@@ -28,7 +37,14 @@
   })
 </script>
 
-<svelte:window onkeydown={(e) => { if (e.key === 'F1') { e.preventDefault(); session.toggleHint() } }} />
+<svelte:window
+  onkeydown={(e) => {
+    if (e.key === 'F1') {
+      e.preventDefault()
+      session.toggleHint()
+    }
+  }}
+/>
 
 {#if session.currentItem && !session.sessionDone}
   <Island>
@@ -100,7 +116,11 @@
         <BtnIcon onclick={() => session.speak(session.currentItem.word)} label="Play audio">
           <span class="anuka-icon anuka-icon-speaker"></span>
         </BtnIcon>
-        <Btn disabled={session.wordDelay} main={session.showTranslation} onclick={() => (session.showTranslation = !session.showTranslation)}>Tr</Btn>
+        <Btn
+          disabled={session.wordDelay}
+          main={session.showTranslation}
+          onclick={() => (session.showTranslation = !session.showTranslation)}>Tr</Btn
+        >
         <Btn disabled={session.wordDelay} main={session.showHint} onclick={() => session.toggleHint()}>Hint</Btn>
         <Btn disabled={session.wordDelay} onclick={() => session.skipWord()}>Skip</Btn>
       </div>
@@ -162,8 +182,8 @@
         <Tags tags={group.tags} />
       {/if}
       <span class="anuka-sm anuka-mute">{group.items.length} words</span>
-      {#if authenticated && groupProgress}
-        <span class="anuka-sm anuka-main">{groupProgress.total} passes ({groupProgress.full} full)</span>
+      {#if authenticated}
+        <span class="anuka-sm anuka-main">W {groupProgressStroke?.full ?? 0} | P {groupProgressPinyin?.full ?? 0}</span>
       {/if}
     </div>
   {/if}

@@ -29,7 +29,8 @@
       group={drill.group}
       items={drill.items}
       wordProgress={drill.wordProgress}
-      groupProgress={drill.groupProgress}
+      groupProgressStroke={drill.groupProgressStroke}
+      groupProgressPinyin={drill.groupProgressPinyin}
       authenticated={drill.authenticated}
       {backUrl}
       onWordDone={(a, c) => drill.recordAttempt(a, c)}

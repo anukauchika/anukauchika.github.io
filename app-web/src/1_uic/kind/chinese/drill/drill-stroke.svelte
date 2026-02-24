@@ -6,8 +6,17 @@
   import Btn from '@std/ui/btn.svelte'
   import BtnIcon from '@std/ui/btn-icon.svelte'
 
-  let { group, items, wordProgress, groupProgress, backUrl,
-        authenticated, onWordDone, onDrillDone } = $props()
+  let {
+    group,
+    items,
+    wordProgress,
+    groupProgressStroke,
+    groupProgressPinyin,
+    backUrl,
+    authenticated,
+    onWordDone,
+    onDrillDone,
+  } = $props()
 
   // svelte-ignore state_referenced_locally
   const session = new DrillStrokeSession({ items, wordProgress, onWordDone, onDrillDone })
@@ -24,7 +33,14 @@
   })
 </script>
 
-<svelte:window onkeydown={(e) => { if (e.key === 'F1') { e.preventDefault(); session.toggleHint() } }} />
+<svelte:window
+  onkeydown={(e) => {
+    if (e.key === 'F1') {
+      e.preventDefault()
+      session.toggleHint()
+    }
+  }}
+/>
 
 {#if session.currentItem && !session.sessionDone}
   <Island>
@@ -48,13 +64,21 @@
         <span>{session.currentItem.tr}</span>
         {#if session.showPinyin}
           <span class="anuka-mute">·</span>
-          <button class="anuka-btn-link" type="button" translate="no" onclick={() => session.speak(session.currentItem.word)}>{session.currentItem.pinyin}</button>
+          <button
+            class="anuka-btn-link"
+            type="button"
+            translate="no"
+            onclick={() => session.speak(session.currentItem.word)}>{session.currentItem.pinyin}</button
+          >
         {/if}
       </div>
 
       <div class="anuka-row anuka-compact anuka-hanzi anuka-lg" translate="no" lang="zh">
         {#each session.hanChars as char, idx}
-          {@const done = idx < session.charIndex || (idx === session.charIndex && session.wordDelay) || session.strokeQuizResult === 'correct'}
+          {@const done =
+            idx < session.charIndex ||
+            (idx === session.charIndex && session.wordDelay) ||
+            session.strokeQuizResult === 'correct'}
           <span class="anuka-tile anuka-lg" class:anuka-main={idx === session.charIndex || done}>
             {#if done}{char}{:else}&nbsp;{/if}
           </span>
@@ -65,7 +89,9 @@
         <div id="drill-canvas"></div>
         {#if session.wordDelay}
           <ProgressLine class="anuka-sm" fill={session.wordDelayProgress}>
-            {#snippet top()}<div class="anuka-row anuka-center"><button class="anuka-btn-link anuka-sm" type="button" onclick={() => session.skipDelay()}>Next</button></div>{/snippet}
+            {#snippet top()}<div class="anuka-row anuka-center">
+                <button class="anuka-btn-link anuka-sm" type="button" onclick={() => session.skipDelay()}>Next</button>
+              </div>{/snippet}
           </ProgressLine>
         {/if}
       </div>
@@ -97,13 +123,15 @@
       <h2 class="anuka-island-title anuka-main">Session complete</h2>
       <div class="anuka-mute anuka-sm">{session.drilledCount} drilled &middot; {session.skippedCount} skipped</div>
       <Btn main onclick={() => session.restart()}>Restart</Btn>
-      <Btn onclick={() => window.location.href = backUrl}>Groups</Btn>
+      <Btn onclick={() => (window.location.href = backUrl)}>Groups</Btn>
     </div>
   </Island>
 {/if}
 
 <ProgressLine fill={session.progress}>
-  {#snippet bottom()}<div class="anuka-row anuka-center"><span class="anuka-mute anuka-sm">{session.currentIndex + 1} / {session.items.length}</span></div>{/snippet}
+  {#snippet bottom()}<div class="anuka-row anuka-center">
+      <span class="anuka-mute anuka-sm">{session.currentIndex + 1} / {session.items.length}</span>
+    </div>{/snippet}
 </ProgressLine>
 
 <div class="anuka-tags anuka-center">
@@ -140,8 +168,8 @@
         <Tags tags={group.tags} />
       {/if}
       <span class="anuka-sm anuka-mute">{group.items.length} words</span>
-      {#if authenticated && groupProgress}
-        <span class="anuka-sm anuka-main">{groupProgress.total} passes ({groupProgress.full} full)</span>
+      {#if authenticated}
+        <span class="anuka-sm anuka-main">W {groupProgressStroke?.full ?? 0} | P {groupProgressPinyin?.full ?? 0}</span>
       {/if}
     </div>
   {/if}
