@@ -45,6 +45,7 @@
     groupSessionsPinyin: sttStats.groupProgressPinyin,
     statsStroke: sttStats.wordProgressStroke,
     statsPinyin: sttStats.wordProgressPinyin,
+    wordProgress: sttStats.wordProgress,
   })
 </script>
 
