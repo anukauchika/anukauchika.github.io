@@ -429,7 +429,7 @@
       "tags": ["L2"],
       "items": [
         {"word": "啊", "pinyin": "a", "english": "modal particle", "id": 1, "tags": ["L2", "particle", "grammar"]},
-        {"word": "爱好", "pinyin": "ài hào", "english": "to like", "id": 2, "tags": ["L2", "verb", "emotion"]},
+        {"word": "爱好", "pinyin": "ài hào", "english": "hobby", "id": 2, "tags": ["L2", "noun", "lifestyle"]},
         {"word": "白色", "pinyin": "bái sè", "english": "white", "id": 3, "tags": ["L2", "noun"]},
         {"word": "班", "pinyin": "bān", "english": "class (school)", "id": 4, "tags": ["L2", "noun", "food"]},
         {"word": "帮", "pinyin": "bāng", "english": "to help", "id": 5, "tags": ["L2", "verb", "social"]},

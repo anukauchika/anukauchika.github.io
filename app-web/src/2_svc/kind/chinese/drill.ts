@@ -6,13 +6,13 @@ import { ChineseDrillType } from '@dom/kind/chinese/dataset'
 import type { ChineseWord, ChineseGroup } from '@dom/kind/chinese/dataset'
 import { asChineseDataset } from '@dom/kind/chinese/dataset'
 import type { CharAttempt } from '@dom/kind/chinese/drill'
-import type { Group } from '@dom/dataset'
 import { datDrill } from '@dat/kind/chinese/drill'
 import { sttDataset } from '@stt/dataset.svelte.js'
 import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
 import { sttAuth } from '@stt/auth.svelte.js'
 import { svcSync } from '@svc/sync'
 import { dsCode, dtCode } from '@svc/kind/chinese/codes'
+import { calcWordDifficulty, calcTypeOverdueScore } from '@std/kind/chinese/stats'
 
 const DT_STORE_KEY: Record<string, 'wordProgressStroke' | 'wordProgressPinyin'> = {
   s: 'wordProgressStroke',
@@ -21,9 +21,11 @@ const DT_STORE_KEY: Record<string, 'wordProgressStroke' | 'wordProgressPinyin'> 
 
 function sortByProgress(items: ChineseWord[], wp: Map<number, WordProgress>): ChineseWord[] {
   return [...items].sort((a, b) => {
-    const ca = wp.get(a.id)?.successCount ?? 0
-    const cb = wp.get(b.id)?.successCount ?? 0
-    return ca - cb
+    const wpA = wp.get(a.id)
+    const wpB = wp.get(b.id)
+    const scoreA = (wpA?.successCount ?? 0) * (1 - calcWordDifficulty(wpA ?? { successCount: 0, errorCount: 0, hintCount: 0, lastDrilledAt: null }) * 0.5)
+    const scoreB = (wpB?.successCount ?? 0) * (1 - calcWordDifficulty(wpB ?? { successCount: 0, errorCount: 0, hintCount: 0, lastDrilledAt: null }) * 0.5)
+    return scoreA - scoreB
   })
 }
 
@@ -132,36 +134,55 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
 }
 
 function pickNextDrillPure(
-  groups: Group[],
-  groupSessions: Map<GroupId, GroupProgress>,
+  groups: ChineseGroup[],
   strokeSessions: Map<GroupId, GroupProgress>,
   pinyinSessions: Map<GroupId, GroupProgress>,
 ): NextDrill | null {
-  const eligible = groups.filter((g) => {
-    const gs = groupSessions.get(g.id)
-    return gs && gs.full >= 1
+  const isActive = (g: ChineseGroup) =>
+    (strokeSessions.get(g.id)?.full ?? 0) >= 1 || (pinyinSessions.get(g.id)?.full ?? 0) >= 1
+
+  const activeGroups = groups.filter(isActive)
+
+  if (activeGroups.length === 0) {
+    // No active groups yet — start with the first unstarted group by id
+    const first = [...groups].sort((a, b) => a.id - b.id)
+      .find(g => (strokeSessions.get(g.id)?.full ?? 0) === 0 && (pinyinSessions.get(g.id)?.full ?? 0) === 0)
+    return first ? { groupId: first.id, type: 'stroke' } : null
+  }
+
+  // Compute per-type overdue scores; group score = max of both types
+  const withScores = activeGroups.map((g) => {
+    const strokeScore = calcTypeOverdueScore(strokeSessions.get(g.id))
+    const pinyinScore = calcTypeOverdueScore(pinyinSessions.get(g.id))
+    const score = Math.max(strokeScore, pinyinScore)
+    const type: 'stroke' | 'pinyin' = pinyinScore >= strokeScore ? 'pinyin' : 'stroke'
+    return { group: g, score, type }
   })
-  if (eligible.length === 0) return null
 
-  eligible.sort((a, b) => {
-    const aTime = groupSessions.get(a.id)!.lastDrilledAt || ''
-    const bTime = groupSessions.get(b.id)!.lastDrilledAt || ''
-    return aTime < bTime ? -1 : aTime > bTime ? 1 : 0
-  })
+  const maxScore = Math.max(...withScores.map((x) => x.score))
 
-  const groupId = eligible[0].id
-  const strokeFull = strokeSessions.get(groupId)?.full ?? 0
-  const pinyinFull = pinyinSessions.get(groupId)?.full ?? 0
-  const type = pinyinFull < strokeFull ? 'pinyin' : 'stroke'
+  let selected: (typeof withScores)[0]
+  if (maxScore >= 1) {
+    selected = withScores.reduce((a, b) => (a.score > b.score ? a : b))
+  } else {
+    // All reviews ahead of schedule — introduce next new group
+    const maxActiveId = Math.max(...activeGroups.map((g) => g.id))
+    const nextNew = groups.find((g) =>
+      g.id === maxActiveId + 1 &&
+      (strokeSessions.get(g.id)?.full ?? 0) === 0 &&
+      (pinyinSessions.get(g.id)?.full ?? 0) === 0
+    )
+    if (nextNew) return { groupId: nextNew.id, type: 'stroke' }
+    selected = withScores.reduce((a, b) => (a.score > b.score ? a : b))
+  }
 
-  return { groupId, type }
+  return { groupId: selected.group.id, type: selected.type }
 }
 
 function pickNextDrillSuggestion(): NextDrill | null {
   if (sttAuth.isAuthenticated) {
     return pickNextDrillPure(
-      sttDataset.filtered,
-      sttStats.groupProgress,
+      sttDataset.filtered as ChineseGroup[],
       sttStats.groupProgressStroke,
       sttStats.groupProgressPinyin,
     )

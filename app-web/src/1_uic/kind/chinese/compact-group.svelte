@@ -13,6 +13,11 @@
     strokeMastery?: number
     pinyinProgress?: number
     pinyinMastery?: number
+    strokeOverdue?: number
+    pinyinOverdue?: number
+    groupDifficulty?: number
+    strokeErrors?: number
+    pinyinErrors?: number
   }
 
   let {
@@ -27,9 +32,15 @@
     strokeMastery = 0,
     pinyinProgress = 0,
     pinyinMastery = 0,
+    strokeOverdue,
+    pinyinOverdue,
+    groupDifficulty,
+    strokeErrors,
+    pinyinErrors,
   }: Props = $props()
 
   const hasProgress = $derived(strokeProgress > 0 || strokeMastery > 0 || pinyinProgress > 0 || pinyinMastery > 0)
+  const hasSpacedData = $derived(strokeOverdue !== undefined || pinyinOverdue !== undefined || groupDifficulty !== undefined)
 </script>
 
 <article class="anuka-stack anuka-compact">
@@ -66,4 +77,12 @@
       </div>
     {/if}
   </div>
+  {#if hasSpacedData}
+    <div style="display:none" class="anuka-row anuka-mute anuka-sm">
+      <span>s: {strokeOverdue !== undefined ? strokeOverdue.toFixed(2) + '×' : '—'}</span>
+      <span>p: {pinyinOverdue !== undefined ? pinyinOverdue.toFixed(2) + '×' : '—'}</span>
+      <span>diff: {groupDifficulty !== undefined ? groupDifficulty.toFixed(2) : '—'}</span>
+      <span>err: {strokeErrors ?? 0}s / {pinyinErrors ?? 0}p</span>
+    </div>
+  {/if}
 </article>

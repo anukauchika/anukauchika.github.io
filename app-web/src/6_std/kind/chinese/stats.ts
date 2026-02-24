@@ -205,6 +205,84 @@ export function sortGroupsByLastDrilled(groups: ChineseGroup[], sessionsMap: Map
   })
 }
 
+// --- Spaced Repetition ---
+
+export function calcWordDifficulty(wp: WordProgress): number {
+  const errorRate = wp.errorCount / Math.max(1, wp.successCount + wp.errorCount)
+  const hintRate = (wp.hintCount ?? 0) / Math.max(1, wp.successCount + (wp.hintCount ?? 0))
+  return Math.min(1, 0.4 * errorRate + 0.7 * hintRate)
+}
+
+export function calcGroupDifficulty(group: ChineseGroup, wordProgress: Map<WordKey, WordProgress>): number {
+  let sum = 0
+  let count = 0
+  for (const item of group.items) {
+    const wp = wordProgress.get(mkWordKey(group.id, item.id))
+    if (wp) { sum += calcWordDifficulty(wp); count++ }
+  }
+  return count > 0 ? sum / count : 0
+}
+
+// Returns expected review interval in days. full=0 → Infinity (not yet started).
+export function calcExpectedInterval(full: number): number {
+  if (full <= 0) return Infinity
+  return Math.min(Math.pow(2, full - 1), 90)
+}
+
+// Shrinks expected interval for harder groups (difficulty 0–1).
+export function calcEffectiveInterval(full: number, difficulty: number): number {
+  const expected = calcExpectedInterval(full)
+  if (!isFinite(expected)) return Infinity
+  return expected * Math.max(0.4, 1 - 0.5 * difficulty)
+}
+
+// elapsed_days / expectedInterval for one drill type. full=0 or no lastFullDrillAt → Infinity.
+export function calcOverdueScore(gp: GroupProgress, effectiveInterval: number): number {
+  if (!isFinite(effectiveInterval) || !gp.lastFullDrillAt) return Infinity
+  const elapsedMs = Date.now() - new Date(gp.lastFullDrillAt).getTime()
+  const elapsedDays = elapsedMs / (1000 * 60 * 60 * 24)
+  return elapsedDays / effectiveInterval
+}
+
+// Overdue score for a single drill type. Undefined/full=0 → Infinity.
+export function calcTypeOverdueScore(gp: GroupProgress | undefined): number {
+  if (!gp) return Infinity
+  return calcOverdueScore(gp, calcExpectedInterval(gp.full))
+}
+
+// Group overdue score = max across drill types. Either type being overdue surfaces the group.
+export function calcGroupOverdueScore(
+  gpStroke: GroupProgress | undefined,
+  gpPinyin: GroupProgress | undefined,
+): number {
+  return Math.max(calcTypeOverdueScore(gpStroke), calcTypeOverdueScore(gpPinyin))
+}
+
+export function sortGroupsByOverdue(
+  groups: ChineseGroup[],
+  strokeProgress: Map<GroupId, GroupProgress>,
+  pinyinProgress: Map<GroupId, GroupProgress>,
+): ChineseGroup[] {
+  return [...groups].sort((a, b) => {
+    const gsA = strokeProgress.get(a.id)
+    const gpA = pinyinProgress.get(a.id)
+    const gsB = strokeProgress.get(b.id)
+    const gpB = pinyinProgress.get(b.id)
+    const isActiveA = (gsA?.full ?? 0) >= 1 || (gpA?.full ?? 0) >= 1
+    const isActiveB = (gsB?.full ?? 0) >= 1 || (gpB?.full ?? 0) >= 1
+    // Inactive groups (neither type ever completed) go last, ordered by id
+    if (!isActiveA && !isActiveB) return a.id - b.id
+    if (!isActiveA) return 1
+    if (!isActiveB) return -1
+    const scoreA = calcGroupOverdueScore(gsA, gpA)
+    const scoreB = calcGroupOverdueScore(gsB, gpB)
+    if (!isFinite(scoreA) && !isFinite(scoreB)) return a.id - b.id
+    if (!isFinite(scoreA)) return -1
+    if (!isFinite(scoreB)) return 1
+    return scoreB - scoreA
+  })
+}
+
 // --- Chart ---
 
 export function buildChartData(drilledItems: DrilledItem[], dayCounts: Map<DayKey, DayProgress>): ChartData | null {

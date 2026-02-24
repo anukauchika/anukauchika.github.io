@@ -3,12 +3,12 @@
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
   import { sttAuth } from '@stt/auth.svelte.js'
-  import { sortGroupsByLastDrilled } from '@std/kind/chinese/stats'
+  import { sortGroupsByOverdue } from '@std/kind/chinese/stats'
   import { buildProps as buildCompactProps } from '@uic/kind/chinese/compact-group-list'
   import ProgressGroups from '@uic/kind/chinese/progress-groups.svelte'
 
   const basePath = $derived.by(() => `/${sttDataset.current?.kind ?? 'chinese'}`)
-  const drilledGroupsSorted = $derived(sortGroupsByLastDrilled(sttDataset.filtered, sttStats.groupProgress))
+  const drilledGroupsSorted = $derived(sortGroupsByOverdue(sttDataset.filtered, sttStats.groupProgressStroke, sttStats.groupProgressPinyin))
 
   const groupCtx = $derived({
     basePath,
@@ -19,6 +19,7 @@
     groupSessionsPinyin: sttStats.groupProgressPinyin,
     statsStroke: sttStats.wordProgressStroke,
     statsPinyin: sttStats.wordProgressPinyin,
+    wordProgress: sttStats.wordProgress,
   })
 </script>
 
