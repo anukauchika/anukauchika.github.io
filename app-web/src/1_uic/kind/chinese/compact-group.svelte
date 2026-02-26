@@ -1,9 +1,9 @@
 <script lang="ts">
   import ProgressLine from '@std/ui/progress-line.svelte'
+  import type { DueInfo, DueStatus } from '@std/format'
 
   interface Props {
     groupId: string
-    lastDrilled?: string
     tags?: string[]
     strokeHref?: string
     pinyinHref?: string
@@ -13,16 +13,14 @@
     strokeMastery?: number
     pinyinProgress?: number
     pinyinMastery?: number
-    strokeOverdue?: number
-    pinyinOverdue?: number
-    groupDifficulty?: number
-    strokeErrors?: number
-    pinyinErrors?: number
+    strokeDue?: DueInfo
+    pinyinDue?: DueInfo
+    strokeLastDrilled?: string
+    pinyinLastDrilled?: string
   }
 
   let {
     groupId,
-    lastDrilled,
     tags,
     strokeHref,
     pinyinHref,
@@ -32,57 +30,54 @@
     strokeMastery = 0,
     pinyinProgress = 0,
     pinyinMastery = 0,
-    strokeOverdue,
-    pinyinOverdue,
-    groupDifficulty,
-    strokeErrors,
-    pinyinErrors,
+    strokeDue,
+    pinyinDue,
+    strokeLastDrilled,
+    pinyinLastDrilled,
   }: Props = $props()
 
+  const badgeMod = (status: DueStatus) =>
+    status === 'overdue' ? 'anuka-fail' : status === 'due-now' ? 'anuka-warn' : 'anuka-mute'
+
   const hasProgress = $derived(strokeProgress > 0 || strokeMastery > 0 || pinyinProgress > 0 || pinyinMastery > 0)
-  const hasSpacedData = $derived(strokeOverdue !== undefined || pinyinOverdue !== undefined || groupDifficulty !== undefined)
 </script>
 
 <article class="anuka-stack anuka-compact">
   <div class="anuka-row anuka-justify">
     <span>{groupId}</span>
-    <span>{lastDrilled ?? ''}</span>
-    <span class="anuka-row">
+    <div class="anuka-tags">
+      {#each tags ?? [] as tag}<span class="anuka-tag anuka-sm">#{tag}</span>{/each}
+    </div>
+    <span class="anuka-row anuka-compact">
       {#if strokeHref}
-        {#if strokeSessions}<span>{strokeSessions}</span>{/if}
         <a class="anuka-btn anuka-btn-icon" href={strokeHref} title="Stroke drill">
           <span class="anuka-icon anuka-icon-stroke"></span>
         </a>
       {/if}
       {#if pinyinHref}
-        {#if pinyinSessions}<span>{pinyinSessions}</span>{/if}
         <a class="anuka-btn anuka-btn-icon" href={pinyinHref} title="Pinyin drill">
           <span class="anuka-icon anuka-icon-pinyin"></span>
         </a>
       {/if}
     </span>
   </div>
-  <div class="anuka-row">
-    {#if tags?.length}
-      <div class="anuka-tags">
-        {#each tags as tag}<span class="anuka-tag">#{tag}</span>{/each}
-      </div>
-    {/if}
-  </div>
-  <div class="anuka-row">
-    {#if hasProgress}
-      <div class="anuka-stack anuka-compact anuka-grow">
-        <ProgressLine fill={strokeProgress} fillStrong={strokeMastery} />
-        <ProgressLine fill={pinyinProgress} fillStrong={pinyinMastery} />
-      </div>
-    {/if}
-  </div>
-  {#if hasSpacedData}
-    <div style="display:none" class="anuka-row anuka-mute anuka-sm">
-      <span>s: {strokeOverdue !== undefined ? strokeOverdue.toFixed(2) + '×' : '—'}</span>
-      <span>p: {pinyinOverdue !== undefined ? pinyinOverdue.toFixed(2) + '×' : '—'}</span>
-      <span>diff: {groupDifficulty !== undefined ? groupDifficulty.toFixed(2) : '—'}</span>
-      <span>err: {strokeErrors ?? 0}s / {pinyinErrors ?? 0}p</span>
+
+  {#if hasProgress}
+    <div class="anuka-stack anuka-compact">
+      <ProgressLine fill={strokeProgress} fillStrong={strokeMastery} />
+      <ProgressLine fill={pinyinProgress} fillStrong={pinyinMastery} />
+    </div>
+  {/if}
+
+  {#if strokeLastDrilled || strokeDue || pinyinLastDrilled || pinyinDue}
+    <div class="anuka-row anuka-compact anuka-center">
+      {#if strokeLastDrilled}<span class="anuka-mute anuka-sm">{strokeLastDrilled}</span>{/if}
+      {#if strokeDue}<span class="anuka-badge {badgeMod(strokeDue.status)} anuka-sm">{strokeDue.label}</span>{/if}
+      {#if strokeSessions > 0}<span class="anuka-mute anuka-sm">{strokeSessions}W</span>{/if}
+      <span class="anuka-mute anuka-sm">|</span>
+      {#if pinyinSessions > 0}<span class="anuka-mute anuka-sm">P{pinyinSessions}</span>{/if}
+      {#if pinyinDue}<span class="anuka-badge {badgeMod(pinyinDue.status)} anuka-sm">{pinyinDue.label}</span>{/if}
+      {#if pinyinLastDrilled}<span class="anuka-mute anuka-sm">{pinyinLastDrilled}</span>{/if}
     </div>
   {/if}
 </article>

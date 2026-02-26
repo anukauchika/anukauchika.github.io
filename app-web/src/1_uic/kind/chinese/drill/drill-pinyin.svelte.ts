@@ -35,7 +35,7 @@ export class DrillPinyinSession {
 
   // --- UI ---
   showHint: boolean = $state(false)
-  showTranslation: boolean = $state(true)
+  showTranslation: boolean = $state(false)
   pinyinInputValue: string = $state('')
   pinyinFeedback: 'fail' | null = $state(null)
   charDoneMap: Map<number, string> = $state(new Map())

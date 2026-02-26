@@ -12,21 +12,17 @@ import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
 import { sttAuth } from '@stt/auth.svelte.js'
 import { svcSync } from '@svc/sync'
 import { dsCode, dtCode } from '@svc/kind/chinese/codes'
-import { calcWordDifficulty, calcTypeOverdueScore } from '@std/kind/chinese/stats'
+import { calcWordSortScore, calcTypeOverdueScore, calcGroupHintDifficulty } from '@std/kind/chinese/stats'
 
 const DT_STORE_KEY: Record<string, 'wordProgressStroke' | 'wordProgressPinyin'> = {
   s: 'wordProgressStroke',
   p: 'wordProgressPinyin',
 }
 
-function sortByProgress(items: ChineseWord[], wp: Map<number, WordProgress>): ChineseWord[] {
-  return [...items].sort((a, b) => {
-    const wpA = wp.get(a.id)
-    const wpB = wp.get(b.id)
-    const scoreA = (wpA?.successCount ?? 0) * (1 - calcWordDifficulty(wpA ?? { successCount: 0, errorCount: 0, hintCount: 0, lastDrilledAt: null }) * 0.5)
-    const scoreB = (wpB?.successCount ?? 0) * (1 - calcWordDifficulty(wpB ?? { successCount: 0, errorCount: 0, hintCount: 0, lastDrilledAt: null }) * 0.5)
-    return scoreA - scoreB
-  })
+function sortByProgress(items: ChineseWord[], wp: Map<number, WordProgress>, drillType: ChineseDrillType): ChineseWord[] {
+  return [...items].sort((a, b) =>
+    calcWordSortScore(wp.get(a.id), drillType) - calcWordSortScore(wp.get(b.id), drillType)
+  )
 }
 
 // --- DrillHandle ---
@@ -57,7 +53,7 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
   const datasetCode = dsCode(datasetId)
   const drillCode = dtCode(drillType)
   const wp = await datDrill.getGroupWordsProgress(datasetCode, drillCode, groupId)
-  const items = sortByProgress(group.items, wp)
+  const items = sortByProgress(group.items, wp, drillType)
   const groupProgressStroke = sttStats.groupProgressStroke.get(groupId) ?? null
   const groupProgressPinyin = sttStats.groupProgressPinyin.get(groupId) ?? null
   const authenticated = sttAuth.isAuthenticated
@@ -140,6 +136,8 @@ function pickNextDrillPure(
   groups: ChineseGroup[],
   strokeSessions: Map<GroupId, GroupProgress>,
   pinyinSessions: Map<GroupId, GroupProgress>,
+  strokeWordProgress: Map<WordKey, WordProgress>,
+  pinyinWordProgress: Map<WordKey, WordProgress>,
 ): NextDrill | null {
   const isActive = (g: ChineseGroup) =>
     (strokeSessions.get(g.id)?.full ?? 0) >= 1 || (pinyinSessions.get(g.id)?.full ?? 0) >= 1
@@ -155,8 +153,8 @@ function pickNextDrillPure(
 
   // Compute per-type overdue scores; group score = max of both types
   const withScores = activeGroups.map((g) => {
-    const strokeScore = calcTypeOverdueScore(strokeSessions.get(g.id))
-    const pinyinScore = calcTypeOverdueScore(pinyinSessions.get(g.id))
+    const strokeScore = calcTypeOverdueScore(strokeSessions.get(g.id), calcGroupHintDifficulty(g, strokeWordProgress))
+    const pinyinScore = calcTypeOverdueScore(pinyinSessions.get(g.id), calcGroupHintDifficulty(g, pinyinWordProgress))
     const score = Math.max(strokeScore, pinyinScore)
     const type: 'stroke' | 'pinyin' = pinyinScore >= strokeScore ? 'pinyin' : 'stroke'
     return { group: g, score, type }
@@ -188,6 +186,8 @@ function pickNextDrillSuggestion(): NextDrill | null {
       sttDataset.filtered as ChineseGroup[],
       sttStats.groupProgressStroke,
       sttStats.groupProgressPinyin,
+      sttStats.wordProgressStroke,
+      sttStats.wordProgressPinyin,
     )
   }
   return sttDataset.filtered.length > 0 ? { groupId: sttDataset.filtered[0].id, type: 'stroke' } : null

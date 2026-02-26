@@ -8,7 +8,7 @@
   import ProgressGroups from '@uic/kind/chinese/progress-groups.svelte'
 
   const basePath = $derived.by(() => `/${sttDataset.current?.kind ?? 'chinese'}`)
-  const drilledGroupsSorted = $derived(sortGroupsByOverdue(sttDataset.filtered, sttStats.groupProgressStroke, sttStats.groupProgressPinyin))
+  const drilledGroupsSorted = $derived(sortGroupsByOverdue(sttDataset.filtered, sttStats.groupProgressStroke, sttStats.groupProgressPinyin, sttStats.wordProgressStroke, sttStats.wordProgressPinyin))
 
   const groupCtx = $derived({
     basePath,
@@ -32,6 +32,7 @@
     groups={drilledGroupsSorted.map(g => buildCompactProps(g, groupCtx, 'groups'))}
     drilledCount={drilledGroupsSorted.filter(g => sttStats.groupProgress.has(g.id)).length}
     totalCount={drilledGroupsSorted.length}
+    overdueCount={sttStats.overdueCount}
     onclose={() => goto('/chinese/')}
   />
 </main>

@@ -1,8 +1,10 @@
 import type { ChineseGroup, ChineseWord, ChineseDatasetStats } from '@dom/kind/chinese/dataset'
+import { ChineseDrillType } from '@dom/kind/chinese/dataset'
 import type { GroupId, WordKey } from '@dom/dataset'
 import { mkWordKey } from '@dom/dataset'
 import type { WordProgress, GroupProgress, DayKey, DayProgress } from '@dom/stats'
-import { toLocalDateKey } from '@std/format'
+import { toLocalDateKey, dueIn } from '@std/format'
+import type { DueInfo } from '@std/format'
 
 // --- Types ---
 
@@ -197,6 +199,19 @@ export function calcGroupMastery(group: ChineseGroup, sessionsMap: Map<GroupId, 
 
 // --- Sorting ---
 
+export function countOverdueGroups(
+  groups: ChineseGroup[],
+  strokeProgress: Map<GroupId, GroupProgress>,
+  pinyinProgress: Map<GroupId, GroupProgress>,
+  strokeWordProgress: Map<WordKey, WordProgress>,
+  pinyinWordProgress: Map<WordKey, WordProgress>,
+): number {
+  return groups.filter(g => {
+    const score = calcGroupOverdueScore(strokeProgress.get(g.id), pinyinProgress.get(g.id), g, strokeWordProgress, pinyinWordProgress)
+    return isFinite(score) && score >= 1
+  }).length
+}
+
 export function sortGroupsByLastDrilled(groups: ChineseGroup[], sessionsMap: Map<GroupId, GroupProgress>): ChineseGroup[] {
   return [...groups].sort((a, b) => {
     const tA = sessionsMap.get(a.id)?.lastDrilledAt ?? ''
@@ -207,10 +222,28 @@ export function sortGroupsByLastDrilled(groups: ChineseGroup[], sessionsMap: Map
 
 // --- Spaced Repetition ---
 
+// Stroke errors count less — they are expected during character learning.
+// Pinyin errors are a stronger signal of not knowing the word.
+const DRILL_ERROR_WEIGHT: Record<ChineseDrillType, number> = {
+  [ChineseDrillType.Stroke]: 0.2,
+  [ChineseDrillType.Pinyin]: 0.4,
+}
+// Difficulty can reduce effective success count by at most 50%.
+const DIFFICULTY_SORT_IMPACT = 0.5
+
 export function calcWordDifficulty(wp: WordProgress): number {
   const errorRate = wp.errorCount / Math.max(1, wp.successCount + wp.errorCount)
   const hintRate = (wp.hintCount ?? 0) / Math.max(1, wp.successCount + (wp.hintCount ?? 0))
   return Math.min(1, 0.4 * errorRate + 0.7 * hintRate)
+}
+
+export function calcWordSortScore(wp: WordProgress | undefined, drillType: ChineseDrillType): number {
+  const errorWeight = DRILL_ERROR_WEIGHT[drillType]
+  const resolved = wp ?? { successCount: 0, errorCount: 0, hintCount: 0, lastDrilledAt: null }
+  const errorRate = resolved.errorCount / Math.max(1, resolved.successCount + resolved.errorCount)
+  const hintRate = (resolved.hintCount ?? 0) / Math.max(1, resolved.successCount + (resolved.hintCount ?? 0))
+  const difficulty = Math.min(1, errorWeight * errorRate + 0.7 * hintRate)
+  return resolved.successCount * (1 - difficulty * DIFFICULTY_SORT_IMPACT)
 }
 
 export function calcGroupDifficulty(group: ChineseGroup, wordProgress: Map<WordKey, WordProgress>): number {
@@ -221,6 +254,25 @@ export function calcGroupDifficulty(group: ChineseGroup, wordProgress: Map<WordK
     if (wp) { sum += calcWordDifficulty(wp); count++ }
   }
   return count > 0 ? sum / count : 0
+}
+
+export function calcGroupHintDifficulty(group: ChineseGroup, wordProgress: Map<WordKey, WordProgress>): number {
+  let sum = 0
+  let count = 0
+  for (const item of group.items) {
+    const wp = wordProgress.get(mkWordKey(group.id, item.id))
+    if (wp) {
+      const hintRate = (wp.hintCount ?? 0) / Math.max(1, wp.successCount + (wp.hintCount ?? 0))
+      sum += 0.7 * hintRate
+      count++
+    }
+  }
+  return count > 0 ? sum / count : 0
+}
+
+export function calcTypeDue(gp: GroupProgress | undefined, difficulty: number = 0): DueInfo | null {
+  if (!gp || gp.full === 0 || !gp.lastFullDrillAt) return null
+  return dueIn(gp.lastFullDrillAt, calcEffectiveInterval(gp.full, difficulty))
 }
 
 // Returns expected review interval in days. full=0 → Infinity (not yet started).
@@ -245,23 +297,30 @@ export function calcOverdueScore(gp: GroupProgress, effectiveInterval: number): 
 }
 
 // Overdue score for a single drill type. Undefined/full=0 → Infinity.
-export function calcTypeOverdueScore(gp: GroupProgress | undefined): number {
+export function calcTypeOverdueScore(gp: GroupProgress | undefined, difficulty: number = 0): number {
   if (!gp) return Infinity
-  return calcOverdueScore(gp, calcExpectedInterval(gp.full))
+  return calcOverdueScore(gp, calcEffectiveInterval(gp.full, difficulty))
 }
 
 // Group overdue score = max across drill types. Either type being overdue surfaces the group.
 export function calcGroupOverdueScore(
   gpStroke: GroupProgress | undefined,
   gpPinyin: GroupProgress | undefined,
+  group: ChineseGroup,
+  strokeWordProgress: Map<WordKey, WordProgress>,
+  pinyinWordProgress: Map<WordKey, WordProgress>,
 ): number {
-  return Math.max(calcTypeOverdueScore(gpStroke), calcTypeOverdueScore(gpPinyin))
+  const strokeDiff = calcGroupHintDifficulty(group, strokeWordProgress)
+  const pinyinDiff = calcGroupHintDifficulty(group, pinyinWordProgress)
+  return Math.max(calcTypeOverdueScore(gpStroke, strokeDiff), calcTypeOverdueScore(gpPinyin, pinyinDiff))
 }
 
 export function sortGroupsByOverdue(
   groups: ChineseGroup[],
   strokeProgress: Map<GroupId, GroupProgress>,
   pinyinProgress: Map<GroupId, GroupProgress>,
+  strokeWordProgress: Map<WordKey, WordProgress>,
+  pinyinWordProgress: Map<WordKey, WordProgress>,
 ): ChineseGroup[] {
   return [...groups].sort((a, b) => {
     const gsA = strokeProgress.get(a.id)
@@ -274,8 +333,8 @@ export function sortGroupsByOverdue(
     if (!isActiveA && !isActiveB) return a.id - b.id
     if (!isActiveA) return 1
     if (!isActiveB) return -1
-    const scoreA = calcGroupOverdueScore(gsA, gpA)
-    const scoreB = calcGroupOverdueScore(gsB, gpB)
+    const scoreA = calcGroupOverdueScore(gsA, gpA, a, strokeWordProgress, pinyinWordProgress)
+    const scoreB = calcGroupOverdueScore(gsB, gpB, b, strokeWordProgress, pinyinWordProgress)
     if (!isFinite(scoreA) && !isFinite(scoreB)) return a.id - b.id
     if (!isFinite(scoreA)) return -1
     if (!isFinite(scoreB)) return 1

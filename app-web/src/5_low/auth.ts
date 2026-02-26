@@ -42,7 +42,11 @@ export const lowAuth: AuthApi = {
   },
 
   onAuthChange(cb) {
+    let currentUserId: string | null = null
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const newUserId = session?.user?.id ?? null
+      if (newUserId === currentUserId) return
+      currentUserId = newUserId
       cb(mapUser(session))
     })
     return () => subscription.unsubscribe()

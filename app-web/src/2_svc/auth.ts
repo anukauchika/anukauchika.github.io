@@ -43,12 +43,7 @@ export const svcAuth: AuthService = {
       if (newUser) syncInBackground()
     })
 
-    // Refresh token when tab becomes visible (timers are throttled in background)
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        datAuth.refreshSession().catch(() => {})
-      }
-    })
+
   },
 
   signInWithGoogle: () => datAuth.signInWithGoogle(),

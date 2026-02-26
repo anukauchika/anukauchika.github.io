@@ -26,15 +26,7 @@
     if (sttDataset.id) reloadStats()
   })
 
-  $effect(() => {
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') reloadStats()
-    }
-    document.addEventListener('visibilitychange', onVisible)
-    return () => document.removeEventListener('visibilitychange', onVisible)
-  })
-
-  let activeWord = $state(null)
+let activeWord = $state(null)
 
   const groupCtx = $derived({
     basePath,

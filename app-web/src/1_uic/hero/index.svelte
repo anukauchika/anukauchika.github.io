@@ -22,6 +22,7 @@
     uniqueChars,
     avgDailyTime,
     strokeDrilledCount,
+    overdueCount,
     strokeProgress,
     strokeMastery,
     pinyinProgress,
@@ -128,6 +129,7 @@
       {uniqueChars}
       {avgDailyTime}
       {strokeDrilledCount}
+      {overdueCount}
       {isAuthenticated}
       {onShowProgressGroups}
       {onShowProgressWords}

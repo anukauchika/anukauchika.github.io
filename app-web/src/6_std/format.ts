@@ -20,6 +20,23 @@ export const formatDuration = (ms: number): string => {
   return m > 0 ? `${h}h ${m}m` : `${h}h`
 }
 
+export type DueStatus = 'overdue' | 'due-now' | 'upcoming'
+export interface DueInfo { label: string; status: DueStatus }
+
+export const dueIn = (lastDrilledAt: string | null | undefined, intervalDays: number): DueInfo | null => {
+  if (!lastDrilledAt || !isFinite(intervalDays) || intervalDays <= 0) return null
+  const nextDueMs = new Date(lastDrilledAt).getTime() + intervalDays * 24 * 60 * 60 * 1000
+  const remainingMs = nextDueMs - Date.now()
+  if (remainingMs <= 0) {
+    const overdueDays = -remainingMs / (1000 * 60 * 60 * 24)
+    if (overdueDays < 1) return { label: 'due now', status: 'due-now' }
+    return { label: `overdue ${Math.round(overdueDays)}d`, status: 'overdue' }
+  }
+  const days = remainingMs / (1000 * 60 * 60 * 24)
+  const label = days < 1 ? `in ${Math.ceil(remainingMs / (1000 * 60 * 60))}h` : `in ${Math.round(days)}d`
+  return { label, status: 'upcoming' }
+}
+
 export const timeAgo = (ts: string | number | null | undefined): string => {
   if (!ts) return ''
   const diff = Date.now() - (typeof ts === 'number' ? ts : new Date(ts).getTime())

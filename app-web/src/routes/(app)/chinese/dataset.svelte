@@ -43,6 +43,7 @@
   uniqueChars={sttStats.datasetStats.chars}
   avgDailyTime={sttStats.avgDailyTime}
   strokeDrilledCount={sttStats.strokeDrilledCount}
+  overdueCount={sttStats.overdueCount}
   strokeProgress={sttStats.strokeProgress}
   strokeMastery={sttStats.strokeMastery}
   pinyinProgress={sttStats.pinyinProgress}

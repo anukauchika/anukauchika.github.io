@@ -21,15 +21,16 @@
     groups: GroupProps[]
     drilledCount: number
     totalCount: number
+    overdueCount: number
     onclose: () => void
   }
 
-  let { groups, drilledCount, totalCount, onclose }: Props = $props()
+  let { groups, drilledCount, totalCount, overdueCount, onclose }: Props = $props()
 </script>
 
 <Island sticky>
   <div class="anuka-row anuka-justify">
-    <h3>Groups Drilled {drilledCount} | {totalCount}</h3>
+    <h3>Groups {totalCount} | <span class="anuka-main">{drilledCount}</span> drill | <span class={overdueCount > 0 ? 'anuka-warn' : ''}>{overdueCount}</span> overdue</h3>
     <BtnIcon icon="close" label="Close" onclick={onclose} />
   </div>
 </Island>
