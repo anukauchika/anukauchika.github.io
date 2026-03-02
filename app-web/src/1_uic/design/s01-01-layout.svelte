@@ -9,6 +9,17 @@
 <AppTitle parts={['Anuka', 'Layout']} />
 
 <Island>
+  <IslandTitle>Size Modifiers</IslandTitle>
+  <p>Apply to any inline element. <code>anuka-sm</code> and <code>anuka-lg</code> reset direct children to 1rem.</p>
+  <div class="anuka-stack anuka-compact">
+    <span class="anuka-sm">anuka-sm — 0.75rem. For secondary labels and hints.</span>
+    <span>Default — 1rem. Body text.</span>
+    <span class="anuka-md">anuka-md — 1.25rem. For island-level descriptions.</span>
+    <span class="anuka-lg">anuka-lg</span>
+  </div>
+</Island>
+
+<Island>
   <IslandTitle>Small Grid</IslandTitle>
   <p>Dense grid for compact items like character tiles.</p>
   <div class="anuka-grid anuka-sm">

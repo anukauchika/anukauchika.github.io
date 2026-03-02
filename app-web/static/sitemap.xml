@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://anukauchika.com/</loc>
+    <lastmod>2026-03-03</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
@@ -10,25 +11,27 @@
   </url>
   <url>
     <loc>https://anukauchika.com/chinese/blog</loc>
+    <lastmod>2026-02-26</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://anukauchika.com/chinese/blog/nihao</loc>
-    <priority>0.8</priority>
+    <lastmod>2026-02-22</lastmod>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://anukauchika.com/chinese/blog/hsk-elementary</loc>
-    <priority>0.8</priority>
+    <lastmod>2026-02-23</lastmod>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://anukauchika.com/chinese/blog/when-to-add-words</loc>
     <lastmod>2026-02-26</lastmod>
-    <priority>0.8</priority>
+    <priority>0.7</priority>
   </url>
-
   <url>
     <loc>https://anukauchika.com/english/</loc>
-    <priority>0.8</priority>
+    <priority>0.5</priority>
   </url>
   <url>
     <loc>https://anukauchika.com/design-book/</loc>

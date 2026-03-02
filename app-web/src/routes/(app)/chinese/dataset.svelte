@@ -54,7 +54,7 @@
   onShowProgressWords={() => goto('/chinese/words')}
   onShowProgressChars={() => goto('/chinese/chars')}
 >
-  <AppTitle parts={appTitle} />
+  <a href="/" style="text-decoration: none; color: inherit;"><AppTitle parts={appTitle} /></a>
 
   {#snippet toolbar()}
     <Toolbar

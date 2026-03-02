@@ -359,6 +359,7 @@ button.anuka-stat:hover {
 /* ── Size modifiers ── */
 
 .anuka-sm { font-size: 0.75rem; }
+.anuka-md { font-size: 1.25rem; }
 .anuka-lg { font-size: 3.5rem; }
 .anuka-sm > *, .anuka-lg > * { font-size: 1rem; }
 
@@ -514,6 +515,7 @@ button.anuka-activity-heatmap-cell {
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
   transition: opacity 0.15s ease;
 }
 
