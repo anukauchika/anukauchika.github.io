@@ -96,17 +96,20 @@
         {/if}
       </div>
 
-      {#if !session.strokeQuizResult || session.wordDelay}
+      {#if !session.strokeQuizResult || session.wordDelay || session.waitingForNext}
         <div class="anuka-row anuka-center">
           <BtnIcon onclick={() => session.speak(session.currentItem.word)} label="Play audio">
             <span class="anuka-icon anuka-icon-speaker"></span>
           </BtnIcon>
           <Btn main={session.showPinyin} onclick={() => (session.showPinyin = !session.showPinyin)}>Pinyin</Btn>
           <Btn main={session.showHint} onclick={() => session.toggleHint()}>Hint</Btn>
-          {#if session.wordDelay}
+          {#if session.wordDelay || session.waitingForNext}
             <Btn onclick={() => session.repeatWord()}>Repeat</Btn>
           {:else}
             <Btn onclick={() => session.skipWord()}>Skip</Btn>
+          {/if}
+          {#if session.waitingForNext}
+            <Btn main onclick={() => session.advanceFromNext()}>Next</Btn>
           {/if}
         </div>
       {/if}

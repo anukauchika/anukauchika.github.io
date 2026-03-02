@@ -23,6 +23,7 @@ export class DrillStrokeSession {
   // --- Inter-word delay ---
   wordDelay: boolean = $state(false)
   wordDelayProgress: number = $state(100)
+  waitingForNext: boolean = $state(false)
 
   // --- Char-level ---
   charIndex: number = $state(0)
@@ -114,12 +115,18 @@ export class DrillStrokeSession {
   repeatWord(): void {
     this.clearDelay()
     this.clearCharDelay()
+    this.waitingForNext = false
     this.charData = []
     this.strokeQuizResult = null
     this.charIndex = 0
     this.wordStartedAt = new Date().toISOString()
     this.charStartedAt = new Date().toISOString()
     this.charErrorCount = 0
+  }
+
+  advanceFromNext(): void {
+    this.waitingForNext = false
+    this.advanceToNext()
   }
 
   toggleHint(): void {
@@ -228,7 +235,12 @@ export class DrillStrokeSession {
     const attempt: WordAttempt = { wordId: item.id, startedAt: wordStartedAt, doneAt: wordDoneAt }
     this.onWordDone(attempt, chars)
 
-    this.startDelay(this.hanChars.length * 1000)
+    const hintUsed = this.showHint || chars.some(c => c.hintCount > 0)
+    if (hintUsed) {
+      this.waitingForNext = true
+    } else {
+      this.startDelay(this.hanChars.length * 1000)
+    }
   }
 
   private finishSession(): void {
@@ -298,6 +310,7 @@ export class DrillStrokeSession {
 
   private advanceToNext(): void {
     this.clearDelay()
+    this.waitingForNext = false
     if (this.currentIndex >= this.items.length - 1) {
       this.finishSession()
     } else {
