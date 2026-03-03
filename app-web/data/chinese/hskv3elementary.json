@@ -119,7 +119,7 @@
         {"word": "很", "pinyin": "hěn", "english": "very", "id": 4, "tags": ["L1", "adverb"]},
         {"word": "后", "pinyin": "hòu", "english": "after; behind", "id": 5, "tags": ["L1", "noun"]},
         {"word": "回", "pinyin": "huí", "english": "to return", "id": 6, "tags": ["L1", "verb"]},
-        {"word": "会", "pinyin": "huì", "english": "can", "id": 7, "tags": ["L1", "verb"]},
+        {"word": "会", "pinyin": "huì", "english": "can; be able to", "id": 7, "tags": ["L1", "verb"]},
         {"word": "火车", "pinyin": "huǒ chē", "english": "train", "id": 8, "tags": ["L1", "noun", "travel"]},
         {"word": "鸡蛋", "pinyin": "jī dàn", "english": "chicken egg", "id": 9, "tags": ["L1", "noun"]},
         {"word": "几", "pinyin": "jǐ", "english": "how much", "id": 10, "tags": ["L1", "pronoun"]},
@@ -495,14 +495,14 @@
         {"word": "过", "pinyin": "guò", "english": "experiential particle", "id": 2, "tags": ["L2", "verb"]},
         {"word": "过来", "pinyin": "guò lái", "english": "to come over", "id": 3, "tags": ["L2", "verb"]},
         {"word": "过年", "pinyin": "guò nián", "english": "to celebrate NYE", "id": 4, "tags": ["L2", "verb", "time"]},
-        {"word": "过去", "pinyin": "guò qù", "english": "in the past", "id": 5, "tags": ["L2", "verb"]},
+        {"word": "过去", "pinyin": "guò qù", "english": "to go over; to pass by", "id": 5, "tags": ["L2", "verb"]},
         {"word": "过", "pinyin": "guo", "english": "experiential particle", "id": 6, "tags": ["L2", "particle", "grammar"]},
         {"word": "还是", "pinyin": "hái shi", "english": "or; still", "id": 7, "tags": ["L2", "adverb"]},
         {"word": "黑色", "pinyin": "hēi sè", "english": "black", "id": 8, "tags": ["L2", "noun", "color"]},
         {"word": "红茶", "pinyin": "hóng chá", "english": "black tea", "id": 9, "tags": ["L2", "noun", "food"]},
         {"word": "红色", "pinyin": "hóng sè", "english": "red", "id": 10, "tags": ["L2", "noun", "color"]},
         {"word": "后面", "pinyin": "hòu mian", "english": "the back", "id": 11, "tags": ["L2", "noun"]},
-        {"word": "花", "pinyin": "huā", "english": "flower", "id": 12, "tags": ["L2", "verb", "nature"]},
+        {"word": "花", "pinyin": "huā", "english": "to spend (money/time)", "id": 12, "tags": ["L2", "verb"]},
         {"word": "花", "pinyin": "huā", "english": "flower", "id": 13, "tags": ["L2", "noun", "nature"]},
         {"word": "画", "pinyin": "huà", "english": "to draw", "id": 14, "tags": ["L2", "verb"]},
         {"word": "坏", "pinyin": "huài", "english": "bad", "id": 15, "tags": ["L2", "adjective"]}
@@ -925,7 +925,7 @@
         {"word": "关注", "pinyin": "guān zhù", "english": "to pay attention to", "id": 12, "tags": ["L3", "verb"]},
         {"word": "国家", "pinyin": "guó jiā", "english": "country", "id": 13, "tags": ["L3", "noun", "location"]},
         {"word": "过节", "pinyin": "guò jié", "english": "to celebrate a holiday", "id": 14, "tags": ["L3", "verb"]},
-        {"word": "过去", "pinyin": "guò qù", "english": "in the past", "id": 15, "tags": ["L3", "noun"]}
+        {"word": "过去", "pinyin": "guò qù", "english": "the past; previously", "id": 15, "tags": ["L3", "noun", "time"]}
       ]
     },
     {
@@ -960,7 +960,7 @@
         {"word": "换", "pinyin": "huàn", "english": "to exchange", "id": 5, "tags": ["L3", "verb"]},
         {"word": "黄色", "pinyin": "huáng sè", "english": "yellow", "id": 6, "tags": ["L3", "noun", "color"]},
         {"word": "回答", "pinyin": "huí dá", "english": "to reply", "id": 7, "tags": ["L3", "verb"]},
-        {"word": "会", "pinyin": "huì", "english": "can", "id": 8, "tags": ["L3", "noun"]},
+        {"word": "会", "pinyin": "huì", "english": "meeting; gathering", "id": 8, "tags": ["L3", "noun", "social"]},
         {"word": "会议", "pinyin": "huì yì", "english": "meeting", "id": 9, "tags": ["L3", "noun", "social"]},
         {"word": "或", "pinyin": "huò", "english": "maybe", "id": 10, "tags": ["L3", "conjunction", "grammar"]},
         {"word": "或者", "pinyin": "huò zhě", "english": "or", "id": 11, "tags": ["L3", "conjunction", "grammar"]},
@@ -1357,7 +1357,7 @@
         {"word": "脏", "pinyin": "zāng", "english": "dirty", "id": 3, "tags": ["L3", "adjective"]},
         {"word": "怎么办", "pinyin": "zěn me bàn", "english": "what's to be done", "id": 4, "tags": ["L3", "phrase"]},
         {"word": "怎样", "pinyin": "zěn yàng", "english": "how", "id": 5, "tags": ["L3", "pronoun"]},
-        {"word": "站", "pinyin": "zhàn", "english": "station", "id": 6, "tags": ["L3", "verb", "location"]},
+        {"word": "站", "pinyin": "zhàn", "english": "to stand", "id": 6, "tags": ["L3", "verb"]},
         {"word": "张", "pinyin": "zhāng", "english": "CL: flat things", "id": 7, "tags": ["L3", "verb", "object"]},
         {"word": "长", "pinyin": "zhǎng", "english": "to grow", "id": 8, "tags": ["L3", "verb"]},
         {"word": "着急", "pinyin": "zháo jí", "english": "to worry", "id": 9, "tags": ["L3", "adjective", "emotion"]},
