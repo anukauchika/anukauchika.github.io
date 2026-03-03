@@ -106,7 +106,7 @@
         {"word": "好吃", "pinyin": "hǎo chī", "english": "tasty", "id": 12, "tags": ["L1", "adjective"]},
         {"word": "好看", "pinyin": "hǎo kàn", "english": "good-looking", "id": 13, "tags": ["L1", "adjective"]},
         {"word": "好听", "pinyin": "hǎo tīng", "english": "pleasant to hear", "id": 14, "tags": ["L1", "adjective"]},
-        {"word": "好玩儿", "pinyin": "hǎo wán", "english": "amusing", "id": 15, "tags": ["L1", "adjective"]}
+        {"word": "好玩儿", "pinyin": "hǎo wánr", "english": "amusing", "id": 15, "tags": ["L1", "adjective"]}
       ]
     },
     {
@@ -182,7 +182,7 @@
         {"word": "们", "pinyin": "men", "english": "plural suffix", "id": 4, "tags": ["L1", "suffix", "grammar"]},
         {"word": "米饭", "pinyin": "mǐ fàn", "english": "cooked rice", "id": 5, "tags": ["L1", "noun", "food"]},
         {"word": "面包", "pinyin": "miàn bāo", "english": "bread", "id": 6, "tags": ["L1", "noun", "food"]},
-        {"word": "面条儿", "pinyin": "miàn tiáo", "english": "noodles", "id": 7, "tags": ["L1", "noun", "food"]},
+        {"word": "面条儿", "pinyin": "miàn tiáor", "english": "noodles", "id": 7, "tags": ["L1", "noun", "food"]},
         {"word": "明年", "pinyin": "míng nián", "english": "next year", "id": 8, "tags": ["L1", "noun", "time"]},
         {"word": "明天", "pinyin": "míng tiān", "english": "tomorrow", "id": 9, "tags": ["L1", "noun", "time"]},
         {"word": "名字", "pinyin": "míng zi", "english": "name", "id": 10, "tags": ["L1", "noun", "family"]},
@@ -370,7 +370,7 @@
         {"word": "一半", "pinyin": "yī bàn", "english": "half", "id": 3, "tags": ["L1", "number"]},
         {"word": "一下", "pinyin": "yī xià", "english": "a bit; briefly", "id": 4, "tags": ["L1", "adverb"]},
         {"word": "椅子", "pinyin": "yǐ zi", "english": "chair", "id": 5, "tags": ["L1", "noun", "object"]},
-        {"word": "一点儿", "pinyin": "yī diǎn", "english": "a bit", "id": 6, "tags": ["L1", "phrase"]},
+        {"word": "一点儿", "pinyin": "yī diǎnr", "english": "a bit", "id": 6, "tags": ["L1", "phrase"]},
         {"word": "一些", "pinyin": "yī xiē", "english": "some", "id": 7, "tags": ["L1", "phrase"]},
         {"word": "有", "pinyin": "yǒu", "english": "to have", "id": 8, "tags": ["L1", "verb"]},
         {"word": "有的", "pinyin": "yǒu de", "english": "some", "id": 9, "tags": ["L1", "pronoun"]},
@@ -648,7 +648,7 @@
         {"word": "下来", "pinyin": "xià lai", "english": "to come down", "id": 8, "tags": ["L2", "verb"]},
         {"word": "下面", "pinyin": "xià miàn", "english": "below", "id": 9, "tags": ["L2", "noun"]},
         {"word": "下去", "pinyin": "xià qù", "english": "to go down", "id": 10, "tags": ["L2", "verb"]},
-        {"word": "小孩儿", "pinyin": "xiǎo hái", "english": "child", "id": 11, "tags": ["L2", "noun", "family"]},
+        {"word": "小孩儿", "pinyin": "xiǎo háir", "english": "child", "id": 11, "tags": ["L2", "noun", "family"]},
         {"word": "小时候", "pinyin": "xiǎo shí hou", "english": "in one's childhood", "id": 12, "tags": ["L2", "noun", "family"]},
         {"word": "笑", "pinyin": "xiào", "english": "to laugh", "id": 13, "tags": ["L2", "verb"]},
         {"word": "姓", "pinyin": "xìng", "english": "family name", "id": 14, "tags": ["L2", "noun", "family"]},
@@ -1063,7 +1063,7 @@
         {"word": "凉快", "pinyin": "liáng kuai", "english": "cool (pleasantly)", "id": 3, "tags": ["L3", "adjective", "food"]},
         {"word": "辆", "pinyin": "liàng", "english": "CL: vehicles", "id": 4, "tags": ["L3", "measure word", "grammar"]},
         {"word": "聊", "pinyin": "liáo", "english": "to chat", "id": 5, "tags": ["L3", "verb"]},
-        {"word": "聊天儿", "pinyin": "liáo tiān", "english": "to chat", "id": 6, "tags": ["L3", "verb"]},
+        {"word": "聊天儿", "pinyin": "liáo tiānr", "english": "to chat", "id": 6, "tags": ["L3", "verb"]},
         {"word": "了解", "pinyin": "liǎo jiě", "english": "to understand", "id": 7, "tags": ["L3", "verb"]},
         {"word": "邻居", "pinyin": "lín jū", "english": "neighbor", "id": 8, "tags": ["L3", "noun"]},
         {"word": "留学", "pinyin": "liú xué", "english": "to study abroad", "id": 9, "tags": ["L3", "verb", "education"]},
@@ -1297,7 +1297,7 @@
         {"word": "页", "pinyin": "yè", "english": "CL: pages", "id": 6, "tags": ["L3", "measure word", "grammar"]},
         {"word": "一定", "pinyin": "yī dìng", "english": "surely", "id": 7, "tags": ["L3", "adjective"]},
         {"word": "一共", "pinyin": "yī gòng", "english": "in total", "id": 8, "tags": ["L3", "adverb"]},
-        {"word": "一块儿", "pinyin": "yī kuài", "english": "a piece", "id": 9, "tags": ["L3", "noun"]},
+        {"word": "一块儿", "pinyin": "yī kuàir", "english": "a piece", "id": 9, "tags": ["L3", "noun"]},
         {"word": "一样", "pinyin": "yī yàng", "english": "same", "id": 10, "tags": ["L3", "adjective"]},
         {"word": "以后", "pinyin": "yǐ hòu", "english": "after", "id": 11, "tags": ["L3", "noun"]},
         {"word": "以前", "pinyin": "yǐ qián", "english": "before", "id": 12, "tags": ["L3", "noun"]},
