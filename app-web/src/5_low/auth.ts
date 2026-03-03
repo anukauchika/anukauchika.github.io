@@ -55,7 +55,7 @@ export const lowAuth: AuthApi = {
   async signInWithGoogle() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo: `${window.location.origin}/chinese/` },
     })
     if (error) throw error
   },
@@ -70,7 +70,7 @@ export const lowAuth: AuthApi = {
   async signInWithEmail(email) {
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.origin },
+      options: { emailRedirectTo: `${window.location.origin}/chinese/` },
     })
     if (error) throw error
   },
