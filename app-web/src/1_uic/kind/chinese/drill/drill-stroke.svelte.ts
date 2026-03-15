@@ -38,6 +38,7 @@ export class DrillStrokeSession {
   hintManuallySet: boolean = $state(false)
   showPinyin: boolean = $state(true)
   strokeQuizResult: 'correct' | null = $state(null)
+  quizKey: number = $state(0)
 
   // --- Internal handles ---
   writer: any = null
@@ -119,6 +120,7 @@ export class DrillStrokeSession {
     this.charData = []
     this.strokeQuizResult = null
     this.charIndex = 0
+    this.quizKey += 1
     this.wordStartedAt = new Date().toISOString()
     this.charStartedAt = new Date().toISOString()
     this.charErrorCount = 0

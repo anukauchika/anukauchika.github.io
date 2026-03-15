@@ -23,6 +23,7 @@
 
   $effect(() => {
     const _charIdx = session.charIndex
+    const _quizKey = session.quizKey
     const _item = session.currentItem
     if (session.currentChar) session.initStrokeQuiz()
     return () => session.destroyStrokeQuiz()
