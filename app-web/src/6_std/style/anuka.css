@@ -1,5 +1,7 @@
 @import './icons.css';
 @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=block');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&display=swap');
 
 /* ── Base reset ── */
 
@@ -8,16 +10,13 @@
 /* ── Semantic tokens (light) ── */
 
 :root {
-  --font-sans: "Avenir Next", "Gill Sans", "Trebuchet MS", "PingFang SC",
-    "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
-  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
-  --font-chinese: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB",
-    "Microsoft YaHei", "Heiti SC", "Noto Sans CJK SC", sans-serif;
-  --font-chinese-hw: "Ma Shan Zheng", "Noto Sans SC", "PingFang SC", sans-serif;
+  --font-ui: Avenir, "Nunito Sans", sans-serif;
+  --font-read: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-hanzi: "Ma Shan Zheng", "Noto Sans SC", "PingFang SC", sans-serif;
 
   color: var(--anuka-color-text);
   background-color: var(--anuka-color-bg-base);
-  font-family: var(--font-sans);
+  font-family: var(--font-ui);
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
@@ -119,7 +118,7 @@
 /* ── Island: rounded content card ── */
 
 .anuka-island {
-  font-family: "Avenir Next", "Gill Sans", sans-serif;
+  font-family: var(--font-ui);
   color: var(--anuka-color-text);
   line-height: 1.5;
   background: var(--anuka-color-surface);
@@ -137,13 +136,13 @@
 /* ── Prose: rich text styling for blog / article content ── */
 
 .anuka-prose p {
-  font-family: var(--font-serif);
+  font-family: var(--font-read);
   font-size: clamp(1.1rem, 1.8vw, 1.3rem);
   line-height: 2;
   color: var(--anuka-color-muted);
 }
 .anuka-prose b,
-.anuka-prose strong { color: var(--anuka-color-text); font-family: var(--font-serif); font-size: clamp(1.1rem, 1.8vw, 1.3rem); font-weight: 600; }
+.anuka-prose strong { color: var(--anuka-color-text); font-family: var(--font-read); font-size: clamp(1.1rem, 1.8vw, 1.3rem); font-weight: 600; }
 .anuka-prose em,
 .anuka-prose i { font-style: italic; }
 .anuka-prose a { color: var(--anuka-color-primary); text-decoration: underline; text-underline-offset: 0.15em; }
@@ -173,7 +172,7 @@
 .anuka-prose ol {
   padding-left: 1.5em;
   color: var(--anuka-color-muted);
-  font-family: var(--font-serif);
+  font-family: var(--font-read);
   font-size: clamp(1.1rem, 1.8vw, 1.3rem);
   line-height: 2;
   display: flex;
@@ -206,7 +205,7 @@
 /* ── App title: brand label, auto-delimited spans ── */
 
 .anuka-app-title {
-  font-family: "Avenir Next", "Gill Sans", sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -219,7 +218,8 @@
 /* ── Island title: serif heading, auto-delimited spans ── */
 
 .anuka-island-title {
-  font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  font-family: var(--font-ui);
+  font-weight: 600;
 }
 
 .anuka-island-title:not(:first-child) {
@@ -296,6 +296,7 @@ h4.anuka-island-title { font-size: 1.2rem; }
 }
 
 .anuka-stat-value {
+  font-family: var(--font-ui);
   font-size: 1.6rem;
   font-weight: 700;
   line-height: 1;
@@ -338,7 +339,7 @@ button.anuka-stat:hover {
 .anuka-fail { color: var(--anuka-color-fail); }
 .anuka-warn { color: var(--anuka-color-warn); }
 
-.anuka-hanzi { font-family: var(--font-chinese-hw); }
+.anuka-hanzi { font-family: var(--font-hanzi); }
 .anuka-hidden { visibility: hidden; }
 .anuka-placeholder { visibility: hidden; height: 1lh; }
 .anuka-divider {
@@ -513,7 +514,7 @@ button.anuka-activity-heatmap-cell {
   color: var(--anuka-color-text);
   font-family: inherit;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   text-decoration: none;
   transition: opacity 0.15s ease;
@@ -544,7 +545,7 @@ button.anuka-activity-heatmap-cell {
   padding: 0;
   font-family: inherit;
   font-size: inherit;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 2px;
