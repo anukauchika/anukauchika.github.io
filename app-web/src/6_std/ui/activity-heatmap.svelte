@@ -11,6 +11,12 @@
 
   let { items, range, value, title, muted, selectedIndex = null, onselect }: Props = $props()
 
+  let scrollEl = $state<HTMLDivElement | null>(null)
+
+  $effect(() => {
+    if (scrollEl) scrollEl.scrollLeft = scrollEl.scrollWidth
+  })
+
   function level(v: number): number {
     if (v <= range[0]) return 0
     if (v >= range[1]) return 4
@@ -18,7 +24,7 @@
   }
 </script>
 
-<div class="anuka-activity-heatmap-scroll">
+<div class="anuka-activity-heatmap-scroll" bind:this={scrollEl}>
   <div class="anuka-activity-heatmap">
     {#each items as item, i}
       {@const lv = level(value(item))}

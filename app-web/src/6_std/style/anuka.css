@@ -462,6 +462,10 @@ button.anuka-card:focus-visible {
 
 .anuka-activity-heatmap-scroll {
   overflow-x: auto;
+  scrollbar-width: none;
+}
+.anuka-activity-heatmap-scroll::-webkit-scrollbar {
+  display: none;
 }
 
 .anuka-activity-heatmap {
