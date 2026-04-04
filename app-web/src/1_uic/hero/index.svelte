@@ -39,34 +39,15 @@
 
   // Activity heatmap
   const ACTIVITY_MAX = 200
-  const CELL_SIZE = 10
-  const CELL_GAP = 3
-  const FUTURE_DAYS_DESKTOP = 10
-  const FUTURE_DAYS_MOBILE = 3
+  const PAST_DAYS = 60
+  const FUTURE_DAYS = 7
 
-  let activityContainer = $state(null)
-  let totalCells = $state(60)
-  let futureDays = $state(FUTURE_DAYS_DESKTOP)
   let selectedActivityDate = $state(null)
-
-  $effect(() => {
-    if (!activityContainer) return
-    const updateCells = () => {
-      const isMobile = window.innerWidth <= 600
-      futureDays = isMobile ? FUTURE_DAYS_MOBILE : FUTURE_DAYS_DESKTOP
-      const width = activityContainer.offsetWidth
-      totalCells = Math.floor((width + CELL_GAP) / (CELL_SIZE + CELL_GAP))
-    }
-    updateCells()
-    const observer = new ResizeObserver(updateCells)
-    observer.observe(activityContainer)
-    return () => observer.disconnect()
-  })
 
   const activityDays = $derived.by(() => {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const pastDays = totalCells - futureDays
+    const pastDays = PAST_DAYS
 
     const days = []
     for (let i = pastDays - 1; i >= 0; i--) {
@@ -83,7 +64,7 @@
         label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       })
     }
-    for (let i = 1; i <= futureDays; i++) {
+    for (let i = 1; i <= FUTURE_DAYS; i++) {
       const d = new Date(today)
       d.setDate(d.getDate() + i)
       days.push({
@@ -140,7 +121,7 @@
       <div class="anuka-stack">
         <ProgressLine fill={strokeProgress} fillStrong={strokeMastery} />
         <ProgressLine fill={pinyinProgress} fillStrong={pinyinMastery} />
-        <div bind:this={activityContainer}>
+        <div>
           <DailyActivityHeatmap
             days={activityDays}
             max={ACTIVITY_MAX}
