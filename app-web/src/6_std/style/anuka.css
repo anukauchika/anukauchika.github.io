@@ -460,10 +460,15 @@ button.anuka-card:focus-visible {
 
 /* ── Activity heatmap: row of intensity cells ── */
 
+.anuka-activity-heatmap-scroll {
+  overflow-x: auto;
+}
+
 .anuka-activity-heatmap {
   display: flex;
   justify-content: center;
   gap: 3px;
+  min-width: min-content;
 }
 
 .anuka-activity-heatmap-cell {

@@ -18,27 +18,29 @@
   }
 </script>
 
-<div class="anuka-activity-heatmap">
-  {#each items as item, i}
-    {@const lv = level(value(item))}
-    {#if onselect}
-      <button
-        type="button"
-        class="anuka-activity-heatmap-cell"
-        data-level={lv || undefined}
-        data-muted={muted?.(item) || undefined}
-        data-selected={selectedIndex === i || undefined}
-        title={title?.(item)}
-        onclick={() => onselect(i)}
-      ></button>
-    {:else}
-      <div
-        class="anuka-activity-heatmap-cell"
-        data-level={lv || undefined}
-        data-muted={muted?.(item) || undefined}
-      ></div>
-    {/if}
-  {/each}
+<div class="anuka-activity-heatmap-scroll">
+  <div class="anuka-activity-heatmap">
+    {#each items as item, i}
+      {@const lv = level(value(item))}
+      {#if onselect}
+        <button
+          type="button"
+          class="anuka-activity-heatmap-cell"
+          data-level={lv || undefined}
+          data-muted={muted?.(item) || undefined}
+          data-selected={selectedIndex === i || undefined}
+          title={title?.(item)}
+          onclick={() => onselect(i)}
+        ></button>
+      {:else}
+        <div
+          class="anuka-activity-heatmap-cell"
+          data-level={lv || undefined}
+          data-muted={muted?.(item) || undefined}
+        ></div>
+      {/if}
+    {/each}
+  </div>
 </div>
 {#if selectedIndex !== null && title}
   <div class="anuka-activity-heatmap-title">{title(items[selectedIndex])}</div>
