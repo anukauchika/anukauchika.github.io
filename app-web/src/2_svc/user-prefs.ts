@@ -7,6 +7,8 @@ const THEME_KEY = 'uch-theme'
 function applyTheme(theme: Theme): void {
   document.documentElement.dataset.theme = theme
   localStorage.setItem(THEME_KEY, theme)
+  const color = theme === 'dark' ? '#1a1a1e' : '#f6efe8'
+  document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach(el => { el.content = color })
 }
 
 function detectSystemTheme(): Theme {
