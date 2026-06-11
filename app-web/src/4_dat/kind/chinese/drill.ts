@@ -200,17 +200,11 @@ export const datDrillSync: DrillSyncRepo = {
   },
 
   async restoreFromServer() {
-    const sessions = await lowStatsSupabase.fetchAllUserSessions()
+    const { sessions, words, chars } = await lowStatsSupabase.restoreChineseStats()
     if (sessions.length === 0) return
 
     await lowStatsIdb.bulkInsertGroupSessions(sessions.map((s) => ({ ...s, synced: 1 })))
-
-    const sessionIds = sessions.map((s) => s.id)
-    const words = await lowStatsSupabase.fetchWordAttempts(sessionIds)
     await lowStatsIdb.bulkInsertWordAttempts(words.map((w) => ({ ...w, synced: 1 })))
-
-    const wordIds = words.map((w) => w.id)
-    const chars = await lowStatsSupabase.fetchCharLogs(wordIds)
     await lowStatsIdb.bulkInsertCharLogs(chars.map((c) => ({ ...c, synced: 1 })))
   },
 

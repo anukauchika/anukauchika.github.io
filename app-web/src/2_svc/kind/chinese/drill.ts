@@ -92,12 +92,14 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
         svcSync.syncPending().catch((e) => console.error('sync failed', e))
 
         const key = mkWordKey(groupId, attempt.wordId)
+        const hintCount = chars.reduce((sum, c) => sum + (c.hintCount || 0), 0)
         const updateWpMap = (map: Map<WordKey, WordProgress>): Map<WordKey, WordProgress> => {
           const next = new Map(map)
           const ex = next.get(key)
           next.set(key, {
             successCount: (ex?.successCount ?? 0) + 1,
             errorCount: (ex?.errorCount ?? 0) + result.errorCount,
+            hintCount: (ex?.hintCount ?? 0) + hintCount,
             lastDrilledAt: attempt.doneAt,
           })
           return next

@@ -6,7 +6,7 @@
  *   import('/src/data/seed-elementary-stats.js').then(m => m.seed())
  */
 import { lowStatsIdb } from '@low/kind/chinese/idb-stats-repo'
-import type { StorageDrill, StorageAttempt, StorageStorageCharLog } from '@dat/kind/chinese/types'
+import type { StorageDrill, StorageAttempt, StorageCharLog } from '@dat/kind/chinese/types'
 
 const DATASET_CODE = 'aa'
 const PRACTICE_TYPE = 's'
@@ -107,6 +107,7 @@ export async function seed(): Promise<void> {
             started_at: isoAt(cStarted),
             done_at: isoAt(new Date(cStarted.getTime() + rand(1, 4) * 1000)),
             error_count: errorCount,
+            hint_count: 0,
             synced: 1,
           } as StorageCharLog)
         }
@@ -116,9 +117,9 @@ export async function seed(): Promise<void> {
     }
   }
 
-  await lowStatsIdb.bulkInsertStorageDrills(sessions)
-  await lowStatsIdb.bulkInsertStorageAttempts(words)
-  await lowStatsIdb.bulkInsertStorageCharLogs(chars)
+  await lowStatsIdb.bulkInsertGroupSessions(sessions)
+  await lowStatsIdb.bulkInsertWordAttempts(words)
+  await lowStatsIdb.bulkInsertCharLogs(chars)
 
   console.log(`Seeded: ${sessions.length} sessions, ${words.length} word attempts, ${chars.length} char logs`)
   console.log('Reload the page and select "HSK V3 2026 Elementary" dataset to see the data.')

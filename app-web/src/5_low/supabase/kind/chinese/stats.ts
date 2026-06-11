@@ -5,6 +5,14 @@ type DrillRecord = Omit<StorageDrill, 'id' | 'synced' | 'done_at'> & { done_at?:
 type AttemptRecord = Omit<StorageAttempt, 'id' | 'synced'>
 type CharLogRecord = Omit<StorageCharLog, 'synced'>
 
+const CHAR_LOG_UPSERT_BATCH_SIZE = 500
+
+interface RestoreChineseStatsPayload {
+  sessions: StorageDrill[]
+  words: StorageAttempt[]
+  chars: StorageCharLog[]
+}
+
 async function createGroupSession(record: DrillRecord): Promise<{ id: number }> {
   const { data, error } = await supabase
     .from('group_session')
@@ -62,48 +70,27 @@ async function insertWordAttempt(record: AttemptRecord): Promise<{ id: number }>
 }
 
 async function insertCharLogs(chars: CharLogRecord[]): Promise<void> {
-  const { error } = await supabase
-    .from('char_log')
-    .upsert(chars, {
-      onConflict: 'word_attempt_id,char_index',
-      ignoreDuplicates: true,
-    })
-  if (error) throw error
-}
-
-const PAGE_SIZE = 1000
-
-async function fetchAllPages<T>(query: () => ReturnType<ReturnType<typeof supabase.from>['select']>): Promise<T[]> {
-  const all: T[] = []
-  let offset = 0
-  while (true) {
-    const { data, error } = await query().range(offset, offset + PAGE_SIZE - 1)
+  for (let offset = 0; offset < chars.length; offset += CHAR_LOG_UPSERT_BATCH_SIZE) {
+    const batch = chars.slice(offset, offset + CHAR_LOG_UPSERT_BATCH_SIZE)
+    const { error } = await supabase
+      .from('char_log')
+      .upsert(batch, {
+        onConflict: 'word_attempt_id,char_index',
+        ignoreDuplicates: true,
+      })
     if (error) throw error
-    all.push(...(data as T[]))
-    if (data.length < PAGE_SIZE) break
-    offset += PAGE_SIZE
   }
-  return all
 }
 
-async function fetchAllUserSessions(): Promise<StorageDrill[]> {
-  return fetchAllPages<StorageDrill>(() =>
-    supabase.from('group_session').select('*').order('started_at', { ascending: true }),
-  )
-}
+async function restoreChineseStats(): Promise<RestoreChineseStatsPayload> {
+  const { data, error } = await supabase.rpc('restore_chinese_stats')
+  if (error) throw error
 
-async function fetchWordAttempts(sessionIds: number[]): Promise<StorageAttempt[]> {
-  if (sessionIds.length === 0) return []
-  return fetchAllPages<StorageAttempt>(() =>
-    supabase.from('word_attempt').select('*').in('group_session_id', sessionIds),
-  )
-}
-
-async function fetchCharLogs(wordAttemptIds: number[]): Promise<StorageCharLog[]> {
-  if (wordAttemptIds.length === 0) return []
-  return fetchAllPages<StorageCharLog>(() =>
-    supabase.from('char_log').select('*').in('word_attempt_id', wordAttemptIds),
-  )
+  return {
+    sessions: data?.sessions ?? [],
+    words: data?.words ?? [],
+    chars: data?.chars ?? [],
+  }
 }
 
 export interface LowStatsSupabase {
@@ -111,9 +98,7 @@ export interface LowStatsSupabase {
   updateGroupSessionDone(id: number, doneAt: string): Promise<void>
   insertWordAttempt(record: AttemptRecord): Promise<{ id: number }>
   insertCharLogs(chars: CharLogRecord[]): Promise<void>
-  fetchAllUserSessions(): Promise<StorageDrill[]>
-  fetchWordAttempts(sessionIds: number[]): Promise<StorageAttempt[]>
-  fetchCharLogs(wordAttemptIds: number[]): Promise<StorageCharLog[]>
+  restoreChineseStats(): Promise<RestoreChineseStatsPayload>
 }
 
 export const lowStatsSupabase: LowStatsSupabase = {
@@ -121,7 +106,5 @@ export const lowStatsSupabase: LowStatsSupabase = {
   updateGroupSessionDone,
   insertWordAttempt,
   insertCharLogs,
-  fetchAllUserSessions,
-  fetchWordAttempts,
-  fetchCharLogs,
+  restoreChineseStats,
 }
