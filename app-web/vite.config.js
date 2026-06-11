@@ -15,6 +15,9 @@ export default defineConfig({
   plugins: [
     sveltekit(),
     VitePWA({
+      base: '/',
+      buildBase: '/',
+      scope: '/',
       devOptions: {
         enabled: true,
         suppressWarnings: true,
