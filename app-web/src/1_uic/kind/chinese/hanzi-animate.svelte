@@ -1,5 +1,5 @@
 <script>
-  let { char, size = 132 } = $props()
+  let { char, size = 132, frameClass = 'anuka-sm' } = $props()
 
   let target = $state(null)
   let writer = null
@@ -37,4 +37,4 @@
   })
 </script>
 
-<div class="anuka-frame anuka-sm" translate="no" lang="zh" bind:this={target}></div>
+<div class="anuka-frame {frameClass}" translate="no" lang="zh" bind:this={target}></div>

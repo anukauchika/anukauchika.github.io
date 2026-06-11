@@ -1,7 +1,6 @@
 <script>
   import { goto } from '$app/navigation'
   import { svcUserPrefs } from '@svc/user-prefs'
-  import Quick from '@std/ui/quick.svelte'
   import HanziAnimate from '@uic/kind/chinese/hanzi-animate.svelte'
 
   function open(id) {
@@ -52,94 +51,120 @@
 </svelte:head>
 
 <main class="anuka-page">
+
+  <div class="anuka-row anuka-right">
+    <button class="anuka-btn-icon" onclick={svcUserPrefs.toggleTheme} aria-label="Toggle theme">
+      <span class="anuka-icon anuka-icon-moon"></span>
+    </button>
+  </div>
+
+  <!-- Hero -->
   <div class="anuka-island">
-    <Quick icon="moon" label="Toggle theme" onclick={svcUserPrefs.toggleTheme} />
-    <div class="anuka-stack">
-      <h1 class="anuka-island-title">Anuka Uchika Chinese</h1>
-      <p class="anuka-mute anuka-md">
-        Learn to write Chinese characters — stroke by stroke.<br />
-        Daily writing & pinyin drills, smart repetition, and printable worksheets. Prepare for the HSK exam.<br />
-        Built for self-directed learners who are done with gamified apps.
-      </p>
-
+    <div class="anuka-hero">
+      <HanziAnimate char="汉" size={250} frameClass="" />
       <div class="anuka-stack">
-        <button class="anuka-card" onclick={() => open('chinese-hskv3-elementary')}>
-          <div class="anuka-stack anuka-center">
-            <HanziAnimate char="汉" />
-            <strong>HSK Elementary</strong>
-            <span class="anuka-sm anuka-mute">Levels 1–3 · The 1,000 most-used words · Start here</span>
-          </div>
-        </button>
-
-        <div class="anuka-grid">
-          <button class="anuka-card" onclick={() => open('chinese-hskv3-intermediate')}>
-            <div class="anuka-stack">
-              <strong>HSK Intermediate</strong>
-              <span class="anuka-sm anuka-mute">Levels 4–6</span>
-            </div>
-          </button>
-          <button class="anuka-card" onclick={() => open('chinese-hskv3-advanced')}>
-            <div class="anuka-stack">
-              <strong>HSK Advanced</strong>
-              <span class="anuka-sm anuka-mute">Levels 7–9</span>
-            </div>
-          </button>
+        <h1 class="anuka-island-title">Learn to write<br>Chinese characters</h1>
+        <p class="anuka-mute">
+          Stroke-by-stroke drills · Smart repetition · Printable worksheets.<br>
+          Prepare for the HSK exam. No streak theater.
+        </p>
+        <div class="anuka-row">
+          <a href="/chinese/drill/hanzi?dataset=chinese-hskv3-elementary&group=1" class="anuka-btn anuka-main">
+            Try a free lesson →
+          </a>
         </div>
       </div>
+    </div>
 
+    <div class="anuka-divider">choose your level</div>
+
+    <div class="anuka-stack">
+      <button class="anuka-card" onclick={() => open('chinese-hskv3-elementary')}>
+        <div class="anuka-row anuka-justify">
+          <div class="anuka-stack anuka-compact">
+            <strong>HSK Elementary</strong>
+            <span class="anuka-sm anuka-mute">Levels 1–3 · The 1,000 most-used words</span>
+          </div>
+          <span class="anuka-tag anuka-main">Start here</span>
+        </div>
+      </button>
+      <div class="anuka-grid">
+        <button class="anuka-card" onclick={() => open('chinese-hskv3-intermediate')}>
+          <div class="anuka-stack anuka-compact">
+            <strong>HSK Intermediate</strong>
+            <span class="anuka-sm anuka-mute">Levels 4–6</span>
+          </div>
+        </button>
+        <button class="anuka-card" onclick={() => open('chinese-hskv3-advanced')}>
+          <div class="anuka-stack anuka-compact">
+            <strong>HSK Advanced</strong>
+            <span class="anuka-sm anuka-mute">Levels 7–9</span>
+          </div>
+        </button>
+      </div>
     </div>
   </div>
 
+  <!-- How it works -->
   <div class="anuka-island">
     <h2 class="anuka-island-title">How it works</h2>
     <div class="anuka-grid">
       <div class="anuka-card">
         <div class="anuka-stack">
-          <strong>Drill daily</strong>
-          <span class="anuka-mute">
-            Trace each character stroke by stroke and get instant feedback. Words come in small groups — one group is
-            one lesson.
+          <div class="anuka-row anuka-compact">
+            <div class="anuka-tile anuka-sm anuka-main">1</div>
+            <strong>Drill daily</strong>
+          </div>
+          <span class="anuka-mute anuka-sm">
+            Trace each character stroke by stroke and get instant feedback.
+            Words come in small groups — one group is one lesson.
           </span>
         </div>
       </div>
       <div class="anuka-card">
         <div class="anuka-stack">
-          <strong>Repeat on schedule</strong>
-          <span class="anuka-mute">
-            Every word you drill is tracked. The repetition algorithm picks your next group and brings words back right
-            before you forget them.
+          <div class="anuka-row anuka-compact">
+            <div class="anuka-tile anuka-sm anuka-main">2</div>
+            <strong>Repeat on schedule</strong>
+          </div>
+          <span class="anuka-mute anuka-sm">
+            Every word you drill is tracked. The repetition algorithm picks your next group
+            and brings words back right before you forget them.
           </span>
         </div>
       </div>
       <div class="anuka-card">
         <div class="anuka-stack">
-          <strong>Take it to paper</strong>
-          <span class="anuka-mute">
-            Print any group as an A4 worksheet, fold it accordion-style, and practice writing, pinyin & translation
-            offline.
+          <div class="anuka-row anuka-compact">
+            <div class="anuka-tile anuka-sm anuka-main">3</div>
+            <strong>Take it to paper</strong>
+          </div>
+          <span class="anuka-mute anuka-sm">
+            Print any group as an A4 worksheet, fold it accordion-style, and practice
+            writing, pinyin & translation offline.
           </span>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Why this app -->
   <div class="anuka-island">
     <h2 class="anuka-island-title">Why this app exists</h2>
     <p class="anuka-mute anuka-md">
-      I'm a software engineer learning Chinese. My first streak in a popular language app lasted 300+ days — and turned
-      out to be a comforting illusion: lessons completed, little retained. Anuka Uchika is the system I built to make
-      real progress instead — honest drills, real stats, no streak theater.
+      I'm a software engineer learning Chinese. My first streak in a popular language app lasted 300+ days —
+      and turned out to be a comforting illusion: lessons completed, little retained.
+      Anuka Uchika is the system I built to make real progress instead — honest drills, real stats, no streak theater.
     </p>
-    <div class="anuka-row anuka-center">
-      <a href="/chinese/blog/nihao" class="anuka-btn">Read the story</a>
-    </div>
+    <a href="/chinese/blog/nihao" class="anuka-btn-link">Read the full story →</a>
   </div>
 
+  <!-- Footer links -->
   <div class="anuka-island">
     <div class="anuka-row anuka-center">
       <a href="/chinese/hsk" class="anuka-btn">HSK Word Lists</a>
       <a href="/chinese/blog" class="anuka-btn">Read the Blog</a>
-      <a href="/chinese/drill/hanzi?dataset=chinese-hskv3-elementary&group=1" class="anuka-btn anuka-main">Try a Lesson</a>
     </div>
   </div>
+
 </main>
