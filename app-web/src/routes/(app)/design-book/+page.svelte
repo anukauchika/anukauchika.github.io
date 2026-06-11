@@ -23,6 +23,7 @@
 
 <svelte:head>
   <title>Design Book - Anuka Uchika</title>
+  <meta name="robots" content="noindex" />
 </svelte:head>
 
 <div class="anuka-page">

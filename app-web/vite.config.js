@@ -16,7 +16,8 @@ export default defineConfig({
     sveltekit(),
     VitePWA({
       devOptions: {
-        enabled: false
+        enabled: true,
+        suppressWarnings: true,
       },
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png'],

@@ -20,6 +20,8 @@ export interface UserPrefsService {
   toggleTheme(): Promise<void>
   getDatasetId(): Promise<string | null>
   setDatasetId(id: string): Promise<void>
+  getDrillIntroSeen(): Promise<boolean>
+  setDrillIntroSeen(): Promise<void>
   switchDatabase(userId: string | null): Promise<void>
 }
 
@@ -38,5 +40,7 @@ export const svcUserPrefs: UserPrefsService = {
 
   getDatasetId: () => datUserPrefs.getDatasetId(),
   setDatasetId: (id) => datUserPrefs.setDatasetId(id),
+  getDrillIntroSeen: () => datUserPrefs.getDrillIntroSeen(),
+  setDrillIntroSeen: () => datUserPrefs.setDrillIntroSeen(),
   switchDatabase: (userId) => datUserPrefs.switchDatabase(userId),
 }

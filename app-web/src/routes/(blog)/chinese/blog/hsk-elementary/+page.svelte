@@ -17,6 +17,11 @@
   <meta property="og:description" content="HSK 3.0 2026 Elementary: 1000 words, 655 characters" />
   <meta property="og:url" content="https://anukauchika.com/chinese/blog/hsk-elementary" />
   <meta property="og:site_name" content="Anuka Uchika" />
+  <meta property="og:image" content="https://anukauchika.com/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://anukauchika.com/og-image.png" />
   {@html `<script type="application/ld+json">${JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Article",

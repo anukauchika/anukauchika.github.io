@@ -7,6 +7,7 @@ import type { ChineseWord, ChineseGroup } from '@dom/kind/chinese/dataset'
 import { asChineseDataset } from '@dom/kind/chinese/dataset'
 import type { CharAttempt } from '@dom/kind/chinese/drill'
 import { datDrill } from '@dat/kind/chinese/drill'
+import { datAnalytics } from '@dat/analytics'
 import { sttDataset } from '@stt/dataset.svelte.js'
 import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
 import { sttAuth } from '@stt/auth.svelte.js'
@@ -61,6 +62,13 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
   let sessionIdPromise: Promise<DrillId> | null = null
   let drillId: DrillId | null = null
 
+  datAnalytics.track('drill_started', {
+    drill_type: drillType,
+    dataset_id: datasetId,
+    group_id: groupId,
+    authenticated,
+  })
+
   return {
     group,
     items,
@@ -103,6 +111,15 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
     },
 
     async endSession(result: GroupAttempt): Promise<void> {
+      datAnalytics.track('drill_completed', {
+        drill_type: drillType,
+        dataset_id: datasetId,
+        group_id: groupId,
+        drilled: result.drilledCount,
+        skipped: result.skippedCount,
+        authenticated,
+      })
+
       if (result.drilledCount === 0 || drillId == null) return
 
       const session = await datDrill.endDrill(drillId)

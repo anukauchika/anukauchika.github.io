@@ -100,3 +100,18 @@
   <p>Per-item <code>muted</code> accessor dims cells (e.g. future slots).</p>
   <ActivityHeatmap items={demoItems} range={[0, demoMax]} value={(d) => d.count} muted={(d) => d.future} />
 </Island>
+
+<Island prose>
+  <IslandTitle level={3}>Prose Table</IslandTitle>
+  <p>Plain <code>table</code> inside <code>anuka-prose</code> — for static reference content like word lists. First column uses text color, the rest are muted.</p>
+  <table>
+    <thead>
+      <tr><th>汉字</th><th>Pinyin</th><th>English</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>爱</td><td>ài</td><td>to love</td></tr>
+      <tr><td>八</td><td>bā</td><td>eight</td></tr>
+      <tr><td>爸爸</td><td>bà ba</td><td>father</td></tr>
+    </tbody>
+  </table>
+</Island>

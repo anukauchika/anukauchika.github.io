@@ -6,6 +6,7 @@
   import Tags from '@std/ui/tags.svelte'
   import Btn from '@std/ui/btn.svelte'
   import BtnIcon from '@std/ui/btn-icon.svelte'
+  import BtnLink from '@std/ui/btn-link.svelte'
 
   let {
     group,
@@ -15,6 +16,7 @@
     groupProgressPinyin,
     backUrl,
     authenticated,
+    onSignIn,
     onWordDone,
     onDrillDone,
   } = $props()
@@ -136,6 +138,11 @@
     <div class="anuka-stack anuka-center anuka-compact">
       <h2 class="anuka-island-title anuka-main">Session complete</h2>
       <div class="anuka-mute anuka-sm">{session.drilledCount} drilled &middot; {session.skippedCount} skipped</div>
+      {#if !authenticated}
+        <p class="anuka-mute anuka-sm">
+          This session won't be saved. <BtnLink onclick={onSignIn}>Sign in</BtnLink> to keep your progress.
+        </p>
+      {/if}
       <Btn main onclick={() => session.restart()}>Restart</Btn>
       <Btn onclick={() => (window.location.href = backUrl)}>Groups</Btn>
     </div>

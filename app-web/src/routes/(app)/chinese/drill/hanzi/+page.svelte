@@ -2,7 +2,11 @@
   import { page } from '$app/stores'
   import { ChineseDrillType } from '@dom/kind/chinese/dataset'
   import { svcDrill } from '@svc/kind/chinese/drill'
+  import { svcAuth } from '@svc/auth'
+  import { svcUserPrefs } from '@svc/user-prefs'
+  import { sttAuth } from '@stt/auth.svelte.js'
   import DrillStroke from '@uic/kind/chinese/drill/drill-stroke.svelte'
+  import AuthModal from '@uic/auth-modal.svelte'
 
   const datasetId = $derived($page.url.searchParams.get('dataset') || '')
   const groupId = $derived(Number($page.url.searchParams.get('group')) || 1)
@@ -10,6 +14,17 @@
   const backUrl = $derived(from ? `/chinese/${from}?dataset=${datasetId}` : `/chinese/?dataset=${datasetId}`)
 
   let drill = $state(null)
+  let showAuth = $state(false)
+  let showIntro = $state(false)
+
+  svcUserPrefs.getDrillIntroSeen().then((seen) => (showIntro = !seen))
+
+  const markIntroSeen = () => {
+    if (showIntro) {
+      showIntro = false
+      svcUserPrefs.setDrillIntroSeen()
+    }
+  }
 
   $effect(() => {
     if (datasetId && groupId) {
@@ -32,9 +47,24 @@
       groupProgressStroke={drill.groupProgressStroke}
       groupProgressPinyin={drill.groupProgressPinyin}
       authenticated={drill.authenticated}
+      {showIntro}
       {backUrl}
-      onWordDone={(a, c) => drill.recordAttempt(a, c)}
+      onSignIn={() => (showAuth = true)}
+      onWordDone={(a, c) => {
+        markIntroSeen()
+        drill.recordAttempt(a, c)
+      }}
       onDrillDone={(r) => drill.endSession(r)}
+    />
+  {/if}
+
+  {#if showAuth}
+    <AuthModal
+      user={sttAuth.user}
+      onclose={() => (showAuth = false)}
+      onSignInWithGoogle={svcAuth.signInWithGoogle}
+      onSignInWithEmail={svcAuth.signInWithEmail}
+      onSignOut={svcAuth.signOut}
     />
   {/if}
 </main>

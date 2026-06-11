@@ -8,11 +8,12 @@ export default {
     adapter: adapter({
       pages: 'dist',
       assets: 'dist',
-      fallback: 'index.html',
+      fallback: '404.html',
     }),
     alias: {
       '@dom': 'src/0_dom',
       '@routes': 'src/routes/(app)',
+      '@blog': 'src/routes/(blog)',
       '@uic': 'src/1_uic',
       '@svc': 'src/2_svc',
       '@stt': 'src/3_stt',

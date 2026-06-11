@@ -182,6 +182,25 @@
 .anuka-prose ul { list-style: disc; }
 .anuka-prose ol { list-style: decimal; }
 .anuka-prose li::marker { color: var(--anuka-color-primary); }
+.anuka-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-read);
+  line-height: 1.6;
+}
+.anuka-prose th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--anuka-color-text);
+  border-bottom: 2px solid var(--anuka-color-accent);
+  padding: 0.4em 0.75em;
+}
+.anuka-prose td {
+  color: var(--anuka-color-muted);
+  border-bottom: 1px solid var(--anuka-color-bg-accent);
+  padding: 0.4em 0.75em;
+}
+.anuka-prose td:first-child { color: var(--anuka-color-text); }
 .anuka-prose hr {
   border: none;
   border-top: 1px solid var(--anuka-color-border);
