@@ -29,8 +29,8 @@
   const fullGroupProps = (group) => ({
     groupId: formatGroup(group.id),
     tags: group.tags,
-    workbookHref: `${basePath}/workbook?group=${group.id}&dataset=${sttDataset.id}`,
-    printHref: `${basePath}/workbook?group=${group.id}&dataset=${sttDataset.id}&autoprint=1`,
+    workbookHref: `${basePath}/workbook/?group=${group.id}&dataset=${sttDataset.id}`,
+    printHref: `${basePath}/workbook/?group=${group.id}&dataset=${sttDataset.id}&autoprint=1`,
     items: group.items.map(item => ({ item })),
   })
 </script>

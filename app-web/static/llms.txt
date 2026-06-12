@@ -19,28 +19,28 @@ Key facts:
 ## Pages
 
 - [Home](https://anukauchika.com/): what the app does and how the method works
+- [The accordion workbook method](https://anukauchika.com/chinese/method/): how printed worksheets
+  fold into self-checking paper practice (static HTML)
 - [Chinese vocabulary browser](https://anukauchika.com/chinese/): explore word groups,
-  start drills, print worksheets (requires JavaScript)
+  start drills, print worksheets (interactive features require JavaScript)
 
 ## HSK 3.0 word lists (static HTML, no JavaScript required)
 
-- [All levels overview](https://anukauchika.com/chinese/hsk): HSK 3.0 (2026) levels
+- [All levels overview](https://anukauchika.com/chinese/hsk/): HSK 3.0 (2026) levels
   explained with word counts
-- [HSK 1](https://anukauchika.com/chinese/hsk/level-1),
-  [HSK 2](https://anukauchika.com/chinese/hsk/level-2),
-  [HSK 3](https://anukauchika.com/chinese/hsk/level-3),
-  [HSK 4](https://anukauchika.com/chinese/hsk/level-4),
-  [HSK 5](https://anukauchika.com/chinese/hsk/level-5),
-  [HSK 6](https://anukauchika.com/chinese/hsk/level-6),
-  [HSK 7–9](https://anukauchika.com/chinese/hsk/level-7-9): complete word lists
-  with pinyin and English translations
+- [HSK 1](https://anukauchika.com/chinese/hsk/level-1/): 300 words with pinyin and English ([markdown](https://anukauchika.com/chinese/hsk/level-1.md))
+- [HSK 2](https://anukauchika.com/chinese/hsk/level-2/): 199 words with pinyin and English ([markdown](https://anukauchika.com/chinese/hsk/level-2.md))
+- [HSK 3](https://anukauchika.com/chinese/hsk/level-3/): 500 words with pinyin and English ([markdown](https://anukauchika.com/chinese/hsk/level-3.md))
+- [HSK 4](https://anukauchika.com/chinese/hsk/level-4/): 999 words with pinyin and English ([markdown](https://anukauchika.com/chinese/hsk/level-4.md))
+- [HSK 5](https://anukauchika.com/chinese/hsk/level-5/): 1,598 words with pinyin and English ([markdown](https://anukauchika.com/chinese/hsk/level-5.md))
+- [HSK 6](https://anukauchika.com/chinese/hsk/level-6/): 1,798 words with pinyin and English ([markdown](https://anukauchika.com/chinese/hsk/level-6.md))
+- [HSK 7–9](https://anukauchika.com/chinese/hsk/level-7-9/): 5,595 words with pinyin and English ([markdown](https://anukauchika.com/chinese/hsk/level-7-9.md))
 
 ## Blog
 
-- ["A lesson a day!" is the wrong focus](https://anukauchika.com/chinese/blog/nihao):
-  why long streaks in gamified language apps are a comforting illusion, and the
-  system built to replace them
-- [HSK Elementary: The Numbers](https://anukauchika.com/chinese/blog/hsk-elementary):
-  what the HSK 3.0 exam is and how its levels are structured
-- [When to add new words to the pack?](https://anukauchika.com/chinese/blog/when-to-add-words):
+- [When to add new words to the pack?](https://anukauchika.com/chinese/blog/when-to-add-words/):
   how to pace new material against spaced repetition load
+- [HSK Elementary: The Numbers](https://anukauchika.com/chinese/blog/hsk-elementary/):
+  what the HSK 3.0 exam is and how its levels are structured
+- ["A lesson a day!" is the wrong focus](https://anukauchika.com/chinese/blog/nihao/):
+  why long streaks in gamified language apps are a comforting illusion, and the system built to replace them

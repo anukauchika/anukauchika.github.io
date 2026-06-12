@@ -22,7 +22,7 @@
     const nd = svcDrill.pickNextDrill()
     const typeToPath = { stroke: 'hanzi', pinyin: 'pinyin' }
     return nd
-      ? `${basePath}/drill/${typeToPath[nd.type] || 'hanzi'}?group=${nd.groupId}&dataset=${sttDataset.id}`
+      ? `${basePath}/drill/${typeToPath[nd.type] || 'hanzi'}/?group=${nd.groupId}&dataset=${sttDataset.id}`
       : null
   })
 
@@ -50,9 +50,9 @@
   pinyinMastery={sttStats.pinyinMastery}
   {drillHref}
   onShowAuthDropdown={() => (showAuthDropdown = true)}
-  onShowProgressGroups={() => goto('/chinese/groups')}
-  onShowProgressWords={() => goto('/chinese/words')}
-  onShowProgressChars={() => goto('/chinese/chars')}
+  onShowProgressGroups={() => goto('/chinese/groups/')}
+  onShowProgressWords={() => goto('/chinese/words/')}
+  onShowProgressChars={() => goto('/chinese/chars/')}
 >
   <a href="/" style="text-decoration: none; color: inherit;"><AppTitle parts={appTitle} /></a>
 

@@ -3,46 +3,19 @@
   import BtnIcon from '@std/ui/btn-icon.svelte'
   import Island from '@std/ui/island.svelte'
   import IslandTitle from '@std/ui/island-title.svelte'
+  import PostHead from '@blog/chinese/blog/post-head.svelte'
+  import { getPost } from '@blog/chinese/blog/posts.js'
+
+  const post = getPost('when-to-add-words')
 </script>
 
-<svelte:head>
-  <title>When to add new words to the pack?</title>
-  <meta
-    name="description"
-    content="How I built a decision rule for spaced repetition: an overdue score that tells me when to add new words and when to catch up first."
-  />
-  <link rel="canonical" href="https://anukauchika.com/chinese/blog/when-to-add-words" />
-  <meta property="og:type" content="article" />
-  <meta property="og:title" content="When to add new words to the pack?" />
-  <meta
-    property="og:description"
-    content="How I built a decision rule for spaced repetition: an overdue score that tells me when to add new words and when to catch up first."
-  />
-  <meta property="og:url" content="https://anukauchika.com/chinese/blog/when-to-add-words" />
-  <meta property="og:site_name" content="Anuka Uchika" />
-  <meta property="og:image" content="https://anukauchika.com/og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://anukauchika.com/og-image.png" />
-  {@html `<script type="application/ld+json">${JSON.stringify({
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: 'When to add new words to the pack?',
-    description:
-      "How I built a decision rule for spaced repetition: an overdue score that tells me when to add new words and when to catch up first.",
-    datePublished: '2026-02-26',
-    author: { '@type': 'Person', name: 'Anuka' },
-    publisher: { '@type': 'Organization', name: 'Anuka Uchika' },
-    url: 'https://anukauchika.com/chinese/blog/when-to-add-words',
-  })}</script>`}
-</svelte:head>
+<PostHead {post} />
 
 <main class="anuka-page">
   <Island sticky>
     <div class="anuka-row anuka-justify">
       <IslandTitle level={3}>When to add new words to the pack?</IslandTitle>
-      <BtnIcon icon="close" label="Back" onclick={() => goto('/chinese/blog')} />
+      <BtnIcon icon="close" label="Back" onclick={() => goto('/chinese/blog/')} />
     </div>
   </Island>
   <div class="anuka-stack">
@@ -412,8 +385,8 @@
       <p>Stay tuned for more updates on how the system evolves.</p>
 
       <div class="anuka-row anuka-right">
-        <a href="/chinese/blog" class="anuka-btn">More insights</a>
-        <a href="/chinese" class="anuka-btn anuka-main">Try a drill</a>
+        <a href="/chinese/blog/" class="anuka-btn">More insights</a>
+        <a href="/chinese/" class="anuka-btn anuka-main">Try a drill</a>
       </div>
     </Island>
   </div>

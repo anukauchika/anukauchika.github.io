@@ -1,4 +1,10 @@
 User-agent: *
-Allow: /
+Disallow: /design-book
+Disallow: /chinese/drill
+Disallow: /chinese/workbook
+Disallow: /chinese/words
+Disallow: /chinese/groups
+Disallow: /chinese/chars
+Disallow: /english
 
 Sitemap: https://anukauchika.com/sitemap.xml

@@ -7,6 +7,10 @@
   import IslandTitle          from '@std/ui/island-title.svelte'
   import Stat                 from '@std/ui/stat.svelte'
   import ProgressLine         from '@std/ui/progress-line.svelte'
+  import PostHead             from '@blog/chinese/blog/post-head.svelte'
+  import { getPost }          from '@blog/chinese/blog/posts.js'
+
+  const post = getPost('nihao')
 
   const dayData = [
     { date: '2026-02-06', count: 99, sessions: 7, dur: '39m' },
@@ -42,37 +46,13 @@
   }
 </script>
 
-<svelte:head>
-  <title>Chinese learning system</title>
-  <meta name="description" content="Building a system for Chinese learning" />
-  <link rel="canonical" href="https://anukauchika.com/chinese/blog/nihao" />
-  <meta property="og:type" content="article" />
-  <meta property="og:title" content="&quot;A lesson a day!&quot; is the wrong focus" />
-  <meta property="og:description" content="Breaking out of the comforting bubble — building a system for Chinese learning" />
-  <meta property="og:url" content="https://anukauchika.com/chinese/blog/nihao" />
-  <meta property="og:site_name" content="Anuka Uchika" />
-  <meta property="og:image" content="https://anukauchika.com/og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://anukauchika.com/og-image.png" />
-  {@html `<script type="application/ld+json">${JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "\"A lesson a day!\" is the wrong focus",
-    "description": "Breaking out of the comforting bubble — building a system for Chinese learning",
-    "datePublished": "2026-02-23",
-    "author": { "@type": "Person", "name": "Anuka" },
-    "publisher": { "@type": "Organization", "name": "Anuka Uchika" },
-    "url": "https://anukauchika.com/chinese/blog/nihao"
-  })}</script>`}
-</svelte:head>
+<PostHead {post} />
 
 <main class="anuka-page">
   <Island sticky>
     <div class="anuka-row anuka-justify">
       <IslandTitle level={3}>"A lesson a day!" is the wrong focus</IslandTitle>
-      <BtnIcon icon="close" label="Back" onclick={() => goto('/chinese/blog')} />
+      <BtnIcon icon="close" label="Back" onclick={() => goto('/chinese/blog/')} />
     </div>
   </Island>
   <div class="anuka-stack">
@@ -138,8 +118,8 @@
       <p>It helps me pick a set of groups to drill, practice both writing and pinyin, and track learning statistics automatically.</p>
       <p>Hopefully I will not be too carried away with the system itself, and use it wisely to accelerate my learning progress.</p>
       <div class="anuka-row anuka-right">
-        <a href="/chinese/blog" class="anuka-btn anuka-main">Read more insights</a>
-        <a href="/chinese" class="anuka-btn anuka-main">Try a Writing Drill</a>
+        <a href="/chinese/blog/" class="anuka-btn anuka-main">Read more insights</a>
+        <a href="/chinese/" class="anuka-btn anuka-main">Try a Writing Drill</a>
       </div>
     </Island>
   </div>

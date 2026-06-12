@@ -6,39 +6,19 @@
   import IslandTitle     from '@std/ui/island-title.svelte'
   import Stat            from '@std/ui/stat.svelte'
   import ProgressLine    from '@std/ui/progress-line.svelte'
+  import PostHead        from '@blog/chinese/blog/post-head.svelte'
+  import { getPost }     from '@blog/chinese/blog/posts.js'
+
+  const post = getPost('hsk-elementary')
 </script>
 
-<svelte:head>
-  <title>HSK Elementary</title>
-  <meta name="description" content="HSK 3.0 2026 Elementary: 1000 words, 655 characters. What HSK 2026 is and what changed" />
-  <link rel="canonical" href="https://anukauchika.com/chinese/blog/hsk-elementary" />
-  <meta property="og:type" content="article" />
-  <meta property="og:title" content="HSK Elementary: The Numbers" />
-  <meta property="og:description" content="HSK 3.0 2026 Elementary: 1000 words, 655 characters" />
-  <meta property="og:url" content="https://anukauchika.com/chinese/blog/hsk-elementary" />
-  <meta property="og:site_name" content="Anuka Uchika" />
-  <meta property="og:image" content="https://anukauchika.com/og-image.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://anukauchika.com/og-image.png" />
-  {@html `<script type="application/ld+json">${JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": "HSK Elementary: The Numbers",
-    "description": "HSK 3.0 2026 Elementary: 1000 words, 655 characters",
-    "datePublished": "2026-02-23",
-    "author": { "@type": "Person", "name": "Anuka" },
-    "publisher": { "@type": "Organization", "name": "Anuka Uchika" },
-    "url": "https://anukauchika.com/chinese/blog/hsk-elementary"
-  })}</script>`}
-</svelte:head>
+<PostHead {post} />
 
 <main class="anuka-page">
   <Island sticky>
     <div class="anuka-row anuka-justify">
       <IslandTitle level={3}>HSK Elementary</IslandTitle>
-      <BtnIcon icon="close" label="Back" onclick={() => goto('/chinese/blog')} />
+      <BtnIcon icon="close" label="Back" onclick={() => goto('/chinese/blog/')} />
     </div>
   </Island>
   <div class="anuka-stack">
@@ -107,9 +87,9 @@
       </ProgressLine>
       <p>Level 3 is the big jump. It contains as many words as Levels 1 and 2 combined.</p>
       <div class="anuka-row anuka-right">
-        <a href="/chinese?dataset=chinese-hskv3-elementary&tags=L1" class="anuka-btn">Explore L1</a>
-        <a href="/chinese?dataset=chinese-hskv3-elementary&tags=L2" class="anuka-btn">Explore L2</a>
-        <a href="/chinese?dataset=chinese-hskv3-elementary&tags=L3" class="anuka-btn">Explore L3</a>
+        <a href="/chinese/?dataset=chinese-hskv3-elementary&tags=L1" class="anuka-btn">Explore L1</a>
+        <a href="/chinese/?dataset=chinese-hskv3-elementary&tags=L2" class="anuka-btn">Explore L2</a>
+        <a href="/chinese/?dataset=chinese-hskv3-elementary&tags=L3" class="anuka-btn">Explore L3</a>
       </div>
     </Island>
 
@@ -238,8 +218,8 @@
         Structure beats motivation.
       </p>
       <div class="anuka-row anuka-right">
-        <a href="/chinese/blog" class="anuka-btn">Read more insights</a>
-        <a href="/chinese?dataset=chinese-hskv3-elementary" class="anuka-btn anuka-main">Start Drilling</a>
+        <a href="/chinese/blog/" class="anuka-btn">Read more insights</a>
+        <a href="/chinese/?dataset=chinese-hskv3-elementary" class="anuka-btn anuka-main">Start Drilling</a>
       </div>
     </Island>
   </div>

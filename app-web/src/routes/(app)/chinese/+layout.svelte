@@ -1,5 +1,6 @@
 <script>
   import { page } from '$app/stores'
+  import { browser } from '$app/environment'
   import { goto } from '$app/navigation'
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { svcDataset } from '@svc/dataset'
@@ -47,6 +48,6 @@
   })
 </script>
 
-{#if datasetReady}
+{#if datasetReady || !browser}
   {@render children()}
 {/if}

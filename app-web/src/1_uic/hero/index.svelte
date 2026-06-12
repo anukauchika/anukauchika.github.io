@@ -135,7 +135,7 @@
     {/if}
 
     <div class="anuka-row anuka-center">
-      <Btn onclick={() => (window.location.href = '/chinese/blog')}>Blog</Btn>
+      <Btn onclick={() => (window.location.href = '/chinese/blog/')}>Blog</Btn>
       {#if drillHref}
         <Btn main onclick={() => (window.location.href = drillHref)}>Drill</Btn>
       {/if}

@@ -11,7 +11,7 @@
   const datasetId = $derived($page.url.searchParams.get('dataset') || '')
   const groupId = $derived(Number($page.url.searchParams.get('group')) || 1)
   const from = $derived($page.url.searchParams.get('from'))
-  const backUrl = $derived(from ? `/chinese/${from}?dataset=${datasetId}` : `/chinese/?dataset=${datasetId}`)
+  const backUrl = $derived(from ? `/chinese/${from}/?dataset=${datasetId}` : `/chinese/?dataset=${datasetId}`)
 
   let drill = $state(null)
   let showAuth = $state(false)

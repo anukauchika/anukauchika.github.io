@@ -2,75 +2,77 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://anukauchika.com/</loc>
-    <lastmod>2026-06-11</lastmod>
+    <lastmod>2026-06-12</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://anukauchika.com/chinese/</loc>
+    <lastmod>2026-06-12</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://anukauchika.com/chinese/hsk</loc>
+    <loc>https://anukauchika.com/chinese/hsk/</loc>
     <lastmod>2026-06-11</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://anukauchika.com/chinese/hsk/level-1</loc>
-    <lastmod>2026-06-11</lastmod>
-    <priority>0.7</priority>
+    <loc>https://anukauchika.com/chinese/method/</loc>
+    <lastmod>2026-06-12</lastmod>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://anukauchika.com/chinese/hsk/level-2</loc>
-    <lastmod>2026-06-11</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://anukauchika.com/chinese/hsk/level-3</loc>
-    <lastmod>2026-06-11</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://anukauchika.com/chinese/hsk/level-4</loc>
-    <lastmod>2026-06-11</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://anukauchika.com/chinese/hsk/level-5</loc>
-    <lastmod>2026-06-11</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://anukauchika.com/chinese/hsk/level-6</loc>
-    <lastmod>2026-06-11</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://anukauchika.com/chinese/hsk/level-7-9</loc>
-    <lastmod>2026-06-11</lastmod>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://anukauchika.com/chinese/blog</loc>
+    <loc>https://anukauchika.com/chinese/blog/</loc>
     <lastmod>2026-02-26</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://anukauchika.com/chinese/blog/nihao</loc>
-    <lastmod>2026-02-22</lastmod>
+    <loc>https://anukauchika.com/chinese/hsk/level-1/</loc>
+    <lastmod>2026-06-11</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://anukauchika.com/chinese/blog/hsk-elementary</loc>
+    <loc>https://anukauchika.com/chinese/hsk/level-2/</loc>
+    <lastmod>2026-06-11</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://anukauchika.com/chinese/hsk/level-3/</loc>
+    <lastmod>2026-06-11</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://anukauchika.com/chinese/hsk/level-4/</loc>
+    <lastmod>2026-06-11</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://anukauchika.com/chinese/hsk/level-5/</loc>
+    <lastmod>2026-06-11</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://anukauchika.com/chinese/hsk/level-6/</loc>
+    <lastmod>2026-06-11</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://anukauchika.com/chinese/hsk/level-7-9/</loc>
+    <lastmod>2026-06-11</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://anukauchika.com/chinese/blog/when-to-add-words/</loc>
+    <lastmod>2026-02-26</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://anukauchika.com/chinese/blog/hsk-elementary/</loc>
     <lastmod>2026-02-23</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://anukauchika.com/chinese/blog/when-to-add-words</loc>
-    <lastmod>2026-02-26</lastmod>
+    <loc>https://anukauchika.com/chinese/blog/nihao/</loc>
+    <lastmod>2026-02-23</lastmod>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://anukauchika.com/english/</loc>
-    <priority>0.5</priority>
   </url>
 </urlset>

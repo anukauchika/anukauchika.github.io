@@ -69,7 +69,7 @@
           Prepare for the HSK exam. No streak theater.
         </p>
         <div class="anuka-row">
-          <a href="/chinese/drill/hanzi?dataset=chinese-hskv3-elementary&group=1" class="anuka-btn anuka-main">
+          <a href="/chinese/drill/hanzi/?dataset=chinese-hskv3-elementary&group=1" class="anuka-btn anuka-main">
             Try a free lesson →
           </a>
         </div>
@@ -142,6 +142,7 @@
           <span class="anuka-mute anuka-sm">
             Print any group as an A4 worksheet, fold it accordion-style, and practice
             writing, pinyin & translation offline.
+            <a href="/chinese/method/">How the folding works →</a>
           </span>
         </div>
       </div>
@@ -156,14 +157,14 @@
       and turned out to be a comforting illusion: lessons completed, little retained.
       Anuka Uchika is the system I built to make real progress instead — honest drills, real stats, no streak theater.
     </p>
-    <a href="/chinese/blog/nihao" class="anuka-btn-link">Read the full story →</a>
+    <a href="/chinese/blog/nihao/" class="anuka-btn-link">Read the full story →</a>
   </div>
 
   <!-- Footer links -->
   <div class="anuka-island">
     <div class="anuka-row anuka-center">
-      <a href="/chinese/hsk" class="anuka-btn">HSK Word Lists</a>
-      <a href="/chinese/blog" class="anuka-btn">Read the Blog</a>
+      <a href="/chinese/hsk/" class="anuka-btn">HSK Word Lists</a>
+      <a href="/chinese/blog/" class="anuka-btn">Read the Blog</a>
     </div>
   </div>
 
