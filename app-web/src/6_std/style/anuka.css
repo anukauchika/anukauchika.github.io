@@ -1,5 +1,4 @@
 @import './icons.css';
-@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=block');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700&display=swap');
 
@@ -12,7 +11,7 @@
 :root {
   --font-ui: Avenir, "Nunito Sans", sans-serif;
   --font-read: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
-  --font-hanzi: "Ma Shan Zheng", "Noto Sans SC", "PingFang SC", sans-serif;
+  --font-hanzi: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
 
   color: var(--anuka-color-text);
   background-color: var(--anuka-color-bg-base);
@@ -355,7 +354,10 @@ button.anuka-stat:hover {
 .anuka-fail { color: var(--anuka-color-fail); }
 .anuka-warn { color: var(--anuka-color-warn); }
 
-.anuka-hanzi { font-family: var(--font-hanzi); }
+.anuka-hanzi,
+[lang="zh-CN"] {
+  font-family: var(--font-hanzi);
+}
 .anuka-hidden { visibility: hidden; }
 .anuka-placeholder { visibility: hidden; height: 1lh; }
 .anuka-divider {

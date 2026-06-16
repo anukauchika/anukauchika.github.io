@@ -80,7 +80,7 @@
   <p>Specialized text modifiers for fonts and visibility.</p>
   <div class="anuka-row anuka-center">
     <span class="anuka-hanzi anuka-lg" lang="zh-CN" translate="no">你好</span>
-    <span class="anuka-mute">anuka-hanzi — handwritten Chinese font</span>
+    <span class="anuka-mute">anuka-hanzi — simplified Chinese font</span>
   </div>
   <div class="anuka-row anuka-center">
     <span>visible</span>
