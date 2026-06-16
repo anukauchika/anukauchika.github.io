@@ -70,7 +70,7 @@
         <span>{session.currentItem.tr}</span>
       </div>
 
-      <div class="anuka-row anuka-center anuka-compact" translate="no" lang="zh">
+      <div class="anuka-row anuka-center anuka-compact" translate="no" lang="zh-CN">
         {#each session.hanChars as char, idx}
           {@const done = session.charDoneMap.has(idx) || session.wordDelay}
           {@const active = idx === session.charIndex && !session.wordDelay}

@@ -72,7 +72,7 @@
         {#each level.words as w, i (`${w.word}|${w.pinyin}`)}
           <tr>
             <td>{i + 1}</td>
-            <td translate="no" lang="zh">{w.word}</td>
+            <td translate="no" lang="zh-CN">{w.word}</td>
             <td translate="no">{w.pinyin}</td>
             <td>{w.english}</td>
           </tr>

@@ -79,7 +79,7 @@
   <IslandTitle level={3}>Text Utilities</IslandTitle>
   <p>Specialized text modifiers for fonts and visibility.</p>
   <div class="anuka-row anuka-center">
-    <span class="anuka-hanzi anuka-lg" lang="zh">你好</span>
+    <span class="anuka-hanzi anuka-lg" lang="zh-CN" translate="no">你好</span>
     <span class="anuka-mute">anuka-hanzi — handwritten Chinese font</span>
   </div>
   <div class="anuka-row anuka-center">

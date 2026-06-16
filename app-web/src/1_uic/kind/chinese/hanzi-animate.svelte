@@ -37,4 +37,4 @@
   })
 </script>
 
-<div class="anuka-frame {frameClass}" translate="no" lang="zh" bind:this={target}></div>
+<div class="anuka-frame {frameClass}" translate="no" lang="zh-CN" bind:this={target}></div>

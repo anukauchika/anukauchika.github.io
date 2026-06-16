@@ -22,7 +22,7 @@
   <div class="anuka-grid anuka-sm">
     {#each chars as c (c.char)}
       <div class="anuka-card anuka-stack anuka-center anuka-compact" class:anuka-mute={!c.drilled}>
-        <span class="anuka-lg" lang="zh" translate="no">{c.char}</span>
+        <span class="anuka-lg" lang="zh-CN" translate="no">{c.char}</span>
         {#if c.drilled}
           {#if c.stroke.successCount > 0}
             <span class="anuka-sm anuka-main">{c.stroke.successCount}{#if c.stroke.errorCount > 0}<span class="anuka-fail">| {c.stroke.errorCount}</span>{/if}{#if c.stroke.hintCount > 0}<span class="anuka-warn">| {c.stroke.hintCount}</span>{/if}</span>

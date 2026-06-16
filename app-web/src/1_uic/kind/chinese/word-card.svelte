@@ -62,7 +62,7 @@
   <Island>
     <Quick label="Close" icon="close" onclick={onClose} />
     <div class="anuka-row">
-      <IslandTitle level={3}><span class="anuka-hanzi">{item.word}</span></IslandTitle>
+      <IslandTitle level={3}><span class="anuka-hanzi" lang="zh-CN" translate="no">{item.word}</span></IslandTitle>
       <BtnIcon onclick={speak} label="Pronounce">
         <span class="anuka-icon anuka-icon-speaker"></span>
       </BtnIcon>

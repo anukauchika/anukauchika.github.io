@@ -8,7 +8,7 @@
 <section class="sheet">
   <div class="grid" style={`--sets:${totalCols}`}>
     {#each group.items as item}
-      <div class="cell filled chinese">{item.word}</div>
+      <div class="cell filled chinese" lang="zh-CN" translate="no">{item.word}</div>
       <div class="cell filled pinyin">{item.pinyin}</div>
       <div class="cell filled english">{item.tr}</div>
 

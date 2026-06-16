@@ -77,7 +77,7 @@
         {/if}
       </div>
 
-      <div class="anuka-row anuka-compact anuka-hanzi anuka-lg" translate="no" lang="zh">
+      <div class="anuka-row anuka-compact anuka-hanzi anuka-lg" translate="no" lang="zh-CN">
         {#each session.hanChars as char, idx}
           {@const done =
             idx < session.charIndex ||

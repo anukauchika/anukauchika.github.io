@@ -25,7 +25,7 @@
     <span class="anuka-badge">{(item.id ?? 0).toString().padStart(2, '0')}</span>
   </div>
   <div class="anuka-row anuka-justify">
-    <span class="anuka-lg anuka-hanzi">{item.word}</span>
+    <span class="anuka-lg anuka-hanzi" lang="zh-CN" translate="no">{item.word}</span>
   </div>
   <div class="anuka-row">
     <span class="anuka-main">{item.pinyin}</span>
