@@ -69,7 +69,16 @@
           Prepare for the HSK exam. No streak theater.
         </p>
         <div class="anuka-row">
-          <a href="/chinese/drill/hanzi/?dataset=chinese-hskv3-elementary&group=1" class="anuka-btn anuka-main">
+          <a
+            href="/chinese/drill/pinyin/?dataset=chinese-hskv3-elementary&group=1"
+            class="anuka-btn anuka-main lesson-cta lesson-cta-desktop"
+          >
+            Try a free lesson →
+          </a>
+          <a
+            href="/chinese/drill/hanzi/?dataset=chinese-hskv3-elementary&group=1"
+            class="anuka-btn anuka-main lesson-cta lesson-cta-mobile"
+          >
             Try a free lesson →
           </a>
         </div>
@@ -169,3 +178,19 @@
   </div>
 
 </main>
+
+<style>
+  .lesson-cta-mobile {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .lesson-cta-desktop {
+      display: none;
+    }
+
+    .lesson-cta-mobile {
+      display: inline-flex;
+    }
+  }
+</style>
