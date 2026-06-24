@@ -1,22 +1,119 @@
 import { req, tx, createDatabase } from '@low/idb'
-import type { StorageDrill, StorageAttempt, StorageCharLog } from '@dat/kind/chinese/types'
+import type { StorageDrill, StorageAttempt, StorageCharLog, StorageGroupScheduleSummary } from '@dat/kind/chinese/types'
 
 const ST_SESSIONS = 'group_sessions'
 const ST_WORDS = 'word_attempts'
 const ST_CHARS = 'char_logs'
+const ST_SUMMARIES = 'group_schedule_summaries'
 
-const statsDb = createDatabase('uch-stats', 1, (db) => {
-  const sessions = db.createObjectStore(ST_SESSIONS, { keyPath: 'id' })
-  sessions.createIndex('dataset_practice', ['dataset_id', 'practice_type'], { unique: false })
-  sessions.createIndex('synced', 'synced', { unique: false })
+const statsDb = createDatabase('uch-stats', 2, (db) => {
+  if (!db.objectStoreNames.contains(ST_SESSIONS)) {
+    const sessions = db.createObjectStore(ST_SESSIONS, { keyPath: 'id' })
+    sessions.createIndex('dataset_practice', ['dataset_id', 'practice_type'], { unique: false })
+    sessions.createIndex('synced', 'synced', { unique: false })
+  }
 
-  const words = db.createObjectStore(ST_WORDS, { keyPath: 'id' })
-  words.createIndex('group_session_id', 'group_session_id', { unique: false })
-  words.createIndex('synced', 'synced', { unique: false })
+  if (!db.objectStoreNames.contains(ST_WORDS)) {
+    const words = db.createObjectStore(ST_WORDS, { keyPath: 'id' })
+    words.createIndex('group_session_id', 'group_session_id', { unique: false })
+    words.createIndex('synced', 'synced', { unique: false })
+  }
 
-  const chars = db.createObjectStore(ST_CHARS, { keyPath: ['word_attempt_id', 'char_index'] })
-  chars.createIndex('synced', 'synced', { unique: false })
+  if (!db.objectStoreNames.contains(ST_CHARS)) {
+    const chars = db.createObjectStore(ST_CHARS, { keyPath: ['word_attempt_id', 'char_index'] })
+    chars.createIndex('synced', 'synced', { unique: false })
+  }
+
+  if (!db.objectStoreNames.contains(ST_SUMMARIES)) {
+    const summaries = db.createObjectStore(ST_SUMMARIES, { keyPath: ['dataset_id', 'practice_type', 'group_id'] })
+    summaries.createIndex('dataset_practice', ['dataset_id', 'practice_type'], { unique: false })
+  }
 })
+
+function emptySummary(session: StorageDrill): StorageGroupScheduleSummary {
+  return {
+    dataset_id: session.dataset_id,
+    practice_type: session.practice_type,
+    group_id: session.group_id,
+    total: 0,
+    full: 0,
+    clean: 0,
+    first_drilled_at: null,
+    last_drilled_at: null,
+    last_full_drill_at: null,
+    last_clean_drill_at: null,
+    last_session_hint_count: null,
+  }
+}
+
+function mergeSummary(
+  base: StorageGroupScheduleSummary | undefined,
+  add: StorageGroupScheduleSummary,
+): StorageGroupScheduleSummary {
+  const merged: StorageGroupScheduleSummary = base
+    ? {
+        ...base,
+        total: base.total + add.total,
+        full: base.full + add.full,
+        clean: base.clean + add.clean,
+      }
+    : { ...add }
+
+  if (add.first_drilled_at && (!merged.first_drilled_at || add.first_drilled_at < merged.first_drilled_at)) {
+    merged.first_drilled_at = add.first_drilled_at
+  }
+  if (add.last_drilled_at && (!merged.last_drilled_at || add.last_drilled_at > merged.last_drilled_at)) {
+    merged.last_drilled_at = add.last_drilled_at
+  }
+  if (add.last_clean_drill_at && (!merged.last_clean_drill_at || add.last_clean_drill_at > merged.last_clean_drill_at)) {
+    merged.last_clean_drill_at = add.last_clean_drill_at
+  }
+  if (add.last_full_drill_at && (!merged.last_full_drill_at || add.last_full_drill_at > merged.last_full_drill_at)) {
+    merged.last_full_drill_at = add.last_full_drill_at
+    merged.last_session_hint_count = add.last_session_hint_count
+  }
+
+  return merged
+}
+
+async function summarizeSessions(sessions: StorageDrill[]): Promise<StorageGroupScheduleSummary[]> {
+  const map = new Map<string, StorageGroupScheduleSummary>()
+
+  for (const s of sessions) {
+    const key = `${s.dataset_id}::${s.practice_type}::${s.group_id}`
+    const summary = map.get(key) ?? emptySummary(s)
+    const ts = s.done_at || s.started_at
+
+    summary.total += 1
+    if (!summary.first_drilled_at || ts < summary.first_drilled_at) summary.first_drilled_at = ts
+    if (!summary.last_drilled_at || ts > summary.last_drilled_at) summary.last_drilled_at = ts
+
+    if (s.done_at) {
+      const words = await getWordAttempts(s.id)
+      let hintCount = 0
+      for (const w of words) {
+        const chars = await getCharLogs(w.id)
+        for (const c of chars) hintCount += c.hint_count || 0
+      }
+
+      summary.full += 1
+      if (!summary.last_full_drill_at || s.done_at > summary.last_full_drill_at) {
+        summary.last_full_drill_at = s.done_at
+        summary.last_session_hint_count = hintCount
+      }
+      if (hintCount === 0) {
+        summary.clean += 1
+        if (!summary.last_clean_drill_at || s.done_at > summary.last_clean_drill_at) {
+          summary.last_clean_drill_at = s.done_at
+        }
+      }
+    }
+
+    map.set(key, summary)
+  }
+
+  return Array.from(map.values())
+}
 
 // --- Interface methods ---
 
@@ -66,6 +163,12 @@ async function saveCharLogs(chars: StorageCharLog[]): Promise<void> {
 async function getGroupSessions(datasetId: string, practiceType: string): Promise<StorageDrill[]> {
   const db = await statsDb.db()
   const store = db.transaction(ST_SESSIONS, 'readonly').objectStore(ST_SESSIONS)
+  return req(store.index('dataset_practice').getAll([datasetId, practiceType]))
+}
+
+async function getGroupScheduleSummaries(datasetId: string, practiceType: string): Promise<StorageGroupScheduleSummary[]> {
+  const db = await statsDb.db()
+  const store = db.transaction(ST_SUMMARIES, 'readonly').objectStore(ST_SUMMARIES)
   return req(store.index('dataset_practice').getAll([datasetId, practiceType]))
 }
 
@@ -173,6 +276,13 @@ async function bulkInsertCharLogs(chars: StorageCharLog[]): Promise<void> {
   await tx(t)
 }
 
+async function clearGroupScheduleSummaries(): Promise<void> {
+  const db = await statsDb.db()
+  const t = db.transaction(ST_SUMMARIES, 'readwrite')
+  t.objectStore(ST_SUMMARIES).clear()
+  await tx(t)
+}
+
 async function isEmpty(): Promise<boolean> {
   const db = await statsDb.db()
   const store = db.transaction(ST_SESSIONS, 'readonly').objectStore(ST_SESSIONS)
@@ -191,16 +301,23 @@ async function deleteOldSyncedRecords(cutoffDate: string): Promise<void> {
   if (old.length === 0) return
 
   const oldSessionIds = new Set(old.map((s: StorageDrill) => s.id))
+  const summaries = await summarizeSessions(old)
 
   // Find word attempts belonging to old sessions
   const allWords = await req(db.transaction(ST_WORDS, 'readonly').objectStore(ST_WORDS).getAll())
   const oldWords = allWords.filter((w: StorageAttempt) => w.synced && oldSessionIds.has(w.group_session_id))
 
   // Delete in one transaction
-  const t = db.transaction([ST_SESSIONS, ST_WORDS, ST_CHARS], 'readwrite')
+  const t = db.transaction([ST_SESSIONS, ST_WORDS, ST_CHARS, ST_SUMMARIES], 'readwrite')
   const ss = t.objectStore(ST_SESSIONS)
   const ws = t.objectStore(ST_WORDS)
   const cs = t.objectStore(ST_CHARS)
+  const summaryStore = t.objectStore(ST_SUMMARIES)
+
+  for (const summary of summaries) {
+    const existing = await req(summaryStore.get([summary.dataset_id, summary.practice_type, summary.group_id]))
+    summaryStore.put(mergeSummary(existing, summary))
+  }
 
   for (const s of old) ss.delete(s.id)
   for (const w of oldWords) {
@@ -231,6 +348,7 @@ export interface LowStatsIdb {
   saveGroupSession(session: StorageDrill): Promise<void>
   getGroupSessionById(id: number): Promise<StorageDrill | null>
   getGroupSessions(datasetId: string, practiceType: string): Promise<StorageDrill[]>
+  getGroupScheduleSummaries(datasetId: string, practiceType: string): Promise<StorageGroupScheduleSummary[]>
   saveWordAttempt(attempt: StorageAttempt): Promise<void>
   getWordAttempts(groupSessionId: number): Promise<StorageAttempt[]>
   saveCharLogs(chars: StorageCharLog[]): Promise<void>
@@ -243,6 +361,7 @@ export interface LowStatsIdb {
   bulkInsertGroupSessions(sessions: StorageDrill[]): Promise<void>
   bulkInsertWordAttempts(attempts: StorageAttempt[]): Promise<void>
   bulkInsertCharLogs(chars: StorageCharLog[]): Promise<void>
+  clearGroupScheduleSummaries(): Promise<void>
   isEmpty(): Promise<boolean>
   getMinId(): Promise<number>
   nextTempId(): Promise<number>
@@ -254,6 +373,7 @@ export const lowStatsIdb: LowStatsIdb = {
   saveGroupSession,
   getGroupSessionById,
   getGroupSessions,
+  getGroupScheduleSummaries,
   saveWordAttempt,
   getWordAttempts,
   saveCharLogs,
@@ -266,6 +386,7 @@ export const lowStatsIdb: LowStatsIdb = {
   bulkInsertGroupSessions,
   bulkInsertWordAttempts,
   bulkInsertCharLogs,
+  clearGroupScheduleSummaries,
   isEmpty,
   getMinId,
   nextTempId,

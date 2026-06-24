@@ -36,3 +36,17 @@ export interface StorageCharLog {
   hint_count: number
   synced: SyncStatus
 }
+
+export interface StorageGroupScheduleSummary {
+  dataset_id: string
+  practice_type: string
+  group_id: number
+  total: number
+  full: number
+  clean: number
+  first_drilled_at: string | null
+  last_drilled_at: string | null
+  last_full_drill_at: string | null
+  last_clean_drill_at: string | null
+  last_session_hint_count: number | null
+}

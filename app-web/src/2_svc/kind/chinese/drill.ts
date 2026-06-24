@@ -13,7 +13,8 @@ import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
 import { sttAuth } from '@stt/auth.svelte.js'
 import { svcSync } from '@svc/sync'
 import { dsCode, dtCode } from '@svc/kind/chinese/codes'
-import { calcWordSortScore, calcTypeOverdueScore, calcGroupHintDifficulty } from '@std/kind/chinese/stats'
+import { calcWordSortScore, calcTypeReview } from '@std/kind/chinese/stats'
+import type { TypeReview } from '@std/kind/chinese/stats'
 
 const DT_STORE_KEY: Record<string, 'wordProgressStroke' | 'wordProgressPinyin'> = {
   s: 'wordProgressStroke',
@@ -61,6 +62,7 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
 
   let sessionIdPromise: Promise<DrillId> | null = null
   let drillId: DrillId | null = null
+  let sessionHintCount = 0
 
   datAnalytics.track('drill_started', {
     drill_type: drillType,
@@ -93,6 +95,7 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
 
         const key = mkWordKey(groupId, attempt.wordId)
         const hintCount = chars.reduce((sum, c) => sum + (c.hintCount || 0), 0)
+        sessionHintCount += hintCount
         const updateWpMap = (map: Map<WordKey, WordProgress>): Map<WordKey, WordProgress> => {
           const next = new Map(map)
           const ex = next.get(key)
@@ -130,15 +133,21 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
       svcSync.syncPending().catch((e) => console.error('sync failed', e))
 
       const doneAt = session.done_at ?? new Date().toISOString()
+      const startedAt = session.started_at ?? doneAt
       const updateGpMap = (map: Map<number, GroupProgress>): Map<number, GroupProgress> => {
         const next = new Map(map)
         const existing = next.get(groupId)
-        if (existing) {
-          next.set(groupId, {
-            ...existing, full: existing.full + 1,
-            lastFullDrillAt: doneAt > (existing.lastFullDrillAt ?? '') ? doneAt : existing.lastFullDrillAt,
-          })
-        }
+        const clean = sessionHintCount === 0
+        next.set(groupId, {
+          total: (existing?.total ?? 0) + 1,
+          full: (existing?.full ?? 0) + 1,
+          clean: (existing?.clean ?? 0) + (clean ? 1 : 0),
+          firstDrilledAt: existing?.firstDrilledAt ?? startedAt,
+          lastDrilledAt: doneAt > (existing?.lastDrilledAt ?? '') ? doneAt : existing?.lastDrilledAt ?? doneAt,
+          lastFullDrillAt: doneAt > (existing?.lastFullDrillAt ?? '') ? doneAt : existing?.lastFullDrillAt ?? doneAt,
+          lastCleanDrillAt: clean && doneAt > (existing?.lastCleanDrillAt ?? '') ? doneAt : existing?.lastCleanDrillAt ?? null,
+          lastSessionHintCount: doneAt > (existing?.lastFullDrillAt ?? '') ? sessionHintCount : existing?.lastSessionHintCount ?? sessionHintCount,
+        })
         return next
       }
       sttStats.groupProgress = updateGpMap(sttStats.groupProgress)
@@ -147,6 +156,7 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
 
       sessionIdPromise = null
       drillId = null
+      sessionHintCount = 0
     },
   }
 }
@@ -155,8 +165,6 @@ function pickNextDrillPure(
   groups: ChineseGroup[],
   strokeSessions: Map<GroupId, GroupProgress>,
   pinyinSessions: Map<GroupId, GroupProgress>,
-  strokeWordProgress: Map<WordKey, WordProgress>,
-  pinyinWordProgress: Map<WordKey, WordProgress>,
 ): NextDrill | null {
   const isActive = (g: ChineseGroup) =>
     (strokeSessions.get(g.id)?.full ?? 0) >= 1 || (pinyinSessions.get(g.id)?.full ?? 0) >= 1
@@ -170,32 +178,61 @@ function pickNextDrillPure(
     return first ? { groupId: first.id, type: 'stroke' } : null
   }
 
-  // Compute per-type overdue scores; group score = max of both types
-  const withScores = activeGroups.map((g) => {
-    const strokeScore = calcTypeOverdueScore(strokeSessions.get(g.id), calcGroupHintDifficulty(g, strokeWordProgress))
-    const pinyinScore = calcTypeOverdueScore(pinyinSessions.get(g.id), calcGroupHintDifficulty(g, pinyinWordProgress))
-    const score = Math.max(strokeScore, pinyinScore)
-    const type: 'stroke' | 'pinyin' = pinyinScore >= strokeScore ? 'pinyin' : 'stroke'
-    return { group: g, score, type }
-  })
-
-  const maxScore = Math.max(...withScores.map((x) => x.score))
-
-  let selected: (typeof withScores)[0]
-  if (maxScore >= 1) {
-    selected = withScores.reduce((a, b) => (a.score > b.score ? a : b))
-  } else {
-    // All reviews ahead of schedule — introduce next new group
-    const maxActiveId = Math.max(...activeGroups.map((g) => g.id))
-    const nextNew = groups.find((g) =>
-      g.id === maxActiveId + 1 &&
-      (strokeSessions.get(g.id)?.full ?? 0) === 0 &&
-      (pinyinSessions.get(g.id)?.full ?? 0) === 0
-    )
-    if (nextNew) return { groupId: nextNew.id, type: 'stroke' }
-    selected = withScores.reduce((a, b) => (a.score > b.score ? a : b))
+  interface Candidate {
+    group: ChineseGroup
+    type: 'stroke' | 'pinyin'
+    review: TypeReview
+    rank: number
+    queuedAt: number
   }
 
+  const ts = (value: string | null | undefined) => value ? new Date(value).getTime() : Infinity
+  const candidates: Candidate[] = []
+
+  for (const group of activeGroups) {
+    const stroke = strokeSessions.get(group.id)
+    const pinyin = pinyinSessions.get(group.id)
+    const groupQueuedAt = Math.min(ts(stroke?.firstDrilledAt), ts(pinyin?.firstDrilledAt))
+
+    const add = (type: 'stroke' | 'pinyin', gp: GroupProgress | undefined) => {
+      const review = calcTypeReview(gp)
+      let rank: number
+      if (review.state === 'repeat') rank = 0
+      else if (review.state === 'due') rank = 1
+      else if (review.state === 'new') rank = 2
+      else rank = 4
+      candidates.push({ group, type, review, rank, queuedAt: groupQueuedAt })
+    }
+
+    add('stroke', stroke)
+    add('pinyin', pinyin)
+  }
+
+  const typeOrder = (type: 'stroke' | 'pinyin') => type === 'stroke' ? 0 : 1
+  const pickBest = (items: Candidate[]) => items.reduce((a, b) => {
+    if (a.rank !== b.rank) return a.rank < b.rank ? a : b
+    if (a.review.dueAt !== b.review.dueAt) return a.review.dueAt < b.review.dueAt ? a : b
+    if (a.queuedAt !== b.queuedAt) return a.queuedAt < b.queuedAt ? a : b
+    if (a.group.id !== b.group.id) return a.group.id < b.group.id ? a : b
+    return typeOrder(a.type) <= typeOrder(b.type) ? a : b
+  })
+
+  const immediate = candidates.filter((c) => c.rank <= 2)
+  if (immediate.length > 0) {
+    const selected = pickBest(immediate)
+    return { groupId: selected.group.id, type: selected.type }
+  }
+
+  // All active work is scheduled for the future — introduce the next new group.
+  const maxActiveId = Math.max(...activeGroups.map((g) => g.id))
+  const nextNew = groups.find((g) =>
+    g.id === maxActiveId + 1 &&
+    (strokeSessions.get(g.id)?.full ?? 0) === 0 &&
+    (pinyinSessions.get(g.id)?.full ?? 0) === 0
+  )
+  if (nextNew) return { groupId: nextNew.id, type: 'stroke' }
+
+  const selected = pickBest(candidates)
   return { groupId: selected.group.id, type: selected.type }
 }
 
@@ -205,8 +242,6 @@ function pickNextDrillSuggestion(): NextDrill | null {
       sttDataset.filtered as ChineseGroup[],
       sttStats.groupProgressStroke,
       sttStats.groupProgressPinyin,
-      sttStats.wordProgressStroke,
-      sttStats.wordProgressPinyin,
     )
   }
   return sttDataset.filtered.length > 0 ? { groupId: sttDataset.filtered[0].id, type: 'stroke' } : null

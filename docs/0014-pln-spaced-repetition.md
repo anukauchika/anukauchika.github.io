@@ -1,118 +1,60 @@
-# Plan 0014 — Spaced Repetition Scheduling
+# Plan 0014 - Hint-Gated Spaced Repetition
 
 RFC: `0014-rfc-spaced-repetition.md`
 
-## Overview
+## Implemented Scope
 
-Three phases, each a single commit. Pure algorithm first, then scheduling logic,
-then UI. No schema or API changes.
+### Domain State
 
----
+`GroupProgress` carries both raw completion and scheduling fields:
 
-## Phase 1 — Pure algorithm functions
+- `total`
+- `full`
+- `clean`
+- `firstDrilledAt`
+- `lastDrilledAt`
+- `lastFullDrillAt`
+- `lastCleanDrillAt`
+- `lastSessionHintCount`
 
-**Scope:** `app-web/src/6_std/kind/chinese/stats.ts`
+`full` remains completed sessions. `clean` is the repetition level used for spacing.
 
-Add the following pure functions (no state/service deps):
+### Scheduler
 
-```typescript
-// 0–1 difficulty for a single word
-calcWordDifficulty(wp: WordProgress): number
-  // 0.4 * error_rate + 0.7 * hint_rate, clamped [0, 1]
+`@std/kind/chinese/stats.ts` exposes:
 
-// avg word difficulty across all words in a group
-calcGroupDifficulty(group: ChineseGroup, wordProgress: Map<WordKey, WordProgress>): number
+- `calcReviewInterval(cleanCount)`
+- `calcTypeReview(groupProgress)`
+- `calcTypeDue(groupProgress)`
+- `countDueGroups(groups, strokeProgress, pinyinProgress)`
+- `sortGroupsByReview(groups, strokeProgress, pinyinProgress)`
 
-// 2^(full-1) days, capped at 90; full=0 → Infinity
-calcExpectedInterval(full: number): number
+Old difficulty-adjusted overdue-score helpers were removed.
 
-// expected * max(0.4, 1 - 0.5 * difficulty)
-calcEffectiveInterval(full: number, difficulty: number): number
+### Main Drill Picker
 
-// elapsed_days / effectiveInterval; full=0 → Infinity
-calcOverdueScore(gp: GroupProgress, effectiveInterval: number): number
+`@svc/kind/chinese/drill.ts` uses clean-session scheduling:
 
-// replaces sortGroupsByLastDrilled — sort desc by overdue score
-sortGroupsByOverdue(
-  groups: ChineseGroup[],
-  groupProgress: Map<GroupId, GroupProgress>,
-  wordProgress: Map<WordKey, WordProgress>,
-): ChineseGroup[]
-```
+1. repeat latest hint-using group/type immediately
+2. review due clean-session intervals
+3. start the unstarted companion type for active groups
+4. introduce next new group
+5. fall back to earliest upcoming review
 
-`sortGroupsByLastDrilled` stays for now (still used in other places), new function
-is added alongside it.
+Session hint count is tracked during the active drill and written into optimistic
+`sttStats` updates when the session ends.
 
----
+### Maintenance Summary
 
-## Phase 2 — Update scheduling logic
+`@low/kind/chinese/idb-stats-repo.ts` upgrades `uch-stats` to version 2 and adds
+`group_schedule_summaries`.
 
-**Scope:** `app-web/src/2_svc/kind/chinese/drill.ts`
+Before deleting old synced raw records, maintenance summarizes them and merges the compact
+summary into that store. Stats loading merges summaries with remaining raw sessions.
 
-### Replace `pickNextDrillPure`
+Server restore clears local summaries before inserting full remote history.
 
-New logic per RFC summary:
+### UI
 
-```typescript
-// Step 1: compute overdue scores for active groups (full >= 1)
-// Step 2: if any score >= 1 → pick highest
-// Step 3: else if new groups exist → pick group.id = max(active ids) + 1
-// Step 4: else → pick highest score (least-ahead active group)
-// Drill type: pick by lower full count; tiebreak by higher difficulty
-```
-
-Requires passing `wordProgress` (aggregated) to compute difficulty per group.
-Update `pickNextDrillSuggestion()` to pull `sttStats.wordProgress` and forward it.
-
-### Replace `sortByProgress`
-
-```typescript
-// word_score = successCount * (1 - difficulty * 0.5)
-// sort ascending
-```
-
-Uses `calcWordDifficulty()` from `@std`.
-
----
-
-## Phase 3 — Groups list UI
-
-**Scope:**
-- `app-web/src/1_uic/kind/chinese/compact-group-list.ts` — extend props
-- `app-web/src/1_uic/kind/chinese/compact-group.svelte` — display new fields
-- `app-web/src/routes/(app)/chinese/groups/+page.svelte` — switch sort function
-
-### New fields on `CompactGroupProps`
-
-```typescript
-overdueScore: number       // e.g. 1.8 → 1.8× overdue
-effectiveInterval: number  // days
-groupDifficulty: number    // 0–1
-elapsedDays: number        // days since lastFullDrillAt (or Infinity)
-```
-
-### Display in `compact-group.svelte`
-
-Show a debug/check row below the existing content (can be styled plainly for now):
-
-```
-overdue: 1.8×   interval: 8d   difficulty: 0.42   elapsed: 14d
-```
-
-Values computable in `buildProps()` in `compact-group-list.ts` using the new
-`@std` functions. Pass aggregated `wordProgress` (all drill types) from page.
-
-### Page update
-
-`/chinese/groups/+page.svelte`:
-- Replace `sortGroupsByLastDrilled` → `sortGroupsByOverdue`
-- Pass `sttStats.wordProgress` to `buildProps` (already available on the page)
-
----
-
-## What doesn't change
-
-- `CompactGroup` layout/design — only a new data row added
-- IDB schema, Supabase tables, sync logic
-- Stats aggregation (all inputs already computed)
-- Pinyin/stroke drill components
+Progress and drill badges show clean session counts. The dashboard and group list show
+`due` instead of `overdue`.

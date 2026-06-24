@@ -190,7 +190,7 @@
       {/if}
       <span class="anuka-sm anuka-mute">{group.items.length} words</span>
       {#if authenticated}
-        <span class="anuka-sm anuka-main">W {groupProgressStroke?.full ?? 0} | P {groupProgressPinyin?.full ?? 0}</span>
+        <span class="anuka-sm anuka-main">W {groupProgressStroke?.clean ?? 0} | P {groupProgressPinyin?.clean ?? 0}</span>
       {/if}
     </div>
   {/if}

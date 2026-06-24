@@ -10,8 +10,12 @@ export interface WordProgress {
 export interface GroupProgress {
   total: number
   full: number
+  clean: number
+  firstDrilledAt: string | null
   lastDrilledAt: string | null
   lastFullDrillAt: string | null
+  lastCleanDrillAt: string | null
+  lastSessionHintCount: number | null
 }
 
 export interface DayProgress {

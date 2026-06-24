@@ -193,30 +193,36 @@ export function calcGroupProgress(group: ChineseGroup, statsMap: Map<WordKey, Wo
 }
 
 export function calcGroupMastery(group: ChineseGroup, sessionsMap: Map<GroupId, GroupProgress>): number {
-  const fullSessions = sessionsMap.get(group.id)?.full ?? 0
-  return Math.min(Math.round((fullSessions / 10) * 100), 100)
+  const cleanSessions = sessionsMap.get(group.id)?.clean ?? 0
+  return Math.min(Math.round((cleanSessions / 10) * 100), 100)
 }
 
 // --- Sorting ---
 
-export function countOverdueGroups(
+export function countDueGroups(
   groups: ChineseGroup[],
   strokeProgress: Map<GroupId, GroupProgress>,
   pinyinProgress: Map<GroupId, GroupProgress>,
-  strokeWordProgress: Map<WordKey, WordProgress>,
-  pinyinWordProgress: Map<WordKey, WordProgress>,
 ): number {
   return groups.filter(g => {
-    const score = calcGroupOverdueScore(strokeProgress.get(g.id), pinyinProgress.get(g.id), g, strokeWordProgress, pinyinWordProgress)
-    return isFinite(score) && score >= 1
+    const stroke = calcTypeReview(strokeProgress.get(g.id))
+    const pinyin = calcTypeReview(pinyinProgress.get(g.id))
+    return stroke.state === 'repeat' || stroke.state === 'due' || pinyin.state === 'repeat' || pinyin.state === 'due'
   }).length
 }
 
-export function sortGroupsByLastDrilled(groups: ChineseGroup[], sessionsMap: Map<GroupId, GroupProgress>): ChineseGroup[] {
+export function sortGroupsByReview(
+  groups: ChineseGroup[],
+  strokeProgress: Map<GroupId, GroupProgress>,
+  pinyinProgress: Map<GroupId, GroupProgress>,
+): ChineseGroup[] {
   return [...groups].sort((a, b) => {
-    const tA = sessionsMap.get(a.id)?.lastDrilledAt ?? ''
-    const tB = sessionsMap.get(b.id)?.lastDrilledAt ?? ''
-    return tB.localeCompare(tA)
+    const aPriority = calcGroupReviewPriority(strokeProgress.get(a.id), pinyinProgress.get(a.id))
+    const bPriority = calcGroupReviewPriority(strokeProgress.get(b.id), pinyinProgress.get(b.id))
+    if (aPriority.rank !== bPriority.rank) return aPriority.rank - bPriority.rank
+    if (aPriority.dueAt !== bPriority.dueAt) return aPriority.dueAt - bPriority.dueAt
+    if (aPriority.queuedAt !== bPriority.queuedAt) return aPriority.queuedAt - bPriority.queuedAt
+    return a.id - b.id
   })
 }
 
@@ -231,12 +237,6 @@ const DRILL_ERROR_WEIGHT: Record<ChineseDrillType, number> = {
 // Difficulty can reduce effective success count by at most 50%.
 const DIFFICULTY_SORT_IMPACT = 0.5
 
-export function calcWordDifficulty(wp: WordProgress): number {
-  const errorRate = wp.errorCount / Math.max(1, wp.successCount + wp.errorCount)
-  const hintRate = (wp.hintCount ?? 0) / Math.max(1, wp.successCount + (wp.hintCount ?? 0))
-  return Math.min(1, 0.4 * errorRate + 0.7 * hintRate)
-}
-
 export function calcWordSortScore(wp: WordProgress | undefined, drillType: ChineseDrillType): number {
   const errorWeight = DRILL_ERROR_WEIGHT[drillType]
   const resolved = wp ?? { successCount: 0, errorCount: 0, hintCount: 0, lastDrilledAt: null }
@@ -246,100 +246,85 @@ export function calcWordSortScore(wp: WordProgress | undefined, drillType: Chine
   return resolved.successCount * (1 - difficulty * DIFFICULTY_SORT_IMPACT)
 }
 
-export function calcGroupDifficulty(group: ChineseGroup, wordProgress: Map<WordKey, WordProgress>): number {
-  let sum = 0
-  let count = 0
-  for (const item of group.items) {
-    const wp = wordProgress.get(mkWordKey(group.id, item.id))
-    if (wp) { sum += calcWordDifficulty(wp); count++ }
+export type ReviewState = 'new' | 'repeat' | 'due' | 'upcoming'
+
+export interface TypeReview {
+  state: ReviewState
+  dueAt: number
+  queuedAt: number
+  intervalDays: number | null
+}
+
+interface GroupReviewPriority {
+  rank: number
+  dueAt: number
+  queuedAt: number
+}
+
+function ts(value: string | null | undefined, fallback: number): number {
+  if (!value) return fallback
+  const time = new Date(value).getTime()
+  return Number.isFinite(time) ? time : fallback
+}
+
+export function calcReviewInterval(cleanCount: number): number | null {
+  if (cleanCount <= 0) return null
+  return Math.pow(2, cleanCount - 1)
+}
+
+export function calcTypeReview(gp: GroupProgress | undefined): TypeReview {
+  if (!gp || gp.full === 0) {
+    return { state: 'new', dueAt: Infinity, queuedAt: Infinity, intervalDays: null }
   }
-  return count > 0 ? sum / count : 0
-}
 
-export function calcGroupHintDifficulty(group: ChineseGroup, wordProgress: Map<WordKey, WordProgress>): number {
-  let sum = 0
-  let count = 0
-  for (const item of group.items) {
-    const wp = wordProgress.get(mkWordKey(group.id, item.id))
-    if (wp) {
-      const hintRate = (wp.hintCount ?? 0) / Math.max(1, wp.successCount + (wp.hintCount ?? 0))
-      sum += 0.7 * hintRate
-      count++
-    }
+  const queuedAt = ts(gp.firstDrilledAt, Infinity)
+  if ((gp.lastSessionHintCount ?? 0) > 0) {
+    return { state: 'repeat', dueAt: ts(gp.lastFullDrillAt, 0), queuedAt, intervalDays: null }
   }
-  return count > 0 ? sum / count : 0
+
+  const intervalDays = calcReviewInterval(gp.clean)
+  if (!intervalDays || !gp.lastCleanDrillAt) {
+    return { state: 'repeat', dueAt: ts(gp.lastFullDrillAt, 0), queuedAt, intervalDays: null }
+  }
+
+  const dueAt = new Date(gp.lastCleanDrillAt).getTime() + intervalDays * 24 * 60 * 60 * 1000
+  return { state: dueAt <= Date.now() ? 'due' : 'upcoming', dueAt, queuedAt, intervalDays }
 }
 
-export function calcTypeDue(gp: GroupProgress | undefined, difficulty: number = 0): DueInfo | null {
-  if (!gp || gp.full === 0 || !gp.lastFullDrillAt) return null
-  return dueIn(gp.lastFullDrillAt, calcEffectiveInterval(gp.full, difficulty))
+export function calcTypeDue(gp: GroupProgress | undefined): DueInfo | null {
+  const review = calcTypeReview(gp)
+  if (review.state === 'new') return null
+  if (review.state === 'repeat') return { label: 'repeat', status: 'due-now' }
+  if (!gp?.lastCleanDrillAt || !review.intervalDays) return null
+  return dueIn(gp.lastCleanDrillAt, review.intervalDays)
 }
 
-// Returns expected review interval in days. full=0 → Infinity (not yet started).
-export function calcExpectedInterval(full: number): number {
-  if (full <= 0) return Infinity
-  return Math.min(Math.pow(2, full - 1), 90)
+function typeRank(review: TypeReview, inactiveRank: number): number {
+  if (review.state === 'repeat') return 0
+  if (review.state === 'due') return 1
+  if (review.state === 'upcoming') return 2
+  return inactiveRank
 }
 
-// Shrinks expected interval for harder groups (difficulty 0–1).
-export function calcEffectiveInterval(full: number, difficulty: number): number {
-  const expected = calcExpectedInterval(full)
-  if (!isFinite(expected)) return Infinity
-  return expected * Math.max(0.4, 1 - 0.5 * difficulty)
-}
-
-// elapsed_days / expectedInterval for one drill type. full=0 or no lastFullDrillAt → Infinity.
-export function calcOverdueScore(gp: GroupProgress, effectiveInterval: number): number {
-  if (!isFinite(effectiveInterval) || !gp.lastFullDrillAt) return Infinity
-  const elapsedMs = Date.now() - new Date(gp.lastFullDrillAt).getTime()
-  const elapsedDays = elapsedMs / (1000 * 60 * 60 * 24)
-  return elapsedDays / effectiveInterval
-}
-
-// Overdue score for a single drill type. Undefined/full=0 → Infinity.
-export function calcTypeOverdueScore(gp: GroupProgress | undefined, difficulty: number = 0): number {
-  if (!gp) return Infinity
-  return calcOverdueScore(gp, calcEffectiveInterval(gp.full, difficulty))
-}
-
-// Group overdue score = max across drill types. Either type being overdue surfaces the group.
-export function calcGroupOverdueScore(
+export function calcGroupReviewPriority(
   gpStroke: GroupProgress | undefined,
   gpPinyin: GroupProgress | undefined,
-  group: ChineseGroup,
-  strokeWordProgress: Map<WordKey, WordProgress>,
-  pinyinWordProgress: Map<WordKey, WordProgress>,
-): number {
-  const strokeDiff = calcGroupHintDifficulty(group, strokeWordProgress)
-  const pinyinDiff = calcGroupHintDifficulty(group, pinyinWordProgress)
-  return Math.max(calcTypeOverdueScore(gpStroke, strokeDiff), calcTypeOverdueScore(gpPinyin, pinyinDiff))
-}
+): GroupReviewPriority {
+  const stroke = calcTypeReview(gpStroke)
+  const pinyin = calcTypeReview(gpPinyin)
+  const active = stroke.state !== 'new' || pinyin.state !== 'new'
+  if (!active) return { rank: 4, dueAt: Infinity, queuedAt: Infinity }
 
-export function sortGroupsByOverdue(
-  groups: ChineseGroup[],
-  strokeProgress: Map<GroupId, GroupProgress>,
-  pinyinProgress: Map<GroupId, GroupProgress>,
-  strokeWordProgress: Map<WordKey, WordProgress>,
-  pinyinWordProgress: Map<WordKey, WordProgress>,
-): ChineseGroup[] {
-  return [...groups].sort((a, b) => {
-    const gsA = strokeProgress.get(a.id)
-    const gpA = pinyinProgress.get(a.id)
-    const gsB = strokeProgress.get(b.id)
-    const gpB = pinyinProgress.get(b.id)
-    const isActiveA = (gsA?.full ?? 0) >= 1 || (gpA?.full ?? 0) >= 1
-    const isActiveB = (gsB?.full ?? 0) >= 1 || (gpB?.full ?? 0) >= 1
-    // Inactive groups (neither type ever completed) go last, ordered by id
-    if (!isActiveA && !isActiveB) return a.id - b.id
-    if (!isActiveA) return 1
-    if (!isActiveB) return -1
-    const scoreA = calcGroupOverdueScore(gsA, gpA, a, strokeWordProgress, pinyinWordProgress)
-    const scoreB = calcGroupOverdueScore(gsB, gpB, b, strokeWordProgress, pinyinWordProgress)
-    if (!isFinite(scoreA) && !isFinite(scoreB)) return a.id - b.id
-    if (!isFinite(scoreA)) return -1
-    if (!isFinite(scoreB)) return 1
-    return scoreB - scoreA
-  })
+  const inactiveRank = 3
+  const strokeRank = typeRank(stroke, inactiveRank)
+  const pinyinRank = typeRank(pinyin, inactiveRank)
+  const bestRank = Math.min(strokeRank, pinyinRank)
+  const dueAt = Math.min(
+    strokeRank === bestRank ? stroke.dueAt : Infinity,
+    pinyinRank === bestRank ? pinyin.dueAt : Infinity,
+  )
+  const queuedAt = Math.min(stroke.queuedAt, pinyin.queuedAt)
+  return { rank: bestRank, dueAt, queuedAt }
 }
 
 // --- Chart ---

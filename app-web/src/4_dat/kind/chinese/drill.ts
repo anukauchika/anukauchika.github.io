@@ -201,6 +201,7 @@ export const datDrillSync: DrillSyncRepo = {
 
   async restoreFromServer() {
     const { sessions, words, chars } = await lowStatsSupabase.restoreChineseStats()
+    await lowStatsIdb.clearGroupScheduleSummaries()
     if (sessions.length === 0) return
 
     await lowStatsIdb.bulkInsertGroupSessions(sessions.map((s) => ({ ...s, synced: 1 })))

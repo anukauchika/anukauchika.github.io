@@ -9,7 +9,7 @@
     uniqueChars,
     avgDailyTime,
     strokeDrilledCount,
-    overdueCount = 0,
+    dueCount = 0,
     isAuthenticated,
     onShowProgressGroups,
     onShowProgressWords,
@@ -32,6 +32,6 @@
   {#if isAuthenticated}
     <Stat value={strokeDrilledCount} label="Drilled" onclick={onShowProgressWords} />
     <Stat value={formatDuration(avgDailyTime)} label="Avg/Day" />
-    <Stat value={overdueCount} label="Overdue" class={overdueCount > 0 ? 'anuka-warn' : ''} />
+    <Stat value={dueCount} label="Due" class={dueCount > 0 ? 'anuka-warn' : ''} />
   {/if}
 </div>

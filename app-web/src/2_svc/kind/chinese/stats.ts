@@ -24,6 +24,7 @@ async function loadWordProgressAll(datasetId: DatasetId): Promise<void> {
       if (existing) {
         existing.successCount += wp.successCount
         existing.errorCount += wp.errorCount
+        existing.hintCount += wp.hintCount
         if (wp.lastDrilledAt && (!existing.lastDrilledAt || wp.lastDrilledAt > existing.lastDrilledAt)) {
           existing.lastDrilledAt = wp.lastDrilledAt
         }
@@ -51,8 +52,16 @@ async function loadGroupProgressAll(datasetId: DatasetId): Promise<void> {
       if (existing) {
         existing.total += summary.total
         existing.full += summary.full
+        existing.clean += summary.clean
+        if (summary.firstDrilledAt && (!existing.firstDrilledAt || summary.firstDrilledAt < existing.firstDrilledAt)) {
+          existing.firstDrilledAt = summary.firstDrilledAt
+        }
+        if (summary.lastCleanDrillAt && (!existing.lastCleanDrillAt || summary.lastCleanDrillAt > existing.lastCleanDrillAt)) {
+          existing.lastCleanDrillAt = summary.lastCleanDrillAt
+        }
         if (summary.lastFullDrillAt && (!existing.lastFullDrillAt || summary.lastFullDrillAt > existing.lastFullDrillAt)) {
           existing.lastFullDrillAt = summary.lastFullDrillAt
+          existing.lastSessionHintCount = summary.lastSessionHintCount
         }
         if (summary.lastDrilledAt && (!existing.lastDrilledAt || summary.lastDrilledAt > existing.lastDrilledAt)) {
           existing.lastDrilledAt = summary.lastDrilledAt

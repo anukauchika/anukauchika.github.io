@@ -1,6 +1,6 @@
 import { timeAgo } from '@std/format'
 import type { DueInfo } from '@std/format'
-import { calcGroupProgress, calcGroupMastery, calcTypeDue, calcGroupHintDifficulty } from '@std/kind/chinese/stats'
+import { calcGroupProgress, calcGroupMastery, calcTypeDue } from '@std/kind/chinese/stats'
 import type { GroupId, WordKey } from '@dom/dataset'
 import type { ChineseGroup } from '@dom/kind/chinese/dataset'
 import type { WordProgress, GroupProgress } from '@dom/stats'
@@ -9,12 +9,10 @@ interface Context {
   basePath: string
   datasetId: string
   isAuthenticated: boolean
-  groupSessions: Map<GroupId, GroupProgress>
   groupSessionsStroke: Map<GroupId, GroupProgress>
   groupSessionsPinyin: Map<GroupId, GroupProgress>
   statsStroke: Map<WordKey, WordProgress>
   statsPinyin: Map<WordKey, WordProgress>
-  wordProgress: Map<WordKey, WordProgress>
 }
 
 export function buildProps(group: ChineseGroup, ctx: Context, from?: string) {
@@ -28,8 +26,8 @@ export function buildProps(group: ChineseGroup, ctx: Context, from?: string) {
   let pinyinLastDrilled: string | undefined
 
   if (ctx.isAuthenticated) {
-    strokeDue = calcTypeDue(gsStroke, calcGroupHintDifficulty(group, ctx.statsStroke)) ?? undefined
-    pinyinDue = calcTypeDue(gsPinyin, calcGroupHintDifficulty(group, ctx.statsPinyin)) ?? undefined
+    strokeDue = calcTypeDue(gsStroke) ?? undefined
+    pinyinDue = calcTypeDue(gsPinyin) ?? undefined
     strokeLastDrilled = gsStroke?.lastFullDrillAt ? timeAgo(gsStroke.lastFullDrillAt) : undefined
     pinyinLastDrilled = gsPinyin?.lastFullDrillAt ? timeAgo(gsPinyin.lastFullDrillAt) : undefined
   }
@@ -39,8 +37,8 @@ export function buildProps(group: ChineseGroup, ctx: Context, from?: string) {
     tags: group.tags,
     strokeHref: `${ctx.basePath}/drill/hanzi/?group=${group.id}&dataset=${ctx.datasetId}${fromParam}`,
     pinyinHref: `${ctx.basePath}/drill/pinyin/?group=${group.id}&dataset=${ctx.datasetId}${fromParam}`,
-    strokeSessions: gsStroke?.full ?? 0,
-    pinyinSessions: gsPinyin?.full ?? 0,
+    strokeSessions: gsStroke?.clean ?? 0,
+    pinyinSessions: gsPinyin?.clean ?? 0,
     strokeProgress: ctx.isAuthenticated ? calcGroupProgress(group, ctx.statsStroke) : 0,
     strokeMastery: ctx.isAuthenticated ? calcGroupMastery(group, ctx.groupSessionsStroke) : 0,
     pinyinProgress: ctx.isAuthenticated ? calcGroupProgress(group, ctx.statsPinyin) : 0,

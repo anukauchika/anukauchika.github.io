@@ -1,6 +1,7 @@
 import type { GroupId, WordKey } from '@dom/dataset'
 import { mkWordKey } from '@dom/dataset'
 import type { DayKey, WordProgress, GroupProgress, DayProgress } from '@dom/stats'
+import type { StorageDrill } from '@dat/kind/chinese/types'
 import { lowStatsIdb } from '@low/kind/chinese/idb-stats-repo'
 
 const MAX_SESSION_MS = 2 * 60 * 60 * 1000 // 2h safety cap
@@ -47,33 +48,89 @@ async function getWordProgress(datasetCode: string, drillCode: string): Promise<
   return map
 }
 
+function emptyGroupProgress(): GroupProgress {
+  return {
+    total: 0,
+    full: 0,
+    clean: 0,
+    firstDrilledAt: null,
+    lastDrilledAt: null,
+    lastFullDrillAt: null,
+    lastCleanDrillAt: null,
+    lastSessionHintCount: null,
+  }
+}
+
+function mergeIntoGroupProgress(target: GroupProgress, add: GroupProgress): void {
+  target.total += add.total
+  target.full += add.full
+  target.clean += add.clean
+  if (add.firstDrilledAt && (!target.firstDrilledAt || add.firstDrilledAt < target.firstDrilledAt)) {
+    target.firstDrilledAt = add.firstDrilledAt
+  }
+  if (add.lastDrilledAt && (!target.lastDrilledAt || add.lastDrilledAt > target.lastDrilledAt)) {
+    target.lastDrilledAt = add.lastDrilledAt
+  }
+  if (add.lastCleanDrillAt && (!target.lastCleanDrillAt || add.lastCleanDrillAt > target.lastCleanDrillAt)) {
+    target.lastCleanDrillAt = add.lastCleanDrillAt
+  }
+  if (add.lastFullDrillAt && (!target.lastFullDrillAt || add.lastFullDrillAt > target.lastFullDrillAt)) {
+    target.lastFullDrillAt = add.lastFullDrillAt
+    target.lastSessionHintCount = add.lastSessionHintCount
+  }
+}
+
+async function sessionProgress(s: StorageDrill): Promise<GroupProgress> {
+  const gp = emptyGroupProgress()
+  const ts = s.done_at || s.started_at
+  gp.total = 1
+  gp.firstDrilledAt = ts
+  gp.lastDrilledAt = ts
+
+  if (!s.done_at) return gp
+
+  const words = await lowStatsIdb.getWordAttempts(s.id)
+  let hintCount = 0
+  for (const w of words) {
+    const chars = await lowStatsIdb.getCharLogs(w.id)
+    for (const c of chars) hintCount += c.hint_count || 0
+  }
+
+  gp.full = 1
+  gp.lastFullDrillAt = s.done_at
+  gp.lastSessionHintCount = hintCount
+  if (hintCount === 0) {
+    gp.clean = 1
+    gp.lastCleanDrillAt = s.done_at
+  }
+
+  return gp
+}
+
 async function getGroupProgress(datasetCode: string, drillCode: string): Promise<Map<GroupId, GroupProgress>> {
   const sessions = await lowStatsIdb.getGroupSessions(datasetCode, drillCode)
+  const summaries = await lowStatsIdb.getGroupScheduleSummaries(datasetCode, drillCode)
   const map = new Map<GroupId, GroupProgress>()
 
+  for (const s of summaries) {
+    const existing = map.get(s.group_id) ?? emptyGroupProgress()
+    mergeIntoGroupProgress(existing, {
+      total: s.total,
+      full: s.full,
+      clean: s.clean,
+      firstDrilledAt: s.first_drilled_at,
+      lastDrilledAt: s.last_drilled_at,
+      lastFullDrillAt: s.last_full_drill_at,
+      lastCleanDrillAt: s.last_clean_drill_at,
+      lastSessionHintCount: s.last_session_hint_count,
+    })
+    map.set(s.group_id, existing)
+  }
+
   for (const s of sessions) {
-    const isFull = s.done_at != null
-    const ts = s.done_at || s.started_at
-    const existing = map.get(s.group_id)
-    if (existing) {
-      existing.total += 1
-      if (isFull) {
-        existing.full += 1
-        if (!existing.lastFullDrillAt || s.done_at! > existing.lastFullDrillAt) {
-          existing.lastFullDrillAt = s.done_at
-        }
-      }
-      if (ts > existing.lastDrilledAt!) {
-        existing.lastDrilledAt = ts
-      }
-    } else {
-      map.set(s.group_id, {
-        total: 1,
-        full: isFull ? 1 : 0,
-        lastDrilledAt: ts,
-        lastFullDrillAt: isFull ? s.done_at : null,
-      })
-    }
+    const existing = map.get(s.group_id) ?? emptyGroupProgress()
+    mergeIntoGroupProgress(existing, await sessionProgress(s))
+    map.set(s.group_id, existing)
   }
   return map
 }
