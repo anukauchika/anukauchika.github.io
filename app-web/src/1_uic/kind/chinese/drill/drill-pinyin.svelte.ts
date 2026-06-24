@@ -10,7 +10,7 @@ const isHanChar = (ch: string) => /[\u4e00-\u9fff]/.test(ch)
 export class DrillPinyinSession {
   // --- Callbacks ---
   private onWordDone: (attempt: WordAttempt, chars: CharAttempt[]) => void
-  private onDrillDone: (result: GroupAttempt) => void
+  private onDrillDone: (result: GroupAttempt) => void | Promise<void>
 
   // --- Session flow ---
   items: ChineseWord[] = $state([])
@@ -20,6 +20,7 @@ export class DrillPinyinSession {
   drilledCount: number = $state(0)
   skippedCount: number = $state(0)
   sessionDone: boolean = $state(false)
+  sessionSaving: boolean = $state(false)
 
   // --- Inter-word delay ---
   wordDelay: boolean = $state(false)
@@ -64,7 +65,7 @@ export class DrillPinyinSession {
     items: ChineseWord[]
     wordProgress: Map<WordId, WordProgress>
     onWordDone: (attempt: WordAttempt, chars: CharAttempt[]) => void
-    onDrillDone: (result: GroupAttempt) => void
+    onDrillDone: (result: GroupAttempt) => void | Promise<void>
   }) {
     this.items = opts.items
     this.wordProgress = new Map(opts.wordProgress)
@@ -202,9 +203,15 @@ export class DrillPinyinSession {
     this.startDelay(this.hanChars.length * 1000)
   }
 
-  private finishSession(): void {
+  private async finishSession(): Promise<void> {
+    if (this.sessionSaving || this.sessionDone) return
+    this.sessionSaving = true
+    try {
+      await this.onDrillDone({ drilledCount: this.drilledCount, skippedCount: this.skippedCount })
+    } finally {
+      this.sessionSaving = false
+    }
     this.sessionDone = true
-    this.onDrillDone({ drilledCount: this.drilledCount, skippedCount: this.skippedCount })
   }
 
   private resetCharState(): void {
@@ -225,6 +232,7 @@ export class DrillPinyinSession {
     this.drilledCount = 0
     this.skippedCount = 0
     this.sessionDone = false
+    this.sessionSaving = false
     this.wordDelay = false
     this.wordDelayProgress = 100
     this.showHint = false

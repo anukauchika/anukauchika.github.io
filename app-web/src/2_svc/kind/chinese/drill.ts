@@ -13,8 +13,7 @@ import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
 import { sttAuth } from '@stt/auth.svelte.js'
 import { svcSync } from '@svc/sync'
 import { dsCode, dtCode } from '@svc/kind/chinese/codes'
-import { calcWordSortScore, calcTypeReview } from '@std/kind/chinese/stats'
-import type { TypeReview } from '@std/kind/chinese/stats'
+import { calcWordSortScore } from '@std/kind/chinese/stats'
 
 const DT_STORE_KEY: Record<string, 'wordProgressStroke' | 'wordProgressPinyin'> = {
   s: 'wordProgressStroke',
@@ -40,9 +39,21 @@ export interface DrillHandle {
   endSession(result: GroupAttempt): Promise<void>
 }
 
-interface NextDrill {
+export interface NextDrill {
   groupId: number
   type: 'stroke' | 'pinyin'
+  reason: 'repeat' | 'due' | 'new' | 'upcoming' | 'fallback'
+  offline: boolean
+}
+
+const DRILL_CODE_TO_TYPE: Record<string, 'stroke' | 'pinyin'> = {
+  s: 'stroke',
+  p: 'pinyin',
+}
+
+function fallbackDrill(groups: ChineseGroup[], offline: boolean): NextDrill | null {
+  const first = [...groups].sort((a, b) => a.id - b.id)[0]
+  return first ? { groupId: first.id, type: 'stroke', reason: 'fallback', offline } : null
 }
 
 async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: ChineseDrillType): Promise<DrillHandle> {
@@ -138,7 +149,8 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
       const session = await datDrill.endDrill(drillId)
       if (!session) return
 
-      svcSync.syncPending().catch((e) => console.error('sync failed', e))
+      if (authenticated) await svcSync.syncPending().catch((e) => console.error('sync failed', e))
+      else svcSync.syncPending().catch((e) => console.error('sync failed', e))
 
       const doneAt = session.done_at ?? new Date().toISOString()
       const startedAt = session.started_at ?? doneAt
@@ -169,97 +181,32 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
   }
 }
 
-function pickNextDrillPure(
-  groups: ChineseGroup[],
-  strokeSessions: Map<GroupId, GroupProgress>,
-  pinyinSessions: Map<GroupId, GroupProgress>,
-): NextDrill | null {
-  const isActive = (g: ChineseGroup) =>
-    (strokeSessions.get(g.id)?.full ?? 0) >= 1 || (pinyinSessions.get(g.id)?.full ?? 0) >= 1
+async function pickNextDrillSuggestion(datasetId: DatasetId, groups: ChineseGroup[]): Promise<NextDrill | null> {
+  if (!sttAuth.isAuthenticated) return fallbackDrill(groups, false)
+  if (groups.length === 0) return null
 
-  const activeGroups = groups.filter(isActive)
-
-  if (activeGroups.length === 0) {
-    // No active groups yet — start with the first unstarted group by id
-    const first = [...groups].sort((a, b) => a.id - b.id)
-      .find(g => (strokeSessions.get(g.id)?.full ?? 0) === 0 && (pinyinSessions.get(g.id)?.full ?? 0) === 0)
-    return first ? { groupId: first.id, type: 'stroke' } : null
-  }
-
-  interface Candidate {
-    group: ChineseGroup
-    type: 'stroke' | 'pinyin'
-    review: TypeReview
-    rank: number
-    queuedAt: number
-  }
-
-  const ts = (value: string | null | undefined) => value ? new Date(value).getTime() : Infinity
-  const candidates: Candidate[] = []
-
-  for (const group of activeGroups) {
-    const stroke = strokeSessions.get(group.id)
-    const pinyin = pinyinSessions.get(group.id)
-    const groupQueuedAt = Math.min(ts(stroke?.firstDrilledAt), ts(pinyin?.firstDrilledAt))
-
-    const add = (type: 'stroke' | 'pinyin', gp: GroupProgress | undefined) => {
-      const review = calcTypeReview(gp)
-      let rank: number
-      if (review.state === 'repeat') rank = 0
-      else if (review.state === 'due') rank = 1
-      else if (review.state === 'new') rank = 2
-      else rank = 4
-      candidates.push({ group, type, review, rank, queuedAt: groupQueuedAt })
+  try {
+    const next = await datDrill.getNextDrill(dsCode(datasetId), groups.map((g) => g.id))
+    if (!next) return fallbackDrill(groups, false)
+    const type = DRILL_CODE_TO_TYPE[next.drillCode]
+    if (!type) return fallbackDrill(groups, false)
+    return {
+      groupId: next.groupId,
+      type,
+      reason: next.reason as NextDrill['reason'],
+      offline: false,
     }
-
-    add('stroke', stroke)
-    add('pinyin', pinyin)
+  } catch (e) {
+    console.error('next drill lookup failed', e)
+    return fallbackDrill(groups, true)
   }
-
-  const typeOrder = (type: 'stroke' | 'pinyin') => type === 'stroke' ? 0 : 1
-  const pickBest = (items: Candidate[]) => items.reduce((a, b) => {
-    if (a.rank !== b.rank) return a.rank < b.rank ? a : b
-    if (a.review.dueAt !== b.review.dueAt) return a.review.dueAt < b.review.dueAt ? a : b
-    if (a.queuedAt !== b.queuedAt) return a.queuedAt < b.queuedAt ? a : b
-    if (a.group.id !== b.group.id) return a.group.id < b.group.id ? a : b
-    return typeOrder(a.type) <= typeOrder(b.type) ? a : b
-  })
-
-  const immediate = candidates.filter((c) => c.rank <= 2)
-  if (immediate.length > 0) {
-    const selected = pickBest(immediate)
-    return { groupId: selected.group.id, type: selected.type }
-  }
-
-  // All active work is scheduled for the future — introduce the next new group.
-  const maxActiveId = Math.max(...activeGroups.map((g) => g.id))
-  const nextNew = groups.find((g) =>
-    g.id === maxActiveId + 1 &&
-    (strokeSessions.get(g.id)?.full ?? 0) === 0 &&
-    (pinyinSessions.get(g.id)?.full ?? 0) === 0
-  )
-  if (nextNew) return { groupId: nextNew.id, type: 'stroke' }
-
-  const selected = pickBest(candidates)
-  return { groupId: selected.group.id, type: selected.type }
-}
-
-function pickNextDrillSuggestion(): NextDrill | null {
-  if (sttAuth.isAuthenticated) {
-    return pickNextDrillPure(
-      sttDataset.filtered as ChineseGroup[],
-      sttStats.groupProgressStroke,
-      sttStats.groupProgressPinyin,
-    )
-  }
-  return sttDataset.filtered.length > 0 ? { groupId: sttDataset.filtered[0].id, type: 'stroke' } : null
 }
 
 // --- Public interface ---
 
 export interface DrillService {
   initDrill(datasetId: DatasetId, groupId: GroupId, drillType: ChineseDrillType): Promise<DrillHandle>
-  pickNextDrill(): NextDrill | null
+  pickNextDrill(datasetId: DatasetId, groups: ChineseGroup[]): Promise<NextDrill | null>
 }
 
 export const svcDrill: DrillService = {

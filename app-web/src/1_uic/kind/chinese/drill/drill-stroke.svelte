@@ -46,7 +46,14 @@
   }}
 />
 
-{#if session.currentItem && !session.sessionDone}
+{#if session.sessionSaving}
+  <Island>
+    <div class="anuka-stack anuka-center anuka-compact">
+      <h2 class="anuka-island-title anuka-main">Saving session</h2>
+      <div class="anuka-mute anuka-sm">{session.drilledCount} drilled &middot; {session.skippedCount} skipped</div>
+    </div>
+  </Island>
+{:else if session.currentItem && !session.sessionDone}
   <Island>
     <a class="anuka-quick" href={backUrl} title="Back">
       <span class="anuka-icon anuka-icon-close"></span>

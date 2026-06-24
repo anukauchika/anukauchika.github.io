@@ -13,6 +13,14 @@ interface RestoreChineseStatsPayload {
   chars: StorageCharLog[]
 }
 
+export interface NextChineseDrillRecord {
+  group_id: number
+  practice_type: string
+  reason: string
+  due_at: string | null
+  interval_days: number | null
+}
+
 async function createGroupSession(record: DrillRecord): Promise<{ id: number }> {
   const { data, error } = await supabase
     .from('group_session')
@@ -93,12 +101,22 @@ async function restoreChineseStats(): Promise<RestoreChineseStatsPayload> {
   }
 }
 
+async function nextChineseDrill(datasetCode: string, groupIds: number[]): Promise<NextChineseDrillRecord | null> {
+  const { data, error } = await supabase.rpc('next_chinese_drill', {
+    p_dataset_id: datasetCode,
+    p_group_ids: groupIds,
+  })
+  if (error) throw error
+  return data?.[0] ?? null
+}
+
 export interface LowStatsSupabase {
   createGroupSession(record: DrillRecord): Promise<{ id: number }>
   updateGroupSessionDone(id: number, doneAt: string): Promise<void>
   insertWordAttempt(record: AttemptRecord): Promise<{ id: number }>
   insertCharLogs(chars: CharLogRecord[]): Promise<void>
   restoreChineseStats(): Promise<RestoreChineseStatsPayload>
+  nextChineseDrill(datasetCode: string, groupIds: number[]): Promise<NextChineseDrillRecord | null>
 }
 
 export const lowStatsSupabase: LowStatsSupabase = {
@@ -107,4 +125,5 @@ export const lowStatsSupabase: LowStatsSupabase = {
   insertWordAttempt,
   insertCharLogs,
   restoreChineseStats,
+  nextChineseDrill,
 }

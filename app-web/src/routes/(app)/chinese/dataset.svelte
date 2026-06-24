@@ -15,19 +15,45 @@
   import AuthModal from '@uic/auth-modal.svelte'
 
   let showAuthDropdown = $state(false)
+  let nextDrill = $state(null)
 
   const basePath = $derived.by(() => `/${sttDataset.current?.kind}`)
 
   const drillHref = $derived.by(() => {
-    const nd = svcDrill.pickNextDrill()
     const typeToPath = { stroke: 'hanzi', pinyin: 'pinyin' }
-    return nd
-      ? `${basePath}/drill/${typeToPath[nd.type] || 'hanzi'}/?group=${nd.groupId}&dataset=${sttDataset.id}`
+    return nextDrill
+      ? `${basePath}/drill/${typeToPath[nextDrill.type] || 'hanzi'}/?group=${nextDrill.groupId}&dataset=${sttDataset.id}`
       : null
   })
+  const drillOffline = $derived(nextDrill?.offline ?? false)
 
   const datasetTitle = $derived.by(() => sttDataset.current?.appTitle)
   const appTitle = $derived.by(() => (datasetTitle ? ['Anuka Uchika', datasetTitle] : ['Anuka Uchika']))
+
+  $effect(() => {
+    const datasetId = sttDataset.id
+    const groups = sttDataset.filtered
+    sttAuth.dbVersion
+    sttAuth.isAuthenticated
+
+    if (!datasetId || groups.length === 0) {
+      nextDrill = null
+      return
+    }
+
+    let cancelled = false
+    svcDrill.pickNextDrill(datasetId, groups)
+      .then((nd) => {
+        if (!cancelled) nextDrill = nd
+      })
+      .catch((e) => {
+        console.error('next drill failed', e)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  })
 </script>
 
 <Hero
@@ -49,6 +75,7 @@
   pinyinProgress={sttStats.pinyinProgress}
   pinyinMastery={sttStats.pinyinMastery}
   {drillHref}
+  {drillOffline}
   onShowAuthDropdown={() => (showAuthDropdown = true)}
   onShowProgressGroups={() => goto('/chinese/groups/')}
   onShowProgressWords={() => goto('/chinese/words/')}

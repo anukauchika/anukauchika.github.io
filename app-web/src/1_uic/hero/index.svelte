@@ -28,6 +28,7 @@
     pinyinProgress,
     pinyinMastery,
     drillHref,
+    drillOffline = false,
     onShowAuthDropdown,
     onShowProgressGroups,
     onShowProgressWords,
@@ -140,6 +141,9 @@
         <Btn main onclick={() => (window.location.href = drillHref)}>Drill</Btn>
       {/if}
     </div>
+    {#if drillOffline}
+      <p class="anuka-mute anuka-sm anuka-center">Offline. Using fallback drill.</p>
+    {/if}
 
     {@render filters()}
   </div>

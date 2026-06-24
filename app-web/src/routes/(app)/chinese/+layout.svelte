@@ -5,6 +5,7 @@
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { svcDataset } from '@svc/dataset'
   import { svcStats } from '@svc/kind/chinese/stats'
+  import { sttAuth } from '@stt/auth.svelte.js'
 
   let { children } = $props()
 
@@ -41,6 +42,7 @@
   })
 
   $effect(() => {
+    sttAuth.dbVersion
     if (sttDataset.id) {
       svcStats.loadGroupProgressAll(sttDataset.id)
       svcStats.loadWordProgressAll(sttDataset.id)
