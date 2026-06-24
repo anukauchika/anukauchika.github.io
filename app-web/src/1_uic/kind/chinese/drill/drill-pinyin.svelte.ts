@@ -95,7 +95,13 @@ export class DrillPinyinSession {
     this.charDoneMap = new Map([...this.charDoneMap, [this.charIndex, slot.pinyin!]])
     this.charData = [
       ...this.charData,
-      { charIndex: this.charIndex, startedAt: this.charStartedAt!, doneAt: now, errorCount: this.charErrorCount, hintCount: this.charHintCount },
+      {
+        charIndex: this.charIndex,
+        startedAt: this.charStartedAt!,
+        doneAt: now,
+        errorCount: this.charErrorCount,
+        hintCount: Math.max(this.charHintCount, this.showHint ? 1 : 0),
+      },
     ]
 
     let next = this.charIndex + 1

@@ -63,6 +63,7 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
   let sessionIdPromise: Promise<DrillId> | null = null
   let drillId: DrillId | null = null
   let sessionHintCount = 0
+  let pendingAttempts: Promise<void>[] = []
 
   datAnalytics.track('drill_started', {
     drill_type: drillType,
@@ -79,40 +80,44 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
     groupProgressPinyin,
     authenticated,
 
-    async recordAttempt(attempt: WordAttempt, chars: CharAttempt[]): Promise<void> {
-      if (!authenticated) return
+    recordAttempt(attempt: WordAttempt, chars: CharAttempt[]): Promise<void> {
+      if (!authenticated) return Promise.resolve()
 
-      if (!sessionIdPromise) {
-        sessionIdPromise = datDrill.startDrill(
-          sttAuth.user?.id ?? null, datasetCode, drillCode, groupId,
-        ).then((id) => { drillId = id; return id })
-      }
-
-      try {
-        const sid = await sessionIdPromise
-        const result = await datDrill.recordAttempt(sid, attempt, chars)
-        svcSync.syncPending().catch((e) => console.error('sync failed', e))
-
-        const key = mkWordKey(groupId, attempt.wordId)
-        const hintCount = chars.reduce((sum, c) => sum + (c.hintCount || 0), 0)
-        sessionHintCount += hintCount
-        const updateWpMap = (map: Map<WordKey, WordProgress>): Map<WordKey, WordProgress> => {
-          const next = new Map(map)
-          const ex = next.get(key)
-          next.set(key, {
-            successCount: (ex?.successCount ?? 0) + 1,
-            errorCount: (ex?.errorCount ?? 0) + result.errorCount,
-            hintCount: (ex?.hintCount ?? 0) + hintCount,
-            lastDrilledAt: attempt.doneAt,
-          })
-          return next
+      const pending = (async () => {
+        if (!sessionIdPromise) {
+          sessionIdPromise = datDrill.startDrill(
+            sttAuth.user?.id ?? null, datasetCode, drillCode, groupId,
+          ).then((id) => { drillId = id; return id })
         }
-        sttStats.wordProgress = updateWpMap(sttStats.wordProgress)
-        const wpStoreKey = DT_STORE_KEY[drillCode]
-        if (wpStoreKey) sttStats[wpStoreKey] = updateWpMap(sttStats[wpStoreKey])
-      } catch (e) {
-        console.error('recordAttempt failed', e)
-      }
+
+        try {
+          const sid = await sessionIdPromise
+          const result = await datDrill.recordAttempt(sid, attempt, chars)
+          svcSync.syncPending().catch((e) => console.error('sync failed', e))
+
+          const key = mkWordKey(groupId, attempt.wordId)
+          const hintCount = chars.reduce((sum, c) => sum + (c.hintCount || 0), 0)
+          sessionHintCount += hintCount
+          const updateWpMap = (map: Map<WordKey, WordProgress>): Map<WordKey, WordProgress> => {
+            const next = new Map(map)
+            const ex = next.get(key)
+            next.set(key, {
+              successCount: (ex?.successCount ?? 0) + 1,
+              errorCount: (ex?.errorCount ?? 0) + result.errorCount,
+              hintCount: (ex?.hintCount ?? 0) + hintCount,
+              lastDrilledAt: attempt.doneAt,
+            })
+            return next
+          }
+          sttStats.wordProgress = updateWpMap(sttStats.wordProgress)
+          const wpStoreKey = DT_STORE_KEY[drillCode]
+          if (wpStoreKey) sttStats[wpStoreKey] = updateWpMap(sttStats[wpStoreKey])
+        } catch (e) {
+          console.error('recordAttempt failed', e)
+        }
+      })()
+      pendingAttempts = [...pendingAttempts, pending]
+      return pending
     },
 
     async endSession(result: GroupAttempt): Promise<void> {
@@ -124,6 +129,9 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
         skipped: result.skippedCount,
         authenticated,
       })
+
+      await Promise.allSettled(pendingAttempts)
+      pendingAttempts = []
 
       if (result.drilledCount === 0 || drillId == null) return
 

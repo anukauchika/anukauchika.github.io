@@ -84,6 +84,7 @@ export class DrillStrokeSession {
 
     this.charStartedAt = new Date().toISOString()
     this.charErrorCount = 0
+    if (this.showHint) this.charHintCount = Math.max(this.charHintCount, 1)
     if (this.charIndex === 0) this.wordStartedAt = new Date().toISOString()
 
     import('hanzi-writer').then(({ default: HanziWriter }) => {
