@@ -3,6 +3,7 @@ import { mkWordKey } from '@dom/dataset'
 import type { DayKey, WordProgress, GroupProgress, DayProgress } from '@dom/stats'
 import type { StorageDrill } from '@dat/kind/chinese/types'
 import { lowStatsIdb } from '@low/kind/chinese/idb-stats-repo'
+import { lowStatsSupabase } from '@low/supabase/kind/chinese/stats.js'
 
 const MAX_SESSION_MS = 2 * 60 * 60 * 1000 // 2h safety cap
 
@@ -16,6 +17,7 @@ function toLocalDateKey(date: Date): string {
 export interface StatsRepo {
   getWordProgress(datasetCode: string, drillCode: string): Promise<Map<WordKey, WordProgress>>
   getGroupProgress(datasetCode: string, drillCode: string): Promise<Map<GroupId, GroupProgress>>
+  getGroupReviewProgress(datasetCode: string, groupIds: GroupId[]): Promise<Record<string, Map<GroupId, GroupProgress>>>
   getDayProgress(datasetCode: string, drillCode: string): Promise<Map<DayKey, DayProgress>>
 }
 
@@ -135,6 +137,30 @@ async function getGroupProgress(datasetCode: string, drillCode: string): Promise
   return map
 }
 
+async function getGroupReviewProgress(datasetCode: string, groupIds: GroupId[]): Promise<Record<string, Map<GroupId, GroupProgress>>> {
+  const perType: Record<string, Map<GroupId, GroupProgress>> = { s: new Map(), p: new Map() }
+  const rows = await lowStatsSupabase.getChineseGroupReviewState(datasetCode, groupIds)
+
+  for (const row of rows) {
+    if (row.full_count === 0) continue
+    const map = perType[row.practice_type]
+    if (!map) continue
+
+    map.set(row.group_id, {
+      total: row.full_count,
+      full: row.full_count,
+      clean: row.clean_count,
+      firstDrilledAt: row.first_full_at,
+      lastDrilledAt: row.last_full_at,
+      lastFullDrillAt: row.last_full_at,
+      lastCleanDrillAt: row.last_clean_at,
+      lastSessionHintCount: row.last_session_hint_count,
+    })
+  }
+
+  return perType
+}
+
 async function getDayProgress(datasetCode: string, drillCode: string): Promise<Map<DayKey, DayProgress>> {
   const sessions = await lowStatsIdb.getGroupSessions(datasetCode, drillCode)
   const dayMap = new Map<DayKey, DayProgress>()
@@ -170,5 +196,6 @@ async function getDayProgress(datasetCode: string, drillCode: string): Promise<M
 export const datStats: StatsRepo = {
   getWordProgress,
   getGroupProgress,
+  getGroupReviewProgress,
   getDayProgress,
 }

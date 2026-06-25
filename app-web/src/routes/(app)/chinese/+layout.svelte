@@ -43,6 +43,8 @@
 
   $effect(() => {
     sttAuth.dbVersion
+    sttAuth.isAuthenticated
+    sttDataset.groups.length
     if (sttDataset.id) {
       svcStats.loadGroupProgressAll(sttDataset.id)
       svcStats.loadWordProgressAll(sttDataset.id)

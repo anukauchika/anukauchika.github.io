@@ -2,6 +2,8 @@ import type { DatasetId, WordKey } from '@dom/dataset'
 import type { WordProgress, GroupProgress, DayProgress } from '@dom/stats'
 import { datStats } from '@dat/kind/chinese/stats'
 import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
+import { sttAuth } from '@stt/auth.svelte.js'
+import { sttDataset } from '@stt/dataset.svelte.js'
 import { dsCode, dtCode, ALL_DT } from '@svc/kind/chinese/codes'
 
 export interface StatsService {
@@ -39,6 +41,19 @@ async function loadWordProgressAll(datasetId: DatasetId): Promise<void> {
 }
 
 async function loadGroupProgressAll(datasetId: DatasetId): Promise<void> {
+  if (sttAuth.isAuthenticated) {
+    const groups = sttDataset.groups
+    if (groups.length > 0) {
+      try {
+        const perType = await datStats.getGroupReviewProgress(dsCode(datasetId), groups.map((g) => g.id))
+        setGroupProgressMaps(perType)
+        return
+      } catch (err) {
+        console.error('Failed to load server group review state:', err)
+      }
+    }
+  }
+
   const merged = new Map<number, GroupProgress>()
   const perType: Record<string, Map<number, GroupProgress>> = { s: new Map(), p: new Map() }
 
@@ -48,32 +63,47 @@ async function loadGroupProgressAll(datasetId: DatasetId): Promise<void> {
     const gp = await datStats.getGroupProgress(dsCode(datasetId), code)
     for (const [groupId, summary] of gp) {
       ptMap.set(groupId, { ...summary })
-      const existing = merged.get(groupId)
-      if (existing) {
-        existing.total += summary.total
-        existing.full += summary.full
-        existing.clean += summary.clean
-        if (summary.firstDrilledAt && (!existing.firstDrilledAt || summary.firstDrilledAt < existing.firstDrilledAt)) {
-          existing.firstDrilledAt = summary.firstDrilledAt
-        }
-        if (summary.lastCleanDrillAt && (!existing.lastCleanDrillAt || summary.lastCleanDrillAt > existing.lastCleanDrillAt)) {
-          existing.lastCleanDrillAt = summary.lastCleanDrillAt
-        }
-        if (summary.lastFullDrillAt && (!existing.lastFullDrillAt || summary.lastFullDrillAt > existing.lastFullDrillAt)) {
-          existing.lastFullDrillAt = summary.lastFullDrillAt
-          existing.lastSessionHintCount = summary.lastSessionHintCount
-        }
-        if (summary.lastDrilledAt && (!existing.lastDrilledAt || summary.lastDrilledAt > existing.lastDrilledAt)) {
-          existing.lastDrilledAt = summary.lastDrilledAt
-        }
-      } else {
-        merged.set(groupId, { ...summary })
-      }
+      mergeGroupProgress(merged, groupId, summary)
     }
   }
   sttStats.groupProgress = merged
   sttStats.groupProgressStroke = perType.s
   sttStats.groupProgressPinyin = perType.p
+}
+
+function setGroupProgressMaps(perType: Record<string, Map<number, GroupProgress>>): void {
+  const merged = new Map<number, GroupProgress>()
+
+  for (const [groupId, summary] of perType.s) mergeGroupProgress(merged, groupId, summary)
+  for (const [groupId, summary] of perType.p) mergeGroupProgress(merged, groupId, summary)
+
+  sttStats.groupProgress = merged
+  sttStats.groupProgressStroke = perType.s
+  sttStats.groupProgressPinyin = perType.p
+}
+
+function mergeGroupProgress(map: Map<number, GroupProgress>, groupId: number, summary: GroupProgress): void {
+  const existing = map.get(groupId)
+  if (existing) {
+    existing.total += summary.total
+    existing.full += summary.full
+    existing.clean += summary.clean
+    if (summary.firstDrilledAt && (!existing.firstDrilledAt || summary.firstDrilledAt < existing.firstDrilledAt)) {
+      existing.firstDrilledAt = summary.firstDrilledAt
+    }
+    if (summary.lastCleanDrillAt && (!existing.lastCleanDrillAt || summary.lastCleanDrillAt > existing.lastCleanDrillAt)) {
+      existing.lastCleanDrillAt = summary.lastCleanDrillAt
+    }
+    if (summary.lastFullDrillAt && (!existing.lastFullDrillAt || summary.lastFullDrillAt > existing.lastFullDrillAt)) {
+      existing.lastFullDrillAt = summary.lastFullDrillAt
+      existing.lastSessionHintCount = summary.lastSessionHintCount
+    }
+    if (summary.lastDrilledAt && (!existing.lastDrilledAt || summary.lastDrilledAt > existing.lastDrilledAt)) {
+      existing.lastDrilledAt = summary.lastDrilledAt
+    }
+  } else {
+    map.set(groupId, { ...summary })
+  }
 }
 
 async function loadDayProgressAll(datasetId: DatasetId): Promise<void> {
