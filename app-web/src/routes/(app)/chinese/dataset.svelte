@@ -80,6 +80,7 @@
   onShowProgressGroups={() => goto('/chinese/groups/')}
   onShowProgressWords={() => goto('/chinese/words/')}
   onShowProgressChars={() => goto('/chinese/chars/')}
+  onShowDrillQueue={() => goto('/chinese/queue/')}
 >
   <a href="/" style="text-decoration: none; color: inherit;"><AppTitle parts={appTitle} /></a>
 

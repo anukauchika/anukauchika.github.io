@@ -30,7 +30,7 @@
 
 <Island sticky>
   <div class="anuka-row anuka-justify">
-    <h3>Groups {totalCount} | <span class="anuka-main">{drilledCount}</span> drill | <span class={dueCount > 0 ? 'anuka-warn' : ''}>{dueCount}</span> due</h3>
+    <h3>Groups {totalCount} | <span class="anuka-main">{drilledCount}</span> drilled | <span class={dueCount > 0 ? 'anuka-warn' : ''}>{dueCount}</span> due</h3>
     <BtnIcon icon="close" label="Close" onclick={onclose} />
   </div>
 </Island>

@@ -199,16 +199,18 @@ export function calcGroupMastery(group: ChineseGroup, sessionsMap: Map<GroupId, 
 
 // --- Sorting ---
 
-export function countDueGroups(
+export function countDueDrills(
   groups: ChineseGroup[],
   strokeProgress: Map<GroupId, GroupProgress>,
   pinyinProgress: Map<GroupId, GroupProgress>,
 ): number {
-  return groups.filter(g => {
+  return groups.reduce((sum, g) => {
     const stroke = calcTypeReview(strokeProgress.get(g.id))
     const pinyin = calcTypeReview(pinyinProgress.get(g.id))
-    return stroke.state === 'repeat' || stroke.state === 'due' || pinyin.state === 'repeat' || pinyin.state === 'due'
-  }).length
+    return sum
+      + (stroke.state === 'repeat' || stroke.state === 'due' ? 1 : 0)
+      + (pinyin.state === 'repeat' || pinyin.state === 'due' ? 1 : 0)
+  }, 0)
 }
 
 export function sortGroupsByReview(

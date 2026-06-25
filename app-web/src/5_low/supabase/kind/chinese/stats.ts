@@ -35,6 +35,13 @@ export interface ChineseGroupReviewRecord {
   interval_days: number | null
 }
 
+export interface ChineseDayProgressRecord {
+  date_key: string
+  count: number
+  duration_ms: number
+  sessions: number
+}
+
 async function createGroupSession(record: DrillRecord): Promise<{ id: number }> {
   const { data, error } = await supabase
     .from('group_session')
@@ -133,6 +140,15 @@ async function getChineseGroupReviewState(datasetCode: string, groupIds: number[
   return data ?? []
 }
 
+async function getChineseDayProgress(datasetCode: string, groupIds: number[]): Promise<ChineseDayProgressRecord[]> {
+  const { data, error } = await supabase.rpc('chinese_day_progress', {
+    p_dataset_id: datasetCode,
+    p_group_ids: groupIds,
+  })
+  if (error) throw error
+  return data ?? []
+}
+
 export interface LowStatsSupabase {
   createGroupSession(record: DrillRecord): Promise<{ id: number }>
   updateGroupSessionDone(id: number, doneAt: string): Promise<void>
@@ -141,6 +157,7 @@ export interface LowStatsSupabase {
   restoreChineseStats(): Promise<RestoreChineseStatsPayload>
   nextChineseDrill(datasetCode: string, groupIds: number[]): Promise<NextChineseDrillRecord | null>
   getChineseGroupReviewState(datasetCode: string, groupIds: number[]): Promise<ChineseGroupReviewRecord[]>
+  getChineseDayProgress(datasetCode: string, groupIds: number[]): Promise<ChineseDayProgressRecord[]>
 }
 
 export const lowStatsSupabase: LowStatsSupabase = {
@@ -151,4 +168,5 @@ export const lowStatsSupabase: LowStatsSupabase = {
   restoreChineseStats,
   nextChineseDrill,
   getChineseGroupReviewState,
+  getChineseDayProgress,
 }

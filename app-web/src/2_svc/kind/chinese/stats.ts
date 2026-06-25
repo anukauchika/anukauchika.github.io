@@ -108,6 +108,14 @@ function mergeGroupProgress(map: Map<number, GroupProgress>, groupId: number, su
 
 async function loadDayProgressAll(datasetId: DatasetId): Promise<void> {
   try {
+    if (sttAuth.isAuthenticated && sttDataset.groups.length > 0) {
+      sttStats.dayProgress = await datStats.getServerDayProgress(
+        dsCode(datasetId),
+        sttDataset.groups.map((g) => g.id),
+      )
+      return
+    }
+
     const merged = new Map<string, DayProgress>()
     for (const dt of ALL_DT) {
       const map = await datStats.getDayProgress(dsCode(datasetId), dtCode(dt))

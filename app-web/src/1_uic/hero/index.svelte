@@ -33,6 +33,7 @@
     onShowProgressGroups,
     onShowProgressWords,
     onShowProgressChars,
+    onShowDrillQueue,
     toolbar,
     filters,
     children,
@@ -116,6 +117,7 @@
       {onShowProgressGroups}
       {onShowProgressWords}
       {onShowProgressChars}
+      {onShowDrillQueue}
     />
 
     {#if isAuthenticated}

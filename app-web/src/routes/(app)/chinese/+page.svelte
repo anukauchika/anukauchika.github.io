@@ -27,6 +27,8 @@
 
   $effect(() => {
     sttAuth.dbVersion
+    sttAuth.isAuthenticated
+    sttDataset.groups.length
     if (sttDataset.id) reloadStats()
   })
 

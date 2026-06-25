@@ -14,6 +14,7 @@
     onShowProgressGroups,
     onShowProgressWords,
     onShowProgressChars,
+    onShowDrillQueue,
   } = $props()
 
   const handleGroups = () => {
@@ -32,6 +33,6 @@
   {#if isAuthenticated}
     <Stat value={strokeDrilledCount} label="Drilled" onclick={onShowProgressWords} />
     <Stat value={formatDuration(avgDailyTime)} label="Avg/Day" />
-    <Stat value={dueCount} label="Due" class={dueCount > 0 ? 'anuka-warn' : ''} />
+    <Stat value={dueCount} label="Due" class={dueCount > 0 ? 'anuka-warn' : ''} onclick={onShowDrillQueue} />
   {/if}
 </div>

@@ -18,6 +18,7 @@ export interface StatsRepo {
   getWordProgress(datasetCode: string, drillCode: string): Promise<Map<WordKey, WordProgress>>
   getGroupProgress(datasetCode: string, drillCode: string): Promise<Map<GroupId, GroupProgress>>
   getGroupReviewProgress(datasetCode: string, groupIds: GroupId[]): Promise<Record<string, Map<GroupId, GroupProgress>>>
+  getServerDayProgress(datasetCode: string, groupIds: GroupId[]): Promise<Map<DayKey, DayProgress>>
   getDayProgress(datasetCode: string, drillCode: string): Promise<Map<DayKey, DayProgress>>
 }
 
@@ -193,9 +194,25 @@ async function getDayProgress(datasetCode: string, drillCode: string): Promise<M
   return dayMap
 }
 
+async function getServerDayProgress(datasetCode: string, groupIds: GroupId[]): Promise<Map<DayKey, DayProgress>> {
+  const rows = await lowStatsSupabase.getChineseDayProgress(datasetCode, groupIds)
+  const map = new Map<DayKey, DayProgress>()
+
+  for (const row of rows) {
+    map.set(row.date_key, {
+      count: row.count,
+      durationMs: row.duration_ms,
+      sessions: row.sessions,
+    })
+  }
+
+  return map
+}
+
 export const datStats: StatsRepo = {
   getWordProgress,
   getGroupProgress,
   getGroupReviewProgress,
+  getServerDayProgress,
   getDayProgress,
 }
