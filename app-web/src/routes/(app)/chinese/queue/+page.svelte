@@ -16,6 +16,7 @@
     type: DrillType
     state: 'repeat' | 'due' | 'upcoming'
     dueAt: number
+    lastFullAt: number
     href: string
   }
 
@@ -50,7 +51,14 @@
     const review = calcTypeReview(progress)
     if (review.state === 'new') return
     const href = `/chinese/drill/${typePath[type]}/?group=${group.id}&dataset=${sttDataset.id}&from=queue`
-    items.push({ group, type, state: review.state, dueAt: review.dueAt, href })
+    items.push({
+      group,
+      type,
+      state: review.state,
+      dueAt: review.dueAt,
+      lastFullAt: progress?.lastFullDrillAt ? new Date(progress.lastFullDrillAt).getTime() : 0,
+      href,
+    })
   }
 
   const queueSections = $derived.by(() => {
@@ -64,6 +72,9 @@
       const rank = (item: QueueItem) => item.state === 'repeat' ? 0 : item.state === 'due' ? 1 : 2
       const rankDiff = rank(a) - rank(b)
       if (rankDiff !== 0) return rankDiff
+      if (a.state === 'repeat' && b.state === 'repeat' && a.lastFullAt !== b.lastFullAt) {
+        return b.lastFullAt - a.lastFullAt
+      }
       if (a.dueAt !== b.dueAt) return a.dueAt - b.dueAt
       if (a.group.id !== b.group.id) return a.group.id - b.group.id
       return a.type === 'stroke' ? -1 : 1
