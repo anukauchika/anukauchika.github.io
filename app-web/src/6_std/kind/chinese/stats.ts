@@ -213,6 +213,23 @@ export function countDueDrills(
   }, 0)
 }
 
+function isInProgressReview(review: TypeReview): boolean {
+  if (review.state === 'new') return false
+  if (review.state === 'repeat' || review.state === 'due') return true
+  return review.intervalDays !== null && review.intervalDays < 256
+}
+
+export function countGroupsInProgress(
+  groups: ChineseGroup[],
+  strokeProgress: Map<GroupId, GroupProgress>,
+  pinyinProgress: Map<GroupId, GroupProgress>,
+): number {
+  return groups.filter((g) =>
+    isInProgressReview(calcTypeReview(strokeProgress.get(g.id))) ||
+    isInProgressReview(calcTypeReview(pinyinProgress.get(g.id)))
+  ).length
+}
+
 export function sortGroupsByReview(
   groups: ChineseGroup[],
   strokeProgress: Map<GroupId, GroupProgress>,

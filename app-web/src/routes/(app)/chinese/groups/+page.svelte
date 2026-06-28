@@ -29,7 +29,7 @@
   <ProgressGroups
     groups={drilledGroupsSorted.map(g => buildCompactProps(g, groupCtx, 'groups'))}
     drilledCount={drilledGroupsSorted.filter(g => sttStats.groupProgress.has(g.id)).length}
-    totalCount={drilledGroupsSorted.length}
+    totalCount={sttStats.groupsInProgressCount}
     dueCount={sttStats.dueCount}
     onclose={() => goto('/chinese/')}
   />

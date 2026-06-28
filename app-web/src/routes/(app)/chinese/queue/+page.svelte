@@ -42,7 +42,8 @@
 
     const today = dayStart()
     const dueDay = dayStart(item.dueAt)
-    const days = Math.max(1, Math.round((dueDay - today) / DAY_MS))
+    const days = Math.round((dueDay - today) / DAY_MS)
+    if (days === 0) return { key: 'later-today', label: 'Later today', sortAt: 0.5 }
     if (days === 1) return { key: 'tomorrow', label: 'Tomorrow', sortAt: 1 }
     return { key: `in-${days}`, label: `In ${days}d`, sortAt: days }
   }

@@ -26,7 +26,7 @@
 </script>
 
 <div class="anuka-row anuka-center">
-  <Stat value={groupCount} label="Groups" onclick={handleGroups} />
+  <Stat value={groupCount} label={isAuthenticated ? 'Active' : 'Groups'} onclick={handleGroups} />
   <Stat value={totalCount} label="Words" />
   <Stat value={uniqueWordCount} label="Unique" />
   <Stat value={uniqueChars} label="Chars" onclick={handleChars} />

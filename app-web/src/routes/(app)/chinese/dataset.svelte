@@ -63,7 +63,7 @@
   datasetId={sttDataset.id}
   dailyActivity={sttStats.dayProgress}
   isAuthenticated={sttAuth.isAuthenticated}
-  groupCount={sttStats.datasetStats.groups}
+  groupCount={sttAuth.isAuthenticated ? sttStats.groupsInProgressCount : sttStats.datasetStats.groups}
   totalCount={sttStats.datasetStats.words}
   uniqueWordCount={sttStats.datasetStats.uniqueWords}
   uniqueChars={sttStats.datasetStats.chars}
