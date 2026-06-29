@@ -6,6 +6,7 @@ declare global {
 }
 
 const GA_MEASUREMENT_ID = 'G-ELKSNFMX2R'
+const GOOGLE_ADS_ID = 'AW-953778095'
 
 export function initAnalytics(): void {
   if (typeof window === 'undefined') return
@@ -28,6 +29,7 @@ export function initAnalytics(): void {
   window.gtag = gtag
   gtag('js', new Date())
   gtag('config', GA_MEASUREMENT_ID)
+  gtag('config', GOOGLE_ADS_ID)
 }
 
 export function trackEvent(name: string, params?: Record<string, unknown>): void {
@@ -37,4 +39,4 @@ export function trackEvent(name: string, params?: Record<string, unknown>): void
 
 // Inline head snippet for prerendered pages with csr=false (no SvelteKit JS
 // runs there, so the root layout never calls initAnalytics). Same logic.
-export const gaHeadSnippet = `<script>(function(){if(location.hostname==='localhost'||typeof window.gtag==='function')return;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}';document.head.appendChild(s);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','${GA_MEASUREMENT_ID}');})()</script>`
+export const gaHeadSnippet = `<script>(function(){if(location.hostname==='localhost'||typeof window.gtag==='function')return;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}';document.head.appendChild(s);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','${GA_MEASUREMENT_ID}');gtag('config','${GOOGLE_ADS_ID}');})()</script>`
