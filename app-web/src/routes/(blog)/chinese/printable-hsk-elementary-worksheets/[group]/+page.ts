@@ -1,15 +1,17 @@
 import { error } from '@sveltejs/kit'
-import { hskElementaryWorksheetGroups } from '../../printable-hsk-elementary-worksheets/worksheet-data'
+import { hskElementaryWorksheetGroups, getHskElementaryWorksheetGroup } from '../worksheet-data'
 
 export const entries = () => hskElementaryWorksheetGroups.map((group) => ({ group: `group-${group.group}` }))
 
 export const load = ({ params }) => {
   const match = /^group-(\d+)$/.exec(params.group)
   const groupNumber = match ? Number(match[1]) : 0
-  const group = hskElementaryWorksheetGroups.find((item) => item.group === groupNumber)
+  const group = getHskElementaryWorksheetGroup(groupNumber)
   if (!group) throw error(404, 'Worksheet group not found')
 
   return {
-    target: `/chinese/printable-hsk-elementary-worksheets/group-${group.group}/`,
+    group,
+    groups: hskElementaryWorksheetGroups,
+    variant: 'group',
   }
 }

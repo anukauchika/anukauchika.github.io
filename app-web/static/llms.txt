@@ -21,8 +21,8 @@ Key facts:
 - [Home](https://anukauchika.com/): what the app does and how the method works
 - [The accordion workbook method](https://anukauchika.com/chinese/method/): how printed worksheets
   fold into self-checking paper practice (static HTML)
-- [Printable HSK 2026 Chinese Writing Worksheets](https://anukauchika.com/chinese/printable-hsk-1-worksheets/):
-  print HSK worksheet groups and practice the same words online
+- [Printable HSK Elementary Chinese Writing Worksheets](https://anukauchika.com/chinese/printable-hsk-elementary-worksheets/):
+  print HSK Elementary worksheet groups and practice the same words online
 - [Chinese vocabulary browser](https://anukauchika.com/chinese/): explore word groups,
   start drills, print worksheets (interactive features require JavaScript)
 

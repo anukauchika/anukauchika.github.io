@@ -1,8 +1,8 @@
 import elementary from '@data/chinese/hskv3elementary.json'
 
-export const hsk1WorksheetDatasetId = 'chinese-hskv3-elementary'
-export const hsk1WorksheetLevel = 1
-export const worksheetBasePath = '/chinese/printable-hsk-1-worksheets'
+export const hskElementaryWorksheetDatasetId = 'chinese-hskv3-elementary'
+export const hskElementaryWorksheetLevel = 'elementary'
+export const worksheetBasePath = '/chinese/printable-hsk-elementary-worksheets'
 
 interface RawWord {
   id: number
@@ -39,7 +39,7 @@ export interface WorksheetGroup {
 
 const rawDataset = elementary as RawDataset
 
-export const hsk1WorksheetGroups: WorksheetGroup[] = rawDataset.groups.map((group) => ({
+export const hskElementaryWorksheetGroups: WorksheetGroup[] = rawDataset.groups.map((group) => ({
   ...group,
   idx: group.group,
   id: group.group,
@@ -52,8 +52,8 @@ export const hsk1WorksheetGroups: WorksheetGroup[] = rawDataset.groups.map((grou
   })),
 }))
 
-export function getHsk1WorksheetGroup(groupNumber: number): WorksheetGroup | undefined {
-  return hsk1WorksheetGroups.find((group) => group.group === groupNumber)
+export function getHskElementaryWorksheetGroup(groupNumber: number): WorksheetGroup | undefined {
+  return hskElementaryWorksheetGroups.find((group) => group.group === groupNumber)
 }
 
 export function getWorksheetGroupUrl(groupNumber: number): string {
@@ -61,11 +61,11 @@ export function getWorksheetGroupUrl(groupNumber: number): string {
 }
 
 export function getWorksheetGroupDrillUrl(groupNumber: number): string {
-  return `/chinese/drill/hanzi/?dataset=${hsk1WorksheetDatasetId}&group=${groupNumber}&from=printable-hsk-1-worksheets`
+  return `/chinese/drill/hanzi/?dataset=${hskElementaryWorksheetDatasetId}&group=${groupNumber}&from=printable-hsk-elementary-worksheets`
 }
 
 export function getChineseAppUrl(): string {
-  return `/chinese/?dataset=${hsk1WorksheetDatasetId}`
+  return `/chinese/?dataset=${hskElementaryWorksheetDatasetId}`
 }
 
 export function getChineseLevelAppUrl(datasetId: string, tag?: string): string {
@@ -75,5 +75,5 @@ export function getChineseLevelAppUrl(datasetId: string, tag?: string): string {
 }
 
 export function getWordGroupId(groupNumber: number): string {
-  return `${hsk1WorksheetDatasetId}:group-${groupNumber}`
+  return `${hskElementaryWorksheetDatasetId}:group-${groupNumber}`
 }

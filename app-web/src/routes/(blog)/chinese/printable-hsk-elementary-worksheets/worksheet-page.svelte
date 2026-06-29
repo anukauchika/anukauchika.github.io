@@ -11,7 +11,7 @@
     trackWorksheetEvent,
   } from '@low/worksheet/attribution'
   import {
-    hsk1WorksheetLevel,
+    hskElementaryWorksheetLevel,
     worksheetBasePath,
     getWorksheetGroupUrl,
     getWorksheetGroupDrillUrl,
@@ -25,13 +25,13 @@
   const isCollection = $derived(variant === 'collection')
   const title = $derived(
     isCollection
-      ? 'Printable HSK 2026 Chinese Writing Worksheets'
-      : `Printable HSK 2026 Worksheet - Group ${group.group}`,
+      ? 'Printable HSK Elementary Chinese Writing Worksheets'
+      : `Printable HSK Elementary Worksheet - Group ${group.group}`,
   )
   const description = $derived(
     isCollection
-      ? 'Print free HSK 2026 Chinese writing worksheets with hanzi, pinyin, English meanings, and handwriting boxes. Practice all worksheet groups online.'
-      : `Print HSK 2026 Group ${group.group} Chinese writing practice sheet with hanzi, pinyin, English meanings, and handwriting boxes.`,
+      ? 'Print free HSK Elementary Chinese writing worksheets with hanzi, pinyin, English meanings, and handwriting boxes. Practice all groups online.'
+      : `Print HSK Elementary Group ${group.group} Chinese writing practice sheet with hanzi, pinyin, English meanings, and handwriting boxes.`,
   )
   const canonical = $derived(
     isCollection
@@ -44,7 +44,7 @@
   const payloadFor = (targetGroup) => ({
     page_url: canonical,
     word_group_id: getWordGroupId(targetGroup.group),
-    hsk_level: hsk1WorksheetLevel,
+    hsk_level: hskElementaryWorksheetLevel,
     group_number: targetGroup.group,
   })
 
@@ -95,6 +95,17 @@
     globalThis.location.href = appendAttributionParams(getWorksheetGroupDrillUrl(targetGroup.group), params)
   }
 
+  const handleFullApp = (event) => {
+    event.preventDefault()
+    const params = getCurrentAttributionParams()
+    const targetUrl = appendAttributionParams(getChineseAppUrl(), params)
+    trackWorksheetEvent('full_app_clicked', {
+      ...payloadFor(group),
+      target_url: targetUrl,
+    })
+    globalThis.location.href = targetUrl
+  }
+
   onMount(() => {
     attributionParams = initAttributionParams()
     trackWorksheetEvent('worksheet_landing_viewed', payloadFor(group))
@@ -125,10 +136,12 @@
       <p class="eyebrow">Free printable Chinese handwriting practice</p>
       <h1>{title}</h1>
       {#if isCollection}
-        <p class="subtitle">Print HSK 2026 Chinese writing practice sheets and memorize words by handwriting.</p>
+        <p class="subtitle">
+          Print HSK Elementary Chinese writing practice sheets and memorize words by handwriting.
+        </p>
       {:else}
         <p class="subtitle">
-          Print HSK 2026 Group {group.group} as a Chinese character writing practice sheet with hanzi, pinyin,
+          Print HSK Elementary Group {group.group} as a Chinese character writing practice sheet with hanzi, pinyin,
           meaning, and handwriting boxes.
         </p>
       {/if}
@@ -144,7 +157,7 @@
           {isCollection ? `Practice Group ${group.group} Online` : 'Practice These Words Online'}
         </a>
         <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-        <a class="anuka-btn anuka-lg" href={appHref}>Open Chinese Practice App</a>
+        <a class="app-link" href={appHref} onclick={handleFullApp}>Explore Full Chinese Practice App &rarr;</a>
       </div>
       <p class="print-note">
         For best results: choose Landscape orientation and Narrow / Minimum margins in the print dialog.
@@ -152,7 +165,7 @@
     </div>
     <aside class="hero-facts">
       <strong>{groups.length} worksheet groups</strong>
-      <span>Real HSK 2026 word groups from the existing worksheet data.</span>
+      <span>Real HSK Elementary word groups from the existing worksheet data.</span>
       <span>No PDF required. Print directly from the browser.</span>
     </aside>
   </section>
@@ -161,7 +174,7 @@
     <div class="worksheet-title-row no-print">
       <div>
         <p class="eyebrow">Featured printable worksheet</p>
-        <h2 id="worksheet-title">HSK 2026 Worksheet - Group {group.group}</h2>
+        <h2 id="worksheet-title">HSK Elementary Worksheet - Group {group.group}</h2>
       </div>
       <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
       <a class="site-mark" href={appendAttributionParams('/', attributionParams)}>anukauchika.com</a>
@@ -175,7 +188,7 @@
     <div class="workbook-page landing-workbook">
       <header class="sheet-header worksheet-sheet-header">
         <div class="group-line">
-          <span class="group-title">HSK 2026</span>
+          <span class="group-title">HSK Elementary</span>
           <span class="sheet-separator">|</span>
           <span class="group-title">{formatGroup(group.group)}</span>
           <span class="sheet-separator">|</span>
@@ -195,7 +208,7 @@
         Practice These Words Online
       </a>
       <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-      <a class="anuka-btn" href={appHref}>Open Chinese Practice App</a>
+      <a class="app-link" href={appHref} onclick={handleFullApp}>Explore Full Chinese Practice App &rarr;</a>
     </div>
   </section>
 
@@ -218,7 +231,7 @@
   {#if isCollection}
     <section class="groups-section no-print" aria-labelledby="all-groups-title">
       <div class="section-head">
-        <h2 id="all-groups-title">HSK Level 1-3 2026 Printable Worksheet Groups</h2>
+        <h2 id="all-groups-title">All HSK Elementary Printable Worksheet Groups</h2>
         <p>
           Choose any group to print the worksheet or practice the same words online with drills.
         </p>
@@ -243,7 +256,7 @@
   {:else}
     <section class="groups-section no-print" aria-labelledby="more-groups-title">
       <div class="section-head">
-        <h2 id="more-groups-title">More HSK Level 1-3 2026 Printable Worksheet Groups</h2>
+        <h2 id="more-groups-title">More HSK Elementary Printable Worksheet Groups</h2>
         <p>
           <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
           <a href={appendAttributionParams(`${worksheetBasePath}/`, attributionParams)}>Back to all 67 groups</a>
@@ -262,7 +275,7 @@
     <div class="section-head">
       <h2 id="advanced-title">HSK Advanced Levels</h2>
       <p>
-        HSK Level 1-3 worksheets are printable here. For HSK Level 4 and above, open the app with the level selected.
+        HSK Elementary worksheets are printable here. For higher HSK levels, open the app with the level selected.
       </p>
     </div>
     <div class="advanced-list">
@@ -368,6 +381,19 @@
     flex-wrap: wrap;
     gap: 0.75rem;
     align-items: center;
+  }
+
+  .app-link {
+    color: #4f4840;
+    font-size: 0.92rem;
+    font-weight: 700;
+    text-decoration-color: rgba(79, 72, 64, 0.35);
+    text-underline-offset: 0.18em;
+  }
+
+  .app-link:hover {
+    color: #1f6f5c;
+    text-decoration-color: currentColor;
   }
 
   .hero-facts {

@@ -1,7 +1,7 @@
 <script>
-  import WorksheetPage from './worksheet-page.svelte'
+  import RedirectPage from './redirect-page.svelte'
 
   let { data } = $props()
 </script>
 
-<WorksheetPage {...data} />
+<RedirectPage {...data} />
