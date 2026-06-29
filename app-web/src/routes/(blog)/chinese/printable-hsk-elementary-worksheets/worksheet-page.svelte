@@ -1,6 +1,10 @@
 <script>
   import { onMount } from 'svelte'
-  import { trackPracticeOnlineConversion, trackWorksheetPrintConversion } from '@low/google/analytics'
+  import {
+    trackFullAppConversion,
+    trackPracticeOnlineConversion,
+    trackWorksheetPrintConversion,
+  } from '@low/google/analytics'
   import { formatGroup } from '@std/format'
   import WorkbookChinese from '@uic/kind/chinese/workbook.svelte'
   import '@uic/workbook.css'
@@ -101,10 +105,11 @@
     event.preventDefault()
     const params = getCurrentAttributionParams()
     const targetUrl = appendAttributionParams(getChineseAppUrl(), params)
-    trackWorksheetEvent('full_app_clicked', {
+    trackWorksheetEvent('hsk_full_app_clicked', {
       ...payloadFor(group),
       target_url: targetUrl,
     })
+    trackFullAppConversion()
     globalThis.location.href = targetUrl
   }
 
