@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import { gaHeadSnippet } from '@low/google/analytics'
+  import { gaHeadSnippet, trackWorksheetPrintConversion } from '@low/google/analytics'
   import { formatGroup } from '@std/format'
   import WorkbookChinese from '@uic/kind/chinese/workbook.svelte'
   import '@uic/workbook.css'
@@ -85,6 +85,7 @@
 
   const handlePrint = (targetGroup) => {
     trackWorksheetEvent('worksheet_print_clicked', payloadFor(targetGroup))
+    trackWorksheetPrintConversion()
     globalThis.print()
   }
 

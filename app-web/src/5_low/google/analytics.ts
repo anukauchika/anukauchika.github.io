@@ -7,6 +7,7 @@ declare global {
 
 const GA_MEASUREMENT_ID = 'G-ELKSNFMX2R'
 const GOOGLE_ADS_ID = 'AW-953778095'
+const HSK_WORKSHEET_PRINTT_CONVERSION_ID = 'AW-953778095/sWzNCNzh8sccEK__5cYD'
 
 export function initAnalytics(): void {
   if (typeof window === 'undefined') return
@@ -35,6 +36,12 @@ export function initAnalytics(): void {
 export function trackEvent(name: string, params?: Record<string, unknown>): void {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
   window.gtag('event', name, params ?? {})
+}
+
+export function trackWorksheetPrintConversion(): void {
+  trackEvent('conversion', {
+    send_to: HSK_WORKSHEET_PRINTT_CONVERSION_ID,
+  })
 }
 
 // Inline head snippet for prerendered pages with csr=false (no SvelteKit JS
