@@ -27,7 +27,7 @@ export interface DrillSuggestion {
 
 export interface DrillRepo {
   getGroupWordsProgress(datasetCode: string, drillCode: string, groupId: GroupId): Promise<Map<WordId, WordProgress>>
-  getNextDrill(datasetCode: string, groupIds: GroupId[]): Promise<DrillSuggestion | null>
+  getNextDrill(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<DrillSuggestion | null>
   startDrill(userId: string | null, datasetCode: string, drillCode: string, groupId: GroupId): Promise<DrillId>
   endDrill(drillId: DrillId): Promise<StorageDrill | null>
   recordAttempt(drillId: DrillId, attempt: WordAttempt, chars: CharAttempt[]): Promise<AttemptMeta>
@@ -62,8 +62,8 @@ async function getGroupWordsProgress(datasetCode: string, drillCode: string, gro
   return map
 }
 
-async function getNextDrill(datasetCode: string, groupIds: GroupId[]): Promise<DrillSuggestion | null> {
-  const next = await lowStatsSupabase.nextChineseDrill(datasetCode, groupIds)
+async function getNextDrill(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<DrillSuggestion | null> {
+  const next = await lowStatsSupabase.nextChineseDrill(datasetCode, groupIds, timeZone)
   if (!next) return null
   return {
     groupId: next.group_id,

@@ -297,6 +297,15 @@ export function calcTypeReview(gp: GroupProgress | undefined): TypeReview {
   }
 
   const queuedAt = ts(gp.firstDrilledAt, Infinity)
+  if (gp.reviewState) {
+    return {
+      state: gp.reviewState,
+      dueAt: gp.dueAt ? ts(gp.dueAt, Infinity) : ts(gp.lastFullDrillAt, 0),
+      queuedAt,
+      intervalDays: gp.intervalDays ?? null,
+    }
+  }
+
   if ((gp.lastSessionHintCount ?? 0) > 0) {
     return { state: 'repeat', dueAt: ts(gp.lastFullDrillAt, 0), queuedAt, intervalDays: null }
   }

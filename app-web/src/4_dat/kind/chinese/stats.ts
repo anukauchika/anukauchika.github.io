@@ -17,7 +17,7 @@ function toLocalDateKey(date: Date): string {
 export interface StatsRepo {
   getWordProgress(datasetCode: string, drillCode: string): Promise<Map<WordKey, WordProgress>>
   getGroupProgress(datasetCode: string, drillCode: string): Promise<Map<GroupId, GroupProgress>>
-  getGroupReviewProgress(datasetCode: string, groupIds: GroupId[]): Promise<Record<string, Map<GroupId, GroupProgress>>>
+  getGroupReviewProgress(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<Record<string, Map<GroupId, GroupProgress>>>
   getServerDayProgress(datasetCode: string, groupIds: GroupId[]): Promise<Map<DayKey, DayProgress>>
   getDayProgress(datasetCode: string, drillCode: string): Promise<Map<DayKey, DayProgress>>
 }
@@ -138,9 +138,9 @@ async function getGroupProgress(datasetCode: string, drillCode: string): Promise
   return map
 }
 
-async function getGroupReviewProgress(datasetCode: string, groupIds: GroupId[]): Promise<Record<string, Map<GroupId, GroupProgress>>> {
+async function getGroupReviewProgress(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<Record<string, Map<GroupId, GroupProgress>>> {
   const perType: Record<string, Map<GroupId, GroupProgress>> = { s: new Map(), p: new Map() }
-  const rows = await lowStatsSupabase.getChineseGroupReviewState(datasetCode, groupIds)
+  const rows = await lowStatsSupabase.getChineseGroupReviewState(datasetCode, groupIds, timeZone)
 
   for (const row of rows) {
     if (row.full_count === 0) continue
@@ -156,6 +156,9 @@ async function getGroupReviewProgress(datasetCode: string, groupIds: GroupId[]):
       lastFullDrillAt: row.last_full_at,
       lastCleanDrillAt: row.last_clean_at,
       lastSessionHintCount: row.last_session_hint_count,
+      reviewState: row.reason as GroupProgress['reviewState'],
+      dueAt: row.due_at,
+      intervalDays: row.interval_days,
     })
   }
 

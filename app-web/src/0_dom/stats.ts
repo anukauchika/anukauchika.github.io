@@ -16,6 +16,9 @@ export interface GroupProgress {
   lastFullDrillAt: string | null
   lastCleanDrillAt: string | null
   lastSessionHintCount: number | null
+  reviewState?: 'new' | 'repeat' | 'due' | 'upcoming'
+  dueAt?: string | null
+  intervalDays?: number | null
 }
 
 export interface DayProgress {

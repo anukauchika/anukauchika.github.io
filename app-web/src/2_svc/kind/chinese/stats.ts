@@ -5,6 +5,7 @@ import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
 import { sttAuth } from '@stt/auth.svelte.js'
 import { sttDataset } from '@stt/dataset.svelte.js'
 import { dsCode, dtCode, ALL_DT } from '@svc/kind/chinese/codes'
+import { localTimeZone } from '@std/format'
 
 export interface StatsService {
   loadWordProgressAll(datasetId: DatasetId): Promise<void>
@@ -45,7 +46,7 @@ async function loadGroupProgressAll(datasetId: DatasetId): Promise<void> {
     const groups = sttDataset.groups
     if (groups.length > 0) {
       try {
-        const perType = await datStats.getGroupReviewProgress(dsCode(datasetId), groups.map((g) => g.id))
+        const perType = await datStats.getGroupReviewProgress(dsCode(datasetId), groups.map((g) => g.id), localTimeZone())
         setGroupProgressMaps(perType)
         return
       } catch (err) {

@@ -122,19 +122,21 @@ async function restoreChineseStats(): Promise<RestoreChineseStatsPayload> {
   }
 }
 
-async function nextChineseDrill(datasetCode: string, groupIds: number[]): Promise<NextChineseDrillRecord | null> {
+async function nextChineseDrill(datasetCode: string, groupIds: number[], timeZone: string): Promise<NextChineseDrillRecord | null> {
   const { data, error } = await supabase.rpc('next_chinese_drill', {
     p_dataset_id: datasetCode,
     p_group_ids: groupIds,
+    p_timezone: timeZone,
   })
   if (error) throw error
   return data?.[0] ?? null
 }
 
-async function getChineseGroupReviewState(datasetCode: string, groupIds: number[]): Promise<ChineseGroupReviewRecord[]> {
+async function getChineseGroupReviewState(datasetCode: string, groupIds: number[], timeZone: string): Promise<ChineseGroupReviewRecord[]> {
   const { data, error } = await supabase.rpc('chinese_group_review_state', {
     p_dataset_id: datasetCode,
     p_group_ids: groupIds,
+    p_timezone: timeZone,
   })
   if (error) throw error
   return data ?? []
@@ -155,8 +157,8 @@ export interface LowStatsSupabase {
   insertWordAttempt(record: AttemptRecord): Promise<{ id: number }>
   insertCharLogs(chars: CharLogRecord[]): Promise<void>
   restoreChineseStats(): Promise<RestoreChineseStatsPayload>
-  nextChineseDrill(datasetCode: string, groupIds: number[]): Promise<NextChineseDrillRecord | null>
-  getChineseGroupReviewState(datasetCode: string, groupIds: number[]): Promise<ChineseGroupReviewRecord[]>
+  nextChineseDrill(datasetCode: string, groupIds: number[], timeZone: string): Promise<NextChineseDrillRecord | null>
+  getChineseGroupReviewState(datasetCode: string, groupIds: number[], timeZone: string): Promise<ChineseGroupReviewRecord[]>
   getChineseDayProgress(datasetCode: string, groupIds: number[]): Promise<ChineseDayProgressRecord[]>
 }
 

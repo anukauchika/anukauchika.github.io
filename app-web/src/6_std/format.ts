@@ -52,3 +52,11 @@ export const timeAgo = (ts: string | number | null | undefined): string => {
   const months = Math.floor(days / 30)
   return `${months}mo ago`
 }
+
+export const localTimeZone = (): string => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+  } catch {
+    return 'UTC'
+  }
+}

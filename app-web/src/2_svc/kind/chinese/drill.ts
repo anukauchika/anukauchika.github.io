@@ -14,6 +14,7 @@ import { sttAuth } from '@stt/auth.svelte.js'
 import { svcSync } from '@svc/sync'
 import { dsCode, dtCode } from '@svc/kind/chinese/codes'
 import { calcWordSortScore } from '@std/kind/chinese/stats'
+import { localTimeZone } from '@std/format'
 
 const DT_STORE_KEY: Record<string, 'wordProgressStroke' | 'wordProgressPinyin'> = {
   s: 'wordProgressStroke',
@@ -186,7 +187,7 @@ async function pickNextDrillSuggestion(datasetId: DatasetId, groups: ChineseGrou
   if (groups.length === 0) return null
 
   try {
-    const next = await datDrill.getNextDrill(dsCode(datasetId), groups.map((g) => g.id))
+    const next = await datDrill.getNextDrill(dsCode(datasetId), groups.map((g) => g.id), localTimeZone())
     if (!next) return fallbackDrill(groups, false)
     const type = DRILL_CODE_TO_TYPE[next.drillCode]
     if (!type) return fallbackDrill(groups, false)
