@@ -3,16 +3,17 @@
 
   const givenCols = 3
   const totalCols = $derived(givenCols + exerciseSets * 3)
+  const exerciseSetIndexes = $derived(Array.from({ length: exerciseSets }, (_, i) => i))
 </script>
 
 <section class="sheet">
   <div class="grid" style={`--sets:${totalCols}`}>
-    {#each group.items as item}
+    {#each group.items as item (item.id)}
       <div class="cell filled chinese" lang="zh-CN" translate="no">{item.word}</div>
       <div class="cell filled pinyin">{item.pinyin}</div>
       <div class="cell filled english">{item.tr}</div>
 
-      {#each Array(exerciseSets) as _}
+      {#each exerciseSetIndexes as i (i)}
         <div class="cell blank chinese"></div>
         <div class="cell blank pinyin"></div>
         <div class="cell blank english"></div>

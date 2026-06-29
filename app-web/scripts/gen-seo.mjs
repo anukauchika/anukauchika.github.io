@@ -17,6 +17,7 @@ const dataDir = path.resolve('data/chinese')
 const pages = [
   { loc: '/', lastmod: '2026-06-12', priority: '1.0' },
   { loc: '/chinese/', lastmod: '2026-06-12', priority: '0.9' },
+  { loc: '/chinese/printable-hsk-1-worksheets/', lastmod: '2026-06-30', priority: '0.9' },
   { loc: '/chinese/hsk/', lastmod: '2026-06-11', priority: '0.8' },
   { loc: '/chinese/method/', lastmod: '2026-06-12', priority: '0.8' },
   { loc: '/chinese/blog/', lastmod: '2026-02-26', priority: '0.8' },
@@ -37,10 +38,17 @@ const levels = hskLevelDefs.map((def) => ({
   words: collect(loadDataset(def.source), def.levelTag),
 }))
 
+const hsk1WorksheetGroups = loadDataset('hskv3elementary.json').groups
+
 // --- sitemap.xml ------------------------------------------------------------
 
 const urlEntries = [
   ...pages,
+  ...hsk1WorksheetGroups.map((g) => ({
+    loc: `/chinese/printable-hsk-1-worksheets/group-${g.group}/`,
+    lastmod: '2026-06-30',
+    priority: '0.6',
+  })),
   ...levels.map((l) => ({ loc: `/chinese/hsk/${l.slug}/`, lastmod: l.lastmod, priority: '0.7' })),
   ...blogPosts.map((p) => ({ loc: `/chinese/blog/${p.slug}/`, lastmod: p.dateModified, priority: '0.7' })),
 ]
@@ -106,6 +114,8 @@ Key facts:
 - [Home](${SITE}/): what the app does and how the method works
 - [The accordion workbook method](${SITE}/chinese/method/): how printed worksheets
   fold into self-checking paper practice (static HTML)
+- [Printable HSK 2026 Chinese Writing Worksheets](${SITE}/chinese/printable-hsk-1-worksheets/):
+  print HSK worksheet groups and practice the same words online
 - [Chinese vocabulary browser](${SITE}/chinese/): explore word groups,
   start drills, print worksheets (interactive features require JavaScript)
 

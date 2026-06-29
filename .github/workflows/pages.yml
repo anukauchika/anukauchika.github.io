@@ -32,6 +32,10 @@ jobs:
         working-directory: app-web
         run: npm ci
 
+      - name: Generate SEO files
+        working-directory: app-web
+        run: npm run gen:seo
+
       - name: Build
         working-directory: app-web
         env:
