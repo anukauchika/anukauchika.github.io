@@ -7,9 +7,6 @@ declare global {
 
 const GA_MEASUREMENT_ID = 'G-ELKSNFMX2R'
 const GOOGLE_ADS_ID = 'AW-953778095'
-const HSK_WORKSHEET_PRINTT_CONVERSION_ID = 'AW-953778095/sWzNCNzh8sccEK__5cYD'
-const HSK_PRACTICE_ONLINE_CONVERSION_ID = 'AW-953778095/u9oRCJ6y3MccEK__5cYD'
-const HSK_FULL_APP_CONVERSION_ID = 'AW-953778095/UPyQCNWx9MccEK__5cYD'
 
 export function initAnalytics(): void {
   if (typeof window === 'undefined') return
@@ -37,23 +34,9 @@ export function initAnalytics(): void {
 
 export function trackEvent(name: string, params?: Record<string, unknown>): void {
   if (typeof window === 'undefined' || typeof window.gtag !== 'function') return
-  window.gtag('event', name, params ?? {})
-}
-
-export function trackWorksheetPrintConversion(): void {
-  trackEvent('conversion', {
-    send_to: HSK_WORKSHEET_PRINTT_CONVERSION_ID,
-  })
-}
-
-export function trackPracticeOnlineConversion(): void {
-  trackEvent('conversion', {
-    send_to: HSK_PRACTICE_ONLINE_CONVERSION_ID,
-  })
-}
-
-export function trackFullAppConversion(): void {
-  trackEvent('conversion', {
-    send_to: HSK_FULL_APP_CONVERSION_ID,
-  })
+  try {
+    window.gtag('event', name, params ?? {})
+  } catch {
+    // Analytics must not interrupt user actions or navigation.
+  }
 }

@@ -1,10 +1,5 @@
 <script>
   import { onMount } from 'svelte'
-  import {
-    trackFullAppConversion,
-    trackPracticeOnlineConversion,
-    trackWorksheetPrintConversion,
-  } from '@low/google/analytics'
   import { formatGroup } from '@std/format'
   import WorkbookChinese from '@uic/kind/chinese/workbook.svelte'
   import '@uic/workbook.css'
@@ -15,6 +10,7 @@
     trackWorksheetEvent,
   } from '@low/worksheet/attribution'
   import {
+    hskElementaryWorksheetDatasetId,
     hskElementaryWorksheetLevel,
     worksheetBasePath,
     getWorksheetGroupUrl,
@@ -47,6 +43,7 @@
 
   const payloadFor = (targetGroup) => ({
     page_url: canonical,
+    dataset: hskElementaryWorksheetDatasetId,
     word_group_id: getWordGroupId(targetGroup.group),
     hsk_level: hskElementaryWorksheetLevel,
     group_number: targetGroup.group,
@@ -88,16 +85,14 @@
   const printDate = formatPrintDate()
 
   const handlePrint = (targetGroup) => {
-    trackWorksheetEvent('hsk_worksheet_print_clicked', payloadFor(targetGroup))
-    trackWorksheetPrintConversion()
+    trackWorksheetEvent('wland_print_clicked', payloadFor(targetGroup))
     globalThis.print()
   }
 
   const handlePractice = (event, targetGroup) => {
     event.preventDefault()
     const params = getCurrentAttributionParams()
-    trackWorksheetEvent('hsk_practice_online_clicked', payloadFor(targetGroup))
-    trackPracticeOnlineConversion()
+    trackWorksheetEvent('wland_drill_clicked', payloadFor(targetGroup))
     globalThis.location.href = appendAttributionParams(getWorksheetGroupDrillUrl(targetGroup.group), params)
   }
 
@@ -105,17 +100,16 @@
     event.preventDefault()
     const params = getCurrentAttributionParams()
     const targetUrl = appendAttributionParams(getChineseAppUrl(), params)
-    trackWorksheetEvent('hsk_full_app_clicked', {
+    trackWorksheetEvent('wland_app_clicked', {
       ...payloadFor(group),
       target_url: targetUrl,
     })
-    trackFullAppConversion()
     globalThis.location.href = targetUrl
   }
 
   onMount(() => {
     attributionParams = initAttributionParams()
-    trackWorksheetEvent('worksheet_landing_viewed', payloadFor(group))
+    trackWorksheetEvent('wland_viewed', payloadFor(group))
   })
 </script>
 
