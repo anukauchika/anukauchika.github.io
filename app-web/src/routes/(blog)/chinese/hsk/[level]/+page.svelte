@@ -1,7 +1,6 @@
 <script>
   import Island from '@std/ui/island.svelte'
   import IslandTitle from '@std/ui/island-title.svelte'
-  import { gaHeadSnippet } from '@low/google/analytics'
 
   let { data } = $props()
 
@@ -36,7 +35,6 @@
     creator: { '@type': 'Organization', name: 'Anuka Uchika', url: 'https://anukauchika.com/' },
     isAccessibleForFree: true,
   })}<\/script>`}
-  {@html gaHeadSnippet}
 </svelte:head>
 
 <main class="anuka-page">

@@ -1,7 +1,6 @@
 <script>
   import Island from '@std/ui/island.svelte'
   import IslandTitle from '@std/ui/island-title.svelte'
-  import { gaHeadSnippet } from '@low/google/analytics'
 
   let { data } = $props()
 
@@ -23,7 +22,6 @@
   <meta property="og:image" content="https://anukauchika.com/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://anukauchika.com/og-image.png" />
-  {@html gaHeadSnippet}
 </svelte:head>
 
 <main class="anuka-page">

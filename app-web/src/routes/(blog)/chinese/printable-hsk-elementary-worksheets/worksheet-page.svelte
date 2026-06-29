@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import { gaHeadSnippet, trackWorksheetPrintConversion } from '@low/google/analytics'
+  import { trackPracticeOnlineConversion, trackWorksheetPrintConversion } from '@low/google/analytics'
   import { formatGroup } from '@std/format'
   import WorkbookChinese from '@uic/kind/chinese/workbook.svelte'
   import '@uic/workbook.css'
@@ -84,7 +84,7 @@
   const printDate = formatPrintDate()
 
   const handlePrint = (targetGroup) => {
-    trackWorksheetEvent('worksheet_print_clicked', payloadFor(targetGroup))
+    trackWorksheetEvent('hsk_worksheet_print_clicked', payloadFor(targetGroup))
     trackWorksheetPrintConversion()
     globalThis.print()
   }
@@ -92,7 +92,8 @@
   const handlePractice = (event, targetGroup) => {
     event.preventDefault()
     const params = getCurrentAttributionParams()
-    trackWorksheetEvent('practice_online_clicked', payloadFor(targetGroup))
+    trackWorksheetEvent('hsk_practice_online_clicked', payloadFor(targetGroup))
+    trackPracticeOnlineConversion()
     globalThis.location.href = appendAttributionParams(getWorksheetGroupDrillUrl(targetGroup.group), params)
   }
 
@@ -127,8 +128,6 @@
   <meta property="og:image:height" content="630" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="https://anukauchika.com/og-image.png" />
-  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-  {@html gaHeadSnippet}
 </svelte:head>
 
 <main class="worksheet-landing">

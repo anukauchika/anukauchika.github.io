@@ -8,6 +8,7 @@ declare global {
 const GA_MEASUREMENT_ID = 'G-ELKSNFMX2R'
 const GOOGLE_ADS_ID = 'AW-953778095'
 const HSK_WORKSHEET_PRINTT_CONVERSION_ID = 'AW-953778095/sWzNCNzh8sccEK__5cYD'
+const HSK_PRACTICE_ONLINE_CONVERSION_ID = 'AW-953778095/u9oRCJ6y3MccEK__5cYD'
 
 export function initAnalytics(): void {
   if (typeof window === 'undefined') return
@@ -44,6 +45,8 @@ export function trackWorksheetPrintConversion(): void {
   })
 }
 
-// Inline head snippet for prerendered pages with csr=false (no SvelteKit JS
-// runs there, so the root layout never calls initAnalytics). Same logic.
-export const gaHeadSnippet = `<script>(function(){if(location.hostname==='localhost'||typeof window.gtag==='function')return;var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}';document.head.appendChild(s);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','${GA_MEASUREMENT_ID}');gtag('config','${GOOGLE_ADS_ID}');})()</script>`
+export function trackPracticeOnlineConversion(): void {
+  trackEvent('conversion', {
+    send_to: HSK_PRACTICE_ONLINE_CONVERSION_ID,
+  })
+}

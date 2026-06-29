@@ -1,7 +1,6 @@
 <script>
   import Island from '@std/ui/island.svelte'
   import IslandTitle from '@std/ui/island-title.svelte'
-  import { gaHeadSnippet } from '@low/google/analytics'
 
   const url = 'https://anukauchika.com/chinese/method/'
   const title = 'The Accordion Workbook Method — Printable Chinese Writing Practice'
@@ -57,7 +56,6 @@
     })),
     url,
   })}<\/script>`}
-  {@html gaHeadSnippet}
 </svelte:head>
 
 <main class="anuka-page">

@@ -9,6 +9,22 @@
     <link rel="manifest" href="/manifest.webmanifest">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f6efe8">
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1a1a1e">
+    <script>
+      (function () {
+        if (location.hostname === 'localhost' || typeof window.gtag === 'function') return
+        var s = document.createElement('script')
+        s.async = true
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-ELKSNFMX2R'
+        document.head.appendChild(s)
+        window.dataLayer = window.dataLayer || []
+        window.gtag = function () {
+          dataLayer.push(arguments)
+        }
+        gtag('js', new Date())
+        gtag('config', 'G-ELKSNFMX2R')
+        gtag('config', 'AW-953778095')
+      })()
+    </script>
     %sveltekit.head%
   </head>
   <body data-sveltekit-preload-data="hover">
