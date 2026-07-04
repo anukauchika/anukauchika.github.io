@@ -21,7 +21,7 @@ const registry = JSON.parse(fs.readFileSync(path.resolve('data/registry.json'), 
 // use the last commit that touched the file instead.
 const lastCommitDate = (relPath) => {
   try {
-    return execSync(`git log -1 --format=%cs -- ${relPath}`, { encoding: 'utf8' }).trim() || undefined
+    return execSync(`git log -1 --format=%cs -- '${relPath}'`, { encoding: 'utf8' }).trim() || undefined
   } catch {
     return undefined
   }
@@ -29,10 +29,9 @@ const lastCommitDate = (relPath) => {
 
 // Pages not derived from the level/post/registry manifests
 const pages = [
-  { loc: '/', lastmod: '2026-06-12', priority: '1.0' },
+  { loc: '/', lastmod: '2026-07-05', priority: '1.0' },
   { loc: '/chinese/', lastmod: '2026-06-12', priority: '0.9' },
   { loc: '/chinese/hsk/', lastmod: '2026-06-11', priority: '0.8' },
-  { loc: '/chinese/method/', lastmod: '2026-06-12', priority: '0.8' },
   { loc: '/chinese/blog/', lastmod: '2026-02-26', priority: '0.8' },
 ]
 
@@ -54,12 +53,25 @@ const levels = hskLevelDefs.map((def) => ({
 // Any chinese dataset with seo.worksheets: true gets a collection + per-group
 // worksheet page — see src/routes/(blog)/chinese/worksheet-datasets.ts for the
 // Svelte-side counterpart of this filter.
+// lastmod must reflect whichever changed more recently: the dataset's own content,
+// or the shared template/config that renders every worksheet page.
+const worksheetTemplatePaths = [
+  'src/routes/(blog)/chinese/[worksheetSlug]/worksheet-page.svelte',
+  'src/routes/(blog)/chinese/worksheet-datasets.ts',
+]
+const worksheetTemplateDate = worksheetTemplatePaths
+  .map(lastCommitDate)
+  .filter(Boolean)
+  .sort()
+  .at(-1)
+
 const worksheetDatasets = registry
   .filter((d) => d.kind === 'chinese' && d.seo?.worksheets && d.seo.slug)
   .map((d) => {
     const filename = path.basename(d.path)
     const groups = loadDataset(filename).groups
-    const lastmod = lastCommitDate(d.path) ?? new Date().toISOString().slice(0, 10)
+    const datasetDate = lastCommitDate(d.path) ?? new Date().toISOString().slice(0, 10)
+    const lastmod = [datasetDate, worksheetTemplateDate].filter(Boolean).sort().at(-1)
     return { slug: d.seo.slug, label: d.seo.label ?? d.name, groups, lastmod }
   })
 
@@ -131,15 +143,12 @@ Key facts:
 - The elementary dataset (HSK levels 1-3) contains the 1,000 most-used Chinese words.
 - Writing drills use stroke-order quizzes (trace each stroke, hints on mistakes).
 - The repetition algorithm tracks per-word progress and schedules group reviews.
-- Worksheets print on A4 and fold accordion-style for self-checking paper practice
-  in three directions: characters, pinyin, and translation.
+- Worksheets print on A4 for writing Chinese words on paper from memory.
 - Free to use; signing in (Google or email) enables progress tracking and sync.
 
 ## Pages
 
 - [Home](${SITE}/): what the app does and how the method works
-- [The accordion workbook method](${SITE}/chinese/method/): how printed worksheets
-  fold into self-checking paper practice (static HTML)
 ${worksheetDatasets
   .map(
     (d) =>

@@ -1,5 +1,11 @@
 <script>
-  let { char, size = 132, frameClass = 'anuka-sm' } = $props()
+  let {
+    char,
+    size = 132,
+    frameClass = 'anuka-sm',
+    strokeColor: strokeColorProp,
+    outlineColor: outlineColorProp,
+  } = $props()
 
   let target = $state(null)
   let writer = null
@@ -11,8 +17,8 @@
     import('hanzi-writer').then(({ default: HanziWriter }) => {
       if (cancelled) return
       const styles = getComputedStyle(document.documentElement)
-      const strokeColor = styles.getPropertyValue('--anuka-color-text').trim()
-      const outlineColor = styles.getPropertyValue('--anuka-color-bg-accent').trim()
+      const strokeColor = strokeColorProp ?? styles.getPropertyValue('--anuka-color-text').trim()
+      const outlineColor = outlineColorProp ?? styles.getPropertyValue('--anuka-color-bg-accent').trim()
       const radicalColor = styles.getPropertyValue('--anuka-color-primary').trim()
       writer = HanziWriter.create(el, char, {
         width: size,
@@ -37,4 +43,4 @@
   })
 </script>
 
-<div class="anuka-frame {frameClass}" translate="no" lang="zh-CN" bind:this={target}></div>
+<div class="anuka-frame {frameClass}" style={`width: ${size}px`} translate="no" lang="zh-CN" bind:this={target}></div>

@@ -103,8 +103,8 @@ let activeWord = $state(null)
     <p>
       Browse the complete <strong>HSK 3.0 (2026)</strong> vocabulary in small, focused word groups — one group is one
       study session. Practice every word with stroke-by-stroke <strong>writing drills</strong> with instant feedback,
-      <strong>pinyin drills</strong>, and printable A4 <strong>worksheets</strong> that fold accordion-style for
-      self-checking paper practice. A smart repetition algorithm tracks your progress per word and tells you which
+      <strong>pinyin drills</strong>, and printable A4 <strong>worksheets</strong> for writing words on paper.
+      A smart repetition algorithm tracks your progress per word and tells you which
       group to review next.
     </p>
     <p>
@@ -114,9 +114,6 @@ let activeWord = $state(null)
       {/each}
       · <a href="/chinese/hsk/">overview</a>
     </p>
-    <p>
-      More: <a href="/chinese/method/">the accordion workbook method</a> ·
-      <a href="/chinese/blog/">blog</a> · <a href="/">about the app</a>
-    </p>
+    <p>More: <a href="/chinese/blog/">blog</a> · <a href="/">about the app</a></p>
   </Island>
 </main>

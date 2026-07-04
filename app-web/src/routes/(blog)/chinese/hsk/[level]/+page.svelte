@@ -53,7 +53,7 @@
       {level.blurb} This list contains all <strong>{count.toLocaleString('en-US')} words</strong> of
       {level.name} under the HSK 3.0 (2026) standard, with pinyin and English translations. You can practice every
       word in the app with stroke-by-stroke <a href="/chinese/?dataset={level.datasetId}">writing drills</a>, pinyin
-      drills, and printable <a href="/chinese/method/">accordion-fold A4 worksheets</a>.
+      drills, and printable A4 worksheets for writing words on paper.
     </p>
     <p>
       Other levels:

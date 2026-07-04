@@ -12,15 +12,12 @@ Key facts:
 - The elementary dataset (HSK levels 1-3) contains the 1,000 most-used Chinese words.
 - Writing drills use stroke-order quizzes (trace each stroke, hints on mistakes).
 - The repetition algorithm tracks per-word progress and schedules group reviews.
-- Worksheets print on A4 and fold accordion-style for self-checking paper practice
-  in three directions: characters, pinyin, and translation.
+- Worksheets print on A4 for writing Chinese words on paper from memory.
 - Free to use; signing in (Google or email) enables progress tracking and sync.
 
 ## Pages
 
 - [Home](https://anukauchika.com/): what the app does and how the method works
-- [The accordion workbook method](https://anukauchika.com/chinese/method/): how printed worksheets
-  fold into self-checking paper practice (static HTML)
 - [HSK Elementary Printable Chinese Worksheets](https://anukauchika.com/chinese/printable-hsk-elementary-worksheets/):
   print HSK Elementary memorization worksheet groups and practice the same words online
 - [HSK Intermediate Printable Chinese Worksheets](https://anukauchika.com/chinese/printable-hsk-intermediate-worksheets/):

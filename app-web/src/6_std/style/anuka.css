@@ -536,28 +536,39 @@ button.anuka-activity-heatmap-cell {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.5rem 1.4rem;
-  border: 1.5px solid var(--anuka-color-accent-strong);
+  border: 1px solid var(--anuka-color-border);
   border-radius: 999px;
-  background: none;
+  background: color-mix(in srgb, var(--anuka-color-surface) 72%, transparent);
   color: var(--anuka-color-text);
   font-family: inherit;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
 }
 
-.anuka-btn:hover { border-color: var(--anuka-color-primary); background: var(--anuka-color-accent); }
+.anuka-btn:hover {
+  border-color: color-mix(in srgb, var(--anuka-color-primary) 34%, var(--anuka-color-border));
+  background: var(--anuka-color-surface-raised);
+}
 .anuka-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
 
 .anuka-btn.anuka-main {
-  background: var(--anuka-color-primary);
+  background:
+    radial-gradient(circle at 22% 0%, rgba(255, 255, 255, 0.28), transparent 34%),
+    linear-gradient(135deg, var(--anuka-color-primary), color-mix(in srgb, var(--anuka-color-primary) 78%, #15362f));
   color: var(--anuka-color-on-primary);
   border-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
-.anuka-btn.anuka-main:hover { opacity: 0.85; }
+.anuka-btn.anuka-main:hover {
+  background:
+    radial-gradient(circle at 22% 0%, rgba(255, 255, 255, 0.34), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--anuka-color-primary) 92%, #ffffff), color-mix(in srgb, var(--anuka-color-primary) 74%, #15362f));
+  opacity: 0.94;
+}
 
 .anuka-btn.anuka-sm { font-size: 0.75rem; padding: 0.35rem 1rem; }
 .anuka-btn.anuka-lg { font-size: 1.1rem; padding: 0.65rem 1.8rem; }

@@ -10,18 +10,17 @@ A vocabulary learning application with two modes:
 
 **Spaced Repetition** - Groups are revisited over time for effective memorization.
 
-**Accordion Folding Technique** - Workbooks are designed to be printed and folded accordion-style:
-1. Print the workbook grid (given columns + empty practice columns)
-2. Fold accordion-style to reveal only the reference column + empty columns
-3. Practice by filling in the blanks manually
-4. Unfold to self-check your answers
+**Printable Worksheets** - Workbooks are designed for paper practice:
+1. Print a focused word group
+2. Write Chinese words, pinyin, and meanings by hand
+3. Check your work after writing from memory
 
-**Practice modes via folding:**
+**Practice modes:**
 - Show pinyin → write Chinese characters
 - Show English → write pinyin
 - Show characters → write English
 
-Each fold transforms one sheet into a different practice pass, enabling tactile, self-checking spaced repetition.
+Each sheet supports tactile practice away from the screen.
 
 ## Stroke Practice Algorithm (Chinese)
 
