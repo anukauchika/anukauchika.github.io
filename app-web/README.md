@@ -112,6 +112,39 @@ The `kind` field in each dataset represents **the learning methodology**, not ju
    ```
 3. No code changes needed - datasets are loaded dynamically
 
+#### Publishing printable worksheet pages (SEO)
+
+A `chinese` dataset can opt in to a public printable-worksheet landing section
+(`/chinese/{slug}/` + one page per group) by adding a `seo` block to its registry
+entry:
+
+```json
+"seo": {
+  "worksheets": true,
+  "slug": "printable-my-dataset-worksheets",
+  "label": "My Dataset",
+  "related": ["other-dataset-id"]
+}
+```
+
+- `worksheets` — opt-in flag; omit or set `false` to keep a dataset private (this is
+  the default — e.g. test/draft datasets should not set this)
+- `slug` — the public URL segment; pick a keyword-rich, stable slug (changing it
+  later changes the page's URL)
+- `label` — display name used in the worksheet page's copy/title, if it should
+  differ from the dataset's app-facing `name` (e.g. shorter/punchier for SEO)
+- `related` — ids of other datasets to cross-promote from this worksheet page (they
+  don't need `seo.worksheets` themselves)
+
+Pages are generated automatically by SvelteKit's static prerendering — no route
+code changes needed. See `src/routes/(blog)/chinese/worksheet-datasets.ts`.
+
+> ⚠️ **After adding or editing a dataset with `seo.worksheets: true` (or its data
+> file), run `npm run gen:seo` and commit the regenerated `static/sitemap.xml`,
+> `static/robots.txt`, and `static/llms.txt`.** This is a manual step — it is NOT
+> part of `npm run build` — so it's easy to forget, but skipping it means the new
+> pages won't be in the sitemap search engines crawl.
+
 ### Adding a New `kind` (Learning Methodology)
 
 When a new learning approach is needed:

@@ -2,22 +2,35 @@
 // markdown twins of the HSK word-list pages from the shared manifests:
 //   src/routes/(blog)/chinese/hsk/levels-data.js
 //   src/routes/(blog)/chinese/blog/posts.js
+//   data/registry.json (chinese datasets with seo.worksheets: true)
 // Run manually after content changes: npm run gen:seo (diffs reviewed in git).
+// IMPORTANT: this is a manual step, NOT part of `npm run build` — see app-web/README.md.
 
 import fs from 'fs'
 import path from 'path'
+import { execSync } from 'child_process'
 import { hskLevelDefs, collect } from '../src/routes/(blog)/chinese/hsk/levels-data.js'
 import { blogPosts } from '../src/routes/(blog)/chinese/blog/posts.js'
 
 const SITE = 'https://anukauchika.com'
 const staticDir = path.resolve('static')
 const dataDir = path.resolve('data/chinese')
+const registry = JSON.parse(fs.readFileSync(path.resolve('data/registry.json'), 'utf8'))
 
-// Pages not derived from the level/post manifests
+// File mtime is meaningless after a fresh clone/checkout (git doesn't preserve it) —
+// use the last commit that touched the file instead.
+const lastCommitDate = (relPath) => {
+  try {
+    return execSync(`git log -1 --format=%cs -- ${relPath}`, { encoding: 'utf8' }).trim() || undefined
+  } catch {
+    return undefined
+  }
+}
+
+// Pages not derived from the level/post/registry manifests
 const pages = [
   { loc: '/', lastmod: '2026-06-12', priority: '1.0' },
   { loc: '/chinese/', lastmod: '2026-06-12', priority: '0.9' },
-  { loc: '/chinese/printable-hsk-elementary-worksheets/', lastmod: '2026-06-30', priority: '0.9' },
   { loc: '/chinese/hsk/', lastmod: '2026-06-11', priority: '0.8' },
   { loc: '/chinese/method/', lastmod: '2026-06-12', priority: '0.8' },
   { loc: '/chinese/blog/', lastmod: '2026-02-26', priority: '0.8' },
@@ -38,17 +51,30 @@ const levels = hskLevelDefs.map((def) => ({
   words: collect(loadDataset(def.source), def.levelTag),
 }))
 
-const hskElementaryWorksheetGroups = loadDataset('hskv3elementary.json').groups
+// Any chinese dataset with seo.worksheets: true gets a collection + per-group
+// worksheet page — see src/routes/(blog)/chinese/worksheet-datasets.ts for the
+// Svelte-side counterpart of this filter.
+const worksheetDatasets = registry
+  .filter((d) => d.kind === 'chinese' && d.seo?.worksheets && d.seo.slug)
+  .map((d) => {
+    const filename = path.basename(d.path)
+    const groups = loadDataset(filename).groups
+    const lastmod = lastCommitDate(d.path) ?? new Date().toISOString().slice(0, 10)
+    return { slug: d.seo.slug, label: d.seo.label ?? d.name, groups, lastmod }
+  })
 
 // --- sitemap.xml ------------------------------------------------------------
 
 const urlEntries = [
   ...pages,
-  ...hskElementaryWorksheetGroups.map((g) => ({
-    loc: `/chinese/printable-hsk-elementary-worksheets/group-${g.group}/`,
-    lastmod: '2026-06-30',
-    priority: '0.6',
-  })),
+  ...worksheetDatasets.flatMap((d) => [
+    { loc: `/chinese/${d.slug}/`, lastmod: d.lastmod, priority: '0.9' },
+    ...d.groups.map((g) => ({
+      loc: `/chinese/${d.slug}/group-${g.group}/`,
+      lastmod: d.lastmod,
+      priority: '0.6',
+    })),
+  ]),
   ...levels.map((l) => ({ loc: `/chinese/hsk/${l.slug}/`, lastmod: l.lastmod, priority: '0.7' })),
   ...blogPosts.map((p) => ({ loc: `/chinese/blog/${p.slug}/`, lastmod: p.dateModified, priority: '0.7' })),
 ]
@@ -114,8 +140,13 @@ Key facts:
 - [Home](${SITE}/): what the app does and how the method works
 - [The accordion workbook method](${SITE}/chinese/method/): how printed worksheets
   fold into self-checking paper practice (static HTML)
-- [Printable HSK Elementary Chinese Writing Worksheets](${SITE}/chinese/printable-hsk-elementary-worksheets/):
-  print HSK Elementary worksheet groups and practice the same words online
+${worksheetDatasets
+  .map(
+    (d) =>
+      `- [Printable ${d.label} Chinese Writing Worksheets](${SITE}/chinese/${d.slug}/):\n` +
+      `  print ${d.label} worksheet groups and practice the same words online`,
+  )
+  .join('\n')}
 - [Chinese vocabulary browser](${SITE}/chinese/): explore word groups,
   start drills, print worksheets (interactive features require JavaScript)
 

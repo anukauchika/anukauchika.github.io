@@ -9,71 +9,39 @@
     getCurrentAttributionParams,
     trackWorksheetEvent,
   } from '@low/worksheet/attribution'
-  import {
-    hskElementaryWorksheetDatasetId,
-    hskElementaryWorksheetLevel,
-    worksheetBasePath,
-    getWorksheetGroupUrl,
-    getWorksheetGroupDrillUrl,
-    getChineseAppUrl,
-    getChineseLevelAppUrl,
-    getWordGroupId,
-  } from './worksheet-data'
+  import { getWorksheetGroupUrl, getWorksheetGroupDrillUrl, getChineseAppUrl, getWordGroupId } from '../worksheet-datasets'
 
-  let { group, groups, variant = 'collection' } = $props()
+  let { dataset, group, groups, variant = 'collection' } = $props()
 
   const isCollection = $derived(variant === 'collection')
   const title = $derived(
     isCollection
-      ? 'Printable HSK Elementary Chinese Writing Worksheets'
-      : `Printable HSK Elementary Worksheet - Group ${group.group}`,
+      ? `Printable ${dataset.name} Chinese Writing Worksheets`
+      : `Printable ${dataset.name} Worksheet - Group ${group.group}`,
   )
   const description = $derived(
     isCollection
-      ? 'Print free HSK Elementary Chinese writing worksheets with hanzi, pinyin, English meanings, and handwriting boxes. Practice all groups online.'
-      : `Print HSK Elementary Group ${group.group} Chinese writing practice sheet with hanzi, pinyin, English meanings, and handwriting boxes.`,
+      ? `Print free ${dataset.name} Chinese writing worksheets with hanzi, pinyin, English meanings, and handwriting boxes. Practice all groups online.`
+      : `Print ${dataset.name} Group ${group.group} Chinese writing practice sheet with hanzi, pinyin, English meanings, and handwriting boxes.`,
   )
   const canonical = $derived(
     isCollection
-      ? `https://anukauchika.com${worksheetBasePath}/`
-      : `https://anukauchika.com${getWorksheetGroupUrl(group.group)}`,
+      ? `https://anukauchika.com/chinese/${dataset.slug}/`
+      : `https://anukauchika.com${getWorksheetGroupUrl(dataset, group.group)}`,
   )
 
   let attributionParams = $state({})
 
   const payloadFor = (targetGroup) => ({
     page_url: canonical,
-    dataset: hskElementaryWorksheetDatasetId,
-    word_group_id: getWordGroupId(targetGroup.group),
-    hsk_level: hskElementaryWorksheetLevel,
+    dataset: dataset.id,
+    word_group_id: getWordGroupId(dataset, targetGroup.group),
     group_number: targetGroup.group,
   })
 
-  const drillHref = (targetGroup) => appendAttributionParams(getWorksheetGroupDrillUrl(targetGroup.group), attributionParams)
-  const groupHref = (targetGroup) => appendAttributionParams(getWorksheetGroupUrl(targetGroup.group), attributionParams)
-  const appHref = $derived(appendAttributionParams(getChineseAppUrl(), attributionParams))
-  const advancedLevels = [
-    {
-      label: 'HSK 4',
-      href: getChineseLevelAppUrl('chinese-hskv3-intermediate', 'L4'),
-      description: 'Intermediate vocabulary, wider topics, and formal registers.',
-    },
-    {
-      label: 'HSK 5',
-      href: getChineseLevelAppUrl('chinese-hskv3-intermediate', 'L5'),
-      description: 'More work, study, media, and abstract vocabulary.',
-    },
-    {
-      label: 'HSK 6',
-      href: getChineseLevelAppUrl('chinese-hskv3-intermediate', 'L6'),
-      description: 'Completes the intermediate band for fluent everyday use.',
-    },
-    {
-      label: 'HSK 7-9',
-      href: getChineseLevelAppUrl('chinese-hskv3-advanced'),
-      description: 'Advanced academic and professional vocabulary.',
-    },
-  ]
+  const drillHref = (targetGroup) => appendAttributionParams(getWorksheetGroupDrillUrl(dataset, targetGroup.group), attributionParams)
+  const groupHref = (targetGroup) => appendAttributionParams(getWorksheetGroupUrl(dataset, targetGroup.group), attributionParams)
+  const appHref = $derived(appendAttributionParams(getChineseAppUrl(dataset), attributionParams))
   const formatPrintDate = () => {
     const now = new Date()
     const day = String(now.getDate()).padStart(2, '0')
@@ -93,13 +61,13 @@
     event.preventDefault()
     const params = getCurrentAttributionParams()
     trackWorksheetEvent('wland_drill_clicked', payloadFor(targetGroup))
-    globalThis.location.href = appendAttributionParams(getWorksheetGroupDrillUrl(targetGroup.group), params)
+    globalThis.location.href = appendAttributionParams(getWorksheetGroupDrillUrl(dataset, targetGroup.group), params)
   }
 
   const handleFullApp = (event) => {
     event.preventDefault()
     const params = getCurrentAttributionParams()
-    const targetUrl = appendAttributionParams(getChineseAppUrl(), params)
+    const targetUrl = appendAttributionParams(getChineseAppUrl(dataset), params)
     trackWorksheetEvent('wland_app_clicked', {
       ...payloadFor(group),
       target_url: targetUrl,
@@ -136,11 +104,11 @@
       <h1>{title}</h1>
       {#if isCollection}
         <p class="subtitle">
-          Print HSK Elementary Chinese writing practice sheets and memorize words by handwriting.
+          Print {dataset.name} Chinese writing practice sheets and memorize words by handwriting.
         </p>
       {:else}
         <p class="subtitle">
-          Print HSK Elementary Group {group.group} as a Chinese character writing practice sheet with hanzi, pinyin,
+          Print {dataset.name} Group {group.group} as a Chinese character writing practice sheet with hanzi, pinyin,
           meaning, and handwriting boxes.
         </p>
       {/if}
@@ -164,7 +132,7 @@
     </div>
     <aside class="hero-facts">
       <strong>{groups.length} worksheet groups</strong>
-      <span>Real HSK Elementary word groups from the existing worksheet data.</span>
+      <span>Real {dataset.name} word groups from the existing worksheet data.</span>
       <span>No PDF required. Print directly from the browser.</span>
     </aside>
   </section>
@@ -173,7 +141,7 @@
     <div class="worksheet-title-row no-print">
       <div>
         <p class="eyebrow">Featured printable worksheet</p>
-        <h2 id="worksheet-title">HSK Elementary Worksheet - Group {group.group}</h2>
+        <h2 id="worksheet-title">{dataset.name} Worksheet - Group {group.group}</h2>
       </div>
       <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
       <a class="site-mark" href={appendAttributionParams('/', attributionParams)}>anukauchika.com</a>
@@ -187,7 +155,7 @@
     <div class="workbook-page landing-workbook">
       <header class="sheet-header worksheet-sheet-header">
         <div class="group-line">
-          <span class="group-title">HSK Elementary</span>
+          <span class="group-title">{dataset.name}</span>
           <span class="sheet-separator">|</span>
           <span class="group-title">{formatGroup(group.group)}</span>
           <span class="sheet-separator">|</span>
@@ -230,7 +198,7 @@
   {#if isCollection}
     <section class="groups-section no-print" aria-labelledby="all-groups-title">
       <div class="section-head">
-        <h2 id="all-groups-title">All HSK Elementary Printable Worksheet Groups</h2>
+        <h2 id="all-groups-title">All {dataset.name} Printable Worksheet Groups</h2>
         <p>
           Choose any group to print the worksheet or practice the same words online with drills.
         </p>
@@ -255,10 +223,10 @@
   {:else}
     <section class="groups-section no-print" aria-labelledby="more-groups-title">
       <div class="section-head">
-        <h2 id="more-groups-title">More HSK Elementary Printable Worksheet Groups</h2>
+        <h2 id="more-groups-title">More {dataset.name} Printable Worksheet Groups</h2>
         <p>
           <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-          <a href={appendAttributionParams(`${worksheetBasePath}/`, attributionParams)}>Back to all 67 groups</a>
+          <a href={appendAttributionParams(`/chinese/${dataset.slug}/`, attributionParams)}>Back to all {groups.length} groups</a>
         </p>
       </div>
       <div class="group-list compact">
@@ -270,23 +238,25 @@
     </section>
   {/if}
 
-  <section class="advanced-section no-print" aria-labelledby="advanced-title">
-    <div class="section-head">
-      <h2 id="advanced-title">HSK Advanced Levels</h2>
-      <p>
-        HSK Elementary worksheets are printable here. For higher HSK levels, open the app with the level selected.
-      </p>
-    </div>
-    <div class="advanced-list">
-      {#each advancedLevels as level (level.label)}
-        <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-        <a class="advanced-link" href={appendAttributionParams(level.href, attributionParams)}>
-          <strong>{level.label}</strong>
-          <span>{level.description}</span>
-        </a>
-      {/each}
-    </div>
-  </section>
+  {#if dataset.related.length}
+    <section class="advanced-section no-print" aria-labelledby="advanced-title">
+      <div class="section-head">
+        <h2 id="advanced-title">More Word Lists</h2>
+        <p>
+          {dataset.name} worksheets are printable here. Explore related word lists in the app.
+        </p>
+      </div>
+      <div class="advanced-list">
+        {#each dataset.related as rel (rel.id)}
+          <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+          <a class="advanced-link" href={appendAttributionParams(getChineseAppUrl(rel), attributionParams)}>
+            <strong>{rel.name}</strong>
+            <span>{rel.description}</span>
+          </a>
+        {/each}
+      </div>
+    </section>
+  {/if}
 </main>
 
 <style>
