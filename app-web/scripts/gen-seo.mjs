@@ -143,8 +143,8 @@ Key facts:
 ${worksheetDatasets
   .map(
     (d) =>
-      `- [Printable ${d.label} Chinese Writing Worksheets](${SITE}/chinese/${d.slug}/):\n` +
-      `  print ${d.label} worksheet groups and practice the same words online`,
+      `- [${d.label} Printable Chinese Worksheets](${SITE}/chinese/${d.slug}/):\n` +
+      `  print ${d.label} memorization worksheet groups and practice the same words online`,
   )
   .join('\n')}
 - [Chinese vocabulary browser](${SITE}/chinese/): explore word groups,

@@ -55,6 +55,7 @@ export interface WorksheetGroup {
 
 export interface RelatedWorksheetDataset {
   id: string
+  slug: string
   name: string
   description: string
 }
@@ -98,13 +99,13 @@ function buildGroups(raw: RawDataset): WorksheetGroup[] {
   }))
 }
 
-// Related datasets are just cross-promo links into the app — they don't need to
-// publish their own worksheet pages to be listed here.
+// Related datasets link to other printable worksheet collections, so only
+// datasets with published worksheet pages are shown here.
 function resolveRelated(ids: string[] = []): RelatedWorksheetDataset[] {
   return ids
     .map((id) => metas.find((m) => m.id === id))
-    .filter((m): m is DatasetMeta => Boolean(m))
-    .map((m) => ({ id: m.id, name: m.seo?.label ?? m.name, description: m.description }))
+    .filter((m): m is DatasetMeta => Boolean(m?.seo?.worksheets && m.seo.slug))
+    .map((m) => ({ id: m.id, slug: m.seo!.slug!, name: m.seo?.label ?? m.name, description: m.description }))
 }
 
 export const worksheetDatasets: WorksheetDataset[] = metas
@@ -130,11 +131,16 @@ export function getWorksheetGroupUrl(dataset: Pick<WorksheetDataset, 'slug'>, gr
   return `/chinese/${dataset.slug}/group-${groupNumber}/`
 }
 
+export function getWorksheetDatasetUrl(dataset: Pick<WorksheetDataset, 'slug'>): string {
+  return `/chinese/${dataset.slug}/`
+}
+
 export function getWorksheetGroupDrillUrl(
   dataset: Pick<WorksheetDataset, 'slug' | 'id'>,
   groupNumber: number,
+  mode: 'hanzi' | 'pinyin' = 'hanzi',
 ): string {
-  return `/chinese/drill/hanzi/?dataset=${dataset.id}&group=${groupNumber}&from=${dataset.slug}`
+  return `/chinese/drill/${mode}/?dataset=${dataset.id}&group=${groupNumber}&from=${dataset.slug}`
 }
 
 export function getChineseAppUrl(dataset: Pick<WorksheetDataset, 'id'>): string {

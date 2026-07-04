@@ -133,8 +133,8 @@ entry:
   later changes the page's URL)
 - `label` — display name used in the worksheet page's copy/title, if it should
   differ from the dataset's app-facing `name` (e.g. shorter/punchier for SEO)
-- `related` — ids of other datasets to cross-promote from this worksheet page (they
-  don't need `seo.worksheets` themselves)
+- `related` — ids of other printable worksheet datasets to cross-promote from this
+  worksheet page (only datasets with `seo.worksheets: true` and a `slug` are linked)
 
 Pages are generated automatically by SvelteKit's static prerendering — no route
 code changes needed. See `src/routes/(blog)/chinese/worksheet-datasets.ts`.

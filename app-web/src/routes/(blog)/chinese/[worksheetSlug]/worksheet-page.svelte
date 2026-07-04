@@ -9,20 +9,26 @@
     getCurrentAttributionParams,
     trackWorksheetEvent,
   } from '@low/worksheet/attribution'
-  import { getWorksheetGroupUrl, getWorksheetGroupDrillUrl, getChineseAppUrl, getWordGroupId } from '../worksheet-datasets'
+  import {
+    getWorksheetDatasetUrl,
+    getWorksheetGroupUrl,
+    getWorksheetGroupDrillUrl,
+    getChineseAppUrl,
+    getWordGroupId,
+  } from '../worksheet-datasets'
 
   let { dataset, group, groups, variant = 'collection' } = $props()
 
   const isCollection = $derived(variant === 'collection')
   const title = $derived(
     isCollection
-      ? `Printable ${dataset.name} Chinese Writing Worksheets`
-      : `Printable ${dataset.name} Worksheet - Group ${group.group}`,
+      ? `${dataset.name} Printable Chinese Worksheets`
+      : `${dataset.name} Printable Chinese Worksheet - Group ${group.group}`,
   )
   const description = $derived(
     isCollection
-      ? `Print free ${dataset.name} Chinese writing worksheets with hanzi, pinyin, English meanings, and handwriting boxes. Practice all groups online.`
-      : `Print ${dataset.name} Group ${group.group} Chinese writing practice sheet with hanzi, pinyin, English meanings, and handwriting boxes.`,
+      ? `Print free ${dataset.name} Chinese vocabulary memorization worksheets with hanzi, pinyin, English meanings, and structured active recall practice. Practice all groups online.`
+      : `Print ${dataset.name} Group ${group.group} as a Chinese vocabulary memorization sheet with hanzi, pinyin, English meanings, and structured active recall practice.`,
   )
   const canonical = $derived(
     isCollection
@@ -31,6 +37,7 @@
   )
 
   let attributionParams = $state({})
+  let drillMode = $state('pinyin')
 
   const payloadFor = (targetGroup) => ({
     page_url: canonical,
@@ -39,7 +46,12 @@
     group_number: targetGroup.group,
   })
 
-  const drillHref = (targetGroup) => appendAttributionParams(getWorksheetGroupDrillUrl(dataset, targetGroup.group), attributionParams)
+  const updateDrillMode = () => {
+    drillMode = globalThis.matchMedia('(max-width: 820px)').matches ? 'hanzi' : 'pinyin'
+  }
+
+  const drillHref = (targetGroup) =>
+    appendAttributionParams(getWorksheetGroupDrillUrl(dataset, targetGroup.group, drillMode), attributionParams)
   const groupHref = (targetGroup) => appendAttributionParams(getWorksheetGroupUrl(dataset, targetGroup.group), attributionParams)
   const appHref = $derived(appendAttributionParams(getChineseAppUrl(dataset), attributionParams))
   const formatPrintDate = () => {
@@ -61,7 +73,7 @@
     event.preventDefault()
     const params = getCurrentAttributionParams()
     trackWorksheetEvent('wland_drill_clicked', payloadFor(targetGroup))
-    globalThis.location.href = appendAttributionParams(getWorksheetGroupDrillUrl(dataset, targetGroup.group), params)
+    globalThis.location.href = appendAttributionParams(getWorksheetGroupDrillUrl(dataset, targetGroup.group, drillMode), params)
   }
 
   const handleFullApp = (event) => {
@@ -78,6 +90,12 @@
   onMount(() => {
     attributionParams = initAttributionParams()
     trackWorksheetEvent('wland_viewed', payloadFor(group))
+
+    updateDrillMode()
+    const media = globalThis.matchMedia('(max-width: 820px)')
+    media.addEventListener('change', updateDrillMode)
+
+    return () => media.removeEventListener('change', updateDrillMode)
   })
 </script>
 
@@ -98,33 +116,39 @@
 </svelte:head>
 
 <main class="worksheet-landing">
-  <section class="hero no-print">
+  <section id="worksheet-top" class="hero no-print">
     <div class="hero-copy">
-      <p class="eyebrow">Free printable Chinese handwriting practice</p>
-      <h1>{title}</h1>
+      <p class="eyebrow">Free Chinese worksheets</p>
+      <h1 aria-label={title}>
+        {#if isCollection}
+          <span class="title-line">{dataset.name}</span>
+          <span class="title-line">Printable Chinese Worksheets</span>
+        {:else}
+          {title}
+        {/if}
+      </h1>
       {#if isCollection}
         <p class="subtitle">
-          Print {dataset.name} Chinese writing practice sheets and memorize words by handwriting.
+          Print {dataset.name} Chinese vocabulary memorization sheets and learn words with active recall.
         </p>
       {:else}
         <p class="subtitle">
-          Print {dataset.name} Group {group.group} as a Chinese character writing practice sheet with hanzi, pinyin,
-          meaning, and handwriting boxes.
+          Print {dataset.name} Group {group.group} as a Chinese vocabulary memorization sheet with hanzi, pinyin,
+          meaning, and structured active recall practice.
         </p>
       {/if}
-      <p class="helper">No login needed. Works best on A4 paper in landscape mode with narrow margins.</p>
       <div class="actions">
         <button class="anuka-btn anuka-main anuka-lg" type="button" onclick={() => handlePrint(group)}>
           <span class="anuka-icon anuka-icon-print"></span>
           {isCollection ? `Print Group ${group.group} Worksheet` : 'Print Worksheet'}
         </button>
         <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-        <a class="anuka-btn anuka-lg" href={drillHref(group)} onclick={(event) => handlePractice(event, group)}>
-          <span class="anuka-icon anuka-icon-stroke"></span>
-          {isCollection ? `Practice Group ${group.group} Online` : 'Practice These Words Online'}
+        <a class="anuka-btn anuka-lg" href="#learning-method">
+          See more
+          <span class="down-arrow" aria-hidden="true"></span>
         </a>
         <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-        <a class="app-link" href={appHref} onclick={handleFullApp}>Explore Full Chinese Practice App &rarr;</a>
+        <a class="app-link" href={appHref} onclick={handleFullApp}>Try Chinese Drills Online &rarr;</a>
       </div>
       <p class="print-note">
         For best results: choose Landscape orientation and Narrow / Minimum margins in the print dialog.
@@ -132,8 +156,7 @@
     </div>
     <aside class="hero-facts">
       <strong>{groups.length} worksheet groups</strong>
-      <span>Real {dataset.name} word groups from the existing worksheet data.</span>
-      <span>No PDF required. Print directly from the browser.</span>
+      <span>{dataset.name} is divided into 15-word groups for structured practice and systematic memorization. Print each group directly from the browser.</span>
     </aside>
   </section>
 
@@ -146,11 +169,6 @@
       <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
       <a class="site-mark" href={appendAttributionParams('/', attributionParams)}>anukauchika.com</a>
     </div>
-
-    <p class="worksheet-intro no-print">
-      Use Look-Cover-Write-Check with this printable Chinese worksheet: look at one clue, cover the answers,
-      write the Chinese word from memory, then check yourself.
-    </p>
 
     <div class="workbook-page landing-workbook">
       <header class="sheet-header worksheet-sheet-header">
@@ -171,16 +189,17 @@
         Print Worksheet
       </button>
       <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-      <a class="anuka-btn" href={drillHref(group)} onclick={(event) => handlePractice(event, group)}>
-        Practice These Words Online
-      </a>
-      <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-      <a class="app-link" href={appHref} onclick={handleFullApp}>Explore Full Chinese Practice App &rarr;</a>
+      <a class="anuka-btn" href={drillHref(group)} onclick={(event) => handlePractice(event, group)}>Practice Online</a>
     </div>
   </section>
 
-  <section class="how-to no-print" aria-labelledby="how-to-title">
-    <h2 id="how-to-title">Look-Cover-Write-Check</h2>
+  <section id="learning-method" class="how-to no-print" aria-labelledby="how-to-title">
+    <div class="section-head">
+      <h2 id="how-to-title">Learn by look-cover-write-check</h2>
+      <a class="section-jump" href="#worksheet-top" aria-label="Go up">
+        <span class="up-arrow" aria-hidden="true"></span>
+      </a>
+    </div>
     <ol>
       <li>Print a worksheet.</li>
       <li>Cover all columns except one.</li>
@@ -189,67 +208,20 @@
       <li>Repeat with another column: meaning, pinyin, or characters.</li>
       <li>Click "Practice Online" to review the same words with drills.</li>
     </ol>
-    <p>
-      These worksheets are designed for active recall: instead of only reading Chinese words, you cover the answers
-      and write them from memory.
-    </p>
   </section>
-
-  {#if isCollection}
-    <section class="groups-section no-print" aria-labelledby="all-groups-title">
-      <div class="section-head">
-        <h2 id="all-groups-title">All {dataset.name} Printable Worksheet Groups</h2>
-        <p>
-          Choose any group to print the worksheet or practice the same words online with drills.
-        </p>
-      </div>
-      <div class="group-list">
-        {#each groups as targetGroup (targetGroup.group)}
-          <div class="group-row">
-            <div>
-              <h3>Group {targetGroup.group}</h3>
-              <p>{targetGroup.items.length} words: {targetGroup.items.slice(0, 3).map((item) => item.word).join(', ')}</p>
-            </div>
-            <div class="group-actions">
-              <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-              <a href={groupHref(targetGroup)}>Print</a>
-              <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-              <a href={drillHref(targetGroup)} onclick={(event) => handlePractice(event, targetGroup)}>Practice Online</a>
-            </div>
-          </div>
-        {/each}
-      </div>
-    </section>
-  {:else}
-    <section class="groups-section no-print" aria-labelledby="more-groups-title">
-      <div class="section-head">
-        <h2 id="more-groups-title">More {dataset.name} Printable Worksheet Groups</h2>
-        <p>
-          <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-          <a href={appendAttributionParams(`/chinese/${dataset.slug}/`, attributionParams)}>Back to all {groups.length} groups</a>
-        </p>
-      </div>
-      <div class="group-list compact">
-        {#each groups as targetGroup (targetGroup.group)}
-          <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-          <a class:current={targetGroup.group === group.group} href={groupHref(targetGroup)}>Group {targetGroup.group}</a>
-        {/each}
-      </div>
-    </section>
-  {/if}
 
   {#if dataset.related.length}
     <section class="advanced-section no-print" aria-labelledby="advanced-title">
       <div class="section-head">
-        <h2 id="advanced-title">More Word Lists</h2>
+        <h2 id="advanced-title">More Sets</h2>
         <p>
-          {dataset.name} worksheets are printable here. Explore related word lists in the app.
+          Explore related printable sets.
         </p>
       </div>
       <div class="advanced-list">
         {#each dataset.related as rel (rel.id)}
           <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-          <a class="advanced-link" href={appendAttributionParams(getChineseAppUrl(rel), attributionParams)}>
+          <a class="advanced-link" href={appendAttributionParams(getWorksheetDatasetUrl(rel), attributionParams)}>
             <strong>{rel.name}</strong>
             <span>{rel.description}</span>
           </a>
@@ -257,6 +229,22 @@
       </div>
     </section>
   {/if}
+
+  <section class="groups-section no-print" aria-labelledby="all-groups-title">
+    <div class="section-head">
+      <h2 id="all-groups-title">All {dataset.name} Groups</h2>
+      <p>
+        Open any group as a printable worksheet.
+      </p>
+    </div>
+    <div class="group-list compact">
+      {#each groups as targetGroup (targetGroup.group)}
+        <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
+        <a class:current={targetGroup.group === group.group} href={groupHref(targetGroup)}>Group {targetGroup.group}</a>
+      {/each}
+    </div>
+  </section>
+
 </main>
 
 <style>
@@ -281,6 +269,11 @@
     flex-direction: column;
     align-items: center;
     gap: 1.25rem;
+    scroll-behavior: smooth;
+  }
+
+  :global(html) {
+    scroll-behavior: smooth;
   }
 
   .worksheet-landing > section {
@@ -311,20 +304,18 @@
   }
 
   h1 {
-    max-width: 760px;
     font-size: clamp(2.2rem, 5vw, 4.4rem);
     line-height: 1.02;
     letter-spacing: 0;
   }
 
+  .title-line {
+    display: block;
+  }
+
   h2 {
     font-size: clamp(1.45rem, 2.4vw, 2rem);
     line-height: 1.18;
-    letter-spacing: 0;
-  }
-
-  h3 {
-    font-size: 1rem;
     letter-spacing: 0;
   }
 
@@ -334,12 +325,8 @@
     font-size: 1.18rem;
   }
 
-  .helper,
   .print-note,
-  .worksheet-intro,
   .section-head p,
-  .how-to p,
-  .group-row p,
   .hero-facts span {
     color: #6b6258;
   }
@@ -385,6 +372,22 @@
     padding: 1rem;
   }
 
+  .how-to {
+    scroll-margin-top: 8rem;
+  }
+
+  .how-to .section-head {
+    display: block;
+    position: relative;
+    padding-right: 2.75rem;
+  }
+
+  .how-to .section-jump {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
   .worksheet-title-row,
   .section-head {
     display: flex;
@@ -401,9 +404,41 @@
     white-space: nowrap;
   }
 
-  .worksheet-intro {
-    max-width: 850px;
-    margin-bottom: 0.9rem;
+  .section-jump {
+    color: #6b6258;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .section-jump:hover {
+    color: #1f6f5c;
+    border-color: rgba(31, 111, 92, 0.38);
+  }
+
+  .up-arrow {
+    width: 0.58rem;
+    height: 0.58rem;
+    border-top: 2px solid currentColor;
+    border-left: 2px solid currentColor;
+    transform: translateY(0.14rem) rotate(45deg);
+  }
+
+  .down-arrow {
+    width: 0.58rem;
+    height: 0.58rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: translateY(-0.14rem) rotate(45deg);
   }
 
   :global(.landing-workbook.workbook-page .worksheet-sheet-header) {
@@ -427,38 +462,6 @@
     margin-top: 0.9rem;
   }
 
-  .group-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 0.55rem;
-  }
-
-  .group-row {
-    min-height: 78px;
-    border: 1px solid rgba(0, 0, 0, 0.07);
-    border-radius: 8px;
-    padding: 0.7rem;
-    display: flex;
-    justify-content: space-between;
-    gap: 0.75rem;
-    align-items: center;
-    background: #f8f6f2;
-  }
-
-  .group-row p {
-    font-size: 0.86rem;
-    margin-top: 0.15rem;
-  }
-
-  .group-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    align-items: flex-end;
-    flex: 0 0 auto;
-    font-size: 0.9rem;
-  }
-
   a {
     color: #1f6f5c;
     text-underline-offset: 0.16em;
@@ -474,7 +477,9 @@
   }
 
   .group-list.compact {
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+    gap: 0.55rem;
   }
 
   .advanced-list {
@@ -497,6 +502,9 @@
 
   .advanced-link strong {
     color: #1f6f5c;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.2;
   }
 
   .advanced-link span {
@@ -509,21 +517,22 @@
   }
 
   .group-list.compact a {
+    min-height: 2.5rem;
     border: 1px solid rgba(0, 0, 0, 0.07);
     border-radius: 8px;
-    padding: 0.45rem 0.6rem;
+    padding: 0.45rem 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     text-decoration: none;
     background: #f8f6f2;
+    white-space: nowrap;
   }
 
   .group-list.compact a.current {
     background: #1f6f5c;
     color: #ffffff;
-  }
-
-  .how-to {
-    margin-bottom: 1rem;
   }
 
   .how-to ol {
@@ -597,16 +606,6 @@
 
     :global(.landing-workbook.workbook-page .cell.chinese) {
       font-size: 1rem;
-    }
-
-    .group-row {
-      align-items: flex-start;
-      flex-direction: column;
-    }
-
-    .group-actions {
-      flex-direction: row;
-      align-items: center;
     }
   }
 
