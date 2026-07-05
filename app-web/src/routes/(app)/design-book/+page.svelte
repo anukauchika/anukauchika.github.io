@@ -13,6 +13,7 @@
   import S0304ControlsData from '@uic/design/s03-04-controls-data.svelte'
   import S0305ControlsIcons from '@uic/design/s03-05-controls-icons.svelte'
   import S0401Composition from '@uic/design/s04-01-composition.svelte'
+  import S0501AppIcon from '@uic/design/s05-01-app-icon.svelte'
 
   function toggleTheme() {
     const current = document.documentElement.dataset.theme
@@ -41,6 +42,9 @@
       <Btn main onclick={() => (window.location.href = '/chinese/')}>Learn Chinese</Btn>
     </div>
   </Island>
+
+  <AppTitle parts={['Anuka', 'Identity']} />
+  <S0501AppIcon />
 
   <S0101Layout />
   <S0201Structure />
