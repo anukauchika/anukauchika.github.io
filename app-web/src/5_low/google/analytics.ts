@@ -6,7 +6,6 @@ declare global {
 }
 
 const GA_MEASUREMENT_ID = 'G-ELKSNFMX2R'
-const GOOGLE_ADS_ID = 'AW-953778095'
 
 export function initAnalytics(): void {
   if (typeof window === 'undefined') return
@@ -29,7 +28,6 @@ export function initAnalytics(): void {
   window.gtag = gtag
   gtag('js', new Date())
   gtag('config', GA_MEASUREMENT_ID)
-  gtag('config', GOOGLE_ADS_ID)
 }
 
 export function trackEvent(name: string, params?: Record<string, unknown>): void {

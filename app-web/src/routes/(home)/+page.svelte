@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte'
   import { sttAuth } from '@stt/auth.svelte.js'
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { svcAuth } from '@svc/auth'
@@ -7,6 +8,11 @@
   import AuthModal from '@uic/auth-modal.svelte'
   import HanziAnimate from '@uic/kind/chinese/hanzi-animate.svelte'
   import BtnIcon from '@std/ui/btn-icon.svelte'
+  import {
+    trackRootLandAuxiClicked,
+    trackRootLandCoreClicked,
+    trackRootLandViewed,
+  } from '@low/google/landing-analytics'
 
   let showAuthDropdown = $state(false)
   let nextDrill = $state(null)
@@ -47,6 +53,15 @@
     return nextDrill && sttDataset.id
       ? `${basePath}/drill/${typeToPath[nextDrill.type] || 'hanzi'}/?group=${nextDrill.groupId}&dataset=${sttDataset.id}`
       : null
+  })
+
+  const openSignIn = () => {
+    trackRootLandAuxiClicked('signin')
+    showAuthDropdown = true
+  }
+
+  onMount(() => {
+    trackRootLandViewed()
   })
 
   $effect(() => {
@@ -140,7 +155,7 @@
             {/if}
           </BtnIcon>
         {:else}
-          <BtnIcon onclick={() => (showAuthDropdown = true)} label="Sign in">
+          <BtnIcon onclick={openSignIn} label="Sign in">
             <span class="anuka-icon anuka-icon-user"></span>
           </BtnIcon>
         {/if}
@@ -160,17 +175,25 @@
         </p>
         <div class="anuka-row hero-actions">
           {#if sttAuth.isAuthenticated && drillHref}
-            <a href={drillHref} class="anuka-btn anuka-main anuka-lg lesson-cta">Drill</a>
+            <a
+              href={drillHref}
+              class="anuka-btn anuka-main anuka-lg lesson-cta"
+              onclick={() => trackRootLandCoreClicked('next_drill')}
+            >
+              Drill
+            </a>
           {:else}
             <a
               href="/chinese/drill/pinyin/?dataset=chinese-hskv3-elementary&group=1"
               class="anuka-btn anuka-main anuka-lg lesson-cta lesson-cta-desktop"
+              onclick={() => trackRootLandCoreClicked('trial_drill')}
             >
               Try a free lesson →
             </a>
             <a
               href="/chinese/drill/hanzi/?dataset=chinese-hskv3-elementary&group=1"
               class="anuka-btn anuka-main anuka-lg lesson-cta lesson-cta-mobile"
+              onclick={() => trackRootLandCoreClicked('trial_drill')}
             >
               Try a free lesson →
             </a>
@@ -241,11 +264,15 @@
               <strong>{vocab.title}</strong>
               <span class="anuka-sm anuka-mute">{vocab.level} · {vocab.words}</span>
               <div class="vocab-actions">
-                <a class="anuka-btn" href={vocab.printableHref}>
+                <a class="anuka-btn" href={vocab.printableHref} onclick={() => trackRootLandAuxiClicked('printables')}>
                   <span class="anuka-icon anuka-icon-print"></span>
                   Printable Worksheets
                 </a>
-                <a class="anuka-btn anuka-main practice-btn" href={vocab.practiceHref}>
+                <a
+                  class="anuka-btn anuka-main practice-btn"
+                  href={vocab.practiceHref}
+                  onclick={() => trackRootLandAuxiClicked('practice_app')}
+                >
                   <span class="anuka-icon anuka-icon-pinyin"></span>
                   Practice Online
                 </a>
@@ -260,14 +287,14 @@
   <!-- Footer links -->
   <div class="anuka-island">
     <div class="footer-link-grid">
-      <a href="/chinese/hsk/" class="anuka-card footer-link-card">
+      <a href="/chinese/hsk/" class="anuka-card footer-link-card" onclick={() => trackRootLandAuxiClicked('hsk_words')}>
         <span class="footer-link-icon"><span class="anuka-icon anuka-icon-book"></span></span>
         <span>
           <strong>HSK Word Lists</strong>
           <span class="anuka-sm anuka-mute">Browse all words by level</span>
         </span>
       </a>
-      <a href="/chinese/blog/" class="anuka-card footer-link-card">
+      <a href="/chinese/blog/" class="anuka-card footer-link-card" onclick={() => trackRootLandAuxiClicked('blog')}>
         <span class="footer-link-icon"><span class="anuka-icon anuka-icon-list"></span></span>
         <span>
           <strong>Read the Blog</strong>

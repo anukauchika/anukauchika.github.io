@@ -1,5 +1,3 @@
-import { trackEvent } from '@low/google/analytics'
-
 export const attributionParamKeys = [
   'utm_source',
   'utm_medium',
@@ -87,13 +85,4 @@ export function appendAttributionParams(url: string, params: AttributionParams =
   }
   if (next.origin === base) return `${next.pathname}${next.search}${next.hash}`
   return next.toString()
-}
-
-export function trackWorksheetEvent(name: string, payload: Record<string, unknown>): void {
-  const pageUrl = typeof window === 'undefined' ? payload.page_url : window.location.href
-  trackEvent(name, {
-    ...payload,
-    page_url: pageUrl,
-    ...getCurrentAttributionParams(),
-  })
 }

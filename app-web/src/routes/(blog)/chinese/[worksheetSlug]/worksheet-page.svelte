@@ -7,14 +7,17 @@
     appendAttributionParams,
     initAttributionParams,
     getCurrentAttributionParams,
-    trackWorksheetEvent,
   } from '@low/worksheet/attribution'
+  import {
+    trackPrintLandAuxiClicked,
+    trackPrintLandCoreClicked,
+    trackPrintLandViewed,
+  } from '@low/google/landing-analytics'
   import {
     getWorksheetDatasetUrl,
     getWorksheetGroupUrl,
     getWorksheetGroupDrillUrl,
     getChineseAppUrl,
-    getWordGroupId,
   } from '../worksheet-datasets'
 
   let { dataset, group, groups, variant = 'collection' } = $props()
@@ -39,13 +42,6 @@
   let attributionParams = $state({})
   let drillMode = $state('pinyin')
 
-  const payloadFor = (targetGroup) => ({
-    page_url: canonical,
-    dataset: dataset.id,
-    word_group_id: getWordGroupId(dataset, targetGroup.group),
-    group_number: targetGroup.group,
-  })
-
   const updateDrillMode = () => {
     drillMode = globalThis.matchMedia('(max-width: 820px)').matches ? 'hanzi' : 'pinyin'
   }
@@ -64,15 +60,15 @@
   }
   const printDate = formatPrintDate()
 
-  const handlePrint = (targetGroup) => {
-    trackWorksheetEvent('wland_print_clicked', payloadFor(targetGroup))
+  const handlePrint = () => {
+    trackPrintLandCoreClicked('print_worksheet', dataset.id)
     globalThis.print()
   }
 
   const handlePractice = (event, targetGroup) => {
     event.preventDefault()
     const params = getCurrentAttributionParams()
-    trackWorksheetEvent('wland_drill_clicked', payloadFor(targetGroup))
+    trackPrintLandAuxiClicked('practice_drill', dataset.id)
     globalThis.location.href = appendAttributionParams(getWorksheetGroupDrillUrl(dataset, targetGroup.group, drillMode), params)
   }
 
@@ -80,16 +76,13 @@
     event.preventDefault()
     const params = getCurrentAttributionParams()
     const targetUrl = appendAttributionParams(getChineseAppUrl(dataset), params)
-    trackWorksheetEvent('wland_app_clicked', {
-      ...payloadFor(group),
-      target_url: targetUrl,
-    })
+    trackPrintLandAuxiClicked('practice_app', dataset.id)
     globalThis.location.href = targetUrl
   }
 
   onMount(() => {
     attributionParams = initAttributionParams()
-    trackWorksheetEvent('wland_viewed', payloadFor(group))
+    trackPrintLandViewed(dataset.id)
 
     updateDrillMode()
     const media = globalThis.matchMedia('(max-width: 820px)')
@@ -138,12 +131,12 @@
         </p>
       {/if}
       <div class="actions">
-        <button class="anuka-btn anuka-main anuka-lg" type="button" onclick={() => handlePrint(group)}>
+        <button class="anuka-btn anuka-main anuka-lg" type="button" onclick={handlePrint}>
           <span class="anuka-icon anuka-icon-print"></span>
           {isCollection ? `Print Group ${group.group} Worksheet` : 'Print Worksheet'}
         </button>
         <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-        <a class="anuka-btn anuka-lg" href="#learning-method">
+        <a class="anuka-btn anuka-lg" href="#learning-method" onclick={() => trackPrintLandAuxiClicked('method', dataset.id)}>
           See more
           <span class="down-arrow" aria-hidden="true"></span>
         </a>
@@ -167,7 +160,9 @@
         <h2 id="worksheet-title">{dataset.name} Worksheet - Group {group.group}</h2>
       </div>
       <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-      <a class="site-mark" href={appendAttributionParams('/', attributionParams)}>anukauchika.com</a>
+      <a class="site-mark" href={appendAttributionParams('/', attributionParams)} onclick={() => trackPrintLandAuxiClicked('root', dataset.id)}>
+        anukauchika.com
+      </a>
     </div>
 
     <div class="workbook-page landing-workbook">
@@ -184,7 +179,7 @@
     </div>
 
     <div class="below-worksheet-actions no-print">
-      <button class="anuka-btn anuka-main" type="button" onclick={() => handlePrint(group)}>
+      <button class="anuka-btn anuka-main" type="button" onclick={handlePrint}>
         <span class="anuka-icon anuka-icon-print"></span>
         Print Worksheet
       </button>
@@ -221,7 +216,7 @@
       <div class="advanced-list">
         {#each dataset.related as rel (rel.id)}
           <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-          <a class="advanced-link" href={appendAttributionParams(getWorksheetDatasetUrl(rel), attributionParams)}>
+          <a class="advanced-link" href={appendAttributionParams(getWorksheetDatasetUrl(rel), attributionParams)} onclick={() => trackPrintLandAuxiClicked('related_collection', dataset.id)}>
             <strong>{rel.name}</strong>
             <span>{rel.description}</span>
           </a>
@@ -240,7 +235,9 @@
     <div class="group-list compact">
       {#each groups as targetGroup (targetGroup.group)}
         <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-        <a class:current={targetGroup.group === group.group} href={groupHref(targetGroup)}>Group {targetGroup.group}</a>
+        <a class:current={targetGroup.group === group.group} href={groupHref(targetGroup)} onclick={() => trackPrintLandAuxiClicked('group', dataset.id)}>
+          Group {targetGroup.group}
+        </a>
       {/each}
     </div>
   </section>

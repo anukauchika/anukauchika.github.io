@@ -146,7 +146,3 @@ export function getWorksheetGroupDrillUrl(
 export function getChineseAppUrl(dataset: Pick<WorksheetDataset, 'id'>): string {
   return `/chinese/?dataset=${dataset.id}`
 }
-
-export function getWordGroupId(dataset: Pick<WorksheetDataset, 'id'>, groupNumber: number): string {
-  return `${dataset.id}:group-${groupNumber}`
-}
