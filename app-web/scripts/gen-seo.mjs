@@ -30,7 +30,6 @@ const lastCommitDate = (relPath) => {
 // Pages not derived from the level/post/registry manifests
 const pages = [
   { loc: '/', lastmod: '2026-07-05', priority: '1.0' },
-  { loc: '/chinese/', lastmod: '2026-06-12', priority: '0.9' },
   { loc: '/chinese/hsk/', lastmod: '2026-06-11', priority: '0.8' },
   { loc: '/chinese/blog/', lastmod: '2026-02-26', priority: '0.8' },
 ]
@@ -111,6 +110,8 @@ ${urlEntries
 // Unslashed prefixes match both /x and /x/ variants.
 const disallow = [
   '/design-book',
+  '/chinese/?',
+  '/chinese/queue',
   '/chinese/drill',
   '/chinese/workbook',
   '/chinese/words',
@@ -156,8 +157,6 @@ ${worksheetDatasets
       `  print ${d.label} memorization worksheet groups and practice the same words online`,
   )
   .join('\n')}
-- [Chinese vocabulary browser](${SITE}/chinese/): explore word groups,
-  start drills, print worksheets (interactive features require JavaScript)
 
 ## HSK 3.0 word lists (static HTML, no JavaScript required)
 

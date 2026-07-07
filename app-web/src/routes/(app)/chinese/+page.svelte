@@ -13,8 +13,19 @@
 
   let showAuthDropdown = $state(false)
   let showDatasetPicker = $state(false)
+  let showHowWorks = $state(false)
 
   const DAILY_GOAL_MIN = 60
+  const motivationPhrases = [
+    'Progress starts where comfort ends.',
+    'The only limit is you.',
+    'Build progress, not participation.',
+    'Invest in yourself, not in the app.',
+    'Build your vocabulary, not long streaks.',
+  ]
+
+  let motivationText = $state(motivationPhrases[0])
+  let motivationTyping = $state(false)
 
   const basePath = $derived.by(() => `/${sttDataset.current?.kind ?? 'chinese'}`)
   const datasetName = $derived(sttDataset.current?.name ?? 'Vocabulary')
@@ -62,6 +73,60 @@
   function plannedTodayLabel(count) {
     return `${count} ${count === 1 ? 'session' : 'sessions'} planned for today`
   }
+
+  function handleDrillClick(event) {
+    if (sttHome.loaded) return
+    event.preventDefault()
+  }
+
+  $effect(() => {
+    if (!browser) return
+
+    let cancelled = false
+    let phraseIndex = 0
+    const timers = new Set()
+    const sleep = (ms) => new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        timers.delete(timer)
+        resolve()
+      }, ms)
+      timers.add(timer)
+    })
+
+    async function typePhrase(nextPhrase) {
+      motivationTyping = true
+      const currentPhrase = motivationText
+      for (let i = currentPhrase.length; i >= 0 && !cancelled; i--) {
+        motivationText = currentPhrase.slice(0, i)
+        await sleep(18)
+      }
+
+      await sleep(120)
+
+      for (let i = 1; i <= nextPhrase.length && !cancelled; i++) {
+        motivationText = nextPhrase.slice(0, i)
+        await sleep(34)
+      }
+      motivationTyping = false
+    }
+
+    async function loop() {
+      while (!cancelled) {
+        await sleep(15_000)
+        if (cancelled) return
+        phraseIndex = (phraseIndex + 1) % motivationPhrases.length
+        await typePhrase(motivationPhrases[phraseIndex])
+      }
+    }
+
+    loop()
+
+    return () => {
+      cancelled = true
+      motivationTyping = false
+      for (const timer of timers) clearTimeout(timer)
+    }
+  })
 
   // Runs on every mount (fresh gauge after a drill) and on dataset/auth changes.
   // Not keyed on sttAuth.dbVersion: chinese_home_summary is a direct server
@@ -135,7 +200,9 @@
 
           <div
             class="app-gauge"
-            aria-label={sttHome.loaded ? `${lessonsDone} of ${lessonsTotal} lessons done today` : 'Loading your progress'}
+            aria-label={sttHome.loaded
+              ? `${lessonsDone} of ${lessonsTotal} lessons done today`
+              : 'Loading your progress'}
           >
             <svg class="app-gauge-svg" viewBox="0 0 300 300" aria-hidden="true">
               <circle class="app-gauge-track" cx="150" cy="150" r="132" />
@@ -150,20 +217,19 @@
                 />
               {/if}
               {#each minuteTicks as tick (tick.i)}
-                <line
-                  class:major={tick.major}
-                  x1={tick.x1}
-                  y1={tick.y1}
-                  x2={tick.x2}
-                  y2={tick.y2}
-                />
+                <line class:major={tick.major} x1={tick.x1} y1={tick.y1} x2={tick.x2} y2={tick.y2} />
               {/each}
             </svg>
 
             <a
               class="app-drill-circle"
+              class:app-drill-circle-off={!sttHome.loaded}
               href={drillHref}
-              aria-label={sttHome.loaded ? `Start drill. ${minutesToday} of ${DAILY_GOAL_MIN} minutes trained today.` : 'Loading your progress'}
+              aria-disabled={!sttHome.loaded}
+              aria-label={sttHome.loaded
+                ? `Start drill. ${minutesToday} of ${DAILY_GOAL_MIN} minutes trained today.`
+                : 'Loading your progress'}
+              onclick={handleDrillClick}
             >
               <span class="app-drill-zi">练</span>
               <span class="app-drill-label" class:app-drill-label-loading={!sttHome.loaded}>Drill</span>
@@ -171,16 +237,18 @@
                 {#if sttHome.loaded}
                   <strong>{minutesToday}</strong> / {DAILY_GOAL_MIN} min today
                 {:else}
-                  Hang tight&hellip;
+                  Loading
                 {/if}
               </span>
             </a>
           </div>
 
           <p class="app-truth">
-            You know <strong>{wordsDrilled.toLocaleString('en-US')}</strong> of
-            <strong>{totalWords.toLocaleString('en-US')}</strong> words.<br>
-            <span>The only limit is you.</span>
+            <span class="app-truth-main">
+              You know <strong>{wordsDrilled.toLocaleString('en-US')}</strong> of
+              <strong>{totalWords.toLocaleString('en-US')}</strong> words.
+            </span>
+            <span class="app-truth-tagline" class:typing={motivationTyping} aria-live="polite">{motivationText}</span>
           </p>
 
           <div class="app-footer-actions">
@@ -189,16 +257,26 @@
               <span class="app-progress-track"><span style={`width: ${progressPercent}%`}></span></span>
               <strong>{progressPercent}%</strong>
             </div>
-            <a class="anuka-btn app-queue-btn" href="/chinese/queue/" aria-label={plannedTodayLabel(plannedToday)}>
-              <span>Queue</span>
-              <span class="app-queue-count">{plannedToday}</span>
-            </a>
+            {#if sttAuth.isAuthenticated}
+              <a
+                class="anuka-btn app-queue-btn"
+                class:app-queue-btn-loading={!sttHome.loaded}
+                href="/chinese/queue/"
+                aria-busy={!sttHome.loaded}
+                aria-label={sttHome.loaded ? plannedTodayLabel(plannedToday) : 'Loading queue'}
+              >
+                <span>Queue</span>
+                <span class="app-queue-count">{sttHome.loaded ? plannedToday : '...'}</span>
+              </a>
+            {/if}
+            <button class="anuka-btn app-help-btn" type="button" onclick={() => (showHowWorks = true)}>
+              How it works
+            </button>
           </div>
         </div>
       </div>
     </section>
   {/if}
-
 </main>
 
 {#if showDatasetPicker}
@@ -231,6 +309,63 @@
   </Modal>
 {/if}
 
+{#if showHowWorks}
+  <Modal onclose={() => (showHowWorks = false)}>
+    <section class="anuka-island how-modal" aria-label="How it works">
+      <div class="anuka-row anuka-justify">
+        <h2 class="how-modal-title">How it works</h2>
+        <BtnIcon icon="close" label="Close" onclick={() => (showHowWorks = false)} />
+      </div>
+
+      <div class="how-list">
+        <section>
+          <h3>Groups</h3>
+          <p>Each vocabulary list is divided into groups of 15 words.</p>
+        </section>
+
+        <section>
+          <h3>Learn one group</h3>
+          <p>A lesson covers one group. You can practice both writing and pinyin.</p>
+        </section>
+
+        <section>
+          <h3>Choose your device</h3>
+          <p>Writing practice works best on mobile with a stylus. Pinyin lessons work on both mobile and desktop.</p>
+        </section>
+
+        <section>
+          <h3>Start with Drill</h3>
+          <p>Press Drill to start the next lesson. If you are new, it begins with the first group. Otherwise, it gives you the first item from your queue.</p>
+        </section>
+
+        <section>
+          <h3>Use hints when stuck</h3>
+          <p>
+            Hints are fine. Use them when you are stuck. The app will keep giving you the same lesson until you pass it
+            without hints.
+          </p>
+        </section>
+
+        <section>
+          <h3>Finish clean to move on</h3>
+          <p>
+            When you finish a full lesson without hints, it is scheduled for review later, with a longer interval each
+            time.
+          </p>
+        </section>
+
+        <section>
+          <h3>Follow the queue</h3>
+          <p>
+            The queue shows what needs work now and what is coming next. Repeat due lessons first, then continue
+            forward.
+          </p>
+        </section>
+      </div>
+    </section>
+  </Modal>
+{/if}
+
 {#if showAuthDropdown}
   <AuthModal
     user={sttAuth.user}
@@ -243,6 +378,7 @@
 
 <style>
   .app-main-page {
+    min-height: 100svh;
     background-image:
       radial-gradient(
         ellipse 75% 65% at 8% -12%,
@@ -274,7 +410,9 @@
     background-image:
       linear-gradient(var(--anuka-color-border) 1px, transparent 1px),
       linear-gradient(90deg, var(--anuka-color-border) 1px, transparent 1px);
-    background-position: 12px 0, 12px 0;
+    background-position:
+      12px 0,
+      12px 0;
     background-size: 34px 34px;
     -webkit-mask-image: radial-gradient(ellipse 95% 65% at 30% 45%, black, transparent 80%);
     mask-image: radial-gradient(ellipse 95% 65% at 30% 45%, black, transparent 80%);
@@ -358,9 +496,9 @@
 
   .app-gauge {
     position: relative;
-    width: min(19rem, 78vw);
+    width: min(20.5rem, 82vw);
     aspect-ratio: 1;
-    margin: 0.65rem auto 0;
+    margin: 1.75rem auto 0;
   }
 
   .app-gauge-svg {
@@ -435,20 +573,43 @@
     );
     color: var(--anuka-color-text);
     text-decoration: none;
-    box-shadow: 0 0 0 0 transparent;
+    box-shadow:
+      inset 0 0 34px color-mix(in srgb, var(--app-accent) 16%, transparent),
+      0 0 70px -10px color-mix(in srgb, var(--app-accent) 45%, transparent);
     transition:
       transform 160ms ease,
       border-color 200ms ease,
-      box-shadow 200ms ease;
+      box-shadow 200ms ease,
+      filter 200ms ease,
+      opacity 200ms ease;
   }
 
-  .app-drill-circle:hover {
+  .app-drill-circle:not(.app-drill-circle-off):hover {
     border-color: color-mix(in srgb, var(--app-accent) 60%, transparent);
-    box-shadow: 0 0 70px -10px color-mix(in srgb, var(--app-accent) 45%, transparent);
+    box-shadow:
+      inset 0 0 40px color-mix(in srgb, var(--app-accent) 20%, transparent),
+      0 0 90px -8px color-mix(in srgb, var(--app-accent) 52%, transparent);
+    filter: saturate(1);
+    opacity: 1;
   }
 
-  .app-drill-circle:active {
+  .app-drill-circle:not(.app-drill-circle-off):active {
     transform: scale(0.97);
+  }
+
+  .app-drill-circle-off {
+    border-color: color-mix(in srgb, var(--anuka-color-text) 14%, transparent);
+    background: radial-gradient(
+      circle at 35% 30%,
+      color-mix(in srgb, var(--anuka-color-surface) 88%, var(--anuka-color-text)),
+      color-mix(in srgb, var(--anuka-color-bg-accent) 96%, var(--anuka-color-text)) 70%
+    );
+    cursor: wait;
+    filter: saturate(0.55);
+    opacity: 0.82;
+    box-shadow:
+      inset 0 0 30px color-mix(in srgb, var(--anuka-color-text) 8%, transparent),
+      0 0 0 0 transparent;
   }
 
   .app-drill-zi {
@@ -457,6 +618,10 @@
     font-size: clamp(1.6rem, 6vw, 2rem);
     font-weight: 900;
     line-height: 1;
+  }
+
+  .app-drill-circle-off .app-drill-zi {
+    color: color-mix(in srgb, var(--anuka-color-text) 28%, transparent);
   }
 
   .app-drill-label {
@@ -490,18 +655,48 @@
 
   .app-truth {
     color: var(--anuka-color-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
     font-size: 0.95rem;
     font-weight: 700;
     line-height: 1.75;
+    margin-block: 1.15rem 0.75rem;
     text-align: center;
+  }
+
+  .app-truth-main {
+    color: var(--anuka-color-muted);
+    font-size: clamp(1.15rem, 4.2vw, 1.65rem);
+    line-height: 1.25;
   }
 
   .app-truth strong {
     color: var(--anuka-color-text);
   }
 
-  .app-truth span {
+  .app-truth-tagline {
     color: var(--app-accent);
+    font-size: clamp(1.05rem, 3.6vw, 1.35rem);
+    min-height: 1.3em;
+    line-height: 1.3;
+  }
+
+  .app-truth-tagline.typing::after {
+    content: '';
+    display: inline-block;
+    width: 0.08em;
+    height: 1em;
+    margin-left: 0.12em;
+    background: currentColor;
+    transform: translateY(0.12em);
+    animation: app-type-caret 1s steps(1) infinite;
+  }
+
+  @keyframes app-type-caret {
+    50% {
+      opacity: 0;
+    }
   }
 
   .app-footer-actions {
@@ -557,6 +752,12 @@
     gap: 0.55rem;
   }
 
+  .app-help-btn {
+    border-color: color-mix(in srgb, var(--anuka-color-text) 12%, var(--anuka-color-border));
+    background: color-mix(in srgb, var(--anuka-color-surface) 70%, transparent);
+    color: var(--anuka-color-muted);
+  }
+
   .app-queue-count {
     min-width: 1.65rem;
     border-radius: 999px;
@@ -569,15 +770,71 @@
     text-align: center;
   }
 
+  .app-queue-btn-loading {
+    opacity: 0.78;
+  }
+
+  .app-queue-btn-loading .app-queue-count {
+    color: color-mix(in srgb, var(--anuka-color-primary) 55%, transparent);
+    animation: app-queue-loading 1s ease-in-out infinite;
+  }
+
+  @keyframes app-queue-loading {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+
   .dataset-modal {
     width: min(34rem, calc(100vw - 2rem));
     max-height: min(42rem, calc(100vh - 2rem));
     overflow: auto;
   }
 
-  .dataset-modal-title {
+  .dataset-modal-title,
+  .how-modal-title {
     font-size: 1.25rem;
     line-height: 1.2;
+  }
+
+  .how-modal {
+    width: min(34rem, calc(100vw - 2rem));
+    max-height: min(42rem, calc(100vh - 2rem));
+    overflow: auto;
+  }
+
+  .how-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .how-list section {
+    border-top: 1px solid var(--anuka-color-border);
+    padding-top: 0.75rem;
+  }
+
+  .how-list section:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .how-list h3 {
+    margin: 0 0 0.18rem;
+    color: var(--anuka-color-text);
+    font-size: 0.86rem;
+    line-height: 1.25;
+  }
+
+  .how-list p {
+    margin: 0;
+    color: var(--anuka-color-muted);
+    font-size: 0.88rem;
+    line-height: 1.45;
   }
 
   .dataset-list {
@@ -621,12 +878,39 @@
   }
 
   @media (max-width: 720px) {
+    .app-main-page {
+      gap: 0;
+      overflow: hidden;
+    }
+
+    .app-main-island {
+      padding: 1rem;
+    }
+
+    .app-main-hero {
+      padding-block: 0.45rem 0;
+    }
+
     .app-main-copy {
-      gap: 0.85rem;
+      gap: 0.65rem;
     }
 
     .app-gauge {
-      width: min(17.25rem, 82vw);
+      width: min(16.75rem, 82vw);
+      margin-top: 1.05rem;
+      margin-bottom: 0;
+    }
+
+    .app-truth {
+      gap: 0.75rem;
+      font-size: 0.86rem;
+      line-height: 1.45;
+      margin-block: 0.75rem 0.55rem;
+    }
+
+    .app-footer-actions {
+      gap: 0.6rem;
+      padding-top: 0.2rem;
     }
 
     .app-dataset-progress {
@@ -640,6 +924,10 @@
     }
 
     .app-queue-btn {
+      width: 100%;
+    }
+
+    .app-help-btn {
       width: 100%;
     }
   }

@@ -32,6 +32,8 @@
   const typePath: Record<DrillType, string> = { stroke: 'hanzi', pinyin: 'pinyin' }
   const typeLabel: Record<DrillType, string> = { stroke: 'Stroke', pinyin: 'Pinyin' }
 
+  let queueLoaded = $state(false)
+
   function dayStart(ts = Date.now()): number {
     const d = new Date(ts)
     d.setHours(0, 0, 0, 0)
@@ -97,8 +99,30 @@
 
   // Not keyed on sttAuth.dbVersion — see the same note on the main page's effect.
   $effect(() => {
-    sttAuth.isAuthenticated
-    if (sttDataset.id) svcStats.loadGroupProgressAll(sttDataset.id)
+    const datasetId = sttDataset.id
+    const isAuthenticated = sttAuth.isAuthenticated
+    const groupCount = sttDataset.groups.length
+
+    if (!isAuthenticated) {
+      queueLoaded = true
+      return
+    }
+    if (!datasetId || groupCount === 0) {
+      queueLoaded = false
+      return
+    }
+
+    let cancelled = false
+    queueLoaded = false
+    svcStats.loadGroupProgressAll(datasetId)
+      .catch((err) => console.error('queue progress load failed:', err))
+      .finally(() => {
+        if (!cancelled) queueLoaded = true
+      })
+
+    return () => {
+      cancelled = true
+    }
   })
 </script>
 
@@ -109,7 +133,14 @@
 <main class="anuka-page">
   <Island sticky>
     <div class="anuka-row anuka-justify">
-      <h3>Drill Queue | <span class={sttStats.dueCount > 0 ? 'anuka-warn' : 'anuka-main'}>{sttStats.dueCount}</span> due</h3>
+      <h3>
+        Drill Queue |
+        {#if sttAuth.isAuthenticated && !queueLoaded}
+          <span class="anuka-mute">...</span> due
+        {:else}
+          <span class={sttStats.dueCount > 0 ? 'anuka-warn' : 'anuka-main'}>{sttStats.dueCount}</span> due
+        {/if}
+      </h3>
       <BtnIcon icon="close" label="Close" onclick={() => goto('/chinese/')} />
     </div>
   </Island>
@@ -117,6 +148,15 @@
   {#if !sttAuth.isAuthenticated}
     <Island>
       <p class="anuka-mute anuka-center">Log in to see your drill queue.</p>
+    </Island>
+  {:else if !queueLoaded}
+    <Island>
+      <div class="queue-loading" aria-busy="true" aria-label="Loading drill queue">
+        <div class="queue-loading-head"></div>
+        <div class="queue-loading-row"></div>
+        <div class="queue-loading-row short"></div>
+        <div class="queue-loading-row"></div>
+      </div>
     </Island>
   {:else if totalQueued === 0}
     <Island>
@@ -149,3 +189,54 @@
     {/each}
   {/if}
 </main>
+
+<style>
+  .queue-loading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+
+  .queue-loading-head,
+  .queue-loading-row {
+    overflow: hidden;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--anuka-color-text) 10%, transparent);
+    position: relative;
+  }
+
+  .queue-loading-head {
+    width: 7rem;
+    height: 1rem;
+  }
+
+  .queue-loading-row {
+    width: 100%;
+    height: 2.6rem;
+  }
+
+  .queue-loading-row.short {
+    width: 78%;
+  }
+
+  .queue-loading-head::after,
+  .queue-loading-row::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--anuka-color-surface-raised) 74%, transparent),
+      transparent
+    );
+    animation: queue-loading-sweep 1.15s ease-in-out infinite;
+  }
+
+  @keyframes queue-loading-sweep {
+    to {
+      transform: translateX(100%);
+    }
+  }
+</style>

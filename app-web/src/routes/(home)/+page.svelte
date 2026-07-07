@@ -1,9 +1,6 @@
 <script>
   import { onMount } from 'svelte'
-  import { sttAuth } from '@stt/auth.svelte.js'
-  import { svcAuth } from '@svc/auth'
   import { svcUserPrefs } from '@svc/user-prefs'
-  import AuthModal from '@uic/auth-modal.svelte'
   import HanziAnimate from '@uic/kind/chinese/hanzi-animate.svelte'
   import BtnIcon from '@std/ui/btn-icon.svelte'
   import {
@@ -11,8 +8,6 @@
     trackRootLandCoreClicked,
     trackRootLandViewed,
   } from '@low/google/landing-analytics'
-
-  let showAuthDropdown = $state(false)
 
   const vocabularies = [
     {
@@ -43,11 +38,6 @@
       featured: false,
     },
   ]
-
-  const openSignIn = () => {
-    trackRootLandAuxiClicked('signin')
-    showAuthDropdown = true
-  }
 
   onMount(() => {
     trackRootLandViewed()
@@ -105,24 +95,6 @@
 
       <div class="island-controls">
         <BtnIcon onclick={svcUserPrefs.toggleTheme} label="Toggle theme" icon="moon" />
-        {#if sttAuth.user}
-          <BtnIcon onclick={() => (showAuthDropdown = true)} label="Account">
-            {#if sttAuth.showAvatar}
-              <img
-                class="anuka-avatar"
-                src={sttAuth.avatarUrl}
-                alt="Avatar"
-                onerror={() => (sttAuth.avatarError = true)}
-              />
-            {:else}
-              <span>{sttAuth.userInitials}</span>
-            {/if}
-          </BtnIcon>
-        {:else}
-          <BtnIcon onclick={openSignIn} label="Sign in">
-            <span class="anuka-icon anuka-icon-user"></span>
-          </BtnIcon>
-        {/if}
       </div>
     </div>
 
@@ -143,7 +115,7 @@
             class="anuka-btn anuka-main anuka-lg lesson-cta"
             onclick={() => trackRootLandCoreClicked('app_main')}
           >
-            {sttAuth.isAuthenticated ? 'Drill' : 'Try a free lesson →'}
+            Practice Writing & Reading →
           </a>
         </div>
       </div>
@@ -252,16 +224,6 @@
   </div>
 
 </main>
-
-{#if showAuthDropdown}
-  <AuthModal
-    user={sttAuth.user}
-    onclose={() => (showAuthDropdown = false)}
-    onSignInWithGoogle={svcAuth.signInWithGoogle}
-    onSignInWithEmail={svcAuth.signInWithEmail}
-    onSignOut={svcAuth.signOut}
-  />
-{/if}
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap');

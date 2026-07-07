@@ -24,8 +24,6 @@ Key facts:
   print HSK Intermediate memorization worksheet groups and practice the same words online
 - [HSK Advanced Printable Chinese Worksheets](https://anukauchika.com/chinese/printable-hsk-advanced-worksheets/):
   print HSK Advanced memorization worksheet groups and practice the same words online
-- [Chinese vocabulary browser](https://anukauchika.com/chinese/): explore word groups,
-  start drills, print worksheets (interactive features require JavaScript)
 
 ## HSK 3.0 word lists (static HTML, no JavaScript required)
 

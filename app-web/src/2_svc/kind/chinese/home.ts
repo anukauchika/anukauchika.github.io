@@ -48,6 +48,8 @@ const EMPTY_SUMMARY: ChineseHomeSummary = {
 }
 
 async function load(datasetId: DatasetId): Promise<void> {
+  sttHome.loaded = false
+
   // Anon drills are never persisted (svcDrill gates writes on auth), so any
   // local read here is guaranteed empty — skip it rather than pay for the walk.
   if (!sttAuth.isAuthenticated) {

@@ -7,7 +7,7 @@ import { trackEvent } from './analytics'
 // Current taxonomy:
 // - root_land_viewed
 // - root_land_core_clicked: target = app_main
-// - root_land_auxi_clicked: target = printables | practice_app | hsk_words | blog | signin
+// - root_land_auxi_clicked: target = printables | practice_app | hsk_words | blog
 // - print_land_viewed: collection = hsk_elementary | hsk_intermediate | hsk_advanced
 // - print_land_core_clicked: target = print_worksheet, collection = ...
 // - print_land_auxi_clicked: target = practice_drill | practice_app | method | group | related_collection | root, collection = ...
@@ -16,7 +16,7 @@ import { trackEvent } from './analytics'
 // should answer traffic-source questions; these events answer path preference.
 
 export type RootLandCoreTarget = 'app_main'
-export type RootLandAuxiTarget = 'printables' | 'practice_app' | 'hsk_words' | 'blog' | 'signin'
+export type RootLandAuxiTarget = 'printables' | 'practice_app' | 'hsk_words' | 'blog'
 
 export type PrintLandCollection = 'hsk_elementary' | 'hsk_intermediate' | 'hsk_advanced'
 export type PrintLandCoreTarget = 'print_worksheet'

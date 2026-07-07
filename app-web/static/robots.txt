@@ -1,5 +1,7 @@
 User-agent: *
 Disallow: /design-book
+Disallow: /chinese/?
+Disallow: /chinese/queue
 Disallow: /chinese/drill
 Disallow: /chinese/workbook
 Disallow: /chinese/words

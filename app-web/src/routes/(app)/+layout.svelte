@@ -7,6 +7,10 @@
   const ready = $derived(sttDataset.ready)
 </script>
 
+<svelte:head>
+  <meta name="robots" content="noindex" />
+</svelte:head>
+
 <!-- !browser: SSR'd pages (/chinese) must render their static head & intro at prerender time -->
 {#if ready || !browser}
   {@render children()}
