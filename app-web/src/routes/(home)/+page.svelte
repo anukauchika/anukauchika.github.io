@@ -1,9 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import { sttAuth } from '@stt/auth.svelte.js'
-  import { sttDataset } from '@stt/dataset.svelte.js'
   import { svcAuth } from '@svc/auth'
-  import { svcDrill } from '@svc/kind/chinese/drill'
   import { svcUserPrefs } from '@svc/user-prefs'
   import AuthModal from '@uic/auth-modal.svelte'
   import HanziAnimate from '@uic/kind/chinese/hanzi-animate.svelte'
@@ -15,7 +13,6 @@
   } from '@low/google/landing-analytics'
 
   let showAuthDropdown = $state(false)
-  let nextDrill = $state(null)
 
   const vocabularies = [
     {
@@ -47,14 +44,6 @@
     },
   ]
 
-  const drillHref = $derived.by(() => {
-    const typeToPath = { stroke: 'hanzi', pinyin: 'pinyin' }
-    const basePath = `/${sttDataset.current?.kind ?? 'chinese'}`
-    return nextDrill && sttDataset.id
-      ? `${basePath}/drill/${typeToPath[nextDrill.type] || 'hanzi'}/?group=${nextDrill.groupId}&dataset=${sttDataset.id}`
-      : null
-  })
-
   const openSignIn = () => {
     trackRootLandAuxiClicked('signin')
     showAuthDropdown = true
@@ -62,31 +51,6 @@
 
   onMount(() => {
     trackRootLandViewed()
-  })
-
-  $effect(() => {
-    const datasetId = sttDataset.id
-    const groups = sttDataset.filtered
-    sttAuth.dbVersion
-    sttAuth.isAuthenticated
-
-    if (!sttAuth.isAuthenticated || !datasetId || groups.length === 0) {
-      nextDrill = null
-      return
-    }
-
-    let cancelled = false
-    svcDrill.pickNextDrill(datasetId, groups)
-      .then((drill) => {
-        if (!cancelled) nextDrill = drill
-      })
-      .catch((e) => {
-        console.error('next drill failed', e)
-      })
-
-    return () => {
-      cancelled = true
-    }
   })
 </script>
 
@@ -174,30 +138,13 @@
           Spaced repetition · Printable worksheets · Prepare for the HSK exam.
         </p>
         <div class="anuka-row hero-actions">
-          {#if sttAuth.isAuthenticated && drillHref}
-            <a
-              href={drillHref}
-              class="anuka-btn anuka-main anuka-lg lesson-cta"
-              onclick={() => trackRootLandCoreClicked('next_drill')}
-            >
-              Drill
-            </a>
-          {:else}
-            <a
-              href="/chinese/drill/pinyin/?dataset=chinese-hskv3-elementary&group=1"
-              class="anuka-btn anuka-main anuka-lg lesson-cta lesson-cta-desktop"
-              onclick={() => trackRootLandCoreClicked('trial_drill')}
-            >
-              Try a free lesson →
-            </a>
-            <a
-              href="/chinese/drill/hanzi/?dataset=chinese-hskv3-elementary&group=1"
-              class="anuka-btn anuka-main anuka-lg lesson-cta lesson-cta-mobile"
-              onclick={() => trackRootLandCoreClicked('trial_drill')}
-            >
-              Try a free lesson →
-            </a>
-          {/if}
+          <a
+            href="/chinese/"
+            class="anuka-btn anuka-main anuka-lg lesson-cta"
+            onclick={() => trackRootLandCoreClicked('app_main')}
+          >
+            {sttAuth.isAuthenticated ? 'Drill' : 'Try a free lesson →'}
+          </a>
         </div>
       </div>
     </div>
@@ -588,10 +535,6 @@
     border-radius: 0.65rem;
   }
 
-  .lesson-cta-mobile {
-    display: none;
-  }
-
   @media (max-width: 640px) {
     .hero-island {
       display: flex;
@@ -610,14 +553,6 @@
     .hero-actions,
     .lesson-cta {
       width: 100%;
-    }
-
-    .lesson-cta-desktop {
-      display: none;
-    }
-
-    .lesson-cta-mobile {
-      display: inline-flex;
     }
 
     .vocab-grid,

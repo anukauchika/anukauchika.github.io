@@ -7,9 +7,9 @@ import registry from '@data/registry.json'
 
 // --- JSON loading ---
 
-const dataModules = import.meta.glob('@data/**/*.json', { eager: true, import: 'default' }) as Record<string, unknown>
+const dataModules = import.meta.glob('@data/**/*.json', { import: 'default' }) as Record<string, () => Promise<unknown>>
 
-const dataByPath: Record<string, unknown> = {}
+const dataByPath: Record<string, () => Promise<unknown>> = {}
 for (const [key, value] of Object.entries(dataModules)) {
   const normalizedPath = key.replace(/^(\.\.\/|\.\/|\/)+/, '')
   dataByPath[normalizedPath] = value
@@ -68,7 +68,8 @@ export const lowDataset: DatasetApi = {
   },
 
   async loadData(meta) {
-    return parse(dataByPath[meta.path], meta)
+    const load = dataByPath[meta.path]
+    return parse(load ? await load() : null, meta)
   },
 
   async getPrefs(datasetId) {

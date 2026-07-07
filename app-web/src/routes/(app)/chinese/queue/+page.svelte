@@ -3,6 +3,7 @@
   import { sttDataset } from '@stt/dataset.svelte.js'
   import { sttStats } from '@stt/kind/chinese/stats.svelte.js'
   import { sttAuth } from '@stt/auth.svelte.js'
+  import { svcStats } from '@svc/kind/chinese/stats'
   import type { ChineseGroup } from '@dom/kind/chinese/dataset'
   import type { GroupProgress } from '@dom/stats'
   import { calcTypeReview } from '@std/kind/chinese/stats'
@@ -93,6 +94,12 @@
   })
 
   const totalQueued = $derived(queueSections.reduce((sum, section) => sum + section.items.length, 0))
+
+  // Not keyed on sttAuth.dbVersion — see the same note on the main page's effect.
+  $effect(() => {
+    sttAuth.isAuthenticated
+    if (sttDataset.id) svcStats.loadGroupProgressAll(sttDataset.id)
+  })
 </script>
 
 <svelte:head>

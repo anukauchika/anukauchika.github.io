@@ -13,14 +13,6 @@ interface RestoreChineseStatsPayload {
   chars: StorageCharLog[]
 }
 
-export interface NextChineseDrillRecord {
-  group_id: number
-  practice_type: string
-  reason: string
-  due_at: string | null
-  interval_days: number | null
-}
-
 export interface ChineseGroupReviewRecord {
   group_id: number
   practice_type: string
@@ -35,11 +27,14 @@ export interface ChineseGroupReviewRecord {
   interval_days: number | null
 }
 
-export interface ChineseDayProgressRecord {
-  date_key: string
-  count: number
-  duration_ms: number
-  sessions: number
+export interface ChineseHomeSummaryRecord {
+  today_sessions: number
+  today_duration_ms: number
+  due_count: number
+  drilled_words: number
+  next_group_id: number | null
+  next_practice_type: string | null
+  next_reason: string | null
 }
 
 async function createGroupSession(record: DrillRecord): Promise<{ id: number }> {
@@ -122,16 +117,6 @@ async function restoreChineseStats(): Promise<RestoreChineseStatsPayload> {
   }
 }
 
-async function nextChineseDrill(datasetCode: string, groupIds: number[], timeZone: string): Promise<NextChineseDrillRecord | null> {
-  const { data, error } = await supabase.rpc('next_chinese_drill', {
-    p_dataset_id: datasetCode,
-    p_group_ids: groupIds,
-    p_timezone: timeZone,
-  })
-  if (error) throw error
-  return data?.[0] ?? null
-}
-
 async function getChineseGroupReviewState(datasetCode: string, groupIds: number[], timeZone: string): Promise<ChineseGroupReviewRecord[]> {
   const { data, error } = await supabase.rpc('chinese_group_review_state', {
     p_dataset_id: datasetCode,
@@ -142,13 +127,14 @@ async function getChineseGroupReviewState(datasetCode: string, groupIds: number[
   return data ?? []
 }
 
-async function getChineseDayProgress(datasetCode: string, groupIds: number[]): Promise<ChineseDayProgressRecord[]> {
-  const { data, error } = await supabase.rpc('chinese_day_progress', {
+async function getChineseHomeSummary(datasetCode: string, groupIds: number[], timeZone: string): Promise<ChineseHomeSummaryRecord | null> {
+  const { data, error } = await supabase.rpc('chinese_home_summary', {
     p_dataset_id: datasetCode,
     p_group_ids: groupIds,
+    p_timezone: timeZone,
   })
   if (error) throw error
-  return data ?? []
+  return data?.[0] ?? null
 }
 
 export interface LowStatsSupabase {
@@ -157,9 +143,8 @@ export interface LowStatsSupabase {
   insertWordAttempt(record: AttemptRecord): Promise<{ id: number }>
   insertCharLogs(chars: CharLogRecord[]): Promise<void>
   restoreChineseStats(): Promise<RestoreChineseStatsPayload>
-  nextChineseDrill(datasetCode: string, groupIds: number[], timeZone: string): Promise<NextChineseDrillRecord | null>
   getChineseGroupReviewState(datasetCode: string, groupIds: number[], timeZone: string): Promise<ChineseGroupReviewRecord[]>
-  getChineseDayProgress(datasetCode: string, groupIds: number[]): Promise<ChineseDayProgressRecord[]>
+  getChineseHomeSummary(datasetCode: string, groupIds: number[], timeZone: string): Promise<ChineseHomeSummaryRecord | null>
 }
 
 export const lowStatsSupabase: LowStatsSupabase = {
@@ -168,7 +153,6 @@ export const lowStatsSupabase: LowStatsSupabase = {
   insertWordAttempt,
   insertCharLogs,
   restoreChineseStats,
-  nextChineseDrill,
   getChineseGroupReviewState,
-  getChineseDayProgress,
+  getChineseHomeSummary,
 }

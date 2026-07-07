@@ -6,7 +6,7 @@ import { trackEvent } from './analytics'
 //
 // Current taxonomy:
 // - root_land_viewed
-// - root_land_core_clicked: target = trial_drill | next_drill
+// - root_land_core_clicked: target = app_main
 // - root_land_auxi_clicked: target = printables | practice_app | hsk_words | blog | signin
 // - print_land_viewed: collection = hsk_elementary | hsk_intermediate | hsk_advanced
 // - print_land_core_clicked: target = print_worksheet, collection = ...
@@ -15,7 +15,7 @@ import { trackEvent } from './analytics'
 // Do not add source/UTM/page-url params here by default. GA4 acquisition reports
 // should answer traffic-source questions; these events answer path preference.
 
-export type RootLandCoreTarget = 'trial_drill' | 'next_drill'
+export type RootLandCoreTarget = 'app_main'
 export type RootLandAuxiTarget = 'printables' | 'practice_app' | 'hsk_words' | 'blog' | 'signin'
 
 export type PrintLandCollection = 'hsk_elementary' | 'hsk_intermediate' | 'hsk_advanced'

@@ -1,5 +1,4 @@
 import type { GroupId, WordId } from '@dom/dataset'
-import { mkWordKey } from '@dom/dataset'
 import type { WordProgress } from '@dom/stats'
 import type { DrillId, WordAttempt } from '@dom/drill'
 import type { CharAttempt } from '@dom/kind/chinese/drill'
@@ -15,19 +14,10 @@ interface AttemptMeta {
   errorCount: number
 }
 
-export interface DrillSuggestion {
-  groupId: GroupId
-  drillCode: string
-  reason: string
-  dueAt: string | null
-  intervalDays: number | null
-}
-
 // --- DrillRepo ---
 
 export interface DrillRepo {
   getGroupWordsProgress(datasetCode: string, drillCode: string, groupId: GroupId): Promise<Map<WordId, WordProgress>>
-  getNextDrill(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<DrillSuggestion | null>
   startDrill(userId: string | null, datasetCode: string, drillCode: string, groupId: GroupId): Promise<DrillId>
   endDrill(drillId: DrillId): Promise<StorageDrill | null>
   recordAttempt(drillId: DrillId, attempt: WordAttempt, chars: CharAttempt[]): Promise<AttemptMeta>
@@ -60,18 +50,6 @@ async function getGroupWordsProgress(datasetCode: string, drillCode: string, gro
     }
   }
   return map
-}
-
-async function getNextDrill(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<DrillSuggestion | null> {
-  const next = await lowStatsSupabase.nextChineseDrill(datasetCode, groupIds, timeZone)
-  if (!next) return null
-  return {
-    groupId: next.group_id,
-    drillCode: next.practice_type,
-    reason: next.reason,
-    dueAt: next.due_at,
-    intervalDays: next.interval_days,
-  }
 }
 
 async function startDrill(userId: string | null, datasetCode: string, drillCode: string, groupId: GroupId): Promise<DrillId> {
@@ -156,7 +134,6 @@ async function recordAttempt(drillId: DrillId, attempt: WordAttempt, chars: Char
 
 export const datDrill: DrillRepo = {
   getGroupWordsProgress,
-  getNextDrill,
   startDrill,
   endDrill,
   recordAttempt,

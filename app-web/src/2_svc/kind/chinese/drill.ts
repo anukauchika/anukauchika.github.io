@@ -1,5 +1,4 @@
-import type { GroupId, DatasetId, WordKey, WordId } from '@dom/dataset'
-import { mkWordKey } from '@dom/dataset'
+import type { GroupId, DatasetId, WordId } from '@dom/dataset'
 import type { WordProgress, GroupProgress } from '@dom/stats'
 import type { WordAttempt, GroupAttempt, DrillId } from '@dom/drill'
 import { ChineseDrillType } from '@dom/kind/chinese/dataset'
@@ -14,12 +13,6 @@ import { sttAuth } from '@stt/auth.svelte.js'
 import { svcSync } from '@svc/sync'
 import { dsCode, dtCode } from '@svc/kind/chinese/codes'
 import { calcWordSortScore } from '@std/kind/chinese/stats'
-import { localTimeZone } from '@std/format'
-
-const DT_STORE_KEY: Record<string, 'wordProgressStroke' | 'wordProgressPinyin'> = {
-  s: 'wordProgressStroke',
-  p: 'wordProgressPinyin',
-}
 
 function sortByProgress(items: ChineseWord[], wp: Map<number, WordProgress>, drillType: ChineseDrillType): ChineseWord[] {
   return [...items].sort((a, b) =>
@@ -40,23 +33,6 @@ export interface DrillHandle {
   endSession(result: GroupAttempt): Promise<void>
 }
 
-export interface NextDrill {
-  groupId: number
-  type: 'stroke' | 'pinyin'
-  reason: 'repeat' | 'due' | 'new' | 'upcoming' | 'fallback'
-  offline: boolean
-}
-
-const DRILL_CODE_TO_TYPE: Record<string, 'stroke' | 'pinyin'> = {
-  s: 'stroke',
-  p: 'pinyin',
-}
-
-function fallbackDrill(groups: ChineseGroup[], offline: boolean): NextDrill | null {
-  const first = [...groups].sort((a, b) => a.id - b.id)[0]
-  return first ? { groupId: first.id, type: 'stroke', reason: 'fallback', offline } : null
-}
-
 async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: ChineseDrillType): Promise<DrillHandle> {
   const ds = asChineseDataset(sttDataset.current)
   if (!ds) throw new Error(`Dataset ${datasetId} not found or not chinese`)
@@ -66,11 +42,16 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
 
   const datasetCode = dsCode(datasetId)
   const drillCode = dtCode(drillType)
-  const wp = await datDrill.getGroupWordsProgress(datasetCode, drillCode, groupId)
-  const items = sortByProgress(group.items, wp, drillType)
+  const authenticated = sttAuth.isAuthenticated
+
+  // Anon drills are never persisted, so a local progress read here is
+  // guaranteed empty — skip the IDB walk and the now-pointless sort.
+  const wp = authenticated
+    ? await datDrill.getGroupWordsProgress(datasetCode, drillCode, groupId)
+    : new Map<WordId, WordProgress>()
+  const items = authenticated ? sortByProgress(group.items, wp, drillType) : group.items
   const groupProgressStroke = sttStats.groupProgressStroke.get(groupId) ?? null
   const groupProgressPinyin = sttStats.groupProgressPinyin.get(groupId) ?? null
-  const authenticated = sttAuth.isAuthenticated
 
   let sessionIdPromise: Promise<DrillId> | null = null
   let drillId: DrillId | null = null
@@ -104,26 +85,10 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
 
         try {
           const sid = await sessionIdPromise
-          const result = await datDrill.recordAttempt(sid, attempt, chars)
+          await datDrill.recordAttempt(sid, attempt, chars)
           svcSync.syncPending().catch((e) => console.error('sync failed', e))
 
-          const key = mkWordKey(groupId, attempt.wordId)
-          const hintCount = chars.reduce((sum, c) => sum + (c.hintCount || 0), 0)
-          sessionHintCount += hintCount
-          const updateWpMap = (map: Map<WordKey, WordProgress>): Map<WordKey, WordProgress> => {
-            const next = new Map(map)
-            const ex = next.get(key)
-            next.set(key, {
-              successCount: (ex?.successCount ?? 0) + 1,
-              errorCount: (ex?.errorCount ?? 0) + result.errorCount,
-              hintCount: (ex?.hintCount ?? 0) + hintCount,
-              lastDrilledAt: attempt.doneAt,
-            })
-            return next
-          }
-          sttStats.wordProgress = updateWpMap(sttStats.wordProgress)
-          const wpStoreKey = DT_STORE_KEY[drillCode]
-          if (wpStoreKey) sttStats[wpStoreKey] = updateWpMap(sttStats[wpStoreKey])
+          sessionHintCount += chars.reduce((sum, c) => sum + (c.hintCount || 0), 0)
         } catch (e) {
           console.error('recordAttempt failed', e)
         }
@@ -171,7 +136,6 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
         })
         return next
       }
-      sttStats.groupProgress = updateGpMap(sttStats.groupProgress)
       const gpStoreKey = drillCode === 's' ? 'groupProgressStroke' : 'groupProgressPinyin'
       sttStats[gpStoreKey] = updateGpMap(sttStats[gpStoreKey] as Map<number, GroupProgress>)
 
@@ -182,35 +146,12 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
   }
 }
 
-async function pickNextDrillSuggestion(datasetId: DatasetId, groups: ChineseGroup[]): Promise<NextDrill | null> {
-  if (!sttAuth.isAuthenticated) return fallbackDrill(groups, false)
-  if (groups.length === 0) return null
-
-  try {
-    const next = await datDrill.getNextDrill(dsCode(datasetId), groups.map((g) => g.id), localTimeZone())
-    if (!next) return fallbackDrill(groups, false)
-    const type = DRILL_CODE_TO_TYPE[next.drillCode]
-    if (!type) return fallbackDrill(groups, false)
-    return {
-      groupId: next.groupId,
-      type,
-      reason: next.reason as NextDrill['reason'],
-      offline: false,
-    }
-  } catch (e) {
-    console.error('next drill lookup failed', e)
-    return fallbackDrill(groups, true)
-  }
-}
-
 // --- Public interface ---
 
 export interface DrillService {
   initDrill(datasetId: DatasetId, groupId: GroupId, drillType: ChineseDrillType): Promise<DrillHandle>
-  pickNextDrill(datasetId: DatasetId, groups: ChineseGroup[]): Promise<NextDrill | null>
 }
 
 export const svcDrill: DrillService = {
   initDrill,
-  pickNextDrill: pickNextDrillSuggestion,
 }

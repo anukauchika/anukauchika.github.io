@@ -8,17 +8,28 @@
     import('virtual:pwa-register').then(m => m.registerSW({ immediate: true }))
     import('@low/google/analytics').then(m => m.initAnalytics())
 
-    Promise.all([
-      import('@svc/maintenance'),
-      import('@svc/auth'),
-      import('@svc/user-prefs'),
-      import('@svc/dataset'),
-    ]).then(([maint, auth, prefs, dataset]) => {
-      maint.svcMaintenance.runStartupTasks()
-      return auth.svcAuth.init()
-        .then(() => prefs.svcUserPrefs.loadTheme())
-        .then(() => dataset.svcDataset.init())
-    })
+    import('@svc/dataset')
+      .then((dataset) => dataset.svcDataset.init())
+      .catch((e) => console.error('dataset init failed', e))
+
+    import('@svc/user-prefs')
+      .then((prefs) => prefs.svcUserPrefs.loadTheme())
+      .catch((e) => console.error('theme init failed', e))
+
+    import('@svc/auth')
+      .then((auth) => auth.svcAuth.init())
+      .catch((e) => console.error('auth init failed', e))
+
+    const runMaintenance = () => {
+      import('@svc/maintenance')
+        .then((maint) => maint.svcMaintenance.runStartupTasks())
+        .catch((e) => console.error('startup maintenance failed', e))
+    }
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(runMaintenance, { timeout: 5_000 })
+    } else {
+      setTimeout(runMaintenance, 1_000)
+    }
   }
 </script>
 

@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ANUKA UCHIKA — Drill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;700&family=Noto+Sans+SC:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    min-height:100vh; display:flex; flex-direction:column;
+    background:
+      linear-gradient(rgba(120,220,185,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(120,220,185,.03) 1px, transparent 1px),
+      #0D1411;
+    background-size:56px 56px, 56px 56px, auto;
+    color:#E6EEE9; font-family:'Space Grotesk',sans-serif;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation:none!important; transition:none!important; }
+  }
+
+  header {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:28px 40px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:#79877f;
+  }
+  header b { color:#E6EEE9; font-weight:500; letter-spacing:.3em; }
+
+  main {
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:40px; padding:24px; text-align:center;
+  }
+
+  /* --- gauge: progress ring + 60 outer minute ticks --- */
+  .gauge { position:relative; width:300px; height:300px; }
+  .gauge svg { position:absolute; inset:0; }
+  .go {
+    position:absolute; inset:36px; border-radius:50%; cursor:pointer;
+    background:radial-gradient(circle at 35% 30%, #16241E, #0F1A15 70%);
+    border:1px solid rgba(111,211,181,.35);
+    color:#E6EEE9; display:flex; flex-direction:column; gap:10px;
+    align-items:center; justify-content:center;
+    transition:box-shadow .2s ease, transform .12s ease;
+  }
+  .go:hover { box-shadow:0 0 70px -10px rgba(111,211,181,.45); }
+  .go:active { transform:scale(.97); }
+  .go:focus-visible { outline:2px solid #6FD3B5; outline-offset:6px; }
+  .go .zi { font-family:'Noto Sans SC',sans-serif; font-weight:700; font-size:32px; color:#6FD3B5; }
+  .go .lbl { font-size:28px; font-weight:700; letter-spacing:.18em; text-indent:.18em; }
+  .go .meta { font-family:'IBM Plex Mono',monospace; font-size:12px; color:#79877f; letter-spacing:.12em; }
+  .go .meta em { font-style:normal; color:#6FD3B5; }
+
+  .truth {
+    font-family:'IBM Plex Mono',monospace; font-size:13px; color:#79877f; line-height:1.8;
+  }
+  .truth em { font-style:normal; color:#E6EEE9; }
+  .truth .limit { color:#6FD3B5; }
+
+  /* --- footer: dataset progress + queue --- */
+  footer {
+    display:flex; flex-direction:column; align-items:center; gap:22px;
+    padding:0 24px 44px;
+  }
+  .dataset {
+    width:min(480px,100%);
+    display:grid; grid-template-columns:auto 1fr auto; gap:16px; align-items:center;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.1em; color:#79877f;
+  }
+  .dataset .t { height:3px; background:rgba(230,238,233,.12); border-radius:2px; overflow:hidden; }
+  .dataset .t i { display:block; height:100%; background:#6FD3B5; }
+  .dataset .n { color:#E6EEE9; }
+
+  .queue-btn {
+    background:transparent; cursor:pointer;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.25em;
+    color:#79877f; padding:10px 18px;
+    border:1px solid rgba(230,238,233,.14); border-radius:99px;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .queue-btn:hover { color:#E6EEE9; border-color:rgba(111,211,181,.5); }
+  .queue-btn:focus-visible { outline:2px solid #6FD3B5; outline-offset:3px; }
+
+  /* --- queue modal --- */
+  .overlay {
+    position:fixed; inset:0; background:rgba(6,10,8,.7); backdrop-filter:blur(6px);
+    display:none; align-items:center; justify-content:center; padding:24px; z-index:50;
+  }
+  .overlay.on { display:flex; }
+  .modal {
+    width:min(440px,100%); background:#101B15;
+    border:1px solid rgba(111,211,181,.25); border-radius:16px;
+    padding:28px; font-family:'IBM Plex Mono',monospace;
+  }
+  .modal h2 {
+    font-size:12px; letter-spacing:.3em; color:#79877f; font-weight:400;
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;
+  }
+  .modal h2 button {
+    border:0; background:transparent; color:#79877f; cursor:pointer;
+    font:inherit; font-size:16px; padding:2px 8px;
+  }
+  .modal h2 button:hover { color:#E6EEE9; }
+  .session {
+    display:grid; grid-template-columns:72px 1fr auto; gap:14px; align-items:baseline;
+    padding:13px 0; border-top:1px solid rgba(230,238,233,.08);
+    font-size:12px; letter-spacing:.06em;
+  }
+  .session .d { color:#6FD3B5; }
+  .session .d.today { color:#E6EEE9; }
+  .session .w { color:#a9b5ae; }
+  .session .m { color:#79877f; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>汉 <b>ANUKA UCHIKA</b></div>
+  <div>HSK4</div>
+</header>
+
+<main>
+  <div class="gauge">
+    <svg id="ringSvg" viewBox="0 0 300 300" aria-hidden="true"></svg>
+    <button class="go" aria-label="Start drill session. 38 of 60 minutes done today.">
+      <span class="zi">开始</span>
+      <span class="lbl">DRILL</span>
+      <span class="meta"><em id="minDone">38</em> / <span id="minGoal">60</span> MIN TODAY</span>
+    </button>
+  </div>
+
+  <p class="truth">
+    You know <em>612</em> of <em>1,200</em> HSK 4 words.<br>
+    <span class="limit">The only limit is you.</span>
+  </p>
+</main>
+
+<footer>
+  <div class="dataset">
+    <span>HSK 4</span>
+    <span class="t"><i style="width:51%"></i></span>
+    <span class="n">51%</span>
+  </div>
+  <button class="queue-btn" id="openQueue">QUEUE</button>
+</footer>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="qTitle">
+  <div class="modal">
+    <h2><span id="qTitle">SESSION QUEUE</span><button id="closeQueue" aria-label="Close">✕</button></h2>
+    <div class="session"><span class="d today">TODAY</span><span class="w">Review 32 · New 8</span><span class="m">22 min</span></div>
+    <div class="session"><span class="d">WED 08</span><span class="w">Review 41 · New 10</span><span class="m">~28 min</span></div>
+    <div class="session"><span class="d">THU 09</span><span class="w">Review 36 · New 10</span><span class="m">~25 min</span></div>
+    <div class="session"><span class="d">FRI 10</span><span class="w">Review 48 · New 10</span><span class="m">~32 min</span></div>
+    <div class="session"><span class="d">SAT 11</span><span class="w">Review 29 · New 10</span><span class="m">~21 min</span></div>
+  </div>
+</div>
+
+<script>
+  // ---- ring: progress arc + 60 outer minute ticks (majors at quarters) ----
+  const MIN_DONE = 38, MIN_GOAL = 60;   // wire to real data
+  const NS = 'http://www.w3.org/2000/svg';
+  const CX = 150, CY = 150, R = 132;
+  const svg = document.getElementById('ringSvg');
+
+  function el(tag, attrs) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  // track + progress arc
+  const c = 2 * Math.PI * R;
+  svg.appendChild(el('circle', { cx:CX, cy:CY, r:R, fill:'none',
+    stroke:'rgba(230,238,233,.1)', 'stroke-width':4 }));
+  svg.appendChild(el('circle', { cx:CX, cy:CY, r:R, fill:'none',
+    stroke:'#6FD3B5', 'stroke-width':4, 'stroke-linecap':'round',
+    'stroke-dasharray':c,
+    'stroke-dashoffset':c * (1 - Math.min(MIN_DONE / MIN_GOAL, 1)),
+    transform:`rotate(-90 ${CX} ${CY})` }));
+
+  // 60 fine ticks outside the ring
+  for (let i = 0; i < 60; i++) {
+    const a = (i / 60) * Math.PI * 2 - Math.PI / 2;
+    const major = i % 15 === 0;
+    const r1 = major ? 140 : 143, r2 = 149;
+    svg.appendChild(el('line', {
+      x1: CX + r1 * Math.cos(a), y1: CY + r1 * Math.sin(a),
+      x2: CX + r2 * Math.cos(a), y2: CY + r2 * Math.sin(a),
+      stroke:'rgba(230,238,233,.14)', 'stroke-width':2, 'stroke-linecap':'round'
+    }));
+  }
+
+  // ---- queue modal ----
+  const overlay = document.getElementById('overlay');
+  document.getElementById('openQueue').addEventListener('click', () => overlay.classList.add('on'));
+  document.getElementById('closeQueue').addEventListener('click', () => overlay.classList.remove('on'));
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('on'); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') overlay.classList.remove('on'); });
+</script>
+</body>
+</html>

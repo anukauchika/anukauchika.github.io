@@ -1,6 +1,7 @@
 import type { GroupId, WordKey } from '@dom/dataset'
 import { mkWordKey } from '@dom/dataset'
-import type { DayKey, WordProgress, GroupProgress, DayProgress } from '@dom/stats'
+import type { GroupProgress } from '@dom/stats'
+import type { ChineseHomeSummary } from '@dom/kind/chinese/stats'
 import type { StorageDrill } from '@dat/kind/chinese/types'
 import { lowStatsIdb } from '@low/kind/chinese/idb-stats-repo'
 import { lowStatsSupabase } from '@low/supabase/kind/chinese/stats.js'
@@ -14,41 +15,17 @@ function toLocalDateKey(date: Date): string {
   return `${year}-${month}-${day}`
 }
 
-export interface StatsRepo {
-  getWordProgress(datasetCode: string, drillCode: string): Promise<Map<WordKey, WordProgress>>
-  getGroupProgress(datasetCode: string, drillCode: string): Promise<Map<GroupId, GroupProgress>>
-  getGroupReviewProgress(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<Record<string, Map<GroupId, GroupProgress>>>
-  getServerDayProgress(datasetCode: string, groupIds: GroupId[]): Promise<Map<DayKey, DayProgress>>
-  getDayProgress(datasetCode: string, drillCode: string): Promise<Map<DayKey, DayProgress>>
+export interface LocalHomeStats {
+  todaySessions: number
+  todayDurationMs: number
+  drilledWords: number
 }
 
-async function getWordProgress(datasetCode: string, drillCode: string): Promise<Map<WordKey, WordProgress>> {
-  const sessions = await lowStatsIdb.getGroupSessions(datasetCode, drillCode)
-  const map = new Map<WordKey, WordProgress>()
-
-  for (const s of sessions) {
-    const words = await lowStatsIdb.getWordAttempts(s.id)
-    for (const w of words) {
-      const key = mkWordKey(s.group_id, w.word_id)
-      const chars = await lowStatsIdb.getCharLogs(w.id)
-      let errors = 0
-      let hints = 0
-      for (const c of chars) { errors += c.error_count || 0; hints += c.hint_count || 0 }
-
-      const existing = map.get(key)
-      if (existing) {
-        existing.successCount += 1
-        existing.errorCount += errors
-        existing.hintCount += hints
-        if (w.done_at && (!existing.lastDrilledAt || w.done_at > existing.lastDrilledAt)) {
-          existing.lastDrilledAt = w.done_at
-        }
-      } else {
-        map.set(key, { successCount: 1, errorCount: errors, hintCount: hints, lastDrilledAt: w.done_at || null })
-      }
-    }
-  }
-  return map
+export interface StatsRepo {
+  getGroupProgress(datasetCode: string, drillCode: string): Promise<Map<GroupId, GroupProgress>>
+  getGroupReviewProgress(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<Record<string, Map<GroupId, GroupProgress>>>
+  getServerHomeSummary(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<ChineseHomeSummary | null>
+  getLocalHomeStats(datasetCode: string): Promise<LocalHomeStats>
 }
 
 function emptyGroupProgress(): GroupProgress {
@@ -165,57 +142,58 @@ async function getGroupReviewProgress(datasetCode: string, groupIds: GroupId[], 
   return perType
 }
 
-async function getDayProgress(datasetCode: string, drillCode: string): Promise<Map<DayKey, DayProgress>> {
-  const sessions = await lowStatsIdb.getGroupSessions(datasetCode, drillCode)
-  const dayMap = new Map<DayKey, DayProgress>()
-  const dayWords = new Map<DayKey, Set<string>>()
+async function getServerHomeSummary(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<ChineseHomeSummary | null> {
+  const row = await lowStatsSupabase.getChineseHomeSummary(datasetCode, groupIds, timeZone)
+  if (!row) return null
 
-  for (const s of sessions) {
-    if (s.done_at) {
-      const dateKey = toLocalDateKey(new Date(s.done_at))
-      const entry = dayMap.get(dateKey) || { count: 0, durationMs: 0, sessions: 0 }
-      const dur = Math.min(new Date(s.done_at).getTime() - new Date(s.started_at).getTime(), MAX_SESSION_MS)
-      entry.durationMs += Math.max(dur, 0)
-      entry.sessions += 1
-      dayMap.set(dateKey, entry)
-    }
-    const words = await lowStatsIdb.getWordAttempts(s.id)
-    for (const w of words) {
-      if (w.done_at) {
-        const dateKey = toLocalDateKey(new Date(w.done_at))
-        if (!dayMap.has(dateKey)) dayMap.set(dateKey, { count: 0, durationMs: 0, sessions: 0 })
-        const set = dayWords.get(dateKey) || new Set()
-        set.add(`${s.group_id}::${w.word_id}`)
-        dayWords.set(dateKey, set)
-      }
-    }
+  return {
+    todaySessions: row.today_sessions,
+    todayDurationMs: Number(row.today_duration_ms),
+    dueCount: row.due_count,
+    drilledWords: row.drilled_words,
+    next: row.next_group_id != null
+      ? { groupId: row.next_group_id, type: row.next_practice_type === 'p' ? 'pinyin' : 'stroke' }
+      : null,
   }
-
-  for (const [dateKey, set] of dayWords) {
-    dayMap.get(dateKey)!.count = set.size
-  }
-  return dayMap
 }
 
-async function getServerDayProgress(datasetCode: string, groupIds: GroupId[]): Promise<Map<DayKey, DayProgress>> {
-  const rows = await lowStatsSupabase.getChineseDayProgress(datasetCode, groupIds)
-  const map = new Map<DayKey, DayProgress>()
+// Offline fallback for authenticated users when the server RPC fails (anon
+// drills are never persisted, so callers skip this entirely for anon).
+// "Done" sessions must be clean (no hints) — a session that used hints leaves
+// its group in 'repeat' state (still due), so counting it as done would
+// double-count the same lesson on both sides of the ratio.
+async function getLocalHomeStats(datasetCode: string): Promise<LocalHomeStats> {
+  const todayKey = toLocalDateKey(new Date())
+  const drilledWords = new Set<WordKey>()
+  let todaySessions = 0
+  let todayDurationMs = 0
 
-  for (const row of rows) {
-    map.set(row.date_key, {
-      count: row.count,
-      durationMs: row.duration_ms,
-      sessions: row.sessions,
-    })
+  for (const drillCode of ['s', 'p']) {
+    const sessions = await lowStatsIdb.getGroupSessions(datasetCode, drillCode)
+    for (const s of sessions) {
+      const words = await lowStatsIdb.getWordAttempts(s.id)
+      for (const w of words) drilledWords.add(mkWordKey(s.group_id, w.word_id))
+
+      if (!s.done_at || toLocalDateKey(new Date(s.done_at)) !== todayKey) continue
+
+      const dur = Math.min(new Date(s.done_at).getTime() - new Date(s.started_at).getTime(), MAX_SESSION_MS)
+      todayDurationMs += Math.max(dur, 0)
+
+      let hintCount = 0
+      for (const w of words) {
+        const chars = await lowStatsIdb.getCharLogs(w.id)
+        for (const c of chars) hintCount += c.hint_count || 0
+      }
+      if (hintCount === 0) todaySessions += 1
+    }
   }
 
-  return map
+  return { todaySessions, todayDurationMs, drilledWords: drilledWords.size }
 }
 
 export const datStats: StatsRepo = {
-  getWordProgress,
   getGroupProgress,
   getGroupReviewProgress,
-  getServerDayProgress,
-  getDayProgress,
+  getServerHomeSummary,
+  getLocalHomeStats,
 }
