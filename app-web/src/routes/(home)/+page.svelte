@@ -157,7 +157,7 @@
       <div class="anuka-card progress-card">
         <div class="anuka-stack">
           <div class="progress-heading">
-            <span class="progress-icon"><span class="anuka-icon anuka-icon-pen"></span></span>
+            <span class="progress-icon"><span class="anuka-icon anuka-icon-notebook"></span></span>
             <strong>Use worksheets</strong>
           </div>
           <span class="anuka-mute progress-copy">

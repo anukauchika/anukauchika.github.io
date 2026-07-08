@@ -61,6 +61,22 @@
       <span class="anuka-icon anuka-icon-list"></span>
       <span class="anuka-mute anuka-sm">list</span>
     </div>
+    <div class="anuka-stack anuka-center anuka-compact">
+      <span class="anuka-icon anuka-icon-pen"></span>
+      <span class="anuka-mute anuka-sm">pen</span>
+    </div>
+    <div class="anuka-stack anuka-center anuka-compact">
+      <span class="anuka-icon anuka-icon-notebook"></span>
+      <span class="anuka-mute anuka-sm">notebook</span>
+    </div>
+    <div class="anuka-stack anuka-center anuka-compact">
+      <span class="anuka-icon anuka-icon-clock"></span>
+      <span class="anuka-mute anuka-sm">clock</span>
+    </div>
+    <div class="anuka-stack anuka-center anuka-compact">
+      <span class="anuka-icon anuka-icon-calendar"></span>
+      <span class="anuka-mute anuka-sm">calendar</span>
+    </div>
   </div>
 
   <IslandTitle level={3}>Semantic Colors</IslandTitle>
