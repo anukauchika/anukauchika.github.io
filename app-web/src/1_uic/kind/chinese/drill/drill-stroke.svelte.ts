@@ -46,6 +46,9 @@ export class DrillStrokeSession {
   private delayTimerId: ReturnType<typeof setTimeout> | null = null
   private delayAnimationId: number | null = null
   private charDelayTimerId: ReturnType<typeof setTimeout> | null = null
+  private hintLoopTimerId: ReturnType<typeof setInterval> | null = null
+  private nextStrokeIndex = 0
+  private initToken = 0
 
   // --- Derived ---
   readonly currentItem: ChineseWord | null = $derived.by(() => this.items[this.currentIndex] ?? null)
@@ -88,8 +91,9 @@ export class DrillStrokeSession {
     if (this.showHint) this.charHintCount = Math.max(this.charHintCount, 1)
     if (this.charIndex === 0) this.wordStartedAt = new Date().toISOString()
 
+    const token = this.initToken
     import('hanzi-writer').then(({ default: HanziWriter }) => {
-      if (!this.currentChar) return
+      if (token !== this.initToken || !this.currentChar) return
       const styles = getComputedStyle(document.documentElement)
       const strokeColor = styles.getPropertyValue('--anuka-color-text').trim()
       const outlineColor = styles.getPropertyValue('--anuka-color-bg-accent').trim()
@@ -100,16 +104,26 @@ export class DrillStrokeSession {
         strokeAnimationSpeed: 1, delayBetweenStrokes: 100,
         highlightOnComplete: false, drawingWidth: 20,
         leniency: 1.4, showHintAfterMisses: 2,
+        strokeHighlightSpeed: 0.5,
         strokeColor, drawingColor: strokeColor, outlineColor, radicalColor,
+        highlightColor: strokeColor,
       })
+      this.nextStrokeIndex = 0
       this.writer.quiz({
         onMistake: () => { this.charErrorCount += 1 },
+        onCorrectStroke: (data: { strokeNum: number }) => {
+          this.nextStrokeIndex = data.strokeNum + 1
+          this.restartHintLoop()
+        },
         onComplete: () => this.onStrokeCharComplete(),
       })
+      this.restartHintLoop()
     })
   }
 
   destroyStrokeQuiz(): void {
+    this.initToken += 1
+    this.clearHintLoop()
     if (this.writer) { this.writer.cancelQuiz(); this.writer = null }
     const target = document.getElementById('drill-canvas')
     if (target) target.innerHTML = ''
@@ -138,6 +152,7 @@ export class DrillStrokeSession {
     if (!this.showHint) this.charHintCount += 1
     this.showHint = !this.showHint
     if (this.writer) this.showHint ? this.writer.showOutline() : this.writer.hideOutline()
+    this.restartHintLoop()
   }
 
   skipWord(): void {
@@ -192,6 +207,7 @@ export class DrillStrokeSession {
   // --- Private ---
 
   private onStrokeCharComplete(): void {
+    this.clearHintLoop()
     const charDoneAt = new Date().toISOString()
     this.charData = [...this.charData, {
       charIndex: this.charIndex, startedAt: this.charStartedAt!,
@@ -297,6 +313,24 @@ export class DrillStrokeSession {
 
   private clearCharDelay(): void {
     if (this.charDelayTimerId) { clearTimeout(this.charDelayTimerId); this.charDelayTimerId = null }
+  }
+
+  private clearHintLoop(): void {
+    if (this.hintLoopTimerId) { clearInterval(this.hintLoopTimerId); this.hintLoopTimerId = null }
+  }
+
+  private restartHintLoop(): void {
+    this.clearHintLoop()
+    if (!this.showHint || !this.writer) return
+    this.hintLoopTimerId = setInterval(() => {
+      const writer = this.writer
+      if (!writer) return
+      const isRadical = writer._character?.strokes?.[this.nextStrokeIndex]?.isInRadical
+      const color = isRadical ? writer._options.radicalColor : writer._options.strokeColor
+      writer.updateColor('highlightColor', color, { duration: 0 }).then(() => {
+        if (this.writer === writer) writer.highlightStroke(this.nextStrokeIndex)
+      })
+    }, 3000)
   }
 
   private startDelay(durationMs: number): void {
