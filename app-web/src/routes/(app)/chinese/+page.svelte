@@ -33,6 +33,7 @@
 
   const wordsDrilled = $derived(sttHome.drilledWords)
   const totalWords = $derived(sttDataset.groups.reduce((sum, group) => sum + group.items.length, 0))
+  const totalGroups = $derived(sttDataset.groups.length)
   const progressPercent = $derived(totalWords > 0 ? Math.round((wordsDrilled / totalWords) * 100) : 0)
 
   const minutesToday = $derived(Math.floor(sttHome.todayDurationMs / 60_000))
@@ -232,7 +233,18 @@
               onclick={handleDrillClick}
             >
               <span class="app-drill-zi">练</span>
-              <span class="app-drill-label" class:app-drill-label-loading={!sttHome.loaded}>Drill</span>
+              <span
+                class="app-drill-label"
+                class:app-drill-label-loading={!sttHome.loaded}
+                class:app-drill-label-try={!sttAuth.isAuthenticated}
+              >
+                {#if sttAuth.isAuthenticated}
+                  Drill
+                {:else}
+                  <span>Try</span>
+                  <span>a lesson</span>
+                {/if}
+              </span>
               <span class="app-drill-meta">
                 {#if sttHome.loaded}
                   <strong>{minutesToday}</strong> / {DAILY_GOAL_MIN} min today
@@ -243,13 +255,25 @@
             </a>
           </div>
 
-          <p class="app-truth">
-            <span class="app-truth-main">
-              You know <strong>{wordsDrilled.toLocaleString('en-US')}</strong> of
-              <strong>{totalWords.toLocaleString('en-US')}</strong> words.
-            </span>
-            <span class="app-truth-tagline" class:typing={motivationTyping} aria-live="polite">{motivationText}</span>
-          </p>
+          {#if sttAuth.isAuthenticated}
+            <p class="app-truth">
+              <span class="app-truth-main">
+                You know <strong>{wordsDrilled.toLocaleString('en-US')}</strong> of
+                <strong>{totalWords.toLocaleString('en-US')}</strong> words.
+              </span>
+              <span class="app-truth-tagline" class:typing={motivationTyping} aria-live="polite">{motivationText}</span>
+            </p>
+          {:else}
+            <p class="app-truth app-truth-anon">
+              <span class="app-truth-main">
+                <button class="anuka-btn-link app-signin-link" type="button" onclick={() => (showAuthDropdown = true)}>
+                  Sign in
+                </button>
+                <span>All {totalGroups.toLocaleString('en-US')} lessons, smart repetition & stats.</span>
+              </span>
+              <span class="app-truth-tagline" class:typing={motivationTyping} aria-live="polite">{motivationText}</span>
+            </p>
+          {/if}
 
           <div class="app-footer-actions">
             <div class="app-dataset-progress" aria-label={`${datasetName}: ${progressPercent}% complete`}>
@@ -625,6 +649,10 @@
   }
 
   .app-drill-label {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
     font-size: clamp(2.35rem, 9vw, 3.4rem);
     font-weight: 950;
     letter-spacing: 0.12em;
@@ -635,6 +663,18 @@
 
   .app-drill-label-loading {
     color: color-mix(in srgb, var(--anuka-color-text) 32%, transparent);
+  }
+
+  .app-drill-label-try {
+    gap: 0.16em;
+    font-size: clamp(1.55rem, 6.4vw, 2.35rem);
+    letter-spacing: 0.08em;
+    line-height: 0.98;
+    text-indent: 0.08em;
+  }
+
+  .app-drill-label-try span:last-child {
+    font-size: 0.58em;
   }
 
   .app-drill-meta {
@@ -697,6 +737,27 @@
     50% {
       opacity: 0;
     }
+  }
+
+  .app-truth-anon {
+    width: min(24rem, 100%);
+    margin-inline: auto;
+    gap: 1.9rem;
+    line-height: 1.35;
+  }
+
+  .app-truth-anon .app-truth-main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: clamp(1rem, 3.4vw, 1.2rem);
+  }
+
+  .app-signin-link {
+    color: var(--app-accent);
+    font-size: clamp(1.05rem, 3.6vw, 1.35rem);
+    font-weight: 850;
   }
 
   .app-footer-actions {
