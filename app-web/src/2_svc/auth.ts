@@ -11,6 +11,8 @@ import { svcSync } from '@svc/sync'
 // initiation marks the next signed-in load as a real login.
 const LOGIN_PENDING_KEY = 'uch-login-pending'
 const LOGIN_PENDING_TTL_MS = 60 * 60 * 1000
+const AUTH_ANALYTICS_LOCK = 'uch-auth-analytics'
+const POST_DRILL_AUTH_FIRED_PREFIX = 'post_drill_auth_fired:'
 
 export interface AuthAnalyticsContext {
   source: 'app_main' | 'printable' | 'queue' | 'direct'
@@ -21,23 +23,29 @@ export interface AuthAnalyticsContext {
 
 function markLoginPending(method: string, context?: AuthAnalyticsContext): void {
   try {
-    localStorage.setItem(LOGIN_PENDING_KEY, JSON.stringify({ method, at: Date.now(), ...context }))
+    const attemptId = crypto.randomUUID()
+    localStorage.setItem(LOGIN_PENDING_KEY, JSON.stringify({ method, at: Date.now(), attemptId, ...context }))
   } catch {
     /* storage unavailable — skip tracking */
   }
 }
 
-function trackAuthIfPending(user: { createdAt: string }): void {
+function consumePendingAuth(user: { id: string; createdAt: string }): void {
   try {
     const raw = localStorage.getItem(LOGIN_PENDING_KEY)
     if (!raw) return
     localStorage.removeItem(LOGIN_PENDING_KEY)
-    const { method, at, source, drill_type, dataset_id, group_id } = JSON.parse(raw)
+    const { method, at, attemptId, source, drill_type, dataset_id, group_id } = JSON.parse(raw)
     if (Date.now() - at >= LOGIN_PENDING_TTL_MS) return
 
     const createdAt = new Date(user.createdAt).getTime()
     const isSignUp = Number.isFinite(createdAt) && createdAt >= at
     const afterDrill = Boolean(drill_type && dataset_id && Number.isFinite(group_id))
+    if (afterDrill) {
+      const guardKey = `${POST_DRILL_AUTH_FIRED_PREFIX}${user.id}`
+      if (localStorage.getItem(guardKey) === attemptId) return
+      localStorage.setItem(guardKey, attemptId)
+    }
     const event = afterDrill
       ? isSignUp
         ? 'sign_up_after_drill'
@@ -53,6 +61,18 @@ function trackAuthIfPending(user: { createdAt: string }): void {
   } catch {
     /* storage unavailable — skip tracking */
   }
+}
+
+async function trackAuthIfPending(user: { id: string; createdAt: string }): Promise<void> {
+  if (navigator.locks) {
+    try {
+      await navigator.locks.request(AUTH_ANALYTICS_LOCK, () => consumePendingAuth(user))
+      return
+    } catch {
+      // Analytics coordination must never interrupt authentication.
+    }
+  }
+  consumePendingAuth(user)
 }
 
 async function switchDatabases(userId: string | null): Promise<void> {
@@ -86,14 +106,14 @@ export const svcAuth: AuthService = {
     sttAuth.user = user
 
     if (user) {
-      trackAuthIfPending(user)
+      await trackAuthIfPending(user)
       await switchDatabases(user.id)
       syncInBackground()
     }
 
     datAuth.onAuthChange(async (newUser) => {
       sttAuth.user = newUser
-      if (newUser) trackAuthIfPending(newUser)
+      if (newUser) await trackAuthIfPending(newUser)
       await switchDatabases(newUser?.id ?? null).catch((e) => console.error('db switch failed', e))
       if (newUser) syncInBackground()
     })
