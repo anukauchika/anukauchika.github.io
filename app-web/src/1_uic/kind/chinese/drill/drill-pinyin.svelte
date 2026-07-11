@@ -6,7 +6,6 @@
   import Tags from '@std/ui/tags.svelte'
   import Btn from '@std/ui/btn.svelte'
   import BtnIcon from '@std/ui/btn-icon.svelte'
-  import BtnLink from '@std/ui/btn-link.svelte'
 
   let {
     group,
@@ -146,12 +145,14 @@
       <h2 class="anuka-island-title anuka-main">Session complete</h2>
       <div class="anuka-mute anuka-sm">{session.drilledCount} drilled &middot; {session.skippedCount} skipped</div>
       {#if !authenticated}
-        <p class="anuka-mute anuka-sm">
-          This session won't be saved. <BtnLink onclick={onSignIn}>Sign in</BtnLink> to keep your progress.
-        </p>
+        <div class="anon-session-notice anuka-mute">
+          <p>The session won't be saved.</p>
+          <p>Get all 67 HSK Elementary lessons free, with smart repetition and stats.</p>
+        </div>
+        <Btn main onclick={onSignIn}>Sign in</Btn>
+      {:else}
+        <Btn main onclick={() => session.restart()}>Restart</Btn>
       {/if}
-      <Btn main onclick={() => session.restart()}>Restart</Btn>
-      <Btn onclick={() => (window.location.href = backUrl)}>Groups</Btn>
     </div>
   </Island>
 {/if}
@@ -197,8 +198,25 @@
       {/if}
       <span class="anuka-sm anuka-mute">{group.items.length} words</span>
       {#if authenticated}
-        <span class="anuka-sm anuka-main">W {groupProgressStroke?.clean ?? 0} | P {groupProgressPinyin?.clean ?? 0}</span>
+        <span class="anuka-sm anuka-main"
+          >W {groupProgressStroke?.clean ?? 0} | P {groupProgressPinyin?.clean ?? 0}</span
+        >
       {/if}
     </div>
   {/if}
 </Island>
+
+<style>
+  .anon-session-notice {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin: 0.8rem 0;
+    font-size: 1.1rem;
+    line-height: 1.45;
+  }
+
+  .anon-session-notice p {
+    margin: 0;
+  }
+</style>

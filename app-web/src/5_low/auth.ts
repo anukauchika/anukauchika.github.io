@@ -1,7 +1,16 @@
 import type { AuthUser } from '@dom/auth'
 import { supabase } from '@low/supabase/supabase-client.js'
 
-function mapUser(session: { user: { id: string; email?: string; user_metadata?: { full_name?: string; avatar_url?: string } } } | null): AuthUser | null {
+function mapUser(
+  session: {
+    user: {
+      id: string
+      email?: string
+      created_at: string
+      user_metadata?: { full_name?: string; avatar_url?: string }
+    }
+  } | null,
+): AuthUser | null {
   if (!session) return null
   const u = session.user
   return {
@@ -9,6 +18,7 @@ function mapUser(session: { user: { id: string; email?: string; user_metadata?: 
     email: u.email ?? '',
     name: u.user_metadata?.full_name ?? u.email ?? '',
     avatarUrl: u.user_metadata?.avatar_url ?? '',
+    createdAt: u.created_at,
   }
 }
 
@@ -43,7 +53,9 @@ export const lowAuth: AuthApi = {
 
   onAuthChange(cb) {
     let currentUserId: string | null = null
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       const newUserId = session?.user?.id ?? null
       if (newUserId === currentUserId) return
       currentUserId = newUserId

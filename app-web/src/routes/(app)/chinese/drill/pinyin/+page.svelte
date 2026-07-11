@@ -1,7 +1,7 @@
 <script>
   import { page } from '$app/stores'
   import { ChineseDrillType } from '@dom/kind/chinese/dataset'
-  import { svcDrill } from '@svc/kind/chinese/drill'
+  import { normalizeDrillSource, svcDrill } from '@svc/kind/chinese/drill'
   import { svcAuth } from '@svc/auth'
   import { sttAuth } from '@stt/auth.svelte.js'
   import DrillPinyin from '@uic/kind/chinese/drill/drill-pinyin.svelte'
@@ -10,6 +10,7 @@
   const datasetId = $derived($page.url.searchParams.get('dataset') || '')
   const groupId = $derived(Number($page.url.searchParams.get('group')) || 1)
   const from = $derived($page.url.searchParams.get('from'))
+  const source = $derived(normalizeDrillSource($page.url.searchParams.get('source')))
   const backUrl = $derived(from ? `/chinese/${from}/?dataset=${datasetId}` : `/chinese/?dataset=${datasetId}`)
 
   let drill = $state(null)
@@ -18,7 +19,7 @@
   $effect(() => {
     if (datasetId && groupId) {
       drill = null
-      svcDrill.initDrill(datasetId, groupId, ChineseDrillType.Pinyin).then((d) => (drill = d))
+      svcDrill.initDrill(datasetId, groupId, ChineseDrillType.Pinyin, source).then((d) => (drill = d))
     }
   })
 </script>
@@ -47,8 +48,20 @@
     <AuthModal
       user={sttAuth.user}
       onclose={() => (showAuth = false)}
-      onSignInWithGoogle={svcAuth.signInWithGoogle}
-      onSignInWithEmail={svcAuth.signInWithEmail}
+      onSignInWithGoogle={() =>
+        svcAuth.signInWithGoogle({
+          source,
+          drill_type: ChineseDrillType.Pinyin,
+          dataset_id: datasetId,
+          group_id: groupId,
+        })}
+      onSignInWithEmail={(email) =>
+        svcAuth.signInWithEmail(email, {
+          source,
+          drill_type: ChineseDrillType.Pinyin,
+          dataset_id: datasetId,
+          group_id: groupId,
+        })}
       onSignOut={svcAuth.signOut}
     />
   {/if}

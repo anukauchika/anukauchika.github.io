@@ -46,9 +46,14 @@
     drillMode = globalThis.matchMedia('(max-width: 820px)').matches ? 'hanzi' : 'pinyin'
   }
 
-  const drillHref = (targetGroup) =>
-    appendAttributionParams(getWorksheetGroupDrillUrl(dataset, targetGroup.group, drillMode), attributionParams)
-  const groupHref = (targetGroup) => appendAttributionParams(getWorksheetGroupUrl(dataset, targetGroup.group), attributionParams)
+  const drillUrl = (targetGroup) => {
+    const url = new URL(getWorksheetGroupDrillUrl(dataset, targetGroup.group, drillMode), 'https://anukauchika.com')
+    url.searchParams.set('source', 'printable')
+    return `${url.pathname}${url.search}${url.hash}`
+  }
+  const drillHref = (targetGroup) => appendAttributionParams(drillUrl(targetGroup), attributionParams)
+  const groupHref = (targetGroup) =>
+    appendAttributionParams(getWorksheetGroupUrl(dataset, targetGroup.group), attributionParams)
   const appHref = $derived(appendAttributionParams(getChineseAppUrl(dataset), attributionParams))
   const formatPrintDate = () => {
     const now = new Date()
@@ -69,7 +74,7 @@
     event.preventDefault()
     const params = getCurrentAttributionParams()
     trackPrintLandAuxiClicked('practice_drill', dataset.id)
-    globalThis.location.href = appendAttributionParams(getWorksheetGroupDrillUrl(dataset, targetGroup.group, drillMode), params)
+    globalThis.location.href = appendAttributionParams(drillUrl(targetGroup), params)
   }
 
   const handleFullApp = (event) => {
@@ -126,8 +131,8 @@
         </p>
       {:else}
         <p class="subtitle">
-          Print {dataset.name} Group {group.group} as a Chinese vocabulary memorization sheet with hanzi, pinyin,
-          meaning, and structured active recall practice.
+          Print {dataset.name} Group {group.group} as a Chinese vocabulary memorization sheet with hanzi, pinyin, meaning,
+          and structured active recall practice.
         </p>
       {/if}
       <div class="actions">
@@ -136,7 +141,11 @@
           {isCollection ? `Print Group ${group.group} Worksheet` : 'Print Worksheet'}
         </button>
         <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-        <a class="anuka-btn anuka-lg" href="#learning-method" onclick={() => trackPrintLandAuxiClicked('method', dataset.id)}>
+        <a
+          class="anuka-btn anuka-lg"
+          href="#learning-method"
+          onclick={() => trackPrintLandAuxiClicked('method', dataset.id)}
+        >
           See more
           <span class="down-arrow" aria-hidden="true"></span>
         </a>
@@ -149,7 +158,10 @@
     </div>
     <aside class="hero-facts">
       <strong>{groups.length} worksheet groups</strong>
-      <span>{dataset.name} is divided into 15-word groups for structured practice and systematic memorization. Print each group directly from the browser.</span>
+      <span
+        >{dataset.name} is divided into 15-word groups for structured practice and systematic memorization. Print each group
+        directly from the browser.</span
+      >
     </aside>
   </section>
 
@@ -160,7 +172,11 @@
         <h2 id="worksheet-title">{dataset.name} Worksheet - Group {group.group}</h2>
       </div>
       <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-      <a class="site-mark" href={appendAttributionParams('/', attributionParams)} onclick={() => trackPrintLandAuxiClicked('root', dataset.id)}>
+      <a
+        class="site-mark"
+        href={appendAttributionParams('/', attributionParams)}
+        onclick={() => trackPrintLandAuxiClicked('root', dataset.id)}
+      >
         anukauchika.com
       </a>
     </div>
@@ -209,14 +225,16 @@
     <section class="advanced-section no-print" aria-labelledby="advanced-title">
       <div class="section-head">
         <h2 id="advanced-title">More Sets</h2>
-        <p>
-          Explore related printable sets.
-        </p>
+        <p>Explore related printable sets.</p>
       </div>
       <div class="advanced-list">
         {#each dataset.related as rel (rel.id)}
           <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-          <a class="advanced-link" href={appendAttributionParams(getWorksheetDatasetUrl(rel), attributionParams)} onclick={() => trackPrintLandAuxiClicked('related_collection', dataset.id)}>
+          <a
+            class="advanced-link"
+            href={appendAttributionParams(getWorksheetDatasetUrl(rel), attributionParams)}
+            onclick={() => trackPrintLandAuxiClicked('related_collection', dataset.id)}
+          >
             <strong>{rel.name}</strong>
             <span>{rel.description}</span>
           </a>
@@ -228,20 +246,21 @@
   <section class="groups-section no-print" aria-labelledby="all-groups-title">
     <div class="section-head">
       <h2 id="all-groups-title">All {dataset.name} Groups</h2>
-      <p>
-        Open any group as a printable worksheet.
-      </p>
+      <p>Open any group as a printable worksheet.</p>
     </div>
     <div class="group-list compact">
       {#each groups as targetGroup (targetGroup.group)}
         <!-- eslint-disable-next-line svelte/no-navigation-without-resolve -->
-        <a class:current={targetGroup.group === group.group} href={groupHref(targetGroup)} onclick={() => trackPrintLandAuxiClicked('group', dataset.id)}>
+        <a
+          class:current={targetGroup.group === group.group}
+          href={groupHref(targetGroup)}
+          onclick={() => trackPrintLandAuxiClicked('group', dataset.id)}
+        >
           Group {targetGroup.group}
         </a>
       {/each}
     </div>
   </section>
-
 </main>
 
 <style>
@@ -579,7 +598,7 @@
     }
 
     :global(.landing-workbook.workbook-page .sheet::after) {
-      content: "";
+      content: '';
       position: absolute;
       inset: auto 0 0;
       height: 4rem;
@@ -636,6 +655,5 @@
       border-radius: 0;
       padding: 0;
     }
-
   }
 </style>

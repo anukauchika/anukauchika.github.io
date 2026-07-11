@@ -62,8 +62,8 @@
     const typeToPath = { stroke: 'hanzi', pinyin: 'pinyin' }
     const next = sttHome.next
     return next
-      ? `${basePath}/drill/${typeToPath[next.type] || 'hanzi'}/?group=${next.groupId}&dataset=${sttDataset.id}`
-      : `${basePath}/drill/hanzi/?group=1&dataset=${sttDataset.id}`
+      ? `${basePath}/drill/${typeToPath[next.type] || 'hanzi'}/?group=${next.groupId}&dataset=${sttDataset.id}&source=app_main`
+      : `${basePath}/drill/hanzi/?group=1&dataset=${sttDataset.id}&source=app_main`
   })
 
   function selectDataset(id) {
@@ -86,13 +86,14 @@
     let cancelled = false
     let phraseIndex = 0
     const timers = new Set()
-    const sleep = (ms) => new Promise((resolve) => {
-      const timer = setTimeout(() => {
-        timers.delete(timer)
-        resolve()
-      }, ms)
-      timers.add(timer)
-    })
+    const sleep = (ms) =>
+      new Promise((resolve) => {
+        const timer = setTimeout(() => {
+          timers.delete(timer)
+          resolve()
+        }, ms)
+        timers.add(timer)
+      })
 
     async function typePhrase(nextPhrase) {
       motivationTyping = true
@@ -359,7 +360,10 @@
 
         <section>
           <h3>Start with Drill</h3>
-          <p>Press Drill to start the next lesson. If you are new, it begins with the first group. Otherwise, it gives you the first item from your queue.</p>
+          <p>
+            Press Drill to start the next lesson. If you are new, it begins with the first group. Otherwise, it gives
+            you the first item from your queue.
+          </p>
         </section>
 
         <section>
@@ -394,8 +398,8 @@
   <AuthModal
     user={sttAuth.user}
     onclose={() => (showAuthDropdown = false)}
-    onSignInWithGoogle={svcAuth.signInWithGoogle}
-    onSignInWithEmail={svcAuth.signInWithEmail}
+    onSignInWithGoogle={() => svcAuth.signInWithGoogle({ source: 'app_main' })}
+    onSignInWithEmail={(email) => svcAuth.signInWithEmail(email, { source: 'app_main' })}
     onSignOut={svcAuth.signOut}
   />
 {/if}

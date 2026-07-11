@@ -14,9 +14,19 @@ import { svcSync } from '@svc/sync'
 import { dsCode, dtCode } from '@svc/kind/chinese/codes'
 import { calcWordSortScore } from '@std/kind/chinese/stats'
 
-function sortByProgress(items: ChineseWord[], wp: Map<number, WordProgress>, drillType: ChineseDrillType): ChineseWord[] {
-  return [...items].sort((a, b) =>
-    calcWordSortScore(wp.get(a.id), drillType) - calcWordSortScore(wp.get(b.id), drillType)
+export type DrillSource = 'app_main' | 'printable' | 'queue' | 'direct'
+
+export function normalizeDrillSource(source: string | null): DrillSource {
+  return source === 'app_main' || source === 'printable' || source === 'queue' ? source : 'direct'
+}
+
+function sortByProgress(
+  items: ChineseWord[],
+  wp: Map<number, WordProgress>,
+  drillType: ChineseDrillType,
+): ChineseWord[] {
+  return [...items].sort(
+    (a, b) => calcWordSortScore(wp.get(a.id), drillType) - calcWordSortScore(wp.get(b.id), drillType),
   )
 }
 
@@ -33,7 +43,12 @@ export interface DrillHandle {
   endSession(result: GroupAttempt): Promise<void>
 }
 
-async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: ChineseDrillType): Promise<DrillHandle> {
+async function initDrill(
+  datasetId: DatasetId,
+  groupId: GroupId,
+  drillType: ChineseDrillType,
+  source: DrillSource = 'direct',
+): Promise<DrillHandle> {
   const ds = asChineseDataset(sttDataset.current)
   if (!ds) throw new Error(`Dataset ${datasetId} not found or not chinese`)
 
@@ -59,6 +74,7 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
   let pendingAttempts: Promise<void>[] = []
 
   datAnalytics.track('drill_started', {
+    source,
     drill_type: drillType,
     dataset_id: datasetId,
     group_id: groupId,
@@ -78,9 +94,12 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
 
       const pending = (async () => {
         if (!sessionIdPromise) {
-          sessionIdPromise = datDrill.startDrill(
-            sttAuth.user?.id ?? null, datasetCode, drillCode, groupId,
-          ).then((id) => { drillId = id; return id })
+          sessionIdPromise = datDrill
+            .startDrill(sttAuth.user?.id ?? null, datasetCode, drillCode, groupId)
+            .then((id) => {
+              drillId = id
+              return id
+            })
         }
 
         try {
@@ -99,6 +118,7 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
 
     async endSession(result: GroupAttempt): Promise<void> {
       datAnalytics.track('drill_completed', {
+        source,
         drill_type: drillType,
         dataset_id: datasetId,
         group_id: groupId,
@@ -129,10 +149,14 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
           full: (existing?.full ?? 0) + 1,
           clean: (existing?.clean ?? 0) + (clean ? 1 : 0),
           firstDrilledAt: existing?.firstDrilledAt ?? startedAt,
-          lastDrilledAt: doneAt > (existing?.lastDrilledAt ?? '') ? doneAt : existing?.lastDrilledAt ?? doneAt,
-          lastFullDrillAt: doneAt > (existing?.lastFullDrillAt ?? '') ? doneAt : existing?.lastFullDrillAt ?? doneAt,
-          lastCleanDrillAt: clean && doneAt > (existing?.lastCleanDrillAt ?? '') ? doneAt : existing?.lastCleanDrillAt ?? null,
-          lastSessionHintCount: doneAt > (existing?.lastFullDrillAt ?? '') ? sessionHintCount : existing?.lastSessionHintCount ?? sessionHintCount,
+          lastDrilledAt: doneAt > (existing?.lastDrilledAt ?? '') ? doneAt : (existing?.lastDrilledAt ?? doneAt),
+          lastFullDrillAt: doneAt > (existing?.lastFullDrillAt ?? '') ? doneAt : (existing?.lastFullDrillAt ?? doneAt),
+          lastCleanDrillAt:
+            clean && doneAt > (existing?.lastCleanDrillAt ?? '') ? doneAt : (existing?.lastCleanDrillAt ?? null),
+          lastSessionHintCount:
+            doneAt > (existing?.lastFullDrillAt ?? '')
+              ? sessionHintCount
+              : (existing?.lastSessionHintCount ?? sessionHintCount),
         })
         return next
       }
@@ -149,7 +173,12 @@ async function initDrill(datasetId: DatasetId, groupId: GroupId, drillType: Chin
 // --- Public interface ---
 
 export interface DrillService {
-  initDrill(datasetId: DatasetId, groupId: GroupId, drillType: ChineseDrillType): Promise<DrillHandle>
+  initDrill(
+    datasetId: DatasetId,
+    groupId: GroupId,
+    drillType: ChineseDrillType,
+    source?: DrillSource,
+  ): Promise<DrillHandle>
 }
 
 export const svcDrill: DrillService = {

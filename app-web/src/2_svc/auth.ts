@@ -12,20 +12,47 @@ import { svcSync } from '@svc/sync'
 const LOGIN_PENDING_KEY = 'uch-login-pending'
 const LOGIN_PENDING_TTL_MS = 60 * 60 * 1000
 
-function markLoginPending(method: string): void {
-  try {
-    localStorage.setItem(LOGIN_PENDING_KEY, JSON.stringify({ method, at: Date.now() }))
-  } catch { /* storage unavailable — skip tracking */ }
+export interface AuthAnalyticsContext {
+  source: 'app_main' | 'printable' | 'queue' | 'direct'
+  drill_type?: string
+  dataset_id?: string
+  group_id?: number
 }
 
-function trackLoginIfPending(): void {
+function markLoginPending(method: string, context?: AuthAnalyticsContext): void {
+  try {
+    localStorage.setItem(LOGIN_PENDING_KEY, JSON.stringify({ method, at: Date.now(), ...context }))
+  } catch {
+    /* storage unavailable — skip tracking */
+  }
+}
+
+function trackAuthIfPending(user: { createdAt: string }): void {
   try {
     const raw = localStorage.getItem(LOGIN_PENDING_KEY)
     if (!raw) return
     localStorage.removeItem(LOGIN_PENDING_KEY)
-    const { method, at } = JSON.parse(raw)
-    if (Date.now() - at < LOGIN_PENDING_TTL_MS) datAnalytics.track('login', { method })
-  } catch { /* storage unavailable — skip tracking */ }
+    const { method, at, source, drill_type, dataset_id, group_id } = JSON.parse(raw)
+    if (Date.now() - at >= LOGIN_PENDING_TTL_MS) return
+
+    const createdAt = new Date(user.createdAt).getTime()
+    const isSignUp = Number.isFinite(createdAt) && createdAt >= at
+    const afterDrill = Boolean(drill_type && dataset_id && Number.isFinite(group_id))
+    const event = afterDrill
+      ? isSignUp
+        ? 'sign_up_after_drill'
+        : 'sign_in_after_drill'
+      : isSignUp
+        ? 'sign_up'
+        : 'sign_in'
+    datAnalytics.track(event, {
+      method,
+      ...(source ? { source } : {}),
+      ...(afterDrill ? { drill_type, dataset_id, group_id } : {}),
+    })
+  } catch {
+    /* storage unavailable — skip tracking */
+  }
 }
 
 async function switchDatabases(userId: string | null): Promise<void> {
@@ -36,17 +63,20 @@ async function switchDatabases(userId: string | null): Promise<void> {
 }
 
 function syncInBackground(): void {
-  svcSync.syncPending()
+  svcSync
+    .syncPending()
     .then(() => svcSync.restoreFromServer())
-    .then(() => { sttAuth.dbVersion++ })
+    .then(() => {
+      sttAuth.dbVersion++
+    })
     .catch((e) => console.error('sync failed', e))
 }
 
 export interface AuthService {
   init(): Promise<void>
-  signInWithGoogle(): Promise<void>
-  signInWithApple(): Promise<void>
-  signInWithEmail(email: string): Promise<void>
+  signInWithGoogle(context?: AuthAnalyticsContext): Promise<void>
+  signInWithApple(context?: AuthAnalyticsContext): Promise<void>
+  signInWithEmail(email: string, context?: AuthAnalyticsContext): Promise<void>
   signOut(): Promise<void>
 }
 
@@ -56,31 +86,29 @@ export const svcAuth: AuthService = {
     sttAuth.user = user
 
     if (user) {
-      trackLoginIfPending()
+      trackAuthIfPending(user)
       await switchDatabases(user.id)
       syncInBackground()
     }
 
     datAuth.onAuthChange(async (newUser) => {
       sttAuth.user = newUser
-      if (newUser) trackLoginIfPending()
+      if (newUser) trackAuthIfPending(newUser)
       await switchDatabases(newUser?.id ?? null).catch((e) => console.error('db switch failed', e))
       if (newUser) syncInBackground()
     })
-
-
   },
 
-  signInWithGoogle: () => {
-    markLoginPending('google')
+  signInWithGoogle: (context) => {
+    markLoginPending('google', context)
     return datAuth.signInWithGoogle()
   },
-  signInWithApple: () => {
-    markLoginPending('apple')
+  signInWithApple: (context) => {
+    markLoginPending('apple', context)
     return datAuth.signInWithApple()
   },
-  signInWithEmail: (email) => {
-    markLoginPending('email')
+  signInWithEmail: (email, context) => {
+    markLoginPending('email', context)
     return datAuth.signInWithEmail(email)
   },
   signOut: () => datAuth.signOut(),

@@ -1,12 +1,14 @@
 <script>
   import '@std/style/anuka.css'
   import { browser } from '$app/environment'
+  import { initAttributionParams } from '@low/worksheet/attribution'
 
   let { children } = $props()
 
   if (browser) {
-    import('virtual:pwa-register').then(m => m.registerSW({ immediate: true }))
-    import('@low/google/analytics').then(m => m.initAnalytics())
+    initAttributionParams()
+    import('virtual:pwa-register').then((m) => m.registerSW({ immediate: true }))
+    import('@low/google/analytics').then((m) => m.initAnalytics())
 
     import('@svc/dataset')
       .then((dataset) => dataset.svcDataset.init())
@@ -16,9 +18,7 @@
       .then((prefs) => prefs.svcUserPrefs.loadTheme())
       .catch((e) => console.error('theme init failed', e))
 
-    import('@svc/auth')
-      .then((auth) => auth.svcAuth.init())
-      .catch((e) => console.error('auth init failed', e))
+    import('@svc/auth').then((auth) => auth.svcAuth.init()).catch((e) => console.error('auth init failed', e))
 
     const runMaintenance = () => {
       import('@svc/maintenance')

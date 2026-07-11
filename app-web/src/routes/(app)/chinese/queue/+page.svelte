@@ -15,7 +15,7 @@
   interface QueueItem {
     group: ChineseGroup
     type: DrillType
-    state: 'repeat' | 'due' | 'upcoming'
+    state: 'new' | 'repeat' | 'due' | 'upcoming'
     dueAt: number
     lastFullAt: number
     href: string
@@ -30,7 +30,7 @@
 
   const DAY_MS = 24 * 60 * 60 * 1000
   const typePath: Record<DrillType, string> = { stroke: 'hanzi', pinyin: 'pinyin' }
-  const typeLabel: Record<DrillType, string> = { stroke: 'Stroke', pinyin: 'Pinyin' }
+  const typeLabel: Record<DrillType, string> = { stroke: 'Writing', pinyin: 'Pinyin' }
 
   let queueLoaded = $state(false)
 
@@ -51,10 +51,15 @@
     return { key: `in-${days}`, label: `In ${days}d`, sortAt: days }
   }
 
-  function addItem(items: QueueItem[], group: ChineseGroup, type: DrillType, progress: GroupProgress | undefined): void {
+  function addItem(
+    items: QueueItem[],
+    group: ChineseGroup,
+    type: DrillType,
+    progress: GroupProgress | undefined,
+  ): void {
     const review = calcTypeReview(progress)
     if (review.state === 'new') return
-    const href = `/chinese/drill/${typePath[type]}/?group=${group.id}&dataset=${sttDataset.id}&from=queue`
+    const href = `/chinese/drill/${typePath[type]}/?group=${group.id}&dataset=${sttDataset.id}&from=queue&source=queue`
     items.push({
       group,
       type,
@@ -65,6 +70,17 @@
     })
   }
 
+  function addStarterItem(items: QueueItem[], group: ChineseGroup, type: DrillType): void {
+    items.push({
+      group,
+      type,
+      state: 'new',
+      dueAt: 0,
+      lastFullAt: 0,
+      href: `/chinese/drill/${typePath[type]}/?group=${group.id}&dataset=${sttDataset.id}&from=queue&source=queue`,
+    })
+  }
+
   const queueSections = $derived.by(() => {
     const items: QueueItem[] = []
     for (const group of sttDataset.groups as ChineseGroup[]) {
@@ -72,8 +88,16 @@
       addItem(items, group, 'pinyin', sttStats.groupProgressPinyin.get(group.id))
     }
 
+    // A fresh account has no review state yet. Seed its otherwise-empty queue
+    // with both lessons from the first vocabulary group.
+    const firstGroup = sttDataset.groups[0] as ChineseGroup | undefined
+    if (items.length === 0 && firstGroup) {
+      addStarterItem(items, firstGroup, 'stroke')
+      addStarterItem(items, firstGroup, 'pinyin')
+    }
+
     items.sort((a, b) => {
-      const rank = (item: QueueItem) => item.state === 'repeat' ? 0 : item.state === 'due' ? 1 : 2
+      const rank = (item: QueueItem) => (item.state === 'repeat' ? 0 : item.state === 'due' ? 1 : 2)
       const rankDiff = rank(a) - rank(b)
       if (rankDiff !== 0) return rankDiff
       if (a.state === 'repeat' && b.state === 'repeat' && a.lastFullAt !== b.lastFullAt) {
@@ -114,7 +138,8 @@
 
     let cancelled = false
     queueLoaded = false
-    svcStats.loadGroupProgressAll(datasetId)
+    svcStats
+      .loadGroupProgressAll(datasetId)
       .catch((err) => console.error('queue progress load failed:', err))
       .finally(() => {
         if (!cancelled) queueLoaded = true
@@ -178,7 +203,11 @@
                   <span>{item.group.displayId}</span>
                   <span class="anuka-mute">{typeLabel[item.type]}</span>
                 </span>
-                <span class="anuka-badge anuka-sm" class:anuka-warn={item.state !== 'upcoming'} class:anuka-mute={item.state === 'upcoming'}>
+                <span
+                  class="anuka-badge anuka-sm"
+                  class:anuka-warn={item.state !== 'upcoming'}
+                  class:anuka-mute={item.state === 'upcoming'}
+                >
                   {item.state}
                 </span>
               </a>
