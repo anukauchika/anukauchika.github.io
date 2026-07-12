@@ -123,6 +123,40 @@
 
   </div>
 
+  <!-- Vocabularies -->
+  <div class="anuka-island">
+    <div class="anuka-stack">
+      <h2 class="anuka-island-title">HSK vocabularies</h2>
+      <div class="vocab-grid">
+        {#each vocabularies as vocab}
+          <div class="anuka-card vocab-card" class:vocab-card-featured={vocab.featured}>
+            <div class="vocab-image" role="img" aria-label="{vocab.title} vocabulary">
+              <span lang="zh-CN">{vocab.hanzi}</span>
+            </div>
+            <div class="anuka-stack anuka-compact vocab-copy">
+              <strong>{vocab.title}</strong>
+              <span class="anuka-sm anuka-mute">{vocab.level} · {vocab.words}</span>
+              <div class="vocab-actions">
+                <a class="anuka-btn" href={vocab.printableHref} onclick={() => trackRootLandAuxiClicked('printables')}>
+                  <span class="anuka-icon anuka-icon-print"></span>
+                  Printable Worksheets
+                </a>
+                <a
+                  class="anuka-btn anuka-main practice-btn"
+                  href={vocab.practiceHref}
+                  onclick={() => trackRootLandAuxiClicked('practice_app')}
+                >
+                  <span class="anuka-icon anuka-icon-pinyin"></span>
+                  Practice Online
+                </a>
+              </div>
+            </div>
+          </div>
+        {/each}
+      </div>
+    </div>
+  </div>
+
   <!-- How it works -->
   <div class="anuka-island">
     <div class="section-title-row">
@@ -165,40 +199,6 @@
             Fold the sheet to check pinyin and meaning after you write.
           </span>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Vocabularies -->
-  <div class="anuka-island">
-    <div class="anuka-stack">
-      <h2 class="anuka-island-title">HSK vocabularies</h2>
-      <div class="vocab-grid">
-        {#each vocabularies as vocab}
-          <div class="anuka-card vocab-card" class:vocab-card-featured={vocab.featured}>
-            <div class="vocab-image" role="img" aria-label="{vocab.title} vocabulary">
-              <span lang="zh-CN">{vocab.hanzi}</span>
-            </div>
-            <div class="anuka-stack anuka-compact vocab-copy">
-              <strong>{vocab.title}</strong>
-              <span class="anuka-sm anuka-mute">{vocab.level} · {vocab.words}</span>
-              <div class="vocab-actions">
-                <a class="anuka-btn" href={vocab.printableHref} onclick={() => trackRootLandAuxiClicked('printables')}>
-                  <span class="anuka-icon anuka-icon-print"></span>
-                  Printable Worksheets
-                </a>
-                <a
-                  class="anuka-btn anuka-main practice-btn"
-                  href={vocab.practiceHref}
-                  onclick={() => trackRootLandAuxiClicked('practice_app')}
-                >
-                  <span class="anuka-icon anuka-icon-pinyin"></span>
-                  Practice Online
-                </a>
-              </div>
-            </div>
-          </div>
-        {/each}
       </div>
     </div>
   </div>

@@ -40,6 +40,7 @@ export class DrillStrokeSession {
   showPinyin: boolean = $state(true)
   strokeQuizResult: 'correct' | null = $state(null)
   quizKey: number = $state(0)
+  acceptedStrokePaths: string[] = $state([])
 
   // --- Internal handles ---
   writer: any = null
@@ -80,6 +81,7 @@ export class DrillStrokeSession {
 
   initStrokeQuiz(): void {
     this.destroyStrokeQuiz()
+    this.acceptedStrokePaths = []
     if (!this.currentChar || !this.currentItem) return
     const target = document.getElementById('drill-canvas')
     if (!target) return
@@ -102,16 +104,18 @@ export class DrillStrokeSession {
         width: 280, height: 280, padding: 20,
         showCharacter: false, showOutline: this.showHint,
         strokeAnimationSpeed: 1, delayBetweenStrokes: 100,
-        highlightOnComplete: false, drawingWidth: 20,
+        highlightOnComplete: false, drawingWidth: 10,
         leniency: 1.4, showHintAfterMisses: 2,
         strokeHighlightSpeed: 0.5,
-        strokeColor, drawingColor: strokeColor, outlineColor, radicalColor,
+        strokeColor: 'rgba(0, 0, 0, 0)', drawingColor: strokeColor, outlineColor,
+        radicalColor: 'rgba(0, 0, 0, 0)',
         highlightColor: strokeColor,
       })
       this.nextStrokeIndex = 0
       this.writer.quiz({
         onMistake: () => { this.charErrorCount += 1 },
-        onCorrectStroke: (data: { strokeNum: number }) => {
+        onCorrectStroke: (data: { strokeNum: number; drawnPath: { pathString: string } }) => {
+          this.acceptedStrokePaths = [...this.acceptedStrokePaths, data.drawnPath.pathString]
           this.nextStrokeIndex = data.strokeNum + 1
           this.restartHintLoop()
         },
