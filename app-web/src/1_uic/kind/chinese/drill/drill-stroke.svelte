@@ -1,4 +1,5 @@
 <script>
+  import { untrack } from 'svelte'
   import { DrillStrokeSession } from './drill-stroke.svelte.js'
   import Island from '@std/ui/island.svelte'
   import ProgressLine from '@std/ui/progress-line.svelte'
@@ -27,7 +28,7 @@
     const _charIdx = session.charIndex
     const _quizKey = session.quizKey
     const _item = session.currentItem
-    if (session.currentChar) session.initStrokeQuiz()
+    if (session.currentChar) untrack(() => session.initStrokeQuiz())
     return () => session.destroyStrokeQuiz()
   })
 
