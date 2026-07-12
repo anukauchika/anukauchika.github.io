@@ -17,15 +17,27 @@ async function loadGroupProgressAll(datasetId: DatasetId): Promise<void> {
   if (!sttAuth.isAuthenticated) {
     sttStats.groupProgressStroke = new Map()
     sttStats.groupProgressPinyin = new Map()
+    sttStats.lessonDrilledWords = new Map()
     return
   }
 
   const groups = sttDataset.groups
   if (groups.length > 0) {
     try {
-      const perType = await datStats.getGroupReviewProgress(dsCode(datasetId), groups.map((g) => g.id), localTimeZone())
+      const [perType, lessonProgress] = await Promise.all([
+        datStats.getGroupReviewProgress(
+          dsCode(datasetId),
+          groups.map((g) => g.id),
+          localTimeZone(),
+        ),
+        datStats.getLessonProgress(
+          dsCode(datasetId),
+          groups.map((g) => g.id),
+        ),
+      ])
       sttStats.groupProgressStroke = perType.s
       sttStats.groupProgressPinyin = perType.p
+      sttStats.lessonDrilledWords = lessonProgress
       return
     } catch (err) {
       console.error('Failed to load server group review state:', err)
@@ -45,6 +57,10 @@ async function loadGroupProgressAll(datasetId: DatasetId): Promise<void> {
   }
   sttStats.groupProgressStroke = perType.s
   sttStats.groupProgressPinyin = perType.p
+  sttStats.lessonDrilledWords = await datStats.getLessonProgress(
+    dsCode(datasetId),
+    groups.map((g) => g.id),
+  )
 }
 
 export const svcStats: StatsService = {

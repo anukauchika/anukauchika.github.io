@@ -37,6 +37,11 @@ export interface ChineseHomeSummaryRecord {
   next_reason: string | null
 }
 
+export interface ChineseLessonProgressRecord {
+  group_id: number
+  drilled_words: number
+}
+
 async function createGroupSession(record: DrillRecord): Promise<{ id: number }> {
   const { data, error } = await supabase
     .from('group_session')
@@ -63,10 +68,7 @@ async function createGroupSession(record: DrillRecord): Promise<{ id: number }> 
 }
 
 async function updateGroupSessionDone(id: number, doneAt: string): Promise<void> {
-  const { error } = await supabase
-    .from('group_session')
-    .update({ done_at: doneAt })
-    .eq('id', id)
+  const { error } = await supabase.from('group_session').update({ done_at: doneAt }).eq('id', id)
   if (error) throw error
 }
 
@@ -96,12 +98,10 @@ async function insertWordAttempt(record: AttemptRecord): Promise<{ id: number }>
 async function insertCharLogs(chars: CharLogRecord[]): Promise<void> {
   for (let offset = 0; offset < chars.length; offset += CHAR_LOG_UPSERT_BATCH_SIZE) {
     const batch = chars.slice(offset, offset + CHAR_LOG_UPSERT_BATCH_SIZE)
-    const { error } = await supabase
-      .from('char_log')
-      .upsert(batch, {
-        onConflict: 'word_attempt_id,char_index',
-        ignoreDuplicates: true,
-      })
+    const { error } = await supabase.from('char_log').upsert(batch, {
+      onConflict: 'word_attempt_id,char_index',
+      ignoreDuplicates: true,
+    })
     if (error) throw error
   }
 }
@@ -117,7 +117,11 @@ async function restoreChineseStats(): Promise<RestoreChineseStatsPayload> {
   }
 }
 
-async function getChineseGroupReviewState(datasetCode: string, groupIds: number[], timeZone: string): Promise<ChineseGroupReviewRecord[]> {
+async function getChineseGroupReviewState(
+  datasetCode: string,
+  groupIds: number[],
+  timeZone: string,
+): Promise<ChineseGroupReviewRecord[]> {
   const { data, error } = await supabase.rpc('chinese_group_review_state', {
     p_dataset_id: datasetCode,
     p_group_ids: groupIds,
@@ -127,7 +131,11 @@ async function getChineseGroupReviewState(datasetCode: string, groupIds: number[
   return data ?? []
 }
 
-async function getChineseHomeSummary(datasetCode: string, groupIds: number[], timeZone: string): Promise<ChineseHomeSummaryRecord | null> {
+async function getChineseHomeSummary(
+  datasetCode: string,
+  groupIds: number[],
+  timeZone: string,
+): Promise<ChineseHomeSummaryRecord | null> {
   const { data, error } = await supabase.rpc('chinese_home_summary', {
     p_dataset_id: datasetCode,
     p_group_ids: groupIds,
@@ -137,14 +145,35 @@ async function getChineseHomeSummary(datasetCode: string, groupIds: number[], ti
   return data?.[0] ?? null
 }
 
+async function getChineseLessonProgress(
+  datasetCode: string,
+  groupIds: number[],
+): Promise<ChineseLessonProgressRecord[]> {
+  const { data, error } = await supabase.rpc('chinese_lesson_progress', {
+    p_dataset_id: datasetCode,
+    p_group_ids: groupIds,
+  })
+  if (error) throw error
+  return data ?? []
+}
+
 export interface LowStatsSupabase {
   createGroupSession(record: DrillRecord): Promise<{ id: number }>
   updateGroupSessionDone(id: number, doneAt: string): Promise<void>
   insertWordAttempt(record: AttemptRecord): Promise<{ id: number }>
   insertCharLogs(chars: CharLogRecord[]): Promise<void>
   restoreChineseStats(): Promise<RestoreChineseStatsPayload>
-  getChineseGroupReviewState(datasetCode: string, groupIds: number[], timeZone: string): Promise<ChineseGroupReviewRecord[]>
-  getChineseHomeSummary(datasetCode: string, groupIds: number[], timeZone: string): Promise<ChineseHomeSummaryRecord | null>
+  getChineseGroupReviewState(
+    datasetCode: string,
+    groupIds: number[],
+    timeZone: string,
+  ): Promise<ChineseGroupReviewRecord[]>
+  getChineseHomeSummary(
+    datasetCode: string,
+    groupIds: number[],
+    timeZone: string,
+  ): Promise<ChineseHomeSummaryRecord | null>
+  getChineseLessonProgress(datasetCode: string, groupIds: number[]): Promise<ChineseLessonProgressRecord[]>
 }
 
 export const lowStatsSupabase: LowStatsSupabase = {
@@ -155,4 +184,5 @@ export const lowStatsSupabase: LowStatsSupabase = {
   restoreChineseStats,
   getChineseGroupReviewState,
   getChineseHomeSummary,
+  getChineseLessonProgress,
 }

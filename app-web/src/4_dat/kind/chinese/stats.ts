@@ -23,9 +23,14 @@ export interface LocalHomeStats {
 
 export interface StatsRepo {
   getGroupProgress(datasetCode: string, drillCode: string): Promise<Map<GroupId, GroupProgress>>
-  getGroupReviewProgress(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<Record<string, Map<GroupId, GroupProgress>>>
+  getGroupReviewProgress(
+    datasetCode: string,
+    groupIds: GroupId[],
+    timeZone: string,
+  ): Promise<Record<string, Map<GroupId, GroupProgress>>>
   getServerHomeSummary(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<ChineseHomeSummary | null>
   getLocalHomeStats(datasetCode: string): Promise<LocalHomeStats>
+  getLessonProgress(datasetCode: string, groupIds: GroupId[]): Promise<Map<GroupId, number>>
 }
 
 function emptyGroupProgress(): GroupProgress {
@@ -115,7 +120,11 @@ async function getGroupProgress(datasetCode: string, drillCode: string): Promise
   return map
 }
 
-async function getGroupReviewProgress(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<Record<string, Map<GroupId, GroupProgress>>> {
+async function getGroupReviewProgress(
+  datasetCode: string,
+  groupIds: GroupId[],
+  timeZone: string,
+): Promise<Record<string, Map<GroupId, GroupProgress>>> {
   const perType: Record<string, Map<GroupId, GroupProgress>> = { s: new Map(), p: new Map() }
   const rows = await lowStatsSupabase.getChineseGroupReviewState(datasetCode, groupIds, timeZone)
 
@@ -142,7 +151,11 @@ async function getGroupReviewProgress(datasetCode: string, groupIds: GroupId[], 
   return perType
 }
 
-async function getServerHomeSummary(datasetCode: string, groupIds: GroupId[], timeZone: string): Promise<ChineseHomeSummary | null> {
+async function getServerHomeSummary(
+  datasetCode: string,
+  groupIds: GroupId[],
+  timeZone: string,
+): Promise<ChineseHomeSummary | null> {
   const row = await lowStatsSupabase.getChineseHomeSummary(datasetCode, groupIds, timeZone)
   if (!row) return null
 
@@ -151,9 +164,10 @@ async function getServerHomeSummary(datasetCode: string, groupIds: GroupId[], ti
     todayDurationMs: Number(row.today_duration_ms),
     dueCount: row.due_count,
     drilledWords: row.drilled_words,
-    next: row.next_group_id != null
-      ? { groupId: row.next_group_id, type: row.next_practice_type === 'p' ? 'pinyin' : 'stroke' }
-      : null,
+    next:
+      row.next_group_id != null
+        ? { groupId: row.next_group_id, type: row.next_practice_type === 'p' ? 'pinyin' : 'stroke' }
+        : null,
   }
 }
 
@@ -191,9 +205,35 @@ async function getLocalHomeStats(datasetCode: string): Promise<LocalHomeStats> {
   return { todaySessions, todayDurationMs, drilledWords: drilledWords.size }
 }
 
+async function getLocalLessonProgress(datasetCode: string): Promise<Map<GroupId, number>> {
+  const wordsByGroup = new Map<GroupId, Set<number>>()
+  for (const drillCode of ['s', 'p']) {
+    const sessions = await lowStatsIdb.getGroupSessions(datasetCode, drillCode)
+    for (const session of sessions) {
+      const words = wordsByGroup.get(session.group_id) ?? new Set<number>()
+      for (const attempt of await lowStatsIdb.getWordAttempts(session.id)) {
+        if (attempt.done_at) words.add(attempt.word_id)
+      }
+      wordsByGroup.set(session.group_id, words)
+    }
+  }
+  return new Map([...wordsByGroup].map(([groupId, words]) => [groupId, words.size]))
+}
+
+async function getLessonProgress(datasetCode: string, groupIds: GroupId[]): Promise<Map<GroupId, number>> {
+  try {
+    const rows = await lowStatsSupabase.getChineseLessonProgress(datasetCode, groupIds)
+    return new Map(rows.map((row) => [row.group_id, row.drilled_words]))
+  } catch (err) {
+    console.error('Failed to load server lesson progress, falling back to local:', err)
+    return getLocalLessonProgress(datasetCode)
+  }
+}
+
 export const datStats: StatsRepo = {
   getGroupProgress,
   getGroupReviewProgress,
   getServerHomeSummary,
   getLocalHomeStats,
+  getLessonProgress,
 }

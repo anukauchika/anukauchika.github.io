@@ -13,6 +13,8 @@
 
   let showAuthDropdown = $state(false)
   let showDatasetPicker = $state(false)
+  let showLessons = $state(false)
+  let LessonsModal = $state()
   let showHowWorks = $state(false)
 
   const DAILY_GOAL_MIN = 60
@@ -39,6 +41,7 @@
   const minutesToday = $derived(Math.floor(sttHome.todayDurationMs / 60_000))
   const lessonsDone = $derived(sttHome.todaySessions)
   const lessonsTotal = $derived(lessonsDone + sttHome.dueCount)
+  const drillHanzi = $derived(!sttAuth.isAuthenticated || wordsDrilled === 0 ? '开始' : '进步')
 
   const ringCircumference = 2 * Math.PI * 132
   const lessonsRatio = $derived(lessonsTotal > 0 ? Math.min(lessonsDone / lessonsTotal, 1) : 0)
@@ -78,6 +81,11 @@
   function handleDrillClick(event) {
     if (sttHome.loaded) return
     event.preventDefault()
+  }
+
+  async function openLessons() {
+    if (!LessonsModal) LessonsModal = (await import('./lessons-modal.svelte')).default
+    showLessons = true
   }
 
   $effect(() => {
@@ -233,7 +241,7 @@
                 : 'Loading your progress'}
               onclick={handleDrillClick}
             >
-              <span class="app-drill-zi">练</span>
+              <span class="app-drill-zi">{drillHanzi}</span>
               <span
                 class="app-drill-label"
                 class:app-drill-label-loading={!sttHome.loaded}
@@ -293,11 +301,50 @@
                 <span>Queue</span>
                 <span class="app-queue-count">{sttHome.loaded ? plannedToday : '...'}</span>
               </a>
+              <button class="anuka-btn app-help-btn" type="button" onclick={openLessons}>Lessons</button>
             {/if}
             <button class="anuka-btn app-help-btn" type="button" onclick={() => (showHowWorks = true)}>
               How it works
             </button>
           </div>
+        </div>
+      </div>
+    </section>
+  {:else}
+    <section class="anuka-island app-main-island">
+      <div class="app-topbar">
+        <a class="app-mark" href="/">Anuka Uchika</a>
+      </div>
+
+      <div class="app-main-hero">
+        <div class="app-main-copy">
+          <div class="dataset-switch"><span>HSK Elementary</span></div>
+
+          <div class="app-gauge" aria-label="Start an HSK Elementary drill">
+            <svg class="app-gauge-svg" viewBox="0 0 300 300" aria-hidden="true">
+              <circle class="app-gauge-track" cx="150" cy="150" r="132" />
+              {#each minuteTicks as tick (tick.i)}
+                <line class:major={tick.major} x1={tick.x1} y1={tick.y1} x2={tick.x2} y2={tick.y2} />
+              {/each}
+            </svg>
+
+            <a
+              class="app-drill-circle"
+              href="/chinese/drill/hanzi/?group=1&dataset=chinese-hskv3-elementary&source=app_main"
+              aria-label="Start an HSK Elementary drill"
+            >
+              <span class="app-drill-zi">开始</span>
+              <span class="app-drill-label">Drill</span>
+            </a>
+          </div>
+
+          <p class="app-truth app-truth-anon">
+            <span class="app-truth-main">
+              <button class="anuka-btn-link app-signin-link" type="button">Sign In</button>
+              <span>All HSK Elementary 67 lessons, smart repetition & stats.</span>
+            </span>
+            <span class="app-truth-tagline">Progress starts where comfort ends</span>
+          </p>
         </div>
       </div>
     </section>
@@ -332,6 +379,10 @@
       </div>
     </section>
   </Modal>
+{/if}
+
+{#if showLessons && LessonsModal}
+  <LessonsModal onclose={() => (showLessons = false)} />
 {/if}
 
 {#if showHowWorks}

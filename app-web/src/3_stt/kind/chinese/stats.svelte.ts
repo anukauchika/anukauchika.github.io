@@ -8,9 +8,12 @@ class StatsState {
   // raw data (written by service)
   groupProgressStroke: Map<GroupId, GroupProgress> = $state(new Map())
   groupProgressPinyin: Map<GroupId, GroupProgress> = $state(new Map())
+  lessonDrilledWords: Map<GroupId, number> = $state(new Map())
 
   // derived (reactive wiring over @std pure functions)
-  private get groups(): ChineseGroup[] { return sttDataset.groups as ChineseGroup[] }
+  private get groups(): ChineseGroup[] {
+    return sttDataset.groups as ChineseGroup[]
+  }
 
   readonly dueCount = $derived(countDueDrills(this.groups, this.groupProgressStroke, this.groupProgressPinyin))
 }
