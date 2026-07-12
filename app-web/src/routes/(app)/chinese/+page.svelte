@@ -31,16 +31,20 @@
 
   const basePath = $derived.by(() => `/${sttDataset.current?.kind ?? 'chinese'}`)
   const datasetName = $derived(sttDataset.current?.name ?? 'Vocabulary')
-  const plannedToday = $derived(sttHome.dueCount)
 
   const wordsDrilled = $derived(sttHome.drilledWords)
   const totalWords = $derived(sttDataset.groups.reduce((sum, group) => sum + group.items.length, 0))
   const totalGroups = $derived(sttDataset.groups.length)
+  const plannedToday = $derived(
+    sttHome.dueCount === 0 && sttHome.loaded && sttAuth.isAuthenticated && wordsDrilled === 0 && totalGroups > 0
+      ? 2
+      : sttHome.dueCount,
+  )
   const progressPercent = $derived(totalWords > 0 ? Math.round((wordsDrilled / totalWords) * 100) : 0)
 
   const minutesToday = $derived(Math.floor(sttHome.todayDurationMs / 60_000))
   const lessonsDone = $derived(sttHome.todaySessions)
-  const lessonsTotal = $derived(lessonsDone + sttHome.dueCount)
+  const lessonsTotal = $derived(lessonsDone + plannedToday)
   const drillHanzi = $derived(!sttAuth.isAuthenticated || wordsDrilled === 0 ? '开始' : '进步')
 
   const ringCircumference = 2 * Math.PI * 132
@@ -151,14 +155,14 @@
 </script>
 
 <svelte:head>
-  <title>Chinese Vocabulary Drills — Stroke & Pinyin | Anuka Uchika</title>
+  <title>HSK Vocabulary Drills — Stroke & Pinyin | Anuka Uchika</title>
   <meta
     name="description"
     content="Browse HSK 3.0 Chinese vocabulary in focused word groups. Practice with stroke-by-stroke writing drills, pinyin drills, printable A4 worksheets, and smart repetition."
   />
   <link rel="canonical" href="https://anukauchika.com/chinese/" />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="Chinese Vocabulary Drills — Stroke & Pinyin" />
+  <meta property="og:title" content="HSK Vocabulary Drills — Stroke & Pinyin" />
   <meta
     property="og:description"
     content="Browse HSK 3.0 vocabulary in focused word groups: writing drills, pinyin drills, printable worksheets, smart repetition."
@@ -210,6 +214,9 @@
 
           <div
             class="app-gauge"
+            class:app-watch-low={sttHome.loaded && lessonsRatio < 0.5}
+            class:app-watch-progress={sttHome.loaded && lessonsRatio >= 0.5 && lessonsRatio < 0.9}
+            class:app-watch-complete={sttHome.loaded && lessonsRatio >= 0.9}
             aria-label={sttHome.loaded
               ? `${lessonsDone} of ${lessonsTotal} lessons done today`
               : 'Loading your progress'}
@@ -256,7 +263,24 @@
               </span>
               <span class="app-drill-meta">
                 {#if sttHome.loaded}
-                  <strong>{minutesToday}</strong> / {DAILY_GOAL_MIN} min today
+                  <span class="app-drill-stats">
+                    <span
+                      class="app-drill-stat"
+                      class:app-lessons-complete={plannedToday === 0}
+                      class:app-lessons-pending={plannedToday > 0}
+                    >
+                      <strong>{lessonsDone}</strong> lessons
+                    </span>
+                    <span
+                      class="app-drill-stat"
+                      class:app-time-low={minutesToday < 30}
+                      class:app-time-progress={minutesToday >= 30 && minutesToday < 60}
+                      class:app-time-complete={minutesToday >= 60}
+                    >
+                      <strong>{minutesToday}</strong> minutes
+                    </span>
+                  </span>
+                  <span class="app-drill-done">done</span>
                 {:else}
                   Loading
                 {/if}
@@ -574,10 +598,23 @@
   }
 
   .app-gauge {
+    --watch-color: var(--app-accent);
     position: relative;
     width: min(20.5rem, 82vw);
     aspect-ratio: 1;
     margin: 1.75rem auto 0;
+  }
+
+  .app-watch-low {
+    --watch-color: var(--anuka-color-fail);
+  }
+
+  .app-watch-progress {
+    --watch-color: var(--app-accent);
+  }
+
+  .app-watch-complete {
+    --watch-color: var(--anuka-color-success);
   }
 
   .app-gauge-svg {
@@ -597,7 +634,7 @@
   }
 
   .app-gauge-progress {
-    stroke: var(--app-accent);
+    stroke: var(--watch-color);
     stroke-linecap: round;
     transform: rotate(-90deg);
     transform-origin: 150px 150px;
@@ -611,7 +648,7 @@
   }
 
   .app-gauge line.major {
-    stroke: color-mix(in srgb, var(--app-accent) 42%, transparent);
+    stroke: color-mix(in srgb, var(--watch-color) 42%, transparent);
   }
 
   .app-drill-circle,
@@ -643,18 +680,18 @@
     align-items: center;
     justify-content: center;
     gap: 0.45rem;
-    border: 1px solid color-mix(in srgb, var(--app-accent) 32%, transparent);
+    border: 1px solid color-mix(in srgb, var(--watch-color) 32%, transparent);
     border-radius: 50%;
     background: radial-gradient(
       circle at 35% 30%,
-      color-mix(in srgb, var(--anuka-color-surface) 96%, var(--app-accent)),
-      color-mix(in srgb, var(--anuka-color-bg-accent) 95%, var(--app-accent)) 70%
+      color-mix(in srgb, var(--anuka-color-surface) 96%, var(--watch-color)),
+      color-mix(in srgb, var(--anuka-color-bg-accent) 95%, var(--watch-color)) 70%
     );
     color: var(--anuka-color-text);
     text-decoration: none;
     box-shadow:
-      inset 0 0 34px color-mix(in srgb, var(--app-accent) 16%, transparent),
-      0 0 70px -10px color-mix(in srgb, var(--app-accent) 45%, transparent);
+      inset 0 0 34px color-mix(in srgb, var(--watch-color) 16%, transparent),
+      0 0 70px -10px color-mix(in srgb, var(--watch-color) 45%, transparent);
     transition:
       transform 160ms ease,
       border-color 200ms ease,
@@ -664,10 +701,10 @@
   }
 
   .app-drill-circle:not(.app-drill-circle-off):hover {
-    border-color: color-mix(in srgb, var(--app-accent) 60%, transparent);
+    border-color: color-mix(in srgb, var(--watch-color) 60%, transparent);
     box-shadow:
-      inset 0 0 40px color-mix(in srgb, var(--app-accent) 20%, transparent),
-      0 0 90px -8px color-mix(in srgb, var(--app-accent) 52%, transparent);
+      inset 0 0 40px color-mix(in srgb, var(--watch-color) 20%, transparent),
+      0 0 90px -8px color-mix(in srgb, var(--watch-color) 52%, transparent);
     filter: saturate(1);
     opacity: 1;
   }
@@ -693,7 +730,7 @@
 
   .app-drill-zi {
     font-family: var(--font-hanzi);
-    color: var(--app-accent);
+    color: var(--watch-color);
     font-size: clamp(1.6rem, 6vw, 2rem);
     font-weight: 900;
     line-height: 1;
@@ -735,6 +772,7 @@
   .app-drill-meta {
     display: inline-flex;
     align-items: center;
+    flex-direction: column;
     gap: 0.35rem;
     color: var(--anuka-color-muted);
     font-size: 0.72rem;
@@ -743,9 +781,45 @@
     text-transform: uppercase;
   }
 
+  .app-drill-stats {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .app-drill-done {
+    line-height: 0.8;
+  }
+
   .app-drill-meta strong {
     color: var(--app-accent);
     font-weight: inherit;
+  }
+
+  .app-drill-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.22rem;
+  }
+
+  .app-lessons-pending strong {
+    color: var(--anuka-color-fail);
+  }
+
+  .app-lessons-complete strong {
+    color: var(--anuka-color-success);
+  }
+
+  .app-time-low strong {
+    color: var(--anuka-color-fail);
+  }
+
+  .app-time-progress strong {
+    color: var(--app-accent);
+  }
+
+  .app-time-complete strong {
+    color: var(--anuka-color-success);
   }
 
   .app-truth {

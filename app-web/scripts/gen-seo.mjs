@@ -30,6 +30,7 @@ const lastCommitDate = (relPath) => {
 // Pages not derived from the level/post/registry manifests
 const pages = [
   { loc: '/', lastmod: '2026-07-05', priority: '1.0' },
+  { loc: '/chinese/', lastmod: '2026-07-12', priority: '0.9' },
   { loc: '/chinese/hsk/', lastmod: '2026-06-11', priority: '0.8' },
   { loc: '/chinese/blog/', lastmod: '2026-02-26', priority: '0.8' },
 ]
@@ -150,6 +151,7 @@ Key facts:
 ## Pages
 
 - [Home](${SITE}/): what the app does and how the method works
+- [HSK Vocabulary Drills](${SITE}/chinese/): interactive HSK Elementary writing and pinyin lessons with smart repetition and progress stats
 ${worksheetDatasets
   .map(
     (d) =>

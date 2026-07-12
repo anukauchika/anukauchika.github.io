@@ -9,6 +9,7 @@
   let { onclose } = $props()
   let loading = $state(true)
   let lessonsList = $state()
+  let selectedGroup = $state(null)
   const datasetName = $derived(sttDataset.current?.name ?? 'Vocabulary')
 
   onMount(() => {
@@ -47,18 +48,57 @@
     const pinyinClean = Math.min(sttStats.groupProgressPinyin.get(groupId)?.clean ?? 0, 10)
     return { drilledWords, writingClean, pinyinClean, percent: Math.round(((writingClean + pinyinClean) / 20) * 100) }
   }
+
+  async function openGroup(group) {
+    selectedGroup = group
+    await tick()
+    document.querySelector('.lessons-modal')?.scrollTo({ top: 0 })
+  }
+
+  async function closeGroup() {
+    selectedGroup = null
+    await tick()
+    scrollToCurrentLessons()
+  }
+
+  function speak(text) {
+    if (!('speechSynthesis' in window)) return
+    speechSynthesis.cancel()
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = 'zh-CN'
+    utterance.rate = 0.8
+    speechSynthesis.speak(utterance)
+  }
 </script>
 
 <Modal {onclose}>
   <section class="anuka-island lessons-modal" aria-label="Lessons">
     <div class="anuka-row anuka-justify lessons-header">
       <div>
-        <h2>Lessons</h2>
-        <p>{datasetName}</p>
+        {#if selectedGroup}
+          <button class="anuka-btn-link back-button" type="button" onclick={closeGroup}>← Lessons</button>
+          <h2>Lesson {selectedGroup.id}</h2>
+        {:else}
+          <h2>Lessons</h2>
+          <p>{datasetName}</p>
+        {/if}
       </div>
       <BtnIcon icon="close" label="Close" onclick={onclose} />
     </div>
-    {#if loading}
+    {#if selectedGroup}
+      <div class="word-list">
+        {#each selectedGroup.items as word (word.id)}
+          <article class="word-row">
+            <div class="word-copy">
+              <strong class="word-hanzi" lang="zh-CN">{word.word}</strong>
+              <span class="word-pinyin">{word.pinyin}</span>
+              <span class="word-translation">{word.tr}</span>
+            </div>
+            <BtnIcon icon="speaker" label={`Play ${word.word}`} onclick={() => speak(word.word)} />
+          </article>
+        {/each}
+      </div>
+    {:else if loading}
       <div class="lessons-list skeleton-list" aria-busy="true" aria-label="Loading lesson progress">
         {#each Array(10) as _, index}
           <div class="lesson-row skeleton-row" aria-hidden="true">
@@ -73,23 +113,18 @@
       </div>
     {:else}
       <div class="lessons-list" bind:this={lessonsList}>
-        <div class="lesson-row done example">
-          <div class="heading">
-            <strong>Example lesson <span class="mark done-mark">Done</span></strong><span>100%</span>
-          </div>
-          <div class="track done-track"><span style="width: 100%"></span></div>
-          <small>Writing 10/10 · Pinyin 10/10</small>
-        </div>
         {#each sttDataset.groups as group (group.id)}
           {@const p = lessonProgress(group.id)}
           {@const started = p.drilledWords > 0 && (p.writingClean <= 2 || p.pinyinClean <= 2)}
           {@const progressing = p.percent < 100 && p.writingClean > 2 && p.pinyinClean > 2}
-          <div
+          <button
+            type="button"
             class="lesson-row"
             class:started
             class:progressing
             class:done={p.percent === 100}
             data-state={p.percent === 100 ? 'done' : progressing ? 'progress' : started ? 'started' : 'unstarted'}
+            onclick={() => openGroup(group)}
           >
             <div class="heading">
               <strong
@@ -108,7 +143,7 @@
               <span style={`width: ${p.percent}%`}></span>
             </div>
             <small>Writing {p.writingClean}/10 · Pinyin {p.pinyinClean}/10</small>
-          </div>
+          </button>
         {/each}
       </div>
     {/if}
@@ -143,6 +178,13 @@
     margin: 0.18rem 0 0;
     color: var(--anuka-color-muted);
     font-size: 0.82rem;
+  }
+  .back-button {
+    display: block;
+    margin-bottom: 0.18rem;
+    color: var(--accent);
+    font-size: 0.76rem;
+    font-weight: 800;
   }
   .lessons-list {
     display: grid;
@@ -209,6 +251,20 @@
     border-radius: 0.75rem;
     background: var(--anuka-color-surface-raised);
     padding: 0.75rem 0.9rem;
+    color: var(--anuka-color-text);
+    font: inherit;
+    text-align: left;
+  }
+  button.lesson-row {
+    width: 100%;
+    cursor: pointer;
+  }
+  button.lesson-row:hover {
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--anuka-color-border));
+  }
+  button.lesson-row:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
   .started {
     border-color: color-mix(in srgb, var(--anuka-color-warn) 48%, var(--anuka-color-border));
@@ -221,9 +277,6 @@
   .done {
     border-color: color-mix(in srgb, var(--anuka-color-success) 55%, var(--anuka-color-border));
     background: color-mix(in srgb, var(--anuka-color-success) 10%, var(--anuka-color-surface-raised));
-  }
-  .example {
-    border-style: dashed;
   }
   .heading {
     display: flex;
@@ -281,5 +334,45 @@
   }
   .done-track span {
     background: var(--anuka-color-success);
+  }
+  .word-list {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: 1rem;
+  }
+  .word-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-width: 0;
+    border: 1px solid var(--anuka-color-border);
+    border-radius: 0.75rem;
+    background: var(--anuka-color-surface-raised);
+    padding: 0.8rem 0.9rem;
+  }
+  .word-copy {
+    display: grid;
+    min-width: 0;
+  }
+  .word-hanzi {
+    color: var(--anuka-color-text);
+    font-family: var(--font-hanzi);
+    font-size: clamp(1.65rem, 7vw, 2.5rem);
+    font-weight: 850;
+    line-height: 1.12;
+    white-space: nowrap;
+  }
+  .word-pinyin {
+    margin-top: 0.2rem;
+    color: var(--accent);
+    font-size: 0.9rem;
+    font-weight: 750;
+  }
+  .word-translation {
+    margin-top: 0.1rem;
+    color: var(--anuka-color-muted);
+    font-size: 0.82rem;
+    line-height: 1.35;
   }
 </style>

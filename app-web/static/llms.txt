@@ -18,6 +18,7 @@ Key facts:
 ## Pages
 
 - [Home](https://anukauchika.com/): what the app does and how the method works
+- [HSK Vocabulary Drills](https://anukauchika.com/chinese/): interactive HSK Elementary writing and pinyin lessons with smart repetition and progress stats
 - [HSK Elementary Printable Chinese Worksheets](https://anukauchika.com/chinese/printable-hsk-elementary-worksheets/):
   print HSK Elementary memorization worksheet groups and practice the same words online
 - [HSK Intermediate Printable Chinese Worksheets](https://anukauchika.com/chinese/printable-hsk-intermediate-worksheets/):

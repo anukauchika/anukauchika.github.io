@@ -41,7 +41,9 @@
   }
 
   function sectionInfo(item: QueueItem): { key: string; label: string; sortAt: number } {
-    if (item.state === 'repeat' || item.state === 'due') return { key: 'today', label: 'Today', sortAt: 0 }
+    if (item.state === 'new' || item.state === 'repeat' || item.state === 'due') {
+      return { key: 'today', label: 'Today', sortAt: 0 }
+    }
 
     const today = dayStart()
     const dueDay = dayStart(item.dueAt)
