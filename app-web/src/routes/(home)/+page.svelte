@@ -115,7 +115,7 @@
             class="anuka-btn anuka-main anuka-lg lesson-cta"
             onclick={() => trackRootLandCoreClicked('app_main')}
           >
-            Practice Writing & Reading →
+            Practice HSK Words
           </a>
         </div>
       </div>
