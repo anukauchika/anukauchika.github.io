@@ -102,11 +102,6 @@
 
       <div class="anuka-frame" data-no-touch>
         <div id="drill-canvas"></div>
-        <svg class="accepted-strokes" viewBox="0 0 280 280" aria-hidden="true">
-          {#each session.acceptedStrokePaths as path, index (index)}
-            <path d={path}></path>
-          {/each}
-        </svg>
         {#if session.wordDelay}
           <ProgressLine class="anuka-sm" fill={session.wordDelayProgress}>
             {#snippet top()}<div class="anuka-row anuka-center">
@@ -208,23 +203,6 @@
 </Island>
 
 <style>
-  .accepted-strokes {
-    position: absolute;
-    inset: 0;
-    width: 280px;
-    height: 280px;
-    pointer-events: none;
-    color: var(--anuka-color-text);
-  }
-
-  .accepted-strokes path {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 10;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
   .anon-session-notice {
     display: flex;
     flex-direction: column;
